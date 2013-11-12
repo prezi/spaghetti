@@ -23,6 +23,11 @@ This is a proof-of-concept implementation of a Gradle plugin that helps in modul
 * generate client proxy code in the implementation language (use Gradle plugin)
 * use client proxy code to access module code
 
+# Module System
+
+Reference-style: 
+![Module System](http://prezi.github.io/gradle-spaghetti-plugin/images/Module System.png "Module System")
+
 # Interface Language
 
 Currently it's pretty rudimentary:
@@ -61,6 +66,11 @@ class MyApp {
 	}
 }
 ```
+
+# Versioning
+
+![Versioning](http://prezi.github.io/gradle-spaghetti-plugin/images/Versioning.png "Versioning")
+
 
 # Next steps
 
