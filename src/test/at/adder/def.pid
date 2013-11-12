@@ -1,0 +1,17 @@
+module "AdderModule", {
+	namespace "prezi.test"
+	service "Adder", {
+		define Int, "add", [a:Int, b:Int]
+	}
+}
+
+// This is a temporary format, because we want a demo quick.
+// The format can be cleaned up to something like:
+/*
+module AdderModule {
+	namespace "prezi.test"
+	service Adder {
+		define add(a:Int, b:Int) returns Int
+	}
+}
+*/

@@ -1,0 +1,24 @@
+import com.prezi.gradle.spaghetti.GenerateClient
+
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+
+	dependencies {
+		classpath "com.prezi.gradle:gradle-prezi-plugin:1.0-SNAPSHOT"
+		classpath "com.prezi.gradle:gradle-spaghetti-plugin:1.0-SNAPSHOT"
+	}
+}
+
+configure(allprojects) {
+	group = "prezi.test"
+	version = "0.1-SNAPSHOT"
+
+	apply plugin: "prezi"
+
+	repositories {
+		mavenLocal()
+		maven downloadRepo("repo")
+	}
+}

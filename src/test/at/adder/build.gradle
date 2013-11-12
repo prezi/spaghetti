@@ -1,0 +1,16 @@
+import com.prezi.gradle.spaghetti.GenerateHeaders
+
+apply plugin: "spaghetti"
+
+task generateHeaders(type: GenerateHeaders) {
+	platform "haxe"
+	definition "def.pid"
+	outputDirectory "$buildDir/haxe"
+}
+
+artifacts {
+	archives(file("def.pid")) {
+		name "definitions"
+		type "pid"
+	}
+}

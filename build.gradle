@@ -1,0 +1,56 @@
+group = 'com.prezi.gradle'
+
+buildscript {
+	repositories {
+		mavenLocal()
+		maven {
+			credentials {
+				username nexusUser
+				password nexusPassword
+			}
+			url "https://artifactory.prezi.com/plugins-snapshot"
+		}
+	}
+
+	dependencies {
+		classpath "com.prezi.gradle:gradle-prezi-plugin:1.0-SNAPSHOT"
+	}
+}
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'prezi'
+
+sourceCompatibility = "1.6"
+targetCompatibility = "1.6"
+
+repositories {
+	mavenLocal()
+	maven downloadRepo("plugins-snapshot")
+}
+
+dependencies {
+	compile gradleApi()
+	compile localGroovy()
+}
+
+task run(type: Exec) {
+	workingDir "src/test/at"
+	commandLine = ["gradle", "clean", "generateHeaders", "generateClient", "-is"]
+}
+
+uploadArchives {
+	repositories {
+		repositories {
+			mavenDeployer {
+				repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
+					authentication(userName: nexusUser, password: nexusPassword)
+				}
+				snapshotRepository(url: "https://artifactory.prezi.com/plugins-snapshot-local/") {
+					authentication(userName: nexusUser, password: nexusPassword)
+				}
+			}
+		}
+	}
+}

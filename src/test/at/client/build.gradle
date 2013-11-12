@@ -1,0 +1,17 @@
+import com.prezi.gradle.spaghetti.GenerateClient
+
+apply plugin: "spaghetti"
+
+configurations {
+	pid
+}
+
+dependencies {
+	pid project(path: ":adder", configuration: "archives")
+}
+
+task generateClient(type: GenerateClient) {
+	platform "haxe"
+	definition configurations.pid.files.iterator().next()
+	outputDirectory "$buildDir/haxe"
+}
