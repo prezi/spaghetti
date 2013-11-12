@@ -60,7 +60,7 @@ Future plan for the interface language looks a bit more like this:
 
 ```groovy
 module prezi.text.LayoutModule {
-	dependsOn "prezi.network.NetworkModule"
+	dependsOn prezi.network.NetworkModule
 	type Text {
 		define getRawText():String
 		define insert(index:Int, text:Text, styles:Style[]):Void
@@ -83,7 +83,7 @@ module prezi.text.LayoutModule {
 
 ```groovy
 module prezi.text.LayoutModule {
-	dependsOn "prezi.network.NetworkModule"
+	dependsOn prezi.network.NetworkModule
 	types {
 		Text
 		Style
