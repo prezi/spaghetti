@@ -7,11 +7,21 @@ JS modularization prototype
 
 This is a proof-of-concept implementation of a Gradle plugin that helps in modularizing JS applications. This is how it's supposed to work:
 
-* You start with an interface definition (see below)
-* You generate interfaces in the language of your choice (can be anything as long as it is Haxe, for now)
-* Then you impelment them in your module
-* When you want to use your module in another module/application, you take the interface definition and generate some classes/whathaveyou in the language of your choice (again, anything as long as it's Haxe for now)
-* You use the generated client code to interact with your module
+## Workflow to write a module
+
+* write IDL
+* choose an implementation language (only Haxe now, Typescript coming)
+* generate interfaces: IDL->implementation language (use Gradle plugin)
+* write implementation
+* deploy artifacts to artifactory.prezi.com (use Gradle plugin)
+
+## Workflow to use a module
+
+* declare dependency on module in Gradle
+* choose an implementation language (only Haxe now, Typescript coming)
+* generate interfaces: IDL->implementation language (use Gradle plugin)
+* generate client proxy code in the implementation language (use Gradle plugin)
+* use client proxy code to access module code
 
 # Interface Language
 
