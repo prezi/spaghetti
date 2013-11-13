@@ -1,3 +1,17 @@
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [Gradle Spaghetti Plugin](#gradle-spaghetti-plugin)
+- [What is this?](#what-is-this)
+	- [Workflow to write a module](#workflow-to-write-a-module)
+	- [Workflow to use a module](#workflow-to-use-a-module)
+- [Module System](#module-system)
+- [Interface Language](#interface-language)
+- [Versioning](#versioning)
+- [Next steps](#next-steps)
+	- [OOP-style](#oop-style)
+	- [More like functional-style](#more-like-functional-style)
+- [Challenges](#challenges)
+
 Gradle Spaghetti Plugin
 =======================
 
