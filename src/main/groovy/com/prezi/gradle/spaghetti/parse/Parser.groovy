@@ -13,8 +13,12 @@ class Parser {
 
 	def methodMissing(String name, def args)
 	{
-		println "Missing method ${name} with ${args}"
+		println "Missing method ${name} with ${args} / " + args.collect { it.class }.join(", ")
 		return new NamedArguments(name, args)
 	}
 
+	def propertyMissing(String name)
+	{
+		return context.getType(name)
+	}
 }

@@ -31,13 +31,13 @@ class ModuleParser {
 }
 
 abstract class ModuleScript extends Script {
-	ParserContext context
+	final ParserContext context
 
 	@Delegate
-	private Parser parser
+	private final Parser parser
 
 	public ModuleScript() {
-		this.context = new ParserContext(binding)
+		this.context = new ParserContext(super.binding)
 		this.parser = new Parser(context)
 	}
 

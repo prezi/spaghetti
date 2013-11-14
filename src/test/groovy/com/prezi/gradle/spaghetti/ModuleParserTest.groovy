@@ -12,7 +12,7 @@ class ModuleParserTest {
 		def moduleDef = new ModuleParser("""
 module Layout {
 	type Text {
-		define insert(offset:int)
+		aVoid insert(bela:aInt)
 	}
 }
 """).parse()

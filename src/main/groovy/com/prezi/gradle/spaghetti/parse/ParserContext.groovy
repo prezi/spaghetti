@@ -9,16 +9,21 @@ class ParserContext {
 	final Binding binding
 
 	final Map<String, TypeDefinition> types = [:]
+	final Map<String, TypeDefinition> builtInTypes = [:]
 	ModuleDefinition module
 
 	ParserContext(Binding binding)
 	{
 		this.binding = binding
-		registerBinding(new TypeDefinition("void", this))
-		registerBinding(new TypeDefinition("bool", this))
-		registerBinding(new TypeDefinition("int", this))
-		registerBinding(new TypeDefinition("float", this))
-		registerBinding(new TypeDefinition("String", this))
+		[
+			new TypeDefinition("aVoid", this),
+			new TypeDefinition("aBool", this),
+			new TypeDefinition("aInt", this),
+			new TypeDefinition("aFloat", this),
+			new TypeDefinition("aString", this)
+		].each {
+			builtInTypes.put(it.name, it)
+		}
 	}
 
 	ModuleDefinition setModule() {
@@ -32,15 +37,21 @@ class ParserContext {
 		if (types.containsKey(type.name)) {
 			throw new IllegalStateException("Type ${type.name} is already registered")
 		}
-		registerBinding(type)
+		if (builtInTypes.containsKey(type.name)) {
+			throw new IllegalStateException("Type ${type.name} is a built-in type")
+		}
 		types.put(type.name, type)
 	}
 
-	void registerBinding(Named property) {
-		if (binding.hasProperty(property.name)) {
-			throw new IllegalStateException("Property ${property.name} is already registered")
+	TypeDefinition getType(String name) {
+		if (types.containsKey(name))
+		{
+			return types.get(name)
 		}
-		binding.setProperty(property.name, property)
-
+		if (builtInTypes.containsKey(name))
+		{
+			return builtInTypes.get(name)
+		}
+		throw new IllegalStateException("Type ${name} is not registered")
 	}
 }
