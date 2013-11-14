@@ -95,10 +95,15 @@ Future plan for the interface language looks a bit more like this:
 ```groovy
 module prezi.text.LayoutModule {
 	dependsOn prezi.network.NetworkModule
+	type Paragraph {
+		// ...
+	}
 	type Text {
 		define getRawText():String
 		define insert(index:Int, text:Text, styles:Style[]):Void
 		define delete(index:Int, length:Int):Void
+		define getParagraphCount():Int
+		define getParagraph(index:Int):Paragraph
 		// ...
 	}
 	type Style {
