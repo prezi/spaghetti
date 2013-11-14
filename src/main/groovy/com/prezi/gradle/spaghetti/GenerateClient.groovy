@@ -1,5 +1,7 @@
 package com.prezi.gradle.spaghetti
 
+import com.prezi.gradle.spaghetti.parse.ModuleDefinition
+
 /**
  * Created by lptr on 12/11/13.
  */

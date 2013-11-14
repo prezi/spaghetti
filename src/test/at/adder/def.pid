@@ -8,10 +8,25 @@ module "AdderModule", {
 // This is a temporary format, because we want a demo quick.
 // The format can be cleaned up to something like:
 /*
-module AdderModule {
-	namespace "prezi.test"
-	service Adder {
-		define add(a:Int, b:Int) returns Int
-	}
+module prezi.text.LayoutModule {
+    dependsOn prezi.network.NetworkModule
+    type Paragraph {
+        // ...
+    }
+    type Text {
+        define getRawText():String
+        define insert(index:Int, text:String, styles:Style[]):Void
+        define delete(index:Int, length:Int):Void
+        define getParagraphCount():Int
+        define getParagraph(index:Int):Paragraph
+        // ...
+    }
+    type Style {
+        define getType():String
+        define getValue():String
+    }
+    services {
+        define createText():Text
+    }
 }
 */

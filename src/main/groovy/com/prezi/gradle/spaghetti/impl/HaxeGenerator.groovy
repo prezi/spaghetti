@@ -1,10 +1,9 @@
 package com.prezi.gradle.spaghetti.impl
 
 import com.prezi.gradle.spaghetti.Generator
-import com.prezi.gradle.spaghetti.MethodDefinition
-import com.prezi.gradle.spaghetti.ModuleDefinition
-import com.prezi.gradle.spaghetti.ServiceDefinition
-import com.prezi.gradle.spaghetti.Type
+import com.prezi.gradle.spaghetti.parse.MethodDefinition
+import com.prezi.gradle.spaghetti.parse.ModuleDefinition
+import com.prezi.gradle.spaghetti.parse.TypeDefinition
 import org.gradle.api.Named
 import org.gradle.api.Project
 
@@ -32,19 +31,19 @@ class HaxeGenerator implements Generator {
 		def namespace = moduleDef.namespace
 		def packageDir = createModuleDirectory(namespace, outputDirectory)
 
-		moduleDef.services.values().each { ServiceDefinition serviceDef ->
-			def serviceFile = createHaxeSourceFile(namespace, packageDir, serviceDef)
-
-			serviceFile << "interface ${serviceDef.name} {\n"
-			serviceDef.methods.values().each { MethodDefinition methodDef ->
-				serviceFile << "\tfunction ${methodDef.name}("
-				serviceFile << methodDef.parameters.collect { String name, Type type ->
-					return "${name} : ${typeName(type)}"
-				}.join(", ")
-				serviceFile << "):${typeName(methodDef.returnType)};\n"
-			}
-			serviceFile << "}\n"
-		}
+//		moduleDef.types.values().each { TypeDefinition serviceDef ->
+//			def serviceFile = createHaxeSourceFile(namespace, packageDir, serviceDef)
+//
+//			serviceFile << "interface ${serviceDef.name} {\n"
+//			serviceDef.methods.values().each { MethodDefinition methodDef ->
+//				serviceFile << "\tfunction ${methodDef.name}("
+//				serviceFile << methodDef.parameters.collect { String name, Type type ->
+//					return "${name} : ${typeName(type)}"
+//				}.join(", ")
+//				serviceFile << "):${typeName(methodDef.returnType)};\n"
+//			}
+//			serviceFile << "}\n"
+//		}
 	}
 
 	@Override
@@ -61,7 +60,7 @@ class HaxeGenerator implements Generator {
 		moduleFile << "\t\tthis.module = untyped require(\"${moduleDef.name}\");\n";
 		moduleFile << "\t}\n"
 		moduleFile << "\n"
-		moduleDef.services.values().each { ServiceDefinition serviceDef ->
+		moduleDef.types.values().each { TypeDefinition serviceDef ->
 			moduleFile << "\tpublic function create${serviceDef.name}():${serviceDef.name} {\n"
 			moduleFile << "\t\treturn new untyped module.${serviceDef.name}();\n"
 			moduleFile << "\t}\n"
@@ -92,7 +91,7 @@ class HaxeGenerator implements Generator {
 		return file
 	}
 
-	private static String typeName(Type type) {
+	private static String typeName(TypeDefinition type) {
 		return type.name
 	}
 }

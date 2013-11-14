@@ -1,5 +1,7 @@
 package com.prezi.gradle.spaghetti
 
+import com.prezi.gradle.spaghetti.parse.ModuleDefinition
+import com.prezi.gradle.spaghetti.parse.ModuleParser
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
@@ -20,7 +22,7 @@ abstract class AbstractGenerateTask extends DefaultTask {
 
 	@TaskAction
 	public void generate() {
-		def moduleDef = new ModuleParser(definition).parse()
+		def moduleDef = new ModuleParser(definition.text).parse()
 
 		def generator = project.getPlugins().getPlugin(SpaghettiPlugin).generators.get(platform)
 		generateInternal(generator, moduleDef)

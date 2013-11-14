@@ -1,5 +1,6 @@
 package com.prezi.gradle.spaghetti
 
+import com.prezi.gradle.spaghetti.parse.ModuleDefinition
 import org.gradle.api.Project
 
 /**
