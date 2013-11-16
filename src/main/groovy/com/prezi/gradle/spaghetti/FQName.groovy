@@ -57,6 +57,10 @@ final public class FQName {
 		return result
 	}
 
+	public boolean hasNamespace() {
+		return namespace != null
+	}
+
 	@Override
 	String toString() {
 		return fullyQualifiedName
