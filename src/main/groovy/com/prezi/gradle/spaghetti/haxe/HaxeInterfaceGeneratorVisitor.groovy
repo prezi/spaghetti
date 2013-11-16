@@ -59,6 +59,6 @@ class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Objec
 	@Override
 	Object visitMethodParameterDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodParameterDefinitionContext ctx)
 	{
-		return generateMethodParameter(ctx, true)
+		return generateMethodParameter(ctx)
 	}
 }
