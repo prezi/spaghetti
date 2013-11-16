@@ -7,7 +7,6 @@ class GenerateClient extends AbstractGenerateTask {
 	@Override
 	protected void generateInternal(Generator generator, ModuleConfiguration config)
 	{
-		generator.generateInterfaces(config, outputDirectory)
 		generator.generateClientModule(config, outputDirectory)
 	}
 }

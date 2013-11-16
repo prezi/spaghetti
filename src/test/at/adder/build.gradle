@@ -1,11 +1,33 @@
+import com.prezi.gradle.spaghetti.BundleModule
 import com.prezi.gradle.spaghetti.GenerateHeaders
 
 apply plugin: "spaghetti"
+apply plugin: "haxe"
+
+configurations {
+	modules
+}
 
 task generateHeaders(type: GenerateHeaders) {
 	platform "haxe"
 	definition "def.pid"
 	outputDirectory "$buildDir/haxe"
+}
+
+task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
+	dependsOn generateHeaders
+	configuration configurations.modules
+	targetPlatform "js"
+	source generateHeaders.outputDirectory
+	source "src"
+	main "prezi.graphics.text.LayoutInit"
+	outputFile "${buildDir}/compiled.js"
+}
+
+task bundle(type: BundleModule) {
+	dependsOn compileHaxe
+	inputFile compileHaxe.outputFile
+	outputFile "${buildDir}/module.js"
 }
 
 artifacts {

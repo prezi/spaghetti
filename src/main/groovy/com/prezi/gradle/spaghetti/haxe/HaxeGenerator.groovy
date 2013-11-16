@@ -25,8 +25,7 @@ class HaxeGenerator implements Generator {
 	void generateInterfaces(ModuleConfiguration config, File outputDirectory)
 	{
 		config.modules.values().each { module ->
-			def visitor = new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory)
-			visitor.visit(module.context)
+			new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).visit(module.context)
 		}
 	}
 
@@ -34,26 +33,7 @@ class HaxeGenerator implements Generator {
 	void generateClientModule(ModuleConfiguration config, File outputDirectory)
 	{
 		config.modules.values().each { module ->
-			def visitor = new HaxeTypedefGeneratorVisitor(config, module, outputDirectory)
-			visitor.visit(module.context)
+			new HaxeTypedefGeneratorVisitor(config, module, outputDirectory).visit(module.context)
 		}
-//		def namespace = moduleDef.namespace
-//		def packageDir = createModuleDirectory(namespace, outputDirectory)
-//		def moduleFile = createHaxeSourceFile(namespace, packageDir, moduleDef)
-//		moduleFile << "class ${moduleDef.name} {\n"
-//		moduleFile << "\n"
-//		moduleFile << "\tvar module:Dynamic;\n"
-//		moduleFile << "\n"
-//		moduleFile << "\tpublic function new() {\n"
-//		moduleFile << "\t\tthis.module = untyped require(\"${moduleDef.name}\");\n";
-//		moduleFile << "\t}\n"
-//		moduleFile << "\n"
-//		moduleDef.types.values().each { TypeDefinition serviceDef ->
-//			moduleFile << "\tpublic function create${serviceDef.name}():${serviceDef.name} {\n"
-//			moduleFile << "\t\treturn new untyped module.${serviceDef.name}();\n"
-//			moduleFile << "\t}\n"
-//		}
-//		moduleFile << "\n"
-//		moduleFile << "}\n"
 	}
 }
