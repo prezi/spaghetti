@@ -32,8 +32,10 @@ task bundle(type: BundleModule) {
 }
 
 artifacts {
-	archives(file("def.pid")) {
-		name "definitions"
-		type "pid"
+	archives(bundle.outputFile) {
+		builtBy bundle
+	}
+	modules(bundle.outputFile) {
+			builtBy bundle
 	}
 }

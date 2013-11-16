@@ -23,4 +23,15 @@ configure(allprojects) {
 		mavenLocal()
 		maven downloadRepo("repo")
 	}
+
+}
+
+configure(subprojects) {
+	install {
+		repositories {
+			ivy {
+				url "file://$rootProject.buildDir/repo"
+			}
+		}
+	}
 }
