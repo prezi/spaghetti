@@ -9,6 +9,10 @@ import prezi.spaghetti.SpaghettiModuleParser.ModuleDefinitionContext
  */
 class ModuleConfigurationParser {
 	public static ModuleConfiguration parse(ModuleDefinitionContext... contexts) {
+		return parse(contexts.toList())
+	}
+
+	public static ModuleConfiguration parse(Iterable<ModuleDefinitionContext> contexts) {
 		def typeNames = new HashSet<FQName>(ModuleConfiguration.BUILT_IN_TYPE_NAMES)
 		def modules = contexts.collect { moduleDefCtx ->
 			def typeCollector = new TypeCollectorVisitor(typeNames)
