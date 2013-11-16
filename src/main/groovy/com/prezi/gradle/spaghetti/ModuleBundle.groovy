@@ -1,8 +1,7 @@
 package com.prezi.gradle.spaghetti
 
-import org.gradle.api.java.archives.Manifest
-import org.gradle.api.java.archives.internal.DefaultManifest
-
+import java.util.jar.Attributes
+import java.util.jar.Manifest
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
@@ -12,7 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle {
-	static final def MANIFEST_ATTR_MODULE_VERSION = "Module-Version"
+	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
 	public static final String DEFINITION_PATH = "module.def"
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
@@ -32,9 +31,10 @@ class ModuleBundle {
 			zipStream.withStream {
 				// Store manifest
 				zipStream.putNextEntry(new ZipEntry(MANIFEST_MF_PATH))
-				Manifest manifest = new DefaultManifest(null)
-				manifest.attributes.put(MANIFEST_ATTR_MODULE_VERSION, "1.0")
-				manifest.writeTo(new OutputStreamWriter(zipStream, "utf-8"))
+				Manifest manifest = new Manifest()
+				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, "1.0")
+				manifest.write(zipStream)
 
 				// Store definition
 				zipStream.putNextEntry(new ZipEntry(DEFINITION_PATH))
@@ -54,7 +54,7 @@ class ModuleBundle {
 
 		String definition = null
 		String compiledJavaScript = null
-		java.util.jar.Manifest manifest = null
+		Manifest manifest = null
 
 		zipFile.entries().each { ZipEntry entry ->
 			Closure<String> contents = { zipFile.getInputStream(entry).text }
@@ -66,7 +66,7 @@ class ModuleBundle {
 					compiledJavaScript = contents()
 					break
 				case MANIFEST_MF_PATH:
-					manifest = new java.util.jar.Manifest(zipFile.getInputStream(entry))
+					manifest = new Manifest(zipFile.getInputStream(entry))
 					break
 			}
 		}
