@@ -1,8 +1,6 @@
 package com.prezi.gradle.spaghetti
 
-import com.prezi.gradle.spaghetti.ModuleParser
 import org.junit.Test
-
 /**
  * Created by lptr on 14/11/13.
  */

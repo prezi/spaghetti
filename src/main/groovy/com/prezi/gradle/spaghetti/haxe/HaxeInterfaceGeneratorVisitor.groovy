@@ -8,10 +8,9 @@ import prezi.spaghetti.SpaghettiModuleParser
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeInterfaceGeneratorVisitor extends HaxeGeneratorVisitor<Object> {
+class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Object> {
 
 	private File moduleFile
-	private def lastMethodParameter = null
 
 	HaxeInterfaceGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
@@ -27,7 +26,7 @@ class HaxeInterfaceGeneratorVisitor extends HaxeGeneratorVisitor<Object> {
 
 		addDocumentationIfNecessary(ctx.documentation)
 
-		moduleFile << "class ${moduleName} {\n"
+		moduleFile << "interface ${moduleName} {\n"
 		def result = super.visitModuleDefinition(ctx);
 		moduleFile << "}\n"
 
@@ -41,41 +40,18 @@ class HaxeInterfaceGeneratorVisitor extends HaxeGeneratorVisitor<Object> {
 	@Override
 	Object visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		def typeName = ctx.name.text
-		currentFile = createHaxeSourceFile(typeName)
-
-		addDocumentationIfNecessary(ctx.documentation)
-		currentFile << "interface ${typeName} {\n"
-		def result = super.visitTypeDefinition(ctx)
-		currentFile << "}\n"
-		currentFile = moduleFile
-		return result
+		return generateTypeDefinition(ctx) { String typeName -> "interface ${typeName}" }
 	}
 
 	@Override
 	Object visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
 	{
-		addDocumentationIfNecessary(ctx.documentation)
-		def methodName = ctx.name.text
-		def returnType = haxeTypeName(ctx.returnType.text)
-		currentFile << "\tfunction ${methodName}("
-		def result = super.visitMethodDefinition(ctx)
-		currentFile << "):${returnType};\n"
-		lastMethodParameter = null
-		return result
+		return generateMethodDefinition(ctx)
 	}
 
 	@Override
 	Object visitMethodParameterDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodParameterDefinitionContext ctx)
 	{
-		def paramName = ctx.name.text
-		def paramType = haxeTypeName(ctx.type.text)
-		if (lastMethodParameter != null)
-		{
-			currentFile << ", "
-		}
-		currentFile << "${paramName}:${paramType}"
-		lastMethodParameter = ctx
-		return super.visitMethodParameterDefinition(ctx)
+		return generateMethodParameter(ctx, true)
 	}
 }
