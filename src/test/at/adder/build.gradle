@@ -21,13 +21,14 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 	source generateHeaders.outputDirectory
 	source "src"
 	main "prezi.graphics.text.LayoutInit"
-	outputFile "${buildDir}/compiled.js"
+	outputFile "${buildDir}/module.js"
 }
 
 task bundle(type: BundleModule) {
 	dependsOn compileHaxe
+	definition "def.pid"
 	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/module.js"
+	outputFile "${buildDir}/module.zip"
 }
 
 artifacts {
