@@ -33,4 +33,9 @@ class ModuleConfiguration {
 		}
 		return fqName
 	}
+
+	@Override
+	String toString() {
+		return "modules: " + modules.values().collect { it.name }.join(", ")
+	}
 }
