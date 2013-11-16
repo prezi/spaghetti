@@ -44,14 +44,27 @@ Reference-style:
 
 # Interface Language
 
-Currently it's pretty rudimentary:
+Language defined in [ANTLR](http://antlr.org/), grammar can be reused without modification if needed in creating an Xtext editor.
 
-```groovy
-module "AdderModule", {
-	namespace "prezi.test"
-	service "Adder", {
-		define Int, "add", [a:Int, b:Int]
-	}
+```
+/**
+ * Layout module.
+ */
+module prezi.graphics.text.Layout {
+
+    /**
+     * Describes a block of text.
+     */
+    type Text {
+        /**
+         * Inserts the given String at <code>offset</code>.
+         */
+        void insert(int offset, String text)
+        void delete(int offset, int end)
+        String getRawText()
+    }
+
+    Text createText()
 }
 ```
 
@@ -85,57 +98,6 @@ class MyApp {
 
 ![Versioning](http://prezi.github.io/gradle-spaghetti-plugin/images/Versioning.png "Versioning")
 
-
-# Next steps
-
-Future plan for the interface language looks a bit more like this:
-
-## OOP-style
-
-```groovy
-module prezi.text.LayoutModule {
-	dependsOn prezi.network.NetworkModule
-	type Paragraph {
-		// ...
-	}
-	type Text {
-		define getRawText():String
-		define insert(index:Int, text:Text, styles:Style[]):Void
-		define delete(index:Int, length:Int):Void
-		define getParagraphCount():Int
-		define getParagraph(index:Int):Paragraph
-		// ...
-	}
-	type Style {
-		define getType():String
-		define getValue():String
-	}
-	service Layout {
-		define createText():Text
-	}
-}
-```
-
-...or...
-
-## More like functional-style
-
-```groovy
-module prezi.text.LayoutModule {
-	dependsOn prezi.network.NetworkModule
-	types {
-		Text
-		Style
-	}
-	service Layout {
-		define createText():Text
-		define getRawText(object:Text):String
-		define insertText(object:Text, index:Int, text:Text, styles:Style[]):Void
-		define deleteText(object:Text, index:Int, length:Int)
-		// ...
-	}
-}
-```
 
 # Challenges
 

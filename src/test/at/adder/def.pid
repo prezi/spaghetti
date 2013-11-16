@@ -1,32 +1,19 @@
-module "AdderModule", {
-	namespace "prezi.test"
-	service "Adder", {
-		define Int, "add", [a:Int, b:Int]
-	}
-}
+/**
+ * Layout module.
+ */
+module prezi.graphics.text.Layout {
 
-// This is a temporary format, because we want a demo quick.
-// The format can be cleaned up to something like:
-/*
-module prezi.text.LayoutModule {
-    dependsOn prezi.network.NetworkModule
-    type Paragraph {
-        // ...
-    }
+    /**
+     * Describes a block of text.
+     */
     type Text {
-        define getRawText():String
-        define insert(index:Int, text:String, styles:Style[]):Void
-        define delete(index:Int, length:Int):Void
-        define getParagraphCount():Int
-        define getParagraph(index:Int):Paragraph
-        // ...
+        /**
+         * Inserts the given String at <code>offset</code>.
+         */
+        void insert(int offset, String text)
+        void delete(int offset, int end)
+        String getRawText()
     }
-    type Style {
-        define getType():String
-        define getValue():String
-    }
-    services {
-        define createText():Text
-    }
+
+    Text createText()
 }
-*/

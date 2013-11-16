@@ -1,6 +1,6 @@
 package com.prezi.gradle.spaghetti
 
-import com.prezi.gradle.spaghetti.parse.ModuleParser
+import com.prezi.gradle.spaghetti.ModuleParser
 import org.junit.Test
 
 /**
@@ -9,13 +9,27 @@ import org.junit.Test
 class ModuleParserTest {
 	@Test
 	void testEmpty() {
-		def moduleDef = new ModuleParser("""
-module Layout {
-	type Text {
-		aVoid insert(bela:aInt)
-	}
+		def moduleDef = ModuleParser.parse("""
+/**
+ * Layout module.
+ */
+module prezi.graphics.text.Layout {
+
+    /**
+     * Describes a block of text.
+     */
+    type Text {
+        /**
+         * Inserts the given String at <code>offset</code>.
+         */
+        void insert(int offset, String text)
+        void delete(int offset, int end)
+        String getRawText()
+    }
+
+    Text createText()
 }
-""").parse()
+""")
 		println "Parsed ${moduleDef}"
 	}
 }

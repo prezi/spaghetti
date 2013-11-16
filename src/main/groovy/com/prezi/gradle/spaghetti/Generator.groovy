@@ -1,6 +1,5 @@
 package com.prezi.gradle.spaghetti
 
-import com.prezi.gradle.spaghetti.parse.ModuleDefinition
 import org.gradle.api.Project
 
 /**
@@ -9,6 +8,6 @@ import org.gradle.api.Project
 public interface Generator {
 	void initialize(Project project)
 	String getPlatform();
-	void generateInterfaces(ModuleDefinition moduleDefinition, File outputDirectory);
-	void generateClientModule(ModuleDefinition moduleDefinition, File outputDirectory);
+	void generateInterfaces(ModuleConfiguration config, File outputDirectory);
+	void generateClientModule(ModuleConfiguration config, File outputDirectory);
 }

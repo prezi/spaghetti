@@ -3,6 +3,7 @@ import com.prezi.gradle.spaghetti.GenerateClient
 buildscript {
 	repositories {
 		mavenLocal()
+		mavenCentral()
 	}
 
 	dependencies {
