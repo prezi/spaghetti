@@ -148,10 +148,7 @@ class InterfaceGenerator extends SpaghettiModuleBaseVisitor<Object> {
 	{
 		addDocumentationIfNecessary(ctx.documentation)
 		def methodName = ctx.name.text
-		def returnType = config.resolveTypeName(ctx.returnType.text, module.name)
-//		if (!config.types.containsKey(returnType)) {
-//			throw new IllegalStateException("Return type not found: " + returnType)
-//		}
+		def returnType = haxeTypeName(ctx.returnType.text)
 		currentTypeFile << "\tfunction ${methodName}("
 		def result = super.visitMethodDefinition(ctx)
 		currentTypeFile << "):${returnType};\n"
@@ -163,14 +160,11 @@ class InterfaceGenerator extends SpaghettiModuleBaseVisitor<Object> {
 	Object visitMethodParameterDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodParameterDefinitionContext ctx)
 	{
 		def paramName = ctx.name.text
-		def paramType = config.resolveTypeName(ctx.type.text, module.name)
-//		if (!config.types.containsKey(paramType)) {
-//			throw new IllegalStateException("Type not found: " + paramType)
-//		}
+		def paramType = haxeTypeName(ctx.type.text)
 		if (lastMethodParameter != null) {
 			currentTypeFile << ", "
 		}
-		currentTypeFile << "${paramName} : ${paramType}"
+		currentTypeFile << "${paramName}:${paramType}"
 		lastMethodParameter = ctx
 		return super.visitMethodParameterDefinition(ctx)
 	}
@@ -190,7 +184,8 @@ class InterfaceGenerator extends SpaghettiModuleBaseVisitor<Object> {
 			(ModuleConfiguration.TYPE_STRING): "String"
 	]
 
-	static String haxeTypeName(FQName typeName) {
-		return HAXE_TYPE_NAME_CONVERSION.get(typeName) ?: typeName.fullyQualifiedName
+	String haxeTypeName(String typeName) {
+		def fqName = config.resolveTypeName(typeName, module.name)
+		return HAXE_TYPE_NAME_CONVERSION.get(fqName) ?: fqName.fullyQualifiedName
 	}
 }
