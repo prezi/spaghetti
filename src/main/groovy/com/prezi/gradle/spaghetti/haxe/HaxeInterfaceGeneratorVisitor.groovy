@@ -10,8 +10,6 @@ import prezi.spaghetti.SpaghettiModuleParser
  */
 class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Object> {
 
-	private File moduleFile
-
 	HaxeInterfaceGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
 		super(config, module, outputDirectory)
@@ -21,7 +19,7 @@ class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Objec
 	Object visitModuleDefinition(@NotNull @NotNull SpaghettiModuleParser.ModuleDefinitionContext ctx)
 	{
 		def moduleName = module.name.localName
-		moduleFile = createHaxeSourceFile(moduleName)
+		File moduleFile = createHaxeSourceFile(moduleName)
 		currentFile = moduleFile
 
 		addDocumentationIfNecessary(ctx.documentation)
@@ -29,6 +27,15 @@ class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Objec
 		moduleFile << "interface ${moduleName} {\n"
 		def result = super.visitModuleDefinition(ctx);
 		moduleFile << "}\n"
+
+		def initializerName = moduleName + "Init"
+		File initFile = createHaxeSourceFile(initializerName)
+		initFile << """class ${initializerName} {
+	public static function main() {
+		untyped __module = new ${moduleName}Impl();
+	}
+}
+"""
 
 		// Make sure nothing nasty happens later
 		moduleFile = null
