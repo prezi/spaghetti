@@ -8,6 +8,6 @@ import org.gradle.api.Project
 public interface Generator {
 	void initialize(Project project)
 	String getPlatform();
-	void generateInterfaces(ModuleConfiguration config, File outputDirectory);
+	void generateInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory);
 	void generateClientModule(ModuleConfiguration config, File outputDirectory);
 }

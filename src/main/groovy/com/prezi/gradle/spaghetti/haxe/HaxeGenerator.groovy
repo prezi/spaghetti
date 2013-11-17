@@ -24,37 +24,52 @@ class HaxeGenerator implements Generator {
 	}
 
 	@Override
-	void generateInterfaces(ModuleConfiguration config, File outputDirectory)
+	void generateInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
-		config.modules.values().each { module ->
-			new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).visit(module.context)
+		// Generate interfaces the module should implement
+		new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).visit(module.context)
+
+		// Find all dependent modules
+		def dependentModules = config.modules.values().findAll { dependentModule -> dependentModule != module }
+
+		// Generate typedefs for each dependent module
+		dependentModules.each { dependentModule ->
+			new HaxeTypedefGeneratorVisitor(config, dependentModule, outputDirectory).visit(module.context)
+		}
+
+		// Generate Modules.hx to access dependent modules
+		if (!dependentModules.empty) {
+			generateModulesFile(module.name.resolveLocalName("Modules"), outputDirectory, dependentModules)
 		}
 	}
 
 	@Override
 	void generateClientModule(ModuleConfiguration config, File outputDirectory)
 	{
+		// Generate typedefs for all modules
 		config.modules.values().each { module ->
 			new HaxeTypedefGeneratorVisitor(config, module, outputDirectory).visit(module.context)
 		}
-		def modulesName = FQName.fromString("prezi.client.Modules")
+
+		// Generate Modules.hx to access dependent modules
+		def modulesName = FQName.fromString("prezi.test.client.Modules")
 		generateModulesFile(modulesName, outputDirectory, config.modules.values())
 	}
 
-	private static void generateModulesFile(FQName moduleName, File outputDirectory, Iterable<ModuleDefinition> dependencies)
+	private static void generateModulesFile(FQName modulesName, File outputDirectory, Iterable<ModuleDefinition> dependencies)
 	{
-		def modulesFile = HaxeGeneratorVisitor.createHaxeSourceFile(moduleName, outputDirectory)
-		modulesFile << """class Modules {
+		def modulesFile = HaxeGeneratorVisitor.createHaxeSourceFile(modulesName, outputDirectory)
+		modulesFile << """class ${modulesName.localName} {
 
-	var modules:Array<Dynamic>;
+	static var modules:Array<Dynamic>;
 
-	function new(modules:Array<Dynamic>) {
-		this.modules = modules;
+	static function __init__() {
+		modules = untyped __modules;
 	}
 """
 		dependencies.eachWithIndex { module, index ->
 			modulesFile << "\n"
-			modulesFile << "\tpublic inline function get${module.name.localName}():${module.name} {\n"
+			modulesFile << "\tpublic static inline function get${module.name.localName}():${module.name} {\n"
 			modulesFile << "\t\treturn modules[${index}];\n"
 			modulesFile << "\t}\n"
 		}

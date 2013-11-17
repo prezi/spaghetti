@@ -11,7 +11,8 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle {
-	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
+	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
+	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	public static final String DEFINITION_PATH = "module.def"
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
@@ -33,7 +34,7 @@ class ModuleBundle {
 				zipStream.putNextEntry(new ZipEntry(MANIFEST_MF_PATH))
 				Manifest manifest = new Manifest()
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, "1.0")
+				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, "1.0")
 				manifest.write(zipStream)
 
 				// Store definition
@@ -73,12 +74,12 @@ class ModuleBundle {
 		if (manifest == null) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + inputFile)
 		}
-		def moduleVersion = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION)
-		if (moduleVersion == null) {
+		def spaghettiVersion = manifest.mainAttributes.getValue(MANIFEST_ATTR_SPAGHETTI_VERSION)
+		if (spaghettiVersion == null) {
 			throw new IllegalArgumentException("Not a module, module version missing from manifest: " + inputFile)
 		}
-		if (moduleVersion != "1.0") {
-			throw new IllegalArgumentException("Not a module, module version mismatch (should be \"1.0\", but was \"" + moduleVersion + "\"): " + inputFile)
+		if (spaghettiVersion != "1.0") {
+			throw new IllegalArgumentException("Not a module, module version mismatch (should be \"1.0\", but was \"" + spaghettiVersion + "\"): " + inputFile)
 		}
 		if (definition == null) {
 			throw new IllegalArgumentException("Not a module, missing definition: " + inputFile)
