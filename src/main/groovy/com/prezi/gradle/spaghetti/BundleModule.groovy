@@ -19,7 +19,9 @@ class BundleModule extends DefaultTask {
 
 	@TaskAction
 	bundle() {
-		new ModuleBundle(definition.text, inputFile.text).save(outputFile)
+		def moduleDefCtx = ModuleParser.parse(definition.text)
+		def moduleName = FQName.fromString(moduleDefCtx.fqName.text)
+		new ModuleBundle(moduleName, definition.text, inputFile.text).save(outputFile)
 	}
 
 	def definition(Object f) {

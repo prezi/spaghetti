@@ -17,10 +17,12 @@ class ModuleBundle {
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
+	final FQName name
 	final String definition
 	final String compiledJavaScript
 
-	public ModuleBundle(String definition, String compiledJavaScript) {
+	public ModuleBundle(FQName name, String definition, String compiledJavaScript) {
+		this.name = checkNotNull(name)
 		this.definition = checkNotNull(definition)
 		this.compiledJavaScript = checkNotNull(compiledJavaScript)
 	}
@@ -35,6 +37,7 @@ class ModuleBundle {
 				Manifest manifest = new Manifest()
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
 				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, "1.0")
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name.fullyQualifiedName)
 				manifest.write(zipStream)
 
 				// Store definition
@@ -81,12 +84,13 @@ class ModuleBundle {
 		if (spaghettiVersion != "1.0") {
 			throw new IllegalArgumentException("Not a module, module version mismatch (should be \"1.0\", but was \"" + spaghettiVersion + "\"): " + inputFile)
 		}
+		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
 		if (definition == null) {
 			throw new IllegalArgumentException("Not a module, missing definition: " + inputFile)
 		}
 		if (compiledJavaScript == null) {
 			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
 		}
-		return new ModuleBundle(definition, compiledJavaScript)
+		return new ModuleBundle(name, definition, compiledJavaScript)
 	}
 }

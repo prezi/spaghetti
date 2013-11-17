@@ -1,4 +1,5 @@
 import com.prezi.gradle.spaghetti.BundleApplication
+import com.prezi.gradle.spaghetti.ExtractModules
 import com.prezi.gradle.spaghetti.GenerateClient
 
 apply plugin: "spaghetti"
@@ -32,4 +33,23 @@ task bundleApplication(type: BundleApplication) {
 	configuration configurations.modules
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/app.js"
+}
+
+task packApplication(type: ExtractModules) {
+	dependsOn bundleApplication
+
+	configuration configurations.modules
+	def testWebappDir = file("${buildDir}/webapp")
+	outputDirectory testWebappDir
+
+	doLast {
+		copy {
+			from bundleApplication.outputFile
+			into testWebappDir
+		}
+		copy {
+			from "test"
+			into testWebappDir
+		}
+	}
 }

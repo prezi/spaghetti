@@ -7,20 +7,20 @@ import prezi.spaghetti.SpaghettiModuleParser
  * Created by lptr on 17/11/13.
  */
 class ModuleDefinitionLookup {
-	public static List<SpaghettiModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration)
-	{
-		def definitions = configuration.files.collect { File file ->
-			def module
-			try
-			{
-				module = ModuleBundle.load(file)
-			}
-			catch (e)
-			{
+	public static List<ModuleBundle> getAllBundles(Configuration configuration) {
+		def bundles = configuration.files.collect { File file ->
+			try {
+				return ModuleBundle.load(file)
+			} catch (e) {
 				return null
 			}
+		}
+		return bundles - null
+	}
+
+	public static List<SpaghettiModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration) {
+		return getAllBundles(configuration).collect { ModuleBundle module ->
 			return ModuleParser.parse(module.definition)
 		}
-		return definitions - null
 	}
 }
