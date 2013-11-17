@@ -1,8 +1,7 @@
 **Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
 
 - [Gradle Spaghetti Plugin](#gradle-spaghetti-plugin)
-- [What is this?](#what-is-this)
-	- [Workflow to write and use a module](#workflow-to-write-and-use-a-module)
+- [Workflow to write and use a module](#workflow-to-write-and-use-a-module)
 - [Module System](#module-system)
 - [Example](#example)
 	- [Interface Language](#interface-language)
@@ -14,19 +13,14 @@
 Gradle Spaghetti Plugin
 =======================
 
-JS modularization prototype
-
-# What is this?
-
 This is a proof-of-concept implementation of a Gradle plugin that helps in modularizing JS applications. This is how it's supposed to work:
 
-## Workflow to write and use a module
+# Workflow to write and use a module
 
 ![Module Workflow](http://prezi.github.io/gradle-spaghetti-plugin/images/Module Workflow.png "Module Workflow")
 
 # Module System
 
-Reference-style: 
 ![Module System](http://prezi.github.io/gradle-spaghetti-plugin/images/Module System.png "Module System")
 
 # Example
