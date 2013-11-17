@@ -23,19 +23,7 @@ This is a proof-of-concept implementation of a Gradle plugin that helps in modul
 
 ## Workflow to write a module
 
-* write IDL
-* choose an implementation language (only Haxe now, Typescript coming)
-* generate interfaces: IDL->implementation language (use Gradle plugin)
-* write implementation
-* deploy artifacts to artifactory.prezi.com (use Gradle plugin)
-
-## Workflow to use a module
-
-* declare dependency on module in Gradle
-* choose an implementation language (only Haxe now, Typescript coming)
-* generate interfaces: IDL->implementation language (use Gradle plugin)
-* generate client proxy code in the implementation language (use Gradle plugin)
-* use client proxy code to access module code
+![Module Workflow](http://prezi.github.io/gradle-spaghetti-plugin/images/Module Workflow.png "Module Workflow")
 
 # Module System
 
