@@ -2,7 +2,6 @@ package com.prezi.gradle.spaghetti
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 /**
  * Created by lptr on 12/11/13.

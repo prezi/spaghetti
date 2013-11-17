@@ -25,7 +25,6 @@ class ModuleParser {
 		def tokens = new CommonTokenStream(lexer)
 		def parser = new SpaghettiModuleParser(tokens)
 		def tree = parser.moduleDefinition()
-		println tree.toStringTree(parser)
 		return tree
 	}
 }
