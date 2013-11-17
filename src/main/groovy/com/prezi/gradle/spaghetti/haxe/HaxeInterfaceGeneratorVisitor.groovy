@@ -38,7 +38,6 @@ class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Objec
 """
 
 		// Make sure nothing nasty happens later
-		moduleFile = null
 		currentFile = null
 
 		return result
