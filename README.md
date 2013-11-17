@@ -5,11 +5,11 @@
 	- [Workflow to write a module](#workflow-to-write-a-module)
 	- [Workflow to use a module](#workflow-to-use-a-module)
 - [Module System](#module-system)
-- [Interface Language](#interface-language)
+- [Example](#example)
+	- [Interface Language](#interface-language)
+	- [Build the module](#build-the-module)
+	- [Use your module](#use-your-module)
 - [Versioning](#versioning)
-- [Next steps](#next-steps)
-	- [OOP-style](#oop-style)
-	- [More like functional-style](#more-like-functional-style)
 - [Challenges](#challenges)
 
 Gradle Spaghetti Plugin
@@ -42,7 +42,11 @@ This is a proof-of-concept implementation of a Gradle plugin that helps in modul
 Reference-style: 
 ![Module System](http://prezi.github.io/gradle-spaghetti-plugin/images/Module System.png "Module System")
 
-# Interface Language
+# Example
+
+There is an example project under [in the source code of the plugin](tree/master/src/test/at).
+
+## Interface Language
 
 Language defined in [ANTLR](http://antlr.org/), grammar can be reused without modification if needed in creating an Xtext editor.
 
@@ -68,28 +72,75 @@ module prezi.graphics.text.Layout {
 }
 ```
 
-You can generate Haxe externs for your application to use this module:
+## Build the module
+
+You can generate Haxe interfaces for your module:
 
 ```groovy
-task generateClient(type: com.prezi.gradle.spaghetti.GenerateClient) {
+task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateHeaders) {
+	definition "Layout.module"
 	platform "haxe"
-	outputDirectory "$buildDir/spaghetti-client"
-}
-
-task compile(type: com.prezi.gradle.haxe.CompileHaxe) {
-	targetPlatform "js"
-	source "$buildDir/spaghetti-client"
-	source "src/main/haxe"
+	outputDirectory "${buildDir}/spaghetti-module"
 }
 ```
 
-Clients can then use this from another module something like this:
+You can then implement these interfaces, and compile all your code to a JavaScript file. Now you only have to bundle your code into a Spaghetti-compatible module, and you're all set:
+
+```groovy
+task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
+	dependsOn compileHaxe
+	definition "Layout.module"
+	inputFile compileHaxe.outputFile
+	outputFile "${buildDir}/module.zip"
+}
+```
+
+## Use your module
+
+You can generate Haxe externs to use this module in your application or another module:
+
+```groovy
+task generateClient(type: com.prezi.gradle.spaghetti.GenerateClient) {
+	configuration configurations.modules
+	platform "haxe"
+	outputDirectory "$buildDir/haxe"
+}
+```
+
+Build your application, and then bundle it for [RequireJS](http://requirejs.org/):
+
+```groovy
+task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
+	dependsOn compileHaxe
+	configuration configurations.modules
+	inputFile compileHaxe.outputFile
+	outputFile "${buildDir}/app.js"
+}
+```
+
+You can also extract all modules to a directory so that they are readily available to RequreJS:
+
+```groovy
+task packApplication(type: com.prezi.gradle.spaghetti.ExtractModules) {
+	dependsOn bundleApplication
+	configuration configurations.modules
+	def testWebappDir = file("${buildDir}/webapp")
+	outputDirectory testWebappDir
+}
+```
+
+This is how you can access your module from an application or another module:
 
 ```haxe
-class MyApp {
+package prezi.test.client;
+
+class Client {
 	public static function main() {
-		var adder = AdderModule.createAdder();
-		var result = adder.add(100, 200);
+		var layout = Modules.getLayout();
+		var text = layout.createText(2);
+		text.insert(0, "World");
+		text.insert(0, "Hello ");
+		trace(text.getRawText());
 	}
 }
 ```

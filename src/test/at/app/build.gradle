@@ -1,7 +1,3 @@
-import com.prezi.gradle.spaghetti.BundleApplication
-import com.prezi.gradle.spaghetti.ExtractModules
-import com.prezi.gradle.spaghetti.GenerateClient
-
 apply plugin: "spaghetti"
 
 configurations {
@@ -9,10 +5,13 @@ configurations {
 }
 
 dependencies {
-	modules project(path: ":adder", configuration: "modules")
+	modules project(path: ":layout", configuration: "modules")
 }
 
-task generateClient(type: GenerateClient) {
+/**
+ * Generate type definitions for every client
+ */
+task generateClient(type: com.prezi.gradle.spaghetti.GenerateClient) {
 	configuration configurations.modules
 	platform "haxe"
 	outputDirectory "$buildDir/haxe"
@@ -28,14 +27,14 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 	outputFile "${buildDir}/app-standalone.js"
 }
 
-task bundleApplication(type: BundleApplication) {
+task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
 	dependsOn compileHaxe
 	configuration configurations.modules
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/app.js"
 }
 
-task packApplication(type: ExtractModules) {
+task packApplication(type: com.prezi.gradle.spaghetti.ExtractModules) {
 	dependsOn bundleApplication
 
 	configuration configurations.modules
