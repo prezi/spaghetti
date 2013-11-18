@@ -31,6 +31,15 @@ class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Objec
 		// Make sure nothing nasty happens later
 		currentFile = null
 
+		def initializerName = "__" + moduleName + "Init"
+		File initFile = createHaxeSourceFile(initializerName)
+		initFile << """class ${initializerName} {
+	public static function __init__() {
+		untyped __module = new ${moduleName}Impl();
+	}
+}
+"""
+
 		return result
 	}
 

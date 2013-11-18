@@ -46,9 +46,9 @@ class ModuleBundle {
 
 				// Store module itself
 				zipStream.putNextEntry(new ZipEntry(COMPILED_JAVASCRIPT_PATH))
-				zipStream << "define(function() { var __module;\n"
+				zipStream << "define(function() {\n"
 				zipStream << compiledJavaScript
-				zipStream << "return __module;});"
+				zipStream << "});"
 			}
 		}
 	}

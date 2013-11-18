@@ -59,7 +59,7 @@ class HaxeGenerator implements Generator {
 	@Override
 	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
 	{
-		return javaScript + "return new ${module.name.fullyQualifiedName}Impl();\n"
+		return "var __module;\n" + javaScript + "return __module;\n"
 	}
 
 	private static void generateModulesFile(FQName modulesName, File outputDirectory, Iterable<ModuleDefinition> dependencies)
