@@ -1,3 +1,5 @@
+evaluationDependsOn(':layout')
+
 apply plugin: "spaghetti"
 
 configurations {
