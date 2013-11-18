@@ -18,4 +18,14 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 		project.logger.info "Loaded generators for ${generators.keySet()}"
 	}
+
+	Generator getGeneratorForPlatform(String platform)
+	{
+		def generator = generators.get(platform)
+		if (generator == null) {
+			throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
+					+ generators.keySet().sort().join(", "))
+		}
+		return generator
+	}
 }

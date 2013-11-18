@@ -8,22 +8,27 @@ import prezi.spaghetti.SpaghettiModuleParser.ModuleDefinitionContext
  * Created by lptr on 15/11/13.
  */
 class ModuleConfigurationParser {
-	public static ModuleConfiguration parse(ModuleDefinitionContext... contexts) {
-		return parse(contexts.toList())
+	public static ModuleConfiguration parse(Iterable<ModuleDefinitionContext> contexts, Iterable<ModuleDefinitionContext> localContexts) {
+		def typeNames = new HashSet<FQName>(ModuleConfiguration.BUILT_IN_TYPE_NAMES)
+		def modules = contexts.collect { context ->
+			return parseModule(context, typeNames)
+		}
+		def localModules = localContexts.collect { context ->
+			return parseModule(context, typeNames)
+		}
+		return new ModuleConfiguration(modules + localModules, localModules, typeNames)
 	}
 
-	public static ModuleConfiguration parse(Iterable<ModuleDefinitionContext> contexts) {
-		def typeNames = new HashSet<FQName>(ModuleConfiguration.BUILT_IN_TYPE_NAMES)
-		def modules = contexts.collect { moduleDefCtx ->
-			def typeCollector = new TypeCollectorVisitor(typeNames)
-			typeCollector.visit(moduleDefCtx)
-			def moduleDef = typeCollector.moduleDefinition
-			if (moduleDef == null) {
-				throw new AssertionError("No module defined")
-			}
-			return moduleDef
+	private static ModuleDefinition parseModule(ModuleDefinitionContext context, Set<FQName> typeNames)
+	{
+		def typeCollector = new TypeCollectorVisitor(typeNames)
+		typeCollector.visit(context)
+		def moduleDef = typeCollector.moduleDefinition
+		if (moduleDef == null)
+		{
+			throw new AssertionError("No module defined")
 		}
-		return new ModuleConfiguration(modules, typeNames)
+		return moduleDef
 	}
 }
 

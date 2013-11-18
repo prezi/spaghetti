@@ -14,11 +14,12 @@ class ModuleConfiguration {
 	]
 
 	final Map<FQName, ModuleDefinition> modules
-
+	final List<ModuleDefinition> localModules
 	final Set<FQName> typeNames
 
-	public ModuleConfiguration(Collection<ModuleDefinition> modules, Set<FQName> typeNames) {
+	public ModuleConfiguration(Collection<ModuleDefinition> modules, Collection<ModuleDefinition> localModules, Set<FQName> typeNames) {
 		this.modules = modules.collectEntries { module -> [ (module.name): module ] }
+		this.localModules = localModules
 		this.typeNames = typeNames
 	}
 

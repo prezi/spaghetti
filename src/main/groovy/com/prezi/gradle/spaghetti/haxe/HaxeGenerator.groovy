@@ -56,6 +56,12 @@ class HaxeGenerator implements Generator {
 		generateModulesFile(modulesName, outputDirectory, config.modules.values())
 	}
 
+	@Override
+	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
+	{
+		return javaScript + "return new ${module.name.fullyQualifiedName}Impl();\n"
+	}
+
 	private static void generateModulesFile(FQName modulesName, File outputDirectory, Iterable<ModuleDefinition> dependencies)
 	{
 		def modulesFile = HaxeGeneratorVisitor.createHaxeSourceFile(modulesName, outputDirectory)

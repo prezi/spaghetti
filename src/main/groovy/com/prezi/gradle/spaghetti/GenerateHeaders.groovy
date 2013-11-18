@@ -15,16 +15,8 @@ class GenerateHeaders extends AbstractGenerateTask {
 
 	@TaskAction
 	generate() {
-		def definitions
-		if (configuration != null) {
-			definitions = ModuleDefinitionLookup.getAllDefinitions(configuration)
-		} else {
-			definitions = []
-		}
-		def moduleDefCtx = ModuleParser.parse(definition.text)
-		definitions += moduleDefCtx
-		def config = ModuleConfigurationParser.parse(definitions)
-		def moduleDef = config.modules.values().find { module -> module.context == moduleDefCtx }
+		def config = readConfig(definition.text)
+		def moduleDef = config.localModules.first()
 		generator.generateInterfaces(config, moduleDef, outputDirectory)
 	}
 

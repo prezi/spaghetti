@@ -22,7 +22,7 @@ class BundleApplication extends DefaultTask {
 	@TaskAction
 	bundle() {
 		def definitions = ModuleDefinitionLookup.getAllDefinitions(configuration)
-		def config = ModuleConfigurationParser.parse(definitions)
+		def config = ModuleConfigurationParser.parse(definitions, [])
 
 		outputFile.delete()
 		outputFile << "require(["

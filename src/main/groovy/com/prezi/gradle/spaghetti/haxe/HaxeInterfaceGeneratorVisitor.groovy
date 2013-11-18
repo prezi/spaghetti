@@ -28,15 +28,6 @@ class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Objec
 		def result = super.visitModuleDefinition(ctx);
 		moduleFile << "}\n"
 
-		def initializerName = moduleName + "Init"
-		File initFile = createHaxeSourceFile(initializerName)
-		initFile << """class ${initializerName} {
-	public static function main() {
-		untyped __module = new ${moduleName}Impl();
-	}
-}
-"""
-
 		// Make sure nothing nasty happens later
 		currentFile = null
 

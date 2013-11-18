@@ -16,12 +16,13 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 	targetPlatform "js"
 	source generateHeaders.outputDirectory
 	source "src"
-	main "prezi.graphics.text.LayoutInit"
+	include "prezi.graphics.text"
 	outputFile "${buildDir}/module.js"
 }
 
 task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 	dependsOn compileHaxe
+	platform "haxe"
 	definition "Layout.module"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/module.zip"

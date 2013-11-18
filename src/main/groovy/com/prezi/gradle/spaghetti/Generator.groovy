@@ -10,4 +10,5 @@ public interface Generator {
 	String getPlatform();
 	void generateInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory);
 	void generateClientModule(ModuleConfiguration config, File outputDirectory);
+	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
 }
