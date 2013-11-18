@@ -1,8 +1,6 @@
 package com.prezi.gradle.spaghetti
 
 import groovy.transform.EqualsAndHashCode
-import org.gradle.api.Named
-
 /**
  * Fully qualified name.
  */
