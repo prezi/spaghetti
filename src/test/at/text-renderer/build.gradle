@@ -4,17 +4,12 @@ evaluationDependsOn(':layout')
 
 apply plugin: "spaghetti"
 
-configurations {
-	modules
-}
-
 dependencies {
 	modules project(path: ":layout", configuration: "modules")
 }
 
 spaghetti {
 	platform "haxe"
-	configuration configurations.modules
 	definition "TextRenderer.module"
 }
 

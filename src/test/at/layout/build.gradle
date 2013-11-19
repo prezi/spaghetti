@@ -2,12 +2,7 @@ import com.prezi.gradle.spaghetti.GenerateModuleHeaders
 
 apply plugin: "spaghetti"
 
-configurations {
-	modules
-}
-
 spaghetti {
-	configuration configurations.modules
 	platform "haxe"
 	definition "Layout.module"
 }

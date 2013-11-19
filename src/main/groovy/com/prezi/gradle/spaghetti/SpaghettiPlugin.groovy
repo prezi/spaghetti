@@ -7,6 +7,8 @@ import org.gradle.api.Project
  * Created by lptr on 12/11/13.
  */
 class SpaghettiPlugin implements Plugin<Project> {
+	static final String CONFIGURATION_NAME = "modules"
+
 	private final Map<String, Generator> generators = [:];
 
 	@Override
@@ -17,7 +19,12 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 		project.logger.info "Loaded generators for ${generators.keySet()}"
 
-		def extension = project.extensions.create "spaghetti", ModulesExtension, project
+		def defaultConfiguration = project.configurations.findByName(CONFIGURATION_NAME)
+		if (defaultConfiguration == null) {
+			defaultConfiguration = project.configurations.create(CONFIGURATION_NAME)
+		}
+
+		def extension = project.extensions.create "spaghetti", ModulesExtension, project, defaultConfiguration
 		project.tasks.withType(AbstractSpaghettiTask) { AbstractSpaghettiTask task ->
 			task.applyParameters(extension.params)
 		}

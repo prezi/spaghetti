@@ -4,17 +4,12 @@ evaluationDependsOn(':text-renderer')
 
 apply plugin: "spaghetti"
 
-configurations {
-	modules
-}
-
 dependencies {
 	modules project(path: ":text-renderer", configuration: "modules")
 }
 
 spaghetti {
 	platform "haxe"
-	configuration configurations.modules
 }
 
 /**
@@ -41,7 +36,6 @@ task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
 task packApplication(type: com.prezi.gradle.spaghetti.ExtractModules) {
 	dependsOn bundleApplication
 
-	configuration configurations.modules
 	def testWebappDir = file("${buildDir}/webapp")
 	outputDirectory testWebappDir
 
