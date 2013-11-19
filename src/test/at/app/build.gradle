@@ -1,3 +1,5 @@
+import com.prezi.gradle.spaghetti.GenerateApplication
+
 evaluationDependsOn(':text-renderer')
 
 apply plugin: "spaghetti"
@@ -13,17 +15,17 @@ dependencies {
 /**
  * Generate type definitions for every client
  */
-task generateClient(type: com.prezi.gradle.spaghetti.GenerateClient) {
+task generateApplication(type: GenerateApplication) {
 	configuration configurations.modules
 	platform "haxe"
 	outputDirectory "$buildDir/haxe"
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
-	dependsOn generateClient
+	dependsOn generateApplication
 	configuration configurations.modules
 	targetPlatform "js"
-	source generateClient.outputDirectory
+	source generateApplication.outputDirectory
 	source "src"
 	main "prezi.test.client.Client"
 	outputFile "${buildDir}/app-standalone.js"

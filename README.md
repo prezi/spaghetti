@@ -81,7 +81,7 @@ task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 You can generate Haxe externs to use this module in your application or another module:
 
 ```groovy
-task generateClient(type: com.prezi.gradle.spaghetti.GenerateClient) {
+task generateApplication(type: com.prezi.gradle.spaghetti.GenerateApplication) {
 	configuration configurations.modules
 	platform "haxe"
 	outputDirectory "$buildDir/haxe"
@@ -94,6 +94,7 @@ Build your application, and then bundle it for [RequireJS](http://requirejs.org/
 task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
 	dependsOn compileHaxe
 	configuration configurations.modules
+	platform "haxe"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/app.js"
 }

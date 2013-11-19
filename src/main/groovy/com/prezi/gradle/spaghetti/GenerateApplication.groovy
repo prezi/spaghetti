@@ -6,7 +6,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 12/11/13.
  */
-class GenerateClient extends AbstractGenerateTask {
+class GenerateApplication extends AbstractGenerateTask {
 	@TaskAction
 	generate() {
 		generator.generateApplication(readConfig(), outputDirectory)
