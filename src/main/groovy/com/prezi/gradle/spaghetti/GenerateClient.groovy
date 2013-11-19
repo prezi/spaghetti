@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 class GenerateClient extends AbstractGenerateTask {
 	@TaskAction
 	generate() {
-		generator.generateClientModule(readConfig(), outputDirectory)
+		generator.generateApplication(readConfig(), outputDirectory)
 	}
 
 	@Override

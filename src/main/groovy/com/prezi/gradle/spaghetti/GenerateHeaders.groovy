@@ -17,7 +17,7 @@ class GenerateHeaders extends AbstractGenerateTask {
 	generate() {
 		def config = readConfig(definition.text)
 		def moduleDef = config.localModules.first()
-		generator.generateInterfaces(config, moduleDef, outputDirectory)
+		generator.generateModuleInterfaces(config, moduleDef, outputDirectory)
 	}
 
 	void definition(Object file) {

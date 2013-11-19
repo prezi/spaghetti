@@ -14,7 +14,7 @@ class HaxeGenerator extends Generator {
 	}
 
 	@Override
-	void generateInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	void generateModuleInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
 		// Generate interfaces the module should implement
 		new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).visit(module.context)
@@ -34,7 +34,7 @@ class HaxeGenerator extends Generator {
 	}
 
 	@Override
-	void generateClientModule(ModuleConfiguration config, File outputDirectory)
+	void generateApplication(ModuleConfiguration config, File outputDirectory)
 	{
 		// Generate typedefs for all modules
 		config.modules.values().each { module ->

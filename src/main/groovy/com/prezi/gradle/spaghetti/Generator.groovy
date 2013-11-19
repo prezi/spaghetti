@@ -10,7 +10,22 @@ abstract public class Generator {
 		this.platform = platform
 	}
 
-	abstract void generateInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
-	abstract void generateClientModule(ModuleConfiguration config, File outputDirectory)
-	abstract String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
+	abstract void generateModuleInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	abstract void generateApplication(ModuleConfiguration config, File outputDirectory)
+
+	/**
+	 * Process the JavaScript code of a module before wrapping it into a Require JS wrapper.
+	 */
+	@SuppressWarnings("GrMethodMayBeStatic")
+	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript) {
+		return javaScript
+	}
+
+	/**
+	 * Process the JavaScript code of an application before wrapping it into a Require JS wrapper.
+	 */
+	@SuppressWarnings("GrMethodMayBeStatic")
+	String processApplicationJavaScript(ModuleConfiguration config, String javaScript) {
+		return javaScript
+	}
 }
