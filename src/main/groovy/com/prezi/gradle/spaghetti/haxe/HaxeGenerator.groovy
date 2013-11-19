@@ -4,7 +4,6 @@ import com.prezi.gradle.spaghetti.FQName
 import com.prezi.gradle.spaghetti.Generator
 import com.prezi.gradle.spaghetti.ModuleConfiguration
 import com.prezi.gradle.spaghetti.ModuleDefinition
-import org.gradle.api.Project
 /**
  * Created by lptr on 12/11/13.
  */
@@ -55,7 +54,7 @@ class HaxeGenerator extends Generator {
 
 	private static void generateModulesFile(FQName modulesName, File outputDirectory, Iterable<ModuleDefinition> dependencies)
 	{
-		def modulesFile = HaxeGeneratorVisitor.createHaxeSourceFile(modulesName, outputDirectory)
+		def modulesFile = AbstractHaxeGeneratorVisitor.createHaxeSourceFile(modulesName, outputDirectory)
 		modulesFile << """class ${modulesName.localName} {
 
 	static var modules:Array<Dynamic>;

@@ -8,7 +8,7 @@ import prezi.spaghetti.SpaghettiModuleParser
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeInterfaceGeneratorVisitor extends HaxeDefinitionGeneratorVisitor<Object> {
+class HaxeInterfaceGeneratorVisitor extends AbstractHaxeGeneratorVisitor<Object> {
 
 	HaxeInterfaceGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
