@@ -7,7 +7,7 @@ import org.gradle.api.Project
  * Created by lptr on 12/11/13.
  */
 class SpaghettiPlugin implements Plugin<Project> {
-	Map<String, Generator> generators = [:];
+	private final Map<String, Generator> generators = [:];
 
 	@Override
 	void apply(Project project)
