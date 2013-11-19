@@ -30,16 +30,16 @@ class HaxeGenerator implements Generator {
 		new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).visit(module.context)
 
 		// Find all dependent modules
-		def dependentModules = config.modules.values().findAll { dependentModule -> dependentModule != module }
+		def dependentModules = config.dependentModules
 
 		// Generate typedefs for each dependent module
-		dependentModules.each { dependentModule ->
-			new HaxeTypedefGeneratorVisitor(config, dependentModule, outputDirectory).visit(module.context)
+		config.dependentModules.each { dependentModule ->
+			new HaxeTypedefGeneratorVisitor(config, dependentModule, outputDirectory).visit(dependentModule.context)
 		}
 
 		// Generate Modules.hx to access dependent modules
 		if (!dependentModules.empty) {
-			generateModulesFile(module.name.resolveLocalName("Modules"), outputDirectory, dependentModules)
+			generateModulesFile(module.name.resolveLocalName(FQName.fromString("Modules")), outputDirectory, dependentModules)
 		}
 	}
 

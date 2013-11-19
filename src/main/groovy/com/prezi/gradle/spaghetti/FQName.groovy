@@ -1,6 +1,7 @@
 package com.prezi.gradle.spaghetti
 
 import groovy.transform.EqualsAndHashCode
+import prezi.spaghetti.SpaghettiModuleParser.FqNameContext
 /**
  * Fully qualified name.
  */
@@ -31,11 +32,19 @@ final public class FQName {
 		return new FQName(_namespace, _name)
 	}
 
-	public FQName resolveLocalName(String localName) {
-		if (localName.indexOf('.') != -1) {
-			return fromString(localName)
+	public static FQName fromContext(FqNameContext context) {
+		if (context.qualifiedName != null) {
+			return FQName.fromString(context.qualifiedName.text)
 		} else {
-			return new FQName(namespace, localName)
+			return FQName.fromString(context.name.text)
+		}
+	}
+
+	public FQName resolveLocalName(FQName name) {
+		if (name.hasNamespace()) {
+			return name
+		} else {
+			return new FQName(namespace, name.localName)
 		}
 	}
 

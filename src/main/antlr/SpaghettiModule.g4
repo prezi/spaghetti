@@ -1,8 +1,8 @@
 grammar SpaghettiModule;
 
 moduleDefinition	:
-	(documentation = DOC)?
-	'module' fqName = FQID '{'
+	(documentation = Doc)?
+	'module' (name = fqName) '{'
 		(elements += moduleElement)*
 	'}'
 	;
@@ -12,30 +12,36 @@ moduleElement	: typeDefinition
 	;
 
 typeDefinition :
-	(documentation = DOC)?
-	'type' name = ID '{'
+	(documentation = Doc)?
+	'type' (name = Name) '{'
 		(methods += methodDefinition)*
 	'}'
 	;
 
 methodDefinition	:
-	(documentation = DOC)?
-	returnType = ID name = ID '('
+	(documentation = Doc)?
+	(returnType = fqName) (name = Name) '('
 		(
-			params += methodParameterDefinition
+			( params += methodParameterDefinition )
 			( ',' params += methodParameterDefinition )*
 		)?
 	')'
 	;
 
 methodParameterDefinition :
-	type = ID
-	name = ID
+	(type = fqName) (name = Name)
 	;
 
-ID		: [a-zA-Z][a-zA-Z0-9]*;
-FQID	: (ID '.')* ID;
-DOC		: '/**' .*? '*/' '\r'* '\n'?;
-BLOCK_COMMENT	: '/*' (.*?) '*/' -> skip;
-LINE_COMMENT	: '//' .*? '\n' -> skip;
-WS		: [ \t\r\n]+ -> skip ; // Define whitespace rule, toss it out
+fqName	: qualifiedName = QualifiedName
+		| name = Name
+	;
+
+fragment NAME		: [a-zA-Z][a-zA-Z0-9]*;
+
+QualifiedName		: (NAME '.')+ NAME;
+Name				: NAME;
+Doc					: '/**' .*? '*/' '\r'* '\n'?;
+
+BlockComment		: '/*' (.*?) '*/' -> skip;
+LineComment			: '//' .*? '\n' -> skip;
+WhiteSpace			: [ \t\r\n]+ -> skip;

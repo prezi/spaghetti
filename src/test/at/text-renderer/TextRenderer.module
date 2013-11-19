@@ -1,0 +1,10 @@
+/**
+ * Text renderer module.
+ */
+module prezi.graphics.text.render.TextRenderer {
+    type Renderer {
+        String render(prezi.graphics.text.Text text)
+    }
+
+    Renderer createRenderer()
+}

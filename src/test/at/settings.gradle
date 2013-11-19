@@ -1,2 +1,3 @@
 include "layout"
+include "text-renderer"
 include "app"

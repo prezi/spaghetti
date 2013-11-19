@@ -19,12 +19,12 @@ class ModuleBundle {
 
 	final FQName name
 	final String definition
-	final String compiledJavaScript
+	final String bundledJavaScript
 
-	public ModuleBundle(FQName name, String definition, String compiledJavaScript) {
+	public ModuleBundle(FQName name, String definition, String bundledJavaScript) {
 		this.name = checkNotNull(name)
 		this.definition = checkNotNull(definition)
-		this.compiledJavaScript = checkNotNull(compiledJavaScript)
+		this.bundledJavaScript = checkNotNull(bundledJavaScript)
 	}
 
 	public void save(File outputFile) {
@@ -46,9 +46,7 @@ class ModuleBundle {
 
 				// Store module itself
 				zipStream.putNextEntry(new ZipEntry(COMPILED_JAVASCRIPT_PATH))
-				zipStream << "define(function() {\n"
-				zipStream << compiledJavaScript
-				zipStream << "});"
+				zipStream << bundledJavaScript
 			}
 		}
 	}

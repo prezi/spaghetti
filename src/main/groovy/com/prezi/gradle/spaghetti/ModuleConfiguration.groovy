@@ -23,10 +23,13 @@ class ModuleConfiguration {
 		this.typeNames = typeNames
 	}
 
-	public FQName resolveTypeName(String typeName, FQName moduleName) {
-		def builtInTypeName = FQName.fromString(typeName)
-		if (typeNames.contains(builtInTypeName)) {
-			return builtInTypeName
+	public List<ModuleDefinition> getDependentModules() {
+		return modules.values().toList() - localModules
+	}
+
+	public FQName resolveTypeName(FQName typeName, FQName moduleName) {
+		if (typeNames.contains(typeName)) {
+			return typeName
 		}
 		def fqName = moduleName.resolveLocalName(typeName)
 		if (!typeNames.contains(fqName)) {

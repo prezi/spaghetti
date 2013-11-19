@@ -43,7 +43,7 @@ class TypeCollectorVisitor extends SpaghettiModuleBaseVisitor<Void> {
 	@Override
 	public Void visitModuleDefinition(ModuleDefinitionContext ctx)
 	{
-		this.moduleDefinition = new ModuleDefinition(FQName.fromString(ctx.fqName.text), ctx)
+		this.moduleDefinition = new ModuleDefinition(FQName.fromContext(ctx.name), ctx)
 		super.visitModuleDefinition(ctx)
 		return null
 	}
@@ -51,13 +51,12 @@ class TypeCollectorVisitor extends SpaghettiModuleBaseVisitor<Void> {
 	@Override
 	public Void visitTypeDefinition(SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		def typeName = moduleDefinition.name.resolveLocalName(ctx.name.text)
+		def typeName = moduleDefinition.name.resolveLocalName(FQName.fromString(ctx.name.text))
 		if (typeNames.contains(typeName)) {
 			throw new IllegalStateException("Type already defined: ${typeName}")
 		}
 		typeNames.add(typeName)
 		super.visitTypeDefinition(ctx)
 		return null
-
 	}
 }

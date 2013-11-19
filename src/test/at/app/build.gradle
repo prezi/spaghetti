@@ -1,4 +1,4 @@
-evaluationDependsOn(':layout')
+evaluationDependsOn(':text-renderer')
 
 apply plugin: "spaghetti"
 
@@ -7,7 +7,7 @@ configurations {
 }
 
 dependencies {
-	modules project(path: ":layout", configuration: "modules")
+	modules project(path: ":text-renderer", configuration: "modules")
 }
 
 /**

@@ -23,7 +23,7 @@ class ExtractModules extends DefaultTask {
 		bundles.each { bundle ->
 			def outputFile = new File(outputDirectory, bundle.name.localName + ".js")
 			outputFile.delete()
-			outputFile << bundle.compiledJavaScript
+			outputFile << bundle.bundledJavaScript
 		}
 	}
 

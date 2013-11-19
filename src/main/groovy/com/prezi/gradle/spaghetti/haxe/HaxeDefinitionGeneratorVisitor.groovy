@@ -42,7 +42,7 @@ abstract class HaxeDefinitionGeneratorVisitor<T> extends HaxeGeneratorVisitor<T>
 	protected Object generateMethodParameter(SpaghettiModuleParser.MethodParameterDefinitionContext ctx)
 	{
 		def paramName = ctx.name.text
-		def paramType = haxeTypeName(ctx.type.text)
+		def paramType = haxeTypeName(ctx.type)
 		if (lastMethodParameter != null)
 		{
 			currentFile << ", "
@@ -56,7 +56,7 @@ abstract class HaxeDefinitionGeneratorVisitor<T> extends HaxeGeneratorVisitor<T>
 	{
 		addDocumentationIfNecessary(ctx.documentation)
 		def methodName = ctx.name.text
-		def returnType = haxeTypeName(ctx.returnType.text)
+		def returnType = haxeTypeName(ctx.returnType)
 		currentFile << "\tfunction ${methodName}("
 		def result = super.visitMethodDefinition(ctx)
 		currentFile << "):${returnType};\n"

@@ -5,6 +5,7 @@ import com.prezi.gradle.spaghetti.ModuleConfiguration
 import com.prezi.gradle.spaghetti.ModuleDefinition
 import org.antlr.v4.runtime.Token
 import prezi.spaghetti.SpaghettiModuleBaseVisitor
+import prezi.spaghetti.SpaghettiModuleParser
 
 /**
  * Created by lptr on 16/11/13.
@@ -56,8 +57,9 @@ abstract class HaxeGeneratorVisitor<T> extends SpaghettiModuleBaseVisitor<Object
 		return file
 	}
 
-	protected String haxeTypeName(String typeName)
+	protected String haxeTypeName(SpaghettiModuleParser.FqNameContext typeNameContext)
 	{
+		def typeName = FQName.fromContext(typeNameContext)
 		def fqName = config.resolveTypeName(typeName, module.name)
 		return HAXE_TYPE_NAME_CONVERSION.get(fqName) ?: fqName.fullyQualifiedName
 	}
