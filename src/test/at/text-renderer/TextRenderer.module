@@ -6,5 +6,5 @@ module prezi.graphics.text.render.TextRenderer {
         String render(prezi.graphics.text.Text text)
     }
 
-    Renderer createRenderer()
+    Renderer createRenderer(String prefix, String suffix)
 }

@@ -15,5 +15,5 @@ module prezi.graphics.text.Layout {
         String getRawText()
     }
 
-    Text createText(int numberOfParagraphs)
+    Text createText()
 }

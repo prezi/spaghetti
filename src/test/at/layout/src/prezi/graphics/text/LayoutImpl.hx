@@ -4,7 +4,7 @@ class LayoutImpl implements Layout {
 	public function new() {
 	}
 
-	public function createText(numberOfParagraphs:Int):Text {
+	public function createText():Text {
 		return new TextImpl();
 	}
 }
