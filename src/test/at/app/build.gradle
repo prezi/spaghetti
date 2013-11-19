@@ -21,7 +21,6 @@ spaghetti {
  * Generate type definitions for every client
  */
 task generateApplication(type: GenerateApplication) {
-	outputDirectory "$buildDir/haxe"
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
@@ -37,7 +36,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
 	dependsOn compileHaxe
 	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/app.js"
 }
 
 task packApplication(type: com.prezi.gradle.spaghetti.ExtractModules) {

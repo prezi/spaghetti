@@ -19,7 +19,6 @@ spaghetti {
 }
 
 task generateHeaders(type: GenerateModuleHeaders) {
-	outputDirectory "$buildDir/haxe"
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
@@ -35,7 +34,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 	dependsOn compileHaxe
 	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/module.zip"
 }
 
 artifacts {

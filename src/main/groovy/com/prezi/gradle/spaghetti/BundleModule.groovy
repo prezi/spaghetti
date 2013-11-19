@@ -7,6 +7,12 @@ import org.gradle.api.tasks.TaskAction
  */
 class BundleModule extends AbstractBundleTask {
 
+	BundleModule()
+	{
+		this.inputFile = new File(project.buildDir, "module.js")
+		this.outputFile = new File(project.buildDir, "spaghetti/module.zip")
+	}
+
 	@TaskAction
 	bundle() {
 		def config = readConfig(definition.text)

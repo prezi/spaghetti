@@ -1,15 +1,17 @@
 package com.prezi.gradle.spaghetti
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
 class BundleApplication extends AbstractBundleTask {
+
+	BundleApplication()
+	{
+		this.inputFile = new File(project.buildDir, "application.js")
+		this.outputFile = new File(project.buildDir, "spaghetti/application.js")
+	}
+
 	@TaskAction
 	bundle() {
 		def definitions = ModuleDefinitionLookup.getAllDefinitions(configuration)

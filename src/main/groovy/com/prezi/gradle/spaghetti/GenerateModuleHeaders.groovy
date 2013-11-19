@@ -7,6 +7,11 @@ import org.gradle.api.tasks.TaskAction
  */
 class GenerateModuleHeaders extends AbstractGenerateTask {
 
+	GenerateModuleHeaders()
+	{
+		this.outputDirectory = new File(project.buildDir, "spaghetti/module-headers")
+	}
+
 	@TaskAction
 	generate() {
 		def config = readConfig(definition.text)
