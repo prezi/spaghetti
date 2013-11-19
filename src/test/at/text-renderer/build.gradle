@@ -11,10 +11,10 @@ dependencies {
 }
 
 task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateHeaders) {
-	platform "haxe"
+	platform "typescript"
 	configuration configurations.modules
 	definition "TextRenderer.module"
-	outputDirectory "$buildDir/haxe"
+	outputDirectory "$buildDir/typescript"
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
@@ -30,7 +30,7 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 	dependsOn compileHaxe
 	configuration configurations.modules
-	platform "haxe"
+	platform "typescript"
 	definition "TextRenderer.module"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/module.zip"

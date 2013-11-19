@@ -1,1 +1,2 @@
 com.prezi.gradle.spaghetti.haxe.HaxeGenerator
+com.prezi.gradle.spaghetti.typescript.TypescriptGenerator
