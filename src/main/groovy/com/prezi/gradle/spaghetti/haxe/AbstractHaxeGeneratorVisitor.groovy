@@ -44,11 +44,15 @@ abstract class AbstractHaxeGeneratorVisitor<T> extends SpaghettiModuleBaseVisito
 	{
 		def previousFile = currentFile
 		def typeName = ctx.name.text
+		FQName superType = null
+		if (ctx.superType != null) {
+			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
+		}
 		currentFile = createHaxeSourceFile(typeName)
 
 		addDocumentationIfNecessary(ctx.documentation)
-		currentFile << defineType(typeName)
-		currentFile << " {\n"
+		currentFile << defineType(typeName, superType)
+		currentFile << "\n"
 		def result = (T) super.visitTypeDefinition(ctx)
 		currentFile << "}\n"
 		currentFile = previousFile

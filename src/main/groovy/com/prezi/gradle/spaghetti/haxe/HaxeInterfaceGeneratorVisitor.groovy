@@ -1,9 +1,11 @@
 package com.prezi.gradle.spaghetti.haxe
 
+import com.prezi.gradle.spaghetti.FQName
 import com.prezi.gradle.spaghetti.ModuleConfiguration
 import com.prezi.gradle.spaghetti.ModuleDefinition
 import org.antlr.v4.runtime.misc.NotNull
 import prezi.spaghetti.SpaghettiModuleParser
+import prezi.spaghetti.SpaghettiModuleParser.FqNameContext
 
 /**
  * Created by lptr on 16/11/13.
@@ -46,7 +48,14 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeGeneratorVisitor<Object>
 	@Override
 	Object visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		return generateTypeDefinition(ctx) { String typeName -> "interface ${typeName}" }
+		return generateTypeDefinition(ctx) { String typeName, FQName superType ->
+			def declaration = "interface ${typeName}"
+			if (superType != null) {
+				declaration += " extends ${superType.fullyQualifiedName}"
+			}
+			declaration += " {"
+			return declaration
+		}
 	}
 
 	@Override

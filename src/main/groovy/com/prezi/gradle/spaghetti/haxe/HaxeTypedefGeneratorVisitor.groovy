@@ -1,5 +1,6 @@
 package com.prezi.gradle.spaghetti.haxe
 
+import com.prezi.gradle.spaghetti.FQName
 import com.prezi.gradle.spaghetti.ModuleConfiguration
 import com.prezi.gradle.spaghetti.ModuleDefinition
 import org.antlr.v4.runtime.misc.NotNull
@@ -41,7 +42,13 @@ class HaxeTypedefGeneratorVisitor extends AbstractHaxeGeneratorVisitor<Object> {
 	@Override
 	Object visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		generateTypeDefinition(ctx) { String typeName -> "typedef ${typeName} =" }
+		generateTypeDefinition(ctx) { String typeName, FQName superType ->
+			def declaration = "typedef ${typeName} = {"
+			if (superType != null) {
+				declaration += " > ${superType.fullyQualifiedName},"
+			}
+			return declaration
+		}
 	}
 
 	@Override
