@@ -15,7 +15,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 	source generateHeaders.outputDirectory
 	source "src"
 	include "prezi.graphics.text"
-	outputFile "${buildDir}/module.js"
 }
 
 task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {

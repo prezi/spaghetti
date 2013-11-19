@@ -23,7 +23,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 	source generateApplication.outputDirectory
 	source "src"
 	main "prezi.test.client.Client"
-	outputFile "${buildDir}/app-standalone.js"
 }
 
 task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
