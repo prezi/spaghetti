@@ -1,5 +1,3 @@
-import com.prezi.gradle.spaghetti.GenerateModuleHeaders
-
 apply plugin: "spaghetti"
 
 spaghetti {
@@ -7,7 +5,7 @@ spaghetti {
 	definition "Layout.module"
 }
 
-task generateHeaders(type: GenerateModuleHeaders) {
+task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateModuleHeaders) {
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {

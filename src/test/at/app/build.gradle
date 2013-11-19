@@ -1,5 +1,3 @@
-import com.prezi.gradle.spaghetti.GenerateApplication
-
 evaluationDependsOn(':text-renderer')
 
 apply plugin: "spaghetti"
@@ -15,7 +13,7 @@ spaghetti {
 /**
  * Generate type definitions for every client
  */
-task generateApplication(type: GenerateApplication) {
+task generateApplication(type: com.prezi.gradle.spaghetti.GenerateApplication) {
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
