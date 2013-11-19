@@ -8,19 +8,10 @@ import org.gradle.api.Project
 /**
  * Created by lptr on 12/11/13.
  */
-class HaxeGenerator implements Generator {
-	private Project project
+class HaxeGenerator extends Generator {
 
-	@Override
-	void initialize(Project project)
-	{
-		this.project = project
-	}
-
-	@Override
-	String getPlatform()
-	{
-		return "haxe"
+	HaxeGenerator() {
+		super("haxe")
 	}
 
 	@Override
