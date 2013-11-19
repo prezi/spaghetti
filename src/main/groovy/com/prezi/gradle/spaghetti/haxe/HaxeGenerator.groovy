@@ -54,7 +54,7 @@ class HaxeGenerator extends Generator {
 
 	private static void generateModulesFile(FQName modulesName, File outputDirectory, Iterable<ModuleDefinition> dependencies)
 	{
-		def modulesFile = AbstractHaxeGeneratorVisitor.createHaxeSourceFile(modulesName, outputDirectory)
+		def modulesFile = HaxeUtils.createHaxeSourceFile(modulesName, outputDirectory)
 		modulesFile << """class ${modulesName.localName} {
 
 	static var modules:Array<Dynamic>;
