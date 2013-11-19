@@ -17,7 +17,8 @@ abstract class AbstractHaxeGeneratorVisitor<T> extends SpaghettiModuleBaseVisito
 			(ModuleConfiguration.TYPE_BOOL): "Bool",
 			(ModuleConfiguration.TYPE_INT): "Int",
 			(ModuleConfiguration.TYPE_FLOAT): "Float",
-			(ModuleConfiguration.TYPE_STRING): "String"
+			(ModuleConfiguration.TYPE_STRING): "String",
+			(ModuleConfiguration.TYPE_ANY): "Dynamic"
 	]
 
 	protected final ModuleConfiguration config

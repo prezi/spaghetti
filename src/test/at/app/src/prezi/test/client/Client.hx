@@ -9,5 +9,6 @@ class Client {
 		var textRenderer = Modules.getTextRenderer();
 		var renderer = textRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
 		trace(renderer.render(text));
+		trace("Internals: " + text.getInternals());
 	}
 }

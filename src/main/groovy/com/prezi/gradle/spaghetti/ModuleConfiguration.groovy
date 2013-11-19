@@ -8,9 +8,10 @@ class ModuleConfiguration {
 	public static final def TYPE_INT = FQName.fromString("int")
 	public static final def TYPE_FLOAT = FQName.fromString("float")
 	public static final def TYPE_STRING = FQName.fromString("String")
+	public static final def TYPE_ANY = FQName.fromString("any")
 
 	public static final Set<FQName> BUILT_IN_TYPE_NAMES = [
-			TYPE_VOID, TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING
+			TYPE_VOID, TYPE_BOOL, TYPE_INT, TYPE_FLOAT, TYPE_STRING, TYPE_ANY
 	]
 
 	final Map<FQName, ModuleDefinition> modules

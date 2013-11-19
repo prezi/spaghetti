@@ -32,4 +32,8 @@ class TextImpl implements Text
 	{
 		text = text.substr(0, offset) + text.substr(end);
 	}
+
+	public function getInternals():Dynamic {
+		return "Internal implementation stuff here";
+	}
 }

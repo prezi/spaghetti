@@ -13,6 +13,7 @@ module prezi.graphics.text.Layout {
         void insert(int offset, String text)
         void delete(int offset, int end)
         String getRawText()
+        any getInternals()
     }
 
     Text createText()
