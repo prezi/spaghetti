@@ -1,0 +1,54 @@
+buildscript {
+	repositories {
+		mavenLocal()
+		maven {
+			credentials {
+				username nexusUser
+				password nexusPassword
+			}
+			url "https://artifactory.prezi.com/plugins-snapshot"
+		}
+	}
+	dependencies {
+		classpath "org.antlr:antlr4:4.1"
+	}
+}
+
+dependencies {
+	compile localGroovy()
+	compile "org.antlr:antlr4-runtime:4.1"
+	compile "com.google.guava:guava:15.0"
+}
+
+def generatedGrammar = file("${buildDir}/antlr-generated")
+task generateGrammar(type: JavaExec) {
+	def grammarFile = file("src/main/antlr/SpaghettiModule.g4")
+	inputs.file grammarFile
+	outputs.dir generatedGrammar
+	main = "org.antlr.v4.Tool"
+	args = [
+			"-o", "${generatedGrammar}/com/prezi/spaghetti/grammar",
+			"-package", "com.prezi.spaghetti.grammar",
+			"-no-listener",
+			"-visitor",
+			grammarFile
+	]
+	classpath = buildscript.configurations.classpath
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir generatedGrammar
+        }
+    }
+}
+
+compileJava {
+	dependsOn generateGrammar
+}
+
+task run(type: Exec) {
+	workingDir "src/test/at"
+	commandLine = ["gradle", "clean", "packApplication", "-is"]
+}

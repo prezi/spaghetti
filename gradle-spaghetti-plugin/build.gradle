@@ -1,0 +1,13 @@
+evaluationDependsOn(":spaghetti-core")
+evaluationDependsOn(":spaghetti-haxe-support")
+
+dependencies {
+	compile gradleApi()
+	compile project(path: ":spaghetti-core")
+	compile project(path: ":spaghetti-haxe-support")
+}
+
+task run(type: Exec) {
+	workingDir "src/test/at"
+	commandLine = ["gradle", "clean", "packApplication", "-is"]
+}

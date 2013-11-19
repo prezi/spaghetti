@@ -1,0 +1,35 @@
+import com.prezi.spaghetti.gradle.BundleModule
+import com.prezi.spaghetti.gradle.GenerateModuleHeaders
+
+apply plugin: "spaghetti"
+
+spaghetti {
+	platform "haxe"
+	definition "Layout.module"
+}
+
+task generateHeaders(type: GenerateModuleHeaders) {
+}
+
+task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
+	dependsOn generateHeaders
+	configuration configurations.modules
+	targetPlatform "js"
+	source generateHeaders.outputDirectory
+	source "src"
+	include "prezi.graphics.text"
+}
+
+task bundleModule(type: BundleModule) {
+	dependsOn compileHaxe
+	inputFile compileHaxe.outputFile
+}
+
+artifacts {
+	archives(bundleModule.outputFile) {
+		builtBy bundleModule
+	}
+	modules(bundleModule.outputFile) {
+			builtBy bundleModule
+	}
+}

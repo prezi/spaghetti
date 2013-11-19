@@ -1,5 +1,3 @@
-group = 'com.prezi.gradle'
-
 buildscript {
 	repositories {
 		mavenLocal()
@@ -11,75 +9,37 @@ buildscript {
 			url "https://artifactory.prezi.com/plugins-snapshot"
 		}
 	}
-
 	dependencies {
 		classpath "com.prezi.gradle:gradle-prezi-plugin:1.0-SNAPSHOT"
-		classpath "org.antlr:antlr4:4.1"
 	}
 }
 
-apply plugin: 'groovy'
-apply plugin: 'maven'
-apply plugin: 'idea'
-apply plugin: 'prezi'
+configure(allprojects) {
+	group = 'com.prezi.spaghetti'
 
-sourceCompatibility = "1.6"
-targetCompatibility = "1.6"
+	apply plugin: 'groovy'
+	apply plugin: 'maven'
+	apply plugin: 'idea'
+	apply plugin: 'prezi'
 
-repositories {
-	mavenLocal()
-	maven downloadRepo("plugins-snapshot")
-}
+	project.ext.sourceCompatibility = "1.6"
+	project.ext.targetCompatibility = "1.6"
 
-dependencies {
-	compile gradleApi()
-	compile localGroovy()
-	compile "org.antlr:antlr4-runtime:4.1"
-	compile "com.google.guava:guava:15.0"
-}
-
-def generatedGrammar = file("${buildDir}/antlr-generated")
-task generateGrammar(type: JavaExec) {
-	def grammarFile = file("src/main/antlr/SpaghettiModule.g4")
-	inputs.file grammarFile
-	outputs.dir generatedGrammar
-	main = "org.antlr.v4.Tool"
-	args = [
-			"-o", "${generatedGrammar}/prezi/spaghetti",
-			"-package", "prezi.spaghetti",
-			"-no-listener",
-			"-visitor",
-			grammarFile
-	]
-	classpath = buildscript.configurations.classpath
-}
-
-sourceSets {
-    main {
-        java {
-            srcDir generatedGrammar
-        }
-    }
-}
-
-compileJava {
-	dependsOn generateGrammar
-}
-
-task run(type: Exec) {
-	workingDir "src/test/at"
-	commandLine = ["gradle", "clean", "packApplication", "-is"]
-}
-
-uploadArchives {
 	repositories {
+		mavenLocal()
+		maven downloadRepo("repo")
+	}
+
+	uploadArchives {
 		repositories {
-			mavenDeployer {
-				repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
-					authentication(userName: nexusUser, password: nexusPassword)
-				}
-				snapshotRepository(url: "https://artifactory.prezi.com/plugins-snapshot-local/") {
-					authentication(userName: nexusUser, password: nexusPassword)
+			repositories {
+				mavenDeployer {
+					repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
+						authentication(userName: nexusUser, password: nexusPassword)
+					}
+					snapshotRepository(url: "https://artifactory.prezi.com/plugins-snapshot-local/") {
+						authentication(userName: nexusUser, password: nexusPassword)
+					}
 				}
 			}
 		}

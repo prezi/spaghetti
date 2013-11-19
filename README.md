@@ -17,15 +17,15 @@ This is a proof-of-concept implementation of a Gradle plugin that helps in modul
 
 # Workflow to write and use a module
 
-![Module Workflow](http://prezi.github.io/gradle-spaghetti-plugin/images/Module Workflow.png "Module Workflow")
+![Module Workflow](http://prezi.github.io/spaghetti/images/Module Workflow.png "Module Workflow")
 
 # Module System
 
-![Module System](http://prezi.github.io/gradle-spaghetti-plugin/images/Module System.png "Module System")
+![Module System](http://prezi.github.io/spaghetti/images/Module System.png "Module System")
 
 # Example
 
-There is an example project under [in the source code of the plugin](tree/master/src/test/at).
+There is an example project under [in the source code of the plugin](tree/master/gradle-spaghetti-plugin/src/test/at).
 
 ## Interface Language
 
@@ -58,7 +58,7 @@ module prezi.graphics.text.Layout {
 You can generate Haxe interfaces for your module:
 
 ```groovy
-task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateModuleHeaders) {
+task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateModuleHeaders) {
 	definition "Layout.module"
 	platform "haxe"
 	outputDirectory "${buildDir}/spaghetti-module"
@@ -68,7 +68,7 @@ task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateModuleHeaders) {
 You can then implement these interfaces, and compile all your code to a JavaScript file. Now you only have to bundle your code into a Spaghetti-compatible module, and you're all set:
 
 ```groovy
-task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
+task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	dependsOn compileHaxe
 	definition "Layout.module"
 	inputFile compileHaxe.outputFile
@@ -81,7 +81,7 @@ task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 You can generate Haxe externs to use this module in your application or another module:
 
 ```groovy
-task generateApplication(type: com.prezi.gradle.spaghetti.GenerateApplication) {
+task generateApplication(type: com.prezi.spaghetti.gradle.GenerateApplication) {
 	configuration configurations.modules
 	platform "haxe"
 	outputDirectory "$buildDir/haxe"
@@ -91,7 +91,7 @@ task generateApplication(type: com.prezi.gradle.spaghetti.GenerateApplication) {
 Build your application, and then bundle it for [RequireJS](http://requirejs.org/):
 
 ```groovy
-task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
+task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	dependsOn compileHaxe
 	configuration configurations.modules
 	platform "haxe"
@@ -103,7 +103,7 @@ task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
 You can also extract all modules to a directory so that they are readily available to RequreJS:
 
 ```groovy
-task packApplication(type: com.prezi.gradle.spaghetti.ExtractModules) {
+task packApplication(type: com.prezi.spaghetti.gradle.ExtractModules) {
 	dependsOn bundleApplication
 	configuration configurations.modules
 	def testWebappDir = file("${buildDir}/webapp")
@@ -129,7 +129,7 @@ class Client {
 
 # Versioning
 
-![Versioning](http://prezi.github.io/gradle-spaghetti-plugin/images/Versioning.png "Versioning")
+![Versioning](http://prezi.github.io/spaghetti/images/Versioning.png "Versioning")
 
 
 # Challenges

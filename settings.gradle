@@ -1,1 +1,4 @@
-rootProject.name = "gradle-spaghetti-plugin"
+rootProject.name = "spaghetti"
+include "spaghetti-core"
+include "spaghetti-haxe-support"
+include "gradle-spaghetti-plugin"

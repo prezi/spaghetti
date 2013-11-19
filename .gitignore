@@ -11,7 +11,7 @@ temp
 *.iws
 out
 
-.gradle
-build
+.gradle/
+build/
 
 .temp/

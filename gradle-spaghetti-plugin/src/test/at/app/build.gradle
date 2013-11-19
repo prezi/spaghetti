@@ -1,0 +1,53 @@
+import com.prezi.spaghetti.gradle.BundleApplication
+import com.prezi.spaghetti.gradle.ExtractModules
+import com.prezi.spaghetti.gradle.GenerateApplication
+
+evaluationDependsOn(':text-renderer')
+
+apply plugin: "spaghetti"
+
+dependencies {
+	modules project(path: ":text-renderer", configuration: "modules")
+}
+
+spaghetti {
+	platform "haxe"
+}
+
+/**
+ * Generate type definitions for every client
+ */
+task generateApplication(type: GenerateApplication) {
+}
+
+task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
+	dependsOn generateApplication
+	configuration configurations.modules
+	targetPlatform "js"
+	source generateApplication.outputDirectory
+	source "src"
+	main "prezi.test.client.Client"
+}
+
+task bundleApplication(type: BundleApplication) {
+	dependsOn compileHaxe
+	inputFile compileHaxe.outputFile
+}
+
+task packApplication(type: ExtractModules) {
+	dependsOn bundleApplication
+
+	def testWebappDir = file("${buildDir}/webapp")
+	outputDirectory testWebappDir
+
+	doLast {
+		copy {
+			from bundleApplication.outputFile
+			into testWebappDir
+		}
+		copy {
+			from "test"
+			into testWebappDir
+		}
+	}
+}

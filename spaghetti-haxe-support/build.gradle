@@ -1,0 +1,5 @@
+evaluationDependsOn(":spaghetti-core")
+
+dependencies {
+	compile project(path: ":spaghetti-core")
+}
