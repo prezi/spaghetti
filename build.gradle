@@ -68,7 +68,7 @@ compileJava {
 
 task run(type: Exec) {
 	workingDir "src/test/at"
-	commandLine = ["gradle", "clean", "generateHeaders", "generateClient", "-is"]
+	commandLine = ["gradle", "clean", "packApplication", "-is"]
 }
 
 uploadArchives {
