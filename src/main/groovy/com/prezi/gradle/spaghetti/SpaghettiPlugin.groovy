@@ -14,7 +14,6 @@ class SpaghettiPlugin implements Plugin<Project> {
 	{
 		for (generator in ServiceLoader.load(Generator)) {
 			generators.put generator.platform, generator
-			generator.initialize(project)
 		}
 		project.logger.info "Loaded generators for ${generators.keySet()}"
 	}
