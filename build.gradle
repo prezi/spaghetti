@@ -17,9 +17,12 @@ buildscript {
 configure(allprojects) {
 	group = 'com.prezi.spaghetti'
 
+	apply plugin: 'idea'
+}
+
+configure(subprojects) {
 	apply plugin: 'groovy'
 	apply plugin: 'maven'
-	apply plugin: 'idea'
 	apply plugin: 'prezi'
 
 	project.ext.sourceCompatibility = "1.6"
