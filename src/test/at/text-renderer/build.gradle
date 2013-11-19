@@ -1,3 +1,5 @@
+import com.prezi.gradle.spaghetti.GenerateModuleHeaders
+
 evaluationDependsOn(':layout')
 
 apply plugin: "spaghetti"
@@ -10,7 +12,7 @@ dependencies {
 	modules project(path: ":layout", configuration: "modules")
 }
 
-task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateHeaders) {
+task generateHeaders(type: GenerateModuleHeaders) {
 	platform "haxe"
 	configuration configurations.modules
 	definition "TextRenderer.module"

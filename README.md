@@ -58,7 +58,7 @@ module prezi.graphics.text.Layout {
 You can generate Haxe interfaces for your module:
 
 ```groovy
-task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateHeaders) {
+task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateModuleHeaders) {
 	definition "Layout.module"
 	platform "haxe"
 	outputDirectory "${buildDir}/spaghetti-module"

@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 12/11/13.
  */
-class GenerateHeaders extends AbstractGenerateTask {
+class GenerateModuleHeaders extends AbstractGenerateTask {
 	@InputFile
 	File definition
 
@@ -17,7 +17,7 @@ class GenerateHeaders extends AbstractGenerateTask {
 	generate() {
 		def config = readConfig(definition.text)
 		def moduleDef = config.localModules.first()
-		generator.generateModuleInterfaces(config, moduleDef, outputDirectory)
+		generator.generateModuleHeaders(config, moduleDef, outputDirectory)
 	}
 
 	void definition(Object file) {

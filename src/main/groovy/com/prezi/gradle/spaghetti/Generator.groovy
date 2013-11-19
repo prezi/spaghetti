@@ -10,7 +10,7 @@ abstract public class Generator {
 		this.platform = platform
 	}
 
-	abstract void generateModuleInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	abstract void generateModuleHeaders(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	abstract void generateApplication(ModuleConfiguration config, File outputDirectory)
 
 	/**

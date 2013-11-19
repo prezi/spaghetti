@@ -1,10 +1,12 @@
+import com.prezi.gradle.spaghetti.GenerateModuleHeaders
+
 apply plugin: "spaghetti"
 
 configurations {
 	modules
 }
 
-task generateHeaders(type: com.prezi.gradle.spaghetti.GenerateHeaders) {
+task generateHeaders(type: GenerateModuleHeaders) {
 	platform "haxe"
 	definition "Layout.module"
 	outputDirectory "$buildDir/haxe"
