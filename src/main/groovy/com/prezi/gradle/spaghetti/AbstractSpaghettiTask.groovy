@@ -2,21 +2,32 @@ package com.prezi.gradle.spaghetti
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.tasks.InputFiles
 
 /**
  * Created by lptr on 18/11/13.
  */
-class AbstractModuleTask extends DefaultTask {
-	protected Configuration configuration
-
-	String platform
+class AbstractSpaghettiTask extends DefaultTask {
+	@Delegate
+	Parameters params = new Parameters(project)
 
 	Generator getGenerator() {
 		project.getPlugins().getPlugin(SpaghettiPlugin).getGeneratorForPlatform(platform)
 	}
 
+	public void applyParameters(Parameters params) {
+		this.platform = params.platform
+		this.configuration = params.configuration
+		this.definition = params.definition
+	}
+
 	ModuleConfiguration readConfig(String... localDefinitions) {
 		return readConfig(localDefinitions.toList())
+	}
+
+	@InputFiles
+	Configuration getConfiguration() {
+		return params.configuration
 	}
 
 	ModuleConfiguration readConfig(Iterable<String> localDefinitions) {
@@ -32,13 +43,5 @@ class AbstractModuleTask extends DefaultTask {
 		}
 		def config = ModuleConfigurationParser.parse(dependentDefinitionContexts, localDefinitionContexts)
 		return config
-	}
-
-	void configuration(Configuration configuration) {
-		this.configuration = configuration
-	}
-
-	Configuration getConfiguration() {
-		return configuration
 	}
 }

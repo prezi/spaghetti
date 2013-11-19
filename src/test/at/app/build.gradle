@@ -12,12 +12,15 @@ dependencies {
 	modules project(path: ":text-renderer", configuration: "modules")
 }
 
+spaghetti {
+	platform "haxe"
+	configuration configurations.modules
+}
+
 /**
  * Generate type definitions for every client
  */
 task generateApplication(type: GenerateApplication) {
-	configuration configurations.modules
-	platform "haxe"
 	outputDirectory "$buildDir/haxe"
 }
 
@@ -33,8 +36,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 
 task bundleApplication(type: com.prezi.gradle.spaghetti.BundleApplication) {
 	dependsOn compileHaxe
-	configuration configurations.modules
-	platform "haxe"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/app.js"
 }

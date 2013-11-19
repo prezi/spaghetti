@@ -16,6 +16,11 @@ class SpaghettiPlugin implements Plugin<Project> {
 			generators.put generator.platform, generator
 		}
 		project.logger.info "Loaded generators for ${generators.keySet()}"
+
+		def extension = project.extensions.create "spaghetti", ModulesExtension, project
+		project.tasks.withType(AbstractSpaghettiTask) { AbstractSpaghettiTask task ->
+			task.applyParameters(extension.params)
+		}
 	}
 
 	Generator getGeneratorForPlatform(String platform)

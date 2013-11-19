@@ -9,18 +9,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class BundleApplication extends DefaultTask {
-	String platform
-
-	@InputFiles
-	Configuration configuration
-
-	@InputFile
-	File inputFile
-
-	@OutputFile
-	File outputFile
-
+class BundleApplication extends AbstractBundleTask {
 	@TaskAction
 	bundle() {
 		def definitions = ModuleDefinitionLookup.getAllDefinitions(configuration)
@@ -35,17 +24,5 @@ class BundleApplication extends DefaultTask {
 		outputFile << "var __modules = arguments;\n"
 		outputFile << bundledJavaScript
 		outputFile << "});\n"
-	}
-
-	def inputFile(Object f) {
-		this.inputFile = project.file(f)
-	}
-
-	def outputFile(Object f) {
-		this.outputFile = project.file(f)
-	}
-
-	def configuration(Configuration configuration) {
-		this.configuration = configuration
 	}
 }

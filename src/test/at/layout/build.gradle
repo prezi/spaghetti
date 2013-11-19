@@ -6,9 +6,13 @@ configurations {
 	modules
 }
 
-task generateHeaders(type: GenerateModuleHeaders) {
+spaghetti {
+	configuration configurations.modules
 	platform "haxe"
 	definition "Layout.module"
+}
+
+task generateHeaders(type: GenerateModuleHeaders) {
 	outputDirectory "$buildDir/haxe"
 }
 
@@ -24,8 +28,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 
 task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 	dependsOn compileHaxe
-	platform "haxe"
-	definition "Layout.module"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/module.zip"
 }

@@ -12,10 +12,13 @@ dependencies {
 	modules project(path: ":layout", configuration: "modules")
 }
 
-task generateHeaders(type: GenerateModuleHeaders) {
+spaghetti {
 	platform "haxe"
 	configuration configurations.modules
 	definition "TextRenderer.module"
+}
+
+task generateHeaders(type: GenerateModuleHeaders) {
 	outputDirectory "$buildDir/haxe"
 }
 
@@ -31,9 +34,6 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 
 task bundleModule(type: com.prezi.gradle.spaghetti.BundleModule) {
 	dependsOn compileHaxe
-	configuration configurations.modules
-	platform "haxe"
-	definition "TextRenderer.module"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/module.zip"
 }

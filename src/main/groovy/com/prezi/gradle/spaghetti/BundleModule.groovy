@@ -1,25 +1,11 @@
 package com.prezi.gradle.spaghetti
 
-import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class BundleModule extends AbstractModuleTask {
-	@InputFile
-	File definition
-
-	@InputFile
-	File inputFile
-
-	@OutputFile
-	File outputFile
-
-	String platform
+class BundleModule extends AbstractBundleTask {
 
 	@TaskAction
 	bundle() {
@@ -40,27 +26,10 @@ class BundleModule extends AbstractModuleTask {
 		bundle.save(outputFile)
 	}
 
-	def platform(String platform) {
-		this.platform = platform
-	}
-
-	def definition(Object f) {
-		this.definition = project.file(f)
-	}
-
-	def inputFile(Object f) {
-		this.inputFile = project.file(f)
-	}
-
-	def outputFile(Object f) {
-		this.outputFile = project.file(f)
-	}
-
 	@Override
-	@InputFiles
-	@Optional
-	Configuration getConfiguration()
+	@InputFile
+	File getDefinition()
 	{
-		return super.getConfiguration()
+		return super.getDefinition()
 	}
 }
