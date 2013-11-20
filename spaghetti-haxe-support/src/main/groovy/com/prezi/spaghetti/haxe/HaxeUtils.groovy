@@ -6,11 +6,11 @@ import com.prezi.spaghetti.FQName
  * Created by lptr on 19/11/13.
  */
 final class HaxeUtils {
-	public static File createHaxeSourceFile(FQName fqName, File outputDirectory) {
-		return createHaxeSourceFile(fqName.localName, fqName, outputDirectory)
+	public static File createHaxeSourceFile(FQName fqName, File outputDirectory, String contents) {
+		return createHaxeSourceFile(fqName.localName, fqName, outputDirectory, contents)
 	}
 
-	public static File createHaxeSourceFile(String name, FQName baseName, File outputDirectory) {
+	public static File createHaxeSourceFile(String name, FQName baseName, File outputDirectory, String contents) {
 		def packageDir = baseName.createNamespacePath(outputDirectory)
 		packageDir.mkdirs()
 		def file = new File(packageDir, name + ".hx")
@@ -23,6 +23,7 @@ final class HaxeUtils {
 			file << "package ${baseName.namespace};\n"
 			file << "\n"
 		}
+		file << contents
 		return file
 	}
 }
