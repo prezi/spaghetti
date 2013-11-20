@@ -10,7 +10,7 @@ abstract public class Generator {
 	}
 
 	abstract void generateModuleHeaders(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
-	abstract void generateApplication(ModuleConfiguration config, File outputDirectory)
+	abstract void generateApplication(ModuleConfiguration config, String namespace, File outputDirectory)
 
 	/**
 	 * Process the JavaScript code of a module before wrapping it into a Require JS wrapper.

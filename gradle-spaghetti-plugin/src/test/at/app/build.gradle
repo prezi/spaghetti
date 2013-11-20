@@ -18,6 +18,7 @@ spaghetti {
  * Generate type definitions for every client
  */
 task generateApplication(type: GenerateApplication) {
+	namespace "prezi.test.client"
 }
 
 task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {

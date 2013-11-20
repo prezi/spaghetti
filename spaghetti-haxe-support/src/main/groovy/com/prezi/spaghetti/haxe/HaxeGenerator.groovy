@@ -52,9 +52,9 @@ class HaxeGenerator extends Generator {
 	}
 
 	@Override
-	void generateApplication(ModuleConfiguration config, File outputDirectory)
+	void generateApplication(ModuleConfiguration config, String namespace, File outputDirectory)
 	{
-		def modulesName = FQName.fromString("prezi.test.client.Modules")
+		def modulesName = FQName.fromString("${namespace}.Modules")
 		generateDependentModules(config, modulesName, outputDirectory)
 	}
 
