@@ -21,7 +21,7 @@ class HaxeModuleGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	String visitModuleDefinition(@NotNull @NotNull SpaghettiModuleParser.ModuleDefinitionContext ctx)
 	{
 		return extractDocumentation(ctx.documentation) \
-			+ defineType(module.name.localName) \
+			+ defineType(module.name.localName) + "\n" \
 			+ super.visitModuleDefinition(ctx) \
 			+ "}"
 	}
