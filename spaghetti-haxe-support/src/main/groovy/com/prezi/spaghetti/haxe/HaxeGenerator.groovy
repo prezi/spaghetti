@@ -16,14 +16,43 @@ class HaxeGenerator extends Generator {
 	@Override
 	void generateModuleHeaders(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
-		// Generate module interface
-		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory,
-			new HaxeModuleGeneratorVisitor(
-					config, module, { moduleName -> "interface ${moduleName} {"}
-			).processModule()
-		)
+		generateModuleInterface(module, outputDirectory, config)
+		generateModuleInitializer(module, outputDirectory)
+		generateInterfacesForModuleTypes(config, module, outputDirectory)
 
-		// Generate module initializer
+		def modulesClassName = module.name.resolveLocalName(FQName.fromString("Modules"))
+		generateStuffForDependentModules(config, modulesClassName, outputDirectory)
+	}
+
+	@Override
+	void generateApplication(ModuleConfiguration config, String namespace, File outputDirectory)
+	{
+		def modulesClassName = FQName.fromString("${namespace}.Modules")
+		generateStuffForDependentModules(config, modulesClassName, outputDirectory)
+	}
+
+	private static void generateStuffForDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory) {
+		generateStructuralTypesForDependentModuleTypes(config, outputDirectory)
+		generateClassToAccessDependentModules(config, modulesClassName, outputDirectory)
+	}
+
+	/**
+	 * Generates main interface for module.
+	 */
+	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory, ModuleConfiguration config)
+	{
+		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory,
+				new HaxeModuleGeneratorVisitor(
+						config, module, { moduleName -> "interface ${moduleName} {" }
+				).processModule()
+		)
+	}
+
+	/**
+	 * Generates initializer for module.
+	 */
+	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
+	{
 		def initializerName = "__" + module.name.localName + "Init"
 		def initializerContents = """class ${initializerName} {
 	public static function __init__() {
@@ -33,56 +62,35 @@ class HaxeGenerator extends Generator {
 }
 """
 		HaxeUtils.createHaxeSourceFile(initializerName, module.name, outputDirectory, initializerContents)
+	}
 
-		// Generate interfaces the module should implement
+	/**
+	 * Generates interfaces the module should implement.
+	 */
+	private static void generateInterfacesForModuleTypes(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	{
 		new HaxeTypeIteratorVisitor(module, outputDirectory, {
 			new HaxeTypeGeneratorVisitor(config, module, { String typeName, FQName superType ->
 				def declaration = "interface ${typeName}"
-				if (superType != null) {
+				if (superType != null)
+				{
 					declaration += " extends ${superType.fullyQualifiedName}"
 				}
 				declaration += " {"
 				return declaration
 			})
 		}).processModule()
-
-		def modulesName = module.name.resolveLocalName(FQName.fromString("Modules"))
-		generateDependentModules(config, modulesName, outputDirectory)
-
 	}
 
-	@Override
-	void generateApplication(ModuleConfiguration config, String namespace, File outputDirectory)
+	private
+	static void generateClassToAccessDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory)
 	{
-		def modulesName = FQName.fromString("${namespace}.Modules")
-		generateDependentModules(config, modulesName, outputDirectory)
-	}
-
-	private static void generateDependentModules(ModuleConfiguration config, FQName modulesName, File outputDirectory) {
-		// Find all dependent modules
 		def dependentModules = config.dependentModules
 
-		// Generate typedefs for each dependent module
-		dependentModules.each { dependentModule ->
-			HaxeUtils.createHaxeSourceFile(dependentModule.name, outputDirectory,
-				new HaxeModuleGeneratorVisitor(
-						config, dependentModule, { moduleName -> "typedef ${moduleName} = {"}
-				).processModule()
-			)
-			new HaxeTypeIteratorVisitor(dependentModule, outputDirectory, {
-				new HaxeTypeGeneratorVisitor(config, dependentModule, { String typeName, FQName superType ->
-					def declaration = "typedef ${typeName} = {"
-					if (superType != null) {
-						declaration += " > ${superType.fullyQualifiedName},"
-					}
-					return declaration
-				})
-			}).visit(dependentModule.context)
-		}
-
 		// Generate Modules.hx to access dependent modules
-		if (!dependentModules.empty) {
-			String modulesContents = """class ${modulesName.localName} {
+		if (!dependentModules.empty)
+		{
+			String modulesContents = """class ${modulesClassName.localName} {
 
 	static var modules:Array<Dynamic>;
 
@@ -98,7 +106,28 @@ class HaxeGenerator extends Generator {
 """
 			}
 			modulesContents += "}\n"
-			HaxeUtils.createHaxeSourceFile(modulesName, outputDirectory, modulesContents)
+			HaxeUtils.createHaxeSourceFile(modulesClassName, outputDirectory, modulesContents)
+		}
+	}
+
+	private static void generateStructuralTypesForDependentModuleTypes(ModuleConfiguration config, File outputDirectory)
+	{
+		config.dependentModules.each { dependentModule ->
+			HaxeUtils.createHaxeSourceFile(dependentModule.name, outputDirectory,
+					new HaxeModuleGeneratorVisitor(
+							config, dependentModule, { moduleName -> "typedef ${moduleName} = {" }
+					).processModule()
+			)
+			new HaxeTypeIteratorVisitor(dependentModule, outputDirectory, {
+				new HaxeTypeGeneratorVisitor(config, dependentModule, { String typeName, FQName superType ->
+					def declaration = "typedef ${typeName} = {"
+					if (superType != null)
+					{
+						declaration += " > ${superType.fullyQualifiedName},"
+					}
+					return declaration
+				})
+			}).visit(dependentModule.context)
 		}
 	}
 
