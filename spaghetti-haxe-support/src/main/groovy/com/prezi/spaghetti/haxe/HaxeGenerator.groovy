@@ -17,14 +17,14 @@ class HaxeGenerator extends Generator {
 	void generateModuleHeaders(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
 	{
 		// Generate interfaces the module should implement
-		new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).visit(module.context)
+		new HaxeInterfaceGeneratorVisitor(config, module, outputDirectory).processModule()
 
 		// Find all dependent modules
 		def dependentModules = config.dependentModules
 
 		// Generate typedefs for each dependent module
 		config.dependentModules.each { dependentModule ->
-			new HaxeTypedefGeneratorVisitor(config, dependentModule, outputDirectory).visit(dependentModule.context)
+			new HaxeTypedefGeneratorVisitor(config, dependentModule, outputDirectory).processModule()
 		}
 
 		// Generate Modules.hx to access dependent modules

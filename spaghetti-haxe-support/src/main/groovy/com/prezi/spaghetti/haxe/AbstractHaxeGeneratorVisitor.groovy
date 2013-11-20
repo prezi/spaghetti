@@ -34,6 +34,10 @@ abstract class AbstractHaxeGeneratorVisitor<T> extends SpaghettiModuleBaseVisito
 		this.outputDirectory = outputDirectory
 	}
 
+	public T processModule() {
+		return (T) visit(module.context)
+	}
+
 	protected File createHaxeSourceFile(String name)
 	{
 		return HaxeUtils.createHaxeSourceFile(name, module.name, outputDirectory)
