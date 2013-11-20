@@ -1,30 +1,25 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.AbstractModuleVisitor
+import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
-import com.prezi.spaghetti.grammar.SpaghettiModuleVisitor
 import org.antlr.v4.runtime.misc.NotNull
 /**
- * Created by lptr on 20/11/13.
+ * Created by lptr on 16/11/13.
  */
-class HaxeTypeGeneratorVisitor extends AbstractModuleVisitor<Void> {
+class HaxeTypeGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
-	private final File outputDirectory
-	private final Closure<SpaghettiModuleVisitor<String>> createVisitor
+	private final Closure<String> defineType
 
-	HaxeTypeGeneratorVisitor(ModuleDefinition module, File outputDirectory,
-							 Closure<SpaghettiModuleVisitor<String>> createVisitor) {
-		super(module)
-		this.outputDirectory = outputDirectory
-		this.createVisitor = createVisitor
+	HaxeTypeGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module, Closure<String> defineType)
+	{
+		super(config, module)
+		this.defineType = defineType
 	}
 
 	@Override
-	Void visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
+	String visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		def contents = createVisitor(ctx).visitTypeDefinition(ctx)
-		HaxeUtils.createHaxeSourceFile(ctx.name.text, module.name, outputDirectory, contents)
-		return null
+		return generateTypeDefinition(ctx, defineType)
 	}
 }

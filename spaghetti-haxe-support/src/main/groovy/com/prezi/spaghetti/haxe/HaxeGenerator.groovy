@@ -18,7 +18,9 @@ class HaxeGenerator extends Generator {
 	{
 		// Generate module interface
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory,
-			new HaxeModuleInterfaceGeneratorVisitor(config, module).processModule()
+			new HaxeModuleGeneratorVisitor(
+					config, module, { moduleName -> "interface ${moduleName} {"}
+			).processModule()
 		)
 
 		// Generate module initializer
@@ -33,8 +35,15 @@ class HaxeGenerator extends Generator {
 		HaxeUtils.createHaxeSourceFile(initializerName, module.name, outputDirectory, initializerContents)
 
 		// Generate interfaces the module should implement
-		new HaxeTypeGeneratorVisitor(module, outputDirectory, {
-			new HaxeTypeInterfaceGeneratorVisitor(config, module)
+		new HaxeTypeIteratorVisitor(module, outputDirectory, {
+			new HaxeTypeGeneratorVisitor(config, module, { String typeName, FQName superType ->
+				def declaration = "interface ${typeName}"
+				if (superType != null) {
+					declaration += " extends ${superType.fullyQualifiedName}"
+				}
+				declaration += " {"
+				return declaration
+			})
 		}).processModule()
 
 		def modulesName = module.name.resolveLocalName(FQName.fromString("Modules"))
@@ -56,10 +65,18 @@ class HaxeGenerator extends Generator {
 		// Generate typedefs for each dependent module
 		dependentModules.each { dependentModule ->
 			HaxeUtils.createHaxeSourceFile(dependentModule.name, outputDirectory,
-				new HaxeModuleTypedefGeneratorVisitor(config, dependentModule).processModule()
+				new HaxeModuleGeneratorVisitor(
+						config, dependentModule, { moduleName -> "typedef ${moduleName} = {"}
+				).processModule()
 			)
-			new HaxeTypeGeneratorVisitor(dependentModule, outputDirectory, {
-				new HaxeTypeTypedefGeneratorVisitor(config, dependentModule)
+			new HaxeTypeIteratorVisitor(dependentModule, outputDirectory, {
+				new HaxeTypeGeneratorVisitor(config, dependentModule, { String typeName, FQName superType ->
+					def declaration = "typedef ${typeName} = {"
+					if (superType != null) {
+						declaration += " > ${superType.fullyQualifiedName},"
+					}
+					return declaration
+				})
 			}).visit(dependentModule.context)
 		}
 
