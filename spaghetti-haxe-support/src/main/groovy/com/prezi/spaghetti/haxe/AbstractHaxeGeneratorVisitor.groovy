@@ -6,6 +6,7 @@ import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
 import org.antlr.v4.runtime.Token
+import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
  */
@@ -44,26 +45,6 @@ ${super.visitTypeDefinition(ctx)}
 		return result
 	}
 
-	protected String generateMethodParameterDefinition(SpaghettiModuleParser.MethodParameterDefinitionContext ctx)
-	{
-		def paramName = ctx.name.text
-		def paramType = haxeTypeName(ctx.type)
-		return "${paramName}:${paramType}"
-	}
-
-	protected String generateMethodDefinition(SpaghettiModuleParser.MethodDefinitionContext ctx)
-	{
-		String result = addDocumentationIfNecessary(ctx.documentation)
-		def methodName = ctx.name.text
-		def returnType = haxeTypeName(ctx.returnType)
-		result += "\tfunction ${methodName}("
-		result += ctx.params.collect { paramCtx ->
-			generateMethodParameterDefinition(paramCtx)
-		}.join(", ")
-		result += "):${returnType};\n"
-		return result
-	}
-
 	protected String haxeTypeName(SpaghettiModuleParser.FqNameContext typeNameContext)
 	{
 		def localTypeName = FQName.fromContext(typeNameContext)
@@ -74,6 +55,22 @@ ${super.visitTypeDefinition(ctx)}
 	protected static String addDocumentationIfNecessary(Token doc)
 	{
 		return doc?.text ?: ""
+	}
+
+	@Override
+	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
+	{
+		String result = addDocumentationIfNecessary(ctx.documentation)
+		def methodName = ctx.name.text
+		def returnType = haxeTypeName(ctx.returnType)
+		result += "\tfunction ${methodName}("
+		result += ctx.params.collect { paramCtx ->
+			def paramName = paramCtx.name.text
+			def paramType = haxeTypeName(paramCtx.type)
+			return "${paramName}:${paramType}"
+		}.join(", ")
+		result += "):${returnType};\n"
+		return result
 	}
 
 	@Override

@@ -28,12 +28,7 @@ ${super.visitModuleDefinition(ctx)}
 	@Override
 	String visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
+		// Suppress processing types
 		return ""
-	}
-
-	@Override
-	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
-	{
-		return generateMethodDefinition(ctx)
 	}
 }

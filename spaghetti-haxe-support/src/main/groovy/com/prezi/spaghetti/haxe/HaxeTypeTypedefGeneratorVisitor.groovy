@@ -26,10 +26,4 @@ class HaxeTypeTypedefGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			return declaration
 		}
 	}
-
-	@Override
-	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
-	{
-		return generateMethodDefinition(ctx)
-	}
 }

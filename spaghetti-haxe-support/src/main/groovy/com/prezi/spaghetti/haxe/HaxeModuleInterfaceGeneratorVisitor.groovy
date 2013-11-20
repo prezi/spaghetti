@@ -28,6 +28,7 @@ ${super.visitModuleDefinition(ctx)}
 	@Override
 	String visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
+		// Suppress processing types
 		return ""
 	}
 }
