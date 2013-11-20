@@ -31,6 +31,12 @@ class HaxeGenerator extends Generator {
 		generateStuffForDependentModules(config, modulesClassName, outputDirectory)
 	}
 
+	@Override
+	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
+	{
+		return "var __module;\n" + javaScript + "return __module;\n"
+	}
+
 	private static void generateStuffForDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory) {
 		generateStructuralTypesForDependentModuleTypes(config, outputDirectory)
 		generateClassToAccessDependentModules(config, modulesClassName, outputDirectory)
@@ -82,8 +88,7 @@ class HaxeGenerator extends Generator {
 		}).processModule()
 	}
 
-	private
-	static void generateClassToAccessDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory)
+	private static void generateClassToAccessDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory)
 	{
 		def dependentModules = config.dependentModules
 
@@ -129,11 +134,5 @@ class HaxeGenerator extends Generator {
 				})
 			}).visit(dependentModule.context)
 		}
-	}
-
-	@Override
-	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
-	{
-		return "var __module;\n" + javaScript + "return __module;\n"
 	}
 }
