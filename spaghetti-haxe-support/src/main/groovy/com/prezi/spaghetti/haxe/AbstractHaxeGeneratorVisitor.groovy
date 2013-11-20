@@ -35,7 +35,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		return HAXE_TYPE_NAME_CONVERSION.get(fqTypeName) ?: fqTypeName.fullyQualifiedName
 	}
 
-	protected static String addDocumentationIfNecessary(Token doc)
+	protected static String extractDocumentation(Token doc)
 	{
 		return doc?.text ?: ""
 	}
@@ -46,7 +46,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		def methodName = ctx.name.text
 		def returnType = resolveHaxeType(ctx.returnType)
 
-		String result = addDocumentationIfNecessary(ctx.documentation)
+		String result = extractDocumentation(ctx.documentation)
 		result += "\tfunction ${methodName}("
 		result += ctx.params.collect { paramCtx ->
 			def paramName = paramCtx.name.text

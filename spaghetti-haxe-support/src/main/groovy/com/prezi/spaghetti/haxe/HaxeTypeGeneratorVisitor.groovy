@@ -27,7 +27,7 @@ class HaxeTypeGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
 		}
 
-		String result = addDocumentationIfNecessary(ctx.documentation) \
+		String result = extractDocumentation(ctx.documentation) \
 			+ """${defineType(typeName, superType)}
 
 ${super.visitTypeDefinition(ctx)}
