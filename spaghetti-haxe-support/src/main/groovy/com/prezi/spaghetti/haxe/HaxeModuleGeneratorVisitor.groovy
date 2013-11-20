@@ -26,11 +26,10 @@ class HaxeModuleGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			+ "}"
 	}
 
-	// Do not generate code for types
 	@Override
 	String visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		// Suppress processing types
+		// Do not generate code for types
 		return ""
 	}
 }

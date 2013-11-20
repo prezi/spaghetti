@@ -28,24 +28,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		this.config = config
 	}
 
-	protected String generateTypeDefinition(SpaghettiModuleParser.TypeDefinitionContext ctx, Closure<String> defineType)
-	{
-		def typeName = ctx.name.text
-		FQName superType = null
-		if (ctx.superType != null) {
-			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
-		}
-
-		String result = addDocumentationIfNecessary(ctx.documentation) \
-			+ """${defineType(typeName, superType)}
-
-${super.visitTypeDefinition(ctx)}
-}
-"""
-		return result
-	}
-
-	protected String haxeTypeName(SpaghettiModuleParser.FqNameContext typeNameContext)
+	protected String resolveHaxeType(SpaghettiModuleParser.FqNameContext typeNameContext)
 	{
 		def localTypeName = FQName.fromContext(typeNameContext)
 		def fqTypeName = config.resolveTypeName(localTypeName, module.name)
@@ -60,13 +43,14 @@ ${super.visitTypeDefinition(ctx)}
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
 	{
-		String result = addDocumentationIfNecessary(ctx.documentation)
 		def methodName = ctx.name.text
-		def returnType = haxeTypeName(ctx.returnType)
+		def returnType = resolveHaxeType(ctx.returnType)
+
+		String result = addDocumentationIfNecessary(ctx.documentation)
 		result += "\tfunction ${methodName}("
 		result += ctx.params.collect { paramCtx ->
 			def paramName = paramCtx.name.text
-			def paramType = haxeTypeName(paramCtx.type)
+			def paramType = resolveHaxeType(paramCtx.type)
 			return "${paramName}:${paramType}"
 		}.join(", ")
 		result += "):${returnType};\n"
@@ -82,5 +66,4 @@ ${super.visitTypeDefinition(ctx)}
 	protected String defaultResult() {
 		return ""
 	}
-
 }

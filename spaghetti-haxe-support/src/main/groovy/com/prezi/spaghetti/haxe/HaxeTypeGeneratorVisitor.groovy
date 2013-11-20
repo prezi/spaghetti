@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
@@ -20,6 +21,18 @@ class HaxeTypeGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		return generateTypeDefinition(ctx, defineType)
+		def typeName = ctx.name.text
+		FQName superType = null
+		if (ctx.superType != null) {
+			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
+		}
+
+		String result = addDocumentationIfNecessary(ctx.documentation) \
+			+ """${defineType(typeName, superType)}
+
+${super.visitTypeDefinition(ctx)}
+}
+"""
+		return result
 	}
 }
