@@ -47,11 +47,10 @@ class HaxeGenerator extends Generator {
 	 */
 	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory, ModuleConfiguration config)
 	{
-		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory,
-				new HaxeModuleGeneratorVisitor(
-						config, module, { moduleName -> "interface ${moduleName} {" }
-				).processModule()
-		)
+		def contents = new HaxeModuleGeneratorVisitor(
+				config, module, { moduleName -> "interface ${moduleName} {" }
+		).processModule()
+		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
 	}
 
 	/**
@@ -88,6 +87,9 @@ class HaxeGenerator extends Generator {
 		}).processModule()
 	}
 
+	/**
+	 * Generates Modules.hx with methods like <code>get<ModuleName>():<ModuleName> { ... }</code>.
+	 */
 	private static void generateClassToAccessDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory)
 	{
 		def dependentModules = config.dependentModules
@@ -118,11 +120,11 @@ class HaxeGenerator extends Generator {
 	private static void generateStructuralTypesForDependentModuleTypes(ModuleConfiguration config, File outputDirectory)
 	{
 		config.dependentModules.each { dependentModule ->
-			HaxeUtils.createHaxeSourceFile(dependentModule.name, outputDirectory,
-					new HaxeModuleGeneratorVisitor(
-							config, dependentModule, { moduleName -> "typedef ${moduleName} = {" }
-					).processModule()
-			)
+			def moduleFileContents = new HaxeModuleGeneratorVisitor(
+					config, dependentModule, { moduleName -> "typedef ${moduleName} = {" }
+			).processModule()
+			HaxeUtils.createHaxeSourceFile(dependentModule.name, outputDirectory, moduleFileContents)
+
 			new HaxeTypeIteratorVisitor(dependentModule, outputDirectory, {
 				new HaxeTypeGeneratorVisitor(config, dependentModule, { String typeName, FQName superType ->
 					def declaration = "typedef ${typeName} = {"
@@ -132,7 +134,7 @@ class HaxeGenerator extends Generator {
 					}
 					return declaration
 				})
-			}).visit(dependentModule.context)
+			}).processModule()
 		}
 	}
 }
