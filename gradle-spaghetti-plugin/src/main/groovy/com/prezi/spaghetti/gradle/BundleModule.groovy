@@ -8,9 +8,12 @@ import org.gradle.api.tasks.TaskAction
  */
 class BundleModule extends AbstractBundleTask {
 
+	private final File jsFile
+
 	BundleModule()
 	{
 		this.inputFile = new File(project.buildDir, "module.js")
+		this.jsFile = new File(project.buildDir, "spaghetti/module.js")
 		this.outputFile = new File(project.buildDir, "spaghetti/module.zip")
 	}
 
@@ -28,6 +31,10 @@ class BundleModule extends AbstractBundleTask {
 		bundledJavaScript += "var __modules = arguments;\n"
 		bundledJavaScript += processedJavaScript
 		bundledJavaScript += "});\n"
+
+		jsFile.parentFile.mkdirs()
+		jsFile.delete()
+		jsFile << bundledJavaScript
 
 		def bundle = new ModuleBundle(module.name, definition.text, bundledJavaScript)
 		bundle.save(outputFile)
