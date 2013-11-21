@@ -3,10 +3,15 @@
  */
 module prezi.graphics.text.Layout {
 
-        void insert(int offset, String text)
+    interface CharacterStyle {
+        String getType()
+        any getValue()
+    }
+
     interface AbstractText {
+        void insert(int offset, String text, CharacterStyle[] withStyles)
         void delete(int offset, int end)
-	}
+    }
 
     /**
      * Describes a block of text.
@@ -20,4 +25,5 @@ module prezi.graphics.text.Layout {
     }
 
     Text createText()
+    CharacterStyle createCharacterStyle(String type, any value)
 }

@@ -20,7 +20,7 @@ typeDefinition :
 
 methodDefinition	:
 	(documentation = Doc)?
-	(returnType = fqName) (name = Name) '('
+	(returnType = fqName) (arrayDimensions += ArrayQualifier)* (name = Name) '('
 		(
 			( params += methodParameterDefinition )
 			( ',' params += methodParameterDefinition )*
@@ -29,7 +29,7 @@ methodDefinition	:
 	;
 
 methodParameterDefinition :
-	(type = fqName) (name = Name)
+	(type = fqName) (arrayDimensions += ArrayQualifier)* (name = Name)
 	;
 
 fqName	: qualifiedName = QualifiedName
@@ -41,6 +41,7 @@ fragment NAME		: [a-zA-Z][a-zA-Z0-9]*;
 QualifiedName		: (NAME '.')+ NAME;
 Name				: NAME;
 Doc					: '/**' .*? '*/' '\r'* '\n'?;
+ArrayQualifier		: '[' ']';
 
 BlockComment		: '/*' (.*?) '*/' -> skip;
 LineComment			: '//' .*? '\n' -> skip;

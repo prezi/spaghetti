@@ -7,6 +7,10 @@ class LayoutImpl implements Layout {
 	public function createText():Text {
 		return new TextImpl();
 	}
+
+	public function createCharacterStyle(type:String, value:Dynamic):CharacterStyle {
+		return new CharacterStyleImpl(type, value);
+	}
 }
 
 class TextImpl implements Text
@@ -23,8 +27,9 @@ class TextImpl implements Text
 		return text;
 	}
 
-	public function insert(offset:Int, textToInsert:String)
+	public function insert(offset:Int, textToInsert:String, withStyles:Array<CharacterStyle>)
 	{
+		trace("Got styles: " + withStyles);
 		text = text.substr(0, offset) + textToInsert + text.substr(offset);
 	}
 
@@ -35,5 +40,23 @@ class TextImpl implements Text
 
 	public function getInternals():Dynamic {
 		return "Internal implementation stuff here";
+	}
+}
+
+class CharacterStyleImpl implements CharacterStyle {
+	var type:String;
+	var value:Dynamic;
+
+	public function new(type:String, value:Dynamic) {
+		this.type = type;
+		this.value = value;
+	}
+
+	public function getType():String {
+		return type;
+	}
+
+	public function getValue():Dynamic {
+		return value;
 	}
 }
