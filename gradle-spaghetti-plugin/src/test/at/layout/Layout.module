@@ -3,8 +3,48 @@
  */
 module prezi.graphics.text.Layout {
 
+	/**
+	 * Different types of character styles.
+	 */
+	enum CharacterStyleType {
+		/**
+		 * This takes an int.
+		 */
+		COLOR
+
+		/**
+		 * A String with the name of the font family.
+		 */
+		FONT_FAMILY
+
+		/**
+		 * This one can be "italic" or "normal".
+		 */
+		FONT_STYLE
+
+		/**
+		 * Something like "condensed", or our favorite: "normal".
+		 */
+		FONT_STRETCH
+
+		/**
+		 * The ever so famous "bold" (or "normal").
+		 */
+		FONT_WEIGHT
+
+		/**
+		 * This'll be a bool.
+		 */
+		UNDERLINE
+
+		/**
+		 * Again, a bool saying whether or not the text is an URL.
+		 */
+		URL
+	}
+
     interface CharacterStyle {
-        String getType()
+        CharacterStyleType getType()
         any getValue()
     }
 
@@ -21,9 +61,8 @@ module prezi.graphics.text.Layout {
          * Inserts the given String at <code>offset</code>.
          */
         String getRawText()
-        any getInternals()
     }
 
     Text createText()
-    CharacterStyle createCharacterStyle(String type, any value)
+    CharacterStyle createCharacterStyle(CharacterStyleType type, any value)
 }

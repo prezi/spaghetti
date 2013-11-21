@@ -8,6 +8,7 @@ moduleDefinition	:
 	;
 
 moduleElement	: typeDefinition
+				| enumDefinition
 				| methodDefinition
 	;
 
@@ -16,6 +17,16 @@ typeDefinition :
 	'interface' (name = Name) ('extends' (superType = fqName))? '{'
 		(methods += methodDefinition)*
 	'}'
+	;
+
+enumDefinition :
+	(documentation = Doc)?
+	'enum' (name = Name) '{'
+		(values += enumValue)*
+	'}'
+	;
+
+enumValue : (documentation = Doc)? (name = Name)
 	;
 
 methodDefinition	:

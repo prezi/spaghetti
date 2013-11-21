@@ -4,6 +4,7 @@ import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
@@ -34,7 +35,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		def methodName = ctx.name.text
 		def returnType = resolveHaxeType(ctx.returnType, ctx.arrayDimensions)
 
-		String result = extractDocumentation(ctx.documentation)
+		String result = ModuleUtils.formatDocumentation(ctx.documentation, "\t")
 		result += "\tfunction ${methodName}("
 		result += ctx.params.collect { paramCtx ->
 			def paramName = paramCtx.name.text
@@ -55,10 +56,6 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		return haxeType
 	}
 
-	protected static String extractDocumentation(Token doc)
-	{
-		return doc?.text ?: ""
-	}
 
 	@Override
 	protected String aggregateResult(String aggregate, String nextResult) {

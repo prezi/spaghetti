@@ -3,16 +3,17 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeTypeGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeInterfaceGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
 	private final Closure<String> defineType
 
-	HaxeTypeGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module, Closure<String> defineType)
+	HaxeInterfaceGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module, Closure<String> defineType)
 	{
 		super(config, module)
 		this.defineType = defineType
@@ -27,7 +28,7 @@ class HaxeTypeGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
 		}
 
-		String result = extractDocumentation(ctx.documentation) \
+		String result = ModuleUtils.formatDocumentation(ctx.documentation) \
 			+ """${defineType(typeName, superType)}
 
 ${super.visitTypeDefinition(ctx)}

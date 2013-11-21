@@ -3,6 +3,7 @@ package com.prezi.spaghetti
 import com.prezi.spaghetti.grammar.SpaghettiModuleBaseVisitor
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser.ModuleDefinitionContext
+import org.antlr.v4.runtime.misc.NotNull
 
 /**
  * Created by lptr on 15/11/13.
@@ -21,42 +22,43 @@ class ModuleConfigurationParser {
 
 	private static ModuleDefinition parseModule(ModuleDefinitionContext context, Set<FQName> typeNames)
 	{
-		def typeCollector = new TypeCollectorVisitor(typeNames)
+		def moduleDef = new ModuleDefinition(FQName.fromContext(context.name), context)
+		def typeCollector = new TypeCollectorVisitor(moduleDef, typeNames)
 		typeCollector.visit(context)
-		def moduleDef = typeCollector.moduleDefinition
-		if (moduleDef == null)
-		{
-			throw new AssertionError("No module defined")
-		}
 		return moduleDef
 	}
 }
 
 class TypeCollectorVisitor extends SpaghettiModuleBaseVisitor<Void> {
 	final Set<FQName> typeNames
-	ModuleDefinition moduleDefinition
+	final ModuleDefinition moduleDefinition
 
-	TypeCollectorVisitor(Set<FQName> typeNames) {
+	TypeCollectorVisitor(ModuleDefinition moduleDefinition, Set<FQName> typeNames) {
+		this.moduleDefinition = moduleDefinition
 		this.typeNames = typeNames
 	}
 
 	@Override
-	public Void visitModuleDefinition(ModuleDefinitionContext ctx)
+	public Void visitTypeDefinition(@NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
 	{
-		this.moduleDefinition = new ModuleDefinition(FQName.fromContext(ctx.name), ctx)
-		super.visitModuleDefinition(ctx)
+		registerTypeName(ctx.name.text)
 		return null
 	}
 
 	@Override
-	public Void visitTypeDefinition(SpaghettiModuleParser.TypeDefinitionContext ctx)
+	Void visitEnumDefinition(@NotNull SpaghettiModuleParser.EnumDefinitionContext ctx)
 	{
-		def typeName = moduleDefinition.name.resolveLocalName(FQName.fromString(ctx.name.text))
-		if (typeNames.contains(typeName)) {
+		registerTypeName(ctx.name.text)
+		return null
+	}
+
+	private void registerTypeName(String localName)
+	{
+		def typeName = moduleDefinition.name.resolveLocalName(FQName.fromString(localName))
+		if (typeNames.contains(typeName))
+		{
 			throw new IllegalStateException("Type already defined: ${typeName}")
 		}
 		typeNames.add(typeName)
-		super.visitTypeDefinition(ctx)
-		return null
 	}
 }

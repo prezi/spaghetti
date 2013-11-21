@@ -2,6 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.SpaghettiModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 /**
@@ -20,7 +21,7 @@ class HaxeModuleGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull SpaghettiModuleParser.ModuleDefinitionContext ctx)
 	{
-		return extractDocumentation(ctx.documentation) \
+		return ModuleUtils.formatDocumentation(ctx.documentation) \
 			+ defineType(module.name.localName) + "\n" \
 			+ super.visitModuleDefinition(ctx) \
 			+ "}"
