@@ -29,7 +29,9 @@ class TextImpl implements Text
 
 	public function insert(offset:Int, textToInsert:String, withStyles:Array<CharacterStyle>)
 	{
-		trace("Got styles: " + withStyles);
+		for (style in withStyles) {
+			trace("Got style: " + style.getType().name() + " = " + style.getValue());
+		}
 		text = text.substr(0, offset) + textToInsert + text.substr(offset);
 	}
 

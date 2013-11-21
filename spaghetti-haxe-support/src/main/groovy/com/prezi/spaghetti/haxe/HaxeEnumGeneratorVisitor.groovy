@@ -26,23 +26,36 @@ class HaxeEnumGeneratorVisitor extends SpaghettiModuleBaseVisitor<String> {
 
 		result +=
 """
-	static inline var guard = ${ctx.values.size()};
+	static var values = [ ${ctx.values.collect { valueCtx -> valueCtx.name.text }.join(", ")} ];
+	static var names =  [ ${ctx.values.collect { valueCtx -> "\"${valueCtx.name.text}\"" }.join(", ")} ];
+	static var namesToValues = { ${ctx.values.collect { valueCtx -> "\"${valueCtx.name.text}\": ${valueCtx.name.text}" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
 	}
 
-	@:to public inline function value():Int
-	{
+	@:to public inline function value():Int {
 		return this;
 	}
 
-	@:from public static inline function fromValue(value:Int):${enumName}
-	{
-		if (value < 0 || value >= guard) {
+	@:from public static inline function fromValue(value:Int):${enumName} {
+		var result = values[value];
+		if (result == null) {
 			throw untyped Error("Invlaid value for ${enumName}: " + value);
 		}
-		return new ${enumName}(value);
+		return result;
+	}
+
+	@:to public inline function name():String {
+		return names[this];
+	}
+
+	@:from public static inline function valueOf(name:String) {
+		var value = untyped namesToValues[name];
+		if (value == null) {
+			throw untyped Error("Invalid name for ${enumName}: " + name);
+		}
+		return value;
 	}
 }
 """
