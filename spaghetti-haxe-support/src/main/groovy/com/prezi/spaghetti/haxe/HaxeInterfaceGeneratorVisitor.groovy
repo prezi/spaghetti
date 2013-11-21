@@ -28,12 +28,10 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
 		}
 
-		String result = ModuleUtils.formatDocumentation(ctx.documentation) \
-			+ """${defineType(typeName, superType)}
-
+		return ModuleUtils.formatDocumentation(ctx.documentation) +
+"""${defineType(typeName, superType)}
 ${super.visitTypeDefinition(ctx)}
 }
 """
-		return result
 	}
 }

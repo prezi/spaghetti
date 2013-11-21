@@ -35,7 +35,11 @@ class HaxeGenerator extends Generator {
 	@Override
 	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
 	{
-		return "var __module;\n" + javaScript + "return __module;\n"
+		return \
+"""var __module;
+${javaScript}
+return __module;
+"""
 	}
 
 	private static void generateStuffForDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory) {
@@ -63,7 +67,8 @@ class HaxeGenerator extends Generator {
 	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
 	{
 		def initializerName = "__" + module.name.localName + "Init"
-		def initializerContents = """class ${initializerName} {
+		def initializerContents =
+"""class ${initializerName} {
 	public static function __init__() {
 		var module:${module.name.localName} = new ${module.name.localName}Impl();
 		untyped __module = module;
@@ -111,7 +116,8 @@ class HaxeGenerator extends Generator {
 		// Generate Modules.hx to access dependent modules
 		if (!dependentModules.empty)
 		{
-			String modulesContents = """class ${modulesClassName.localName} {
+			String modulesContents =
+"""class ${modulesClassName.localName} {
 
 	static var modules:Array<Dynamic>;
 
@@ -120,13 +126,16 @@ class HaxeGenerator extends Generator {
 	}
 """
 			dependentModules.eachWithIndex { module, index ->
-				modulesContents += """
+				modulesContents +=
+"""
 	public static inline function get${module.name.localName}():${module.name} {
 		return modules[${index}];
 	}
 """
 			}
-			modulesContents += "}\n"
+			modulesContents +=
+"""}
+"""
 			HaxeUtils.createHaxeSourceFile(modulesClassName, outputDirectory, modulesContents)
 		}
 	}

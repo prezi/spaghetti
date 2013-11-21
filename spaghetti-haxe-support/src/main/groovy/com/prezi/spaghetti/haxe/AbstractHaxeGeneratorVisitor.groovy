@@ -35,15 +35,17 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		def methodName = ctx.name.text
 		def returnType = resolveHaxeType(ctx.returnType, ctx.arrayDimensions)
 
-		String result = ModuleUtils.formatDocumentation(ctx.documentation, "\t")
-		result += "\tfunction ${methodName}("
-		result += ctx.params.collect { paramCtx ->
+		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
+"""	function ${methodName}(${generateParameters(ctx.params)}):${returnType};
+"""
+	}
+
+	private String generateParameters(Iterable<SpaghettiModuleParser.MethodParameterDefinitionContext> params) {
+		return params.collect { paramCtx ->
 			def paramName = paramCtx.name.text
 			def paramType = resolveHaxeType(paramCtx.type, paramCtx.arrayDimensions)
 			return "${paramName}:${paramType}"
 		}.join(", ")
-		result += "):${returnType};\n"
-		return result
 	}
 
 	protected String resolveHaxeType(SpaghettiModuleParser.FqNameContext typeNameContext, Iterable<Token> arrayDimensions)
