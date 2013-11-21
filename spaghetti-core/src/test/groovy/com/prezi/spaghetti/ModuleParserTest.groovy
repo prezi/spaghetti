@@ -1,5 +1,6 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.ModuleParser
 import org.junit.Test
 /**
  * Created by lptr on 14/11/13.
@@ -16,7 +17,7 @@ module prezi.graphics.text.Layout {
     /**
      * Describes a block of text.
      */
-    type Text {
+    interface Text {
         /**
          * Inserts the given String at <code>offset</code>.
          */
