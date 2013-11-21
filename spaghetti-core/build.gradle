@@ -18,7 +18,6 @@ dependencies {
 	compile localGroovy()
 	compile "org.antlr:antlr4-runtime:4.1"
 	compile "com.google.guava:guava:15.0"
-	testCompile "junit:junit:4.11"
 }
 
 def generatedGrammar = file("${buildDir}/antlr-generated")
