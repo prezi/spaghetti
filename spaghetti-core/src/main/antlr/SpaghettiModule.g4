@@ -1,21 +1,21 @@
 grammar SpaghettiModule;
 
-moduleDefinition	:
+moduleDefinition :
 	(documentation = Doc)?
 	'module' (name = fqName) '{'
-		(elements += moduleElement)*
+		moduleElement*
 	'}'
 	;
 
 moduleElement	: typeDefinition
 				| enumDefinition
-				| methodDefinition
+				| typeElement
 	;
 
 typeDefinition :
 	(documentation = Doc)?
 	'interface' (name = Name) ('extends' (superType = fqName))? '{'
-		(methods += methodDefinition)*
+		typeElement*
 	'}'
 	;
 
@@ -29,18 +29,29 @@ enumDefinition :
 enumValue : (documentation = Doc)? (name = Name)
 	;
 
-methodDefinition	:
+typeElement	: methodDefinition
+			| propertyDefinition
+	;
+
+methodDefinition :
 	(documentation = Doc)?
-	(returnType = fqName) (arrayDimensions += ArrayQualifier)* (name = Name) '('
+	(returnType = valueType) (name = Name) '('
 		(
-			( params += methodParameterDefinition )
-			( ',' params += methodParameterDefinition )*
+			( params += typedName )
+			( ',' params += typedName )*
 		)?
 	')'
 	;
 
-methodParameterDefinition :
-	(type = fqName) (arrayDimensions += ArrayQualifier)* (name = Name)
+propertyDefinition :
+	(documentation = Doc)?
+    (property = typedName)
+	;
+
+typedName : (type = valueType) (name = Name)
+	;
+
+valueType : (name = fqName) (arrayDimensions += ArrayQualifier)*
 	;
 
 fqName	: qualifiedName = QualifiedName

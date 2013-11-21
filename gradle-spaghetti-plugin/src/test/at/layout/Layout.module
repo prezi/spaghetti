@@ -44,8 +44,8 @@ module prezi.graphics.text.Layout {
 	}
 
     interface CharacterStyle {
-        CharacterStyleType getType()
-        any getValue()
+        CharacterStyleType type
+        any value
     }
 
     interface AbstractText {

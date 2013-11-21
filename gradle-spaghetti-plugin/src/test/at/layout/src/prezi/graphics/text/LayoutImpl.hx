@@ -53,8 +53,14 @@ class CharacterStyleImpl implements CharacterStyle {
 	public function getType():CharacterStyleType {
 		return type;
 	}
+	public function setType(type:CharacterStyleType) {
+		this.type = type;
+	}
 
 	public function getValue():Dynamic {
 		return value;
+	}
+	public function setValue(value:Dynamic) {
+		this.value = value;
 	}
 }

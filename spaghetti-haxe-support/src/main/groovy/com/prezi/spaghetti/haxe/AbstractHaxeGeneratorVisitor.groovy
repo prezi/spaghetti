@@ -32,29 +32,46 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
 	{
-		def methodName = ctx.name.text
-		def returnType = resolveHaxeType(ctx.returnType, ctx.arrayDimensions)
+		def returnType = resolveHaxeType(ctx.returnType)
+		return generateMethod(ctx.documentation, returnType, ctx.name.text, ctx.params)
+	}
 
-		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-"""	function ${methodName}(${generateParameters(ctx.params)}):${returnType};
+	@Override
+	String visitPropertyDefinition(@NotNull @NotNull SpaghettiModuleParser.PropertyDefinitionContext ctx)
+	{
+		def propertyName = HaxeUtils.capitalize(ctx.property.name.text)
+		def propertyType = ctx.property.type
+		def resolvedPropertyType = resolveHaxeType(propertyType)
+
+		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, [])
+		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, [ ctx.property ])
+		return result
+	}
+
+	private String generateMethod(Token doc,
+								  String resolvedReturnType,
+								  String name,
+								  Iterable<SpaghettiModuleParser.TypedNameContext> params) {
+		return ModuleUtils.formatDocumentation(doc, "\t") +
+"""	function ${name}(${generateParameters(params)}):${resolvedReturnType};
 """
 	}
 
-	private String generateParameters(Iterable<SpaghettiModuleParser.MethodParameterDefinitionContext> params) {
+	private String generateParameters(Iterable<SpaghettiModuleParser.TypedNameContext> params) {
 		return params.collect { paramCtx ->
 			def paramName = paramCtx.name.text
-			def paramType = resolveHaxeType(paramCtx.type, paramCtx.arrayDimensions)
+			def paramType = resolveHaxeType(paramCtx.type)
 			return "${paramName}:${paramType}"
 		}.join(", ")
 	}
 
-	protected String resolveHaxeType(SpaghettiModuleParser.FqNameContext typeNameContext, Iterable<Token> arrayDimensions)
+	protected String resolveHaxeType(SpaghettiModuleParser.ValueTypeContext valueTypeContext)
 	{
-		def localTypeName = FQName.fromContext(typeNameContext)
+		def localTypeName = FQName.fromContext(valueTypeContext.name)
 		def fqTypeName = config.resolveTypeName(localTypeName, module.name)
 		def haxeTypeName = HAXE_TYPE_NAME_CONVERSION.get(fqTypeName) ?: fqTypeName.fullyQualifiedName
 		String haxeType = haxeTypeName
-		arrayDimensions.each { haxeType = "Array<${haxeType}>" }
+		valueTypeContext.arrayDimensions.each { haxeType = "Array<${haxeType}>" }
 		return haxeType
 	}
 
