@@ -37,6 +37,18 @@ task generateGrammar(type: JavaExec) {
 	classpath = buildscript.configurations.classpath
 }
 
+idea.module {
+	sourceDirs += generatedGrammar
+	excludeDirs -= project.buildDir
+	if (project.buildDir.exists()) {
+		project.buildDir.eachDir() {
+			if (it != generatedGrammar) {
+				excludeDirs += it
+			}
+		}
+	}
+}
+
 sourceSets {
     main {
         java {
