@@ -36,7 +36,7 @@ fqName	: qualifiedName = QualifiedName
 		| name = Name
 	;
 
-fragment NAME		: [a-zA-Z][a-zA-Z0-9]*;
+fragment NAME		: [_a-zA-Z][_a-zA-Z0-9]*;
 
 QualifiedName		: (NAME '.')+ NAME;
 Name				: NAME;
