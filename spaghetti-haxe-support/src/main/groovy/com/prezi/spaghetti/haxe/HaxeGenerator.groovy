@@ -97,11 +97,8 @@ class HaxeGenerator extends Generator {
 	private static void generateEnumClasses(ModuleDefinition module, File outputDirectory)
 	{
 		new HaxeEnumIteratorVisitor(module, outputDirectory, {
-			new HaxeEnumTypedefGeneratorVisitor()
+			new HaxeEnumGeneratorVisitor()
 		}).processModule()
-		new HaxeEnumIteratorVisitor(module, outputDirectory, {
-			new HaxeEnumValuesGeneratorVisitor()
-		}, { ctx -> ctx.name.text + "s" }).processModule()
 	}
 
 	/**
