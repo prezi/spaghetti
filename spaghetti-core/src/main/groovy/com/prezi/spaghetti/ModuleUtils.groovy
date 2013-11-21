@@ -16,6 +16,6 @@ final class ModuleUtils {
 		lines.each { line ->
 			result += prefix + line.replaceFirst(/^\s+ \*/, " *") + "\n"
 		}
-		return result
+		return "\n" + result
 	}
 }

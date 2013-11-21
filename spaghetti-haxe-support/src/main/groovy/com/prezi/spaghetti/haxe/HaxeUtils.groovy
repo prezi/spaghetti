@@ -21,7 +21,6 @@ final class HaxeUtils {
 		if (baseName.hasNamespace())
 		{
 			file << "package ${baseName.namespace};\n"
-			file << "\n"
 		}
 		file << contents
 		return file
