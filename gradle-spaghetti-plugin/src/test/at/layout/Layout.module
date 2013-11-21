@@ -3,15 +3,15 @@
  */
 module prezi.graphics.text.Layout {
 
-	type AbstractText {
         void insert(int offset, String text)
+    interface AbstractText {
         void delete(int offset, int end)
 	}
 
     /**
      * Describes a block of text.
      */
-    type Text extends AbstractText {
+    interface Text extends AbstractText {
         /**
          * Inserts the given String at <code>offset</code>.
          */

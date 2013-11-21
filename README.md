@@ -40,7 +40,7 @@ module prezi.graphics.text.Layout {
     /**
      * Describes a block of text.
      */
-    type Text {
+    interface Text {
         /**
          * Inserts the given String at <code>offset</code>.
          */

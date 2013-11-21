@@ -2,7 +2,7 @@
  * Text renderer module.
  */
 module prezi.graphics.text.render.TextRenderer {
-    type Renderer {
+    interface Renderer {
         String render(prezi.graphics.text.Text text)
     }
 

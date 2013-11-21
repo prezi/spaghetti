@@ -13,7 +13,7 @@ moduleElement	: typeDefinition
 
 typeDefinition :
 	(documentation = Doc)?
-	'type' (name = Name) ('extends' (superType = fqName))? '{'
+	'interface' (name = Name) ('extends' (superType = fqName))? '{'
 		(methods += methodDefinition)*
 	'}'
 	;
