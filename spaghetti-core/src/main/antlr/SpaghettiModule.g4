@@ -2,7 +2,7 @@ grammar SpaghettiModule;
 
 moduleDefinition :
 	(documentation = Doc)?
-	'module' (name = fqName) '{'
+	'module' (name = qualifiedName) '{'
 		moduleElement*
 	'}'
 	;
@@ -14,7 +14,7 @@ moduleElement	: typeDefinition
 
 typeDefinition :
 	(documentation = Doc)?
-	'interface' (name = Name) ('extends' (superType = fqName))? '{'
+	'interface' (name = Name) ('extends' (superType = qualifiedName))? '{'
 		typeElement*
 	'}'
 	;
@@ -51,17 +51,13 @@ propertyDefinition :
 typedName : (type = valueType) (name = Name)
 	;
 
-valueType : (name = fqName) (arrayDimensions += ArrayQualifier)*
+valueType : (name = qualifiedName) (arrayDimensions += ArrayQualifier)*
 	;
 
-fqName	: qualifiedName = QualifiedName
-		| name = Name
+qualifiedName : ( parts += Name ) ( '.' parts += Name )*
 	;
 
-fragment NAME		: [_a-zA-Z][_a-zA-Z0-9]*;
-
-QualifiedName		: (NAME '.')+ NAME;
-Name				: NAME;
+Name				: [_a-zA-Z][_a-zA-Z0-9]*;
 Doc					: '/**' .*? '*/' '\r'* '\n'?;
 ArrayQualifier		: '[' ']';
 
