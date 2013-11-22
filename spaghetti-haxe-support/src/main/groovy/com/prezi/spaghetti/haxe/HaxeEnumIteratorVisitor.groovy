@@ -23,7 +23,7 @@ class HaxeEnumIteratorVisitor extends AbstractModuleVisitor<Void> {
 	@Override
 	Void visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
-		def contents = createVisitor(ctx).visitEnumDefinition(ctx)
+		def contents = ctx.accept(createVisitor(ctx))
 		HaxeUtils.createHaxeSourceFile(ctx.name.text, module.name, outputDirectory, contents)
 		return null
 	}

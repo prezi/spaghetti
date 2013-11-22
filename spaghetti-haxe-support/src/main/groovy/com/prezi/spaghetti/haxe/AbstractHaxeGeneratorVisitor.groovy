@@ -33,7 +33,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	{
 		def returnType = ctx.returnType().accept(this)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
-			ctx.parameters != null ? visitTypeNamePairs(ctx.parameters) : ""
+			ctx.parameters != null ? ctx.parameters.accept(this) : ""
 		})
 	}
 
@@ -42,10 +42,10 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	{
 		def propertyName = HaxeUtils.capitalize(ctx.property.name.text)
 		def propertyType = ctx.property.type
-		def resolvedPropertyType = visitValueType(propertyType)
+		def resolvedPropertyType = propertyType.accept(this)
 
 		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, { "" })
-		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, { visitTypeNamePair(ctx.property) })
+		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, { ctx.property.accept(this) })
 		return result
 	}
 
@@ -62,14 +62,14 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	String visitTypeNamePairs(@NotNull @NotNull ModuleParser.TypeNamePairsContext ctx)
 	{
 		return ctx.elements.collect { elementCtx ->
-			visitTypeNamePair(elementCtx)
+			elementCtx.accept(this)
 		}.join(", ")
 	}
 
 	@Override
 	String visitTypeNamePair(@NotNull @NotNull ModuleParser.TypeNamePairContext ctx)
 	{
-		return "${ctx.name.text}:${visitValueType(ctx.type)}"
+		return "${ctx.name.text}:${ ctx.type.accept(this) }"
 	}
 
 	@Override
@@ -83,7 +83,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	{
 		def primitiveType = ctx.primitiveType()
 		def moduleType = ctx.moduleType()
-		def typeInsideArray = primitiveType ? visitPrimitiveType(primitiveType) : visitModuleType(moduleType)
+		def typeInsideArray = primitiveType ? primitiveType.accept(this) : moduleType.accept(this)
 		String type = typeInsideArray
 		ctx.ArrayQualifier().each { type = "Array<${type}>" }
 		return type
