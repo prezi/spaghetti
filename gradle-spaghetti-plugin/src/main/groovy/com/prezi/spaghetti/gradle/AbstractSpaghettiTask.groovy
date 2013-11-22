@@ -3,7 +3,10 @@ package com.prezi.spaghetti.gradle
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
-import com.prezi.spaghetti.ModuleParser
+import com.prezi.spaghetti.grammar.ModuleLexer
+import com.prezi.spaghetti.grammar.ModuleParser
+import org.antlr.v4.runtime.ANTLRInputStream
+import org.antlr.v4.runtime.CommonTokenStream
 import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.InputFiles
@@ -42,7 +45,7 @@ class AbstractSpaghettiTask extends DefaultTask {
 			dependentDefinitionContexts = []
 		}
 		def localDefinitionContexts = localDefinitions.collect { String definition ->
-			def moduleDefCtx = ModuleParser.parse(definition)
+			def moduleDefCtx = ModuleConfigurationParser.parse(definition)
 			return moduleDefCtx
 		}
 		def config = ModuleConfigurationParser.parse(dependentDefinitionContexts, localDefinitionContexts)

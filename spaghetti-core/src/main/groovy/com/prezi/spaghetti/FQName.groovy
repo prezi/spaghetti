@@ -1,6 +1,6 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser
+import com.prezi.spaghetti.grammar.ModuleParser
 import groovy.transform.EqualsAndHashCode
 /**
  * Fully qualified name.
@@ -32,7 +32,7 @@ final public class FQName {
 		return new FQName(_namespace, _name)
 	}
 
-	public static FQName fromContext(SpaghettiModuleParser.QualifiedNameContext context) {
+	public static FQName fromContext(ModuleParser.QualifiedNameContext context) {
 		return fromString(context.parts.collect() { it.text }.join("."))
 	}
 

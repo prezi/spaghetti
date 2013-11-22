@@ -5,7 +5,7 @@ import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser
+import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
 /**
@@ -30,7 +30,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
+	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = visitValueType(ctx.returnType)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
@@ -39,7 +39,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitPropertyDefinition(@NotNull @NotNull SpaghettiModuleParser.PropertyDefinitionContext ctx)
+	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
 		def propertyName = HaxeUtils.capitalize(ctx.property.name.text)
 		def propertyType = ctx.property.type
@@ -60,7 +60,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitTypedNameList(@NotNull @NotNull SpaghettiModuleParser.TypedNameListContext ctx)
+	String visitTypedNameList(@NotNull @NotNull ModuleParser.TypedNameListContext ctx)
 	{
 		return ctx.elements.collect { elementCtx ->
 			visitTypedName(elementCtx)
@@ -68,13 +68,13 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitTypedName(@NotNull @NotNull SpaghettiModuleParser.TypedNameContext ctx)
+	String visitTypedName(@NotNull @NotNull ModuleParser.TypedNameContext ctx)
 	{
 		return "${ctx.name.text}:${visitValueType(ctx.type)}"
 	}
 
 	@Override
-	String visitValueType(@NotNull @NotNull SpaghettiModuleParser.ValueTypeContext ctx)
+	String visitValueType(@NotNull @NotNull ModuleParser.ValueTypeContext ctx)
 	{
 		def localTypeName = FQName.fromContext(ctx.name)
 		def fqTypeName = config.resolveTypeName(localTypeName, module.name)

@@ -1,6 +1,6 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser.ModuleDefinitionContext
+import com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext
 
 /**
  * Created by lptr on 15/11/13.

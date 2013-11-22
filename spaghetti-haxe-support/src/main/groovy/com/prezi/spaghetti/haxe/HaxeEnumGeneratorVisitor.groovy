@@ -1,16 +1,16 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.grammar.SpaghettiModuleBaseVisitor
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser
+import com.prezi.spaghetti.grammar.ModuleBaseVisitor
+import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeEnumGeneratorVisitor extends SpaghettiModuleBaseVisitor<String> {
+class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 
 	@Override
-	String visitEnumDefinition(@NotNull @NotNull SpaghettiModuleParser.EnumDefinitionContext ctx)
+	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		def enumName = ctx.name.text
 		def result = ModuleUtils.formatDocumentation(ctx.documentation) +

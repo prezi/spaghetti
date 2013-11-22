@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
-import com.prezi.spaghetti.ModuleParser
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser
+import com.prezi.spaghetti.ModuleConfigurationParser
+import com.prezi.spaghetti.grammar.ModuleParser
 import org.gradle.api.artifacts.Configuration
 /**
  * Created by lptr on 17/11/13.
@@ -19,9 +19,9 @@ class ModuleDefinitionLookup {
 		return bundles - null
 	}
 
-	public static List<SpaghettiModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration) {
+	public static List<ModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration) {
 		return getAllBundles(configuration).collect { ModuleBundle module ->
-			return ModuleParser.parse(module.definition)
+			return ModuleConfigurationParser.parse(module.definition)
 		}
 	}
 }

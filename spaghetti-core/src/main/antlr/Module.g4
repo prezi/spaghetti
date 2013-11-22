@@ -1,4 +1,4 @@
-grammar SpaghettiModule;
+grammar Module;
 
 moduleDefinition :
 	(documentation = Doc)?

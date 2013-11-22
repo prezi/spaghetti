@@ -22,7 +22,7 @@ dependencies {
 
 def generatedGrammar = file("${buildDir}/antlr-generated")
 task generateGrammar(type: JavaExec) {
-	def grammarFile = file("src/main/antlr/SpaghettiModule.g4")
+	def grammarFile = file("src/main/antlr/Module.g4")
 	inputs.file grammarFile
 	outputs.dir generatedGrammar
 	main = "org.antlr.v4.Tool"

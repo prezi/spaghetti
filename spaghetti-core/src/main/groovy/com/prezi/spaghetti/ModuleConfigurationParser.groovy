@@ -1,8 +1,11 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.grammar.SpaghettiModuleBaseVisitor
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser.ModuleDefinitionContext
+import com.prezi.spaghetti.grammar.ModuleBaseVisitor
+import com.prezi.spaghetti.grammar.ModuleLexer
+import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext
+import org.antlr.v4.runtime.ANTLRInputStream
+import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.misc.NotNull
 
 /**
@@ -27,9 +30,18 @@ class ModuleConfigurationParser {
 		typeCollector.visit(context)
 		return moduleDef
 	}
+
+	public static ModuleDefinitionContext parse(String descriptor) {
+		def input = new ANTLRInputStream(descriptor)
+		def lexer = new ModuleLexer(input)
+		def tokens = new CommonTokenStream(lexer)
+		def parser = new ModuleParser(tokens)
+		def tree = parser.moduleDefinition()
+		return tree
+	}
 }
 
-class TypeCollectorVisitor extends SpaghettiModuleBaseVisitor<Void> {
+class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
 	final Set<FQName> typeNames
 	final ModuleDefinition moduleDefinition
 
@@ -39,14 +51,14 @@ class TypeCollectorVisitor extends SpaghettiModuleBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitTypeDefinition(@NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
+	public Void visitTypeDefinition(@NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
 		registerTypeName(ctx.name.text)
 		return null
 	}
 
 	@Override
-	Void visitEnumDefinition(@NotNull SpaghettiModuleParser.EnumDefinitionContext ctx)
+	Void visitEnumDefinition(@NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		registerTypeName(ctx.name.text)
 		return null

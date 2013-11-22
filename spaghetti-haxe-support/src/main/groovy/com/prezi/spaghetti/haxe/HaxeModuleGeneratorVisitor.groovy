@@ -3,7 +3,7 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.grammar.SpaghettiModuleParser
+import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
@@ -19,7 +19,7 @@ class HaxeModuleGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	}
 
 	@Override
-	String visitModuleDefinition(@NotNull @NotNull SpaghettiModuleParser.ModuleDefinitionContext ctx)
+	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
 		return ModuleUtils.formatDocumentation(ctx.documentation) +
 """${defineType(module.name.localName)}
@@ -29,7 +29,7 @@ ${super.visitModuleDefinition(ctx)}
 	}
 
 	@Override
-	String visitTypeDefinition(@NotNull @NotNull SpaghettiModuleParser.TypeDefinitionContext ctx)
+	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
 		// Do not generate code for types
 		return ""
