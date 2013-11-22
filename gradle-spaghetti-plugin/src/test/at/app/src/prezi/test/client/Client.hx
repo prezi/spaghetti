@@ -13,7 +13,8 @@ class Client {
 		var renderer = textRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
 		trace(renderer.render(text));
 
-		text.registerCallback(function (message:String) {
+		var testStuff = layout.createTestStuff();
+		testStuff.registerCallback(function (message:String) {
 			trace("Received callback message: " + message);
 		});
 	}

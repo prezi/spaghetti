@@ -11,6 +11,18 @@ class LayoutImpl implements Layout {
 	public function createCharacterStyle(type:CharacterStyleType, value:Dynamic):CharacterStyle {
 		return new CharacterStyleImpl(type, value);
 	}
+
+	public function createTestStuff():TestStuff
+	{
+		return new TestStuffImpl();
+	}
+}
+
+class TestStuffImpl implements TestStuff {
+	public function new() {}
+	public function registerCallback(callback:String->Void) {
+		callback("Calling callback");
+	}
 }
 
 class TextImpl implements Text
@@ -38,10 +50,6 @@ class TextImpl implements Text
 	public function delete(offset:Int, end:Int)
 	{
 		text = text.substr(0, offset) + text.substr(end);
-	}
-
-	public function registerCallback(callback:String->Void) {
-		callback("Calling callback");
 	}
 }
 

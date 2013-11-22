@@ -51,7 +51,6 @@ module prezi.graphics.text.Layout {
     interface AbstractText {
         void insert(int offset, String text, CharacterStyle[] withStyles)
         void delete(int offset, int end)
-        void registerCallback(String->void callback)
     }
 
     /**
@@ -64,6 +63,14 @@ module prezi.graphics.text.Layout {
         String getRawText()
     }
 
+    /**
+     * Stuff here only to test code generation features.
+     */
+    interface TestStuff {
+        void registerCallback(String->void callback)
+    }
+
     Text createText()
     CharacterStyle createCharacterStyle(CharacterStyleType type, any value)
+    TestStuff createTestStuff()
 }
