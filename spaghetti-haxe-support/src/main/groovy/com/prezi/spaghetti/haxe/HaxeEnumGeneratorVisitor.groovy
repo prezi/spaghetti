@@ -26,9 +26,9 @@ class HaxeEnumGeneratorVisitor extends SpaghettiModuleBaseVisitor<String> {
 
 		result +=
 """
-	static var values = [ ${ctx.values.collect { valueCtx -> valueCtx.name.text }.join(", ")} ];
-	static var names =  [ ${ctx.values.collect { valueCtx -> "\"${valueCtx.name.text}\"" }.join(", ")} ];
-	static var namesToValues = { ${ctx.values.collect { valueCtx -> "\"${valueCtx.name.text}\": ${valueCtx.name.text}" }.join(", ")} };
+	static var values = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
+	static var names =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
+	static var namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
