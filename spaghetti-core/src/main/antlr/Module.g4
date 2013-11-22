@@ -32,7 +32,7 @@ typeElement	: methodDefinition
 	;
 
 methodDefinition : (documentation = Doc)?
-	returnType (name = Name) '(' ( parameters = typeNamePairs )? ')'
+	returnTypeChain (name = Name) '(' ( parameters = typeNamePairs )? ')'
 	;
 
 propertyDefinition : (documentation = Doc)?
@@ -42,15 +42,26 @@ propertyDefinition : (documentation = Doc)?
 typeNamePairs : ( elements += typeNamePair ) ( ',' elements += typeNamePair )*
 	;
 
-typeNamePair : (type = valueType) (name = Name)
+typeNamePair : (type = typeChain) (name = Name)
 	;
 
-returnType	: 'void'		# voidReturnType
-			| valueType		# normalReturnType
+returnTypeChain	: voidType		# voidReturnTypeChain
+				| typeChain		# normalReturnTypeChain
+	;
+
+typeChain	: valueType							# unchainedValueType
+			| returnType ( '->' returnType )+	# normalTypeChain
+	;
+
+returnType	: voidType
+			| valueType
 	;
 
 valueType	: primitiveType ArrayQualifier*
 			| moduleType ArrayQualifier*
+	;
+
+voidType : 'void'
 	;
 
 primitiveType	: 'bool'

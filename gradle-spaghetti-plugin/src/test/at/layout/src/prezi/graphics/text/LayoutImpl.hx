@@ -39,6 +39,10 @@ class TextImpl implements Text
 	{
 		text = text.substr(0, offset) + text.substr(end);
 	}
+
+	public function registerCallback(callback:String->Void) {
+		callback("Calling callback");
+	}
 }
 
 class CharacterStyleImpl implements CharacterStyle {

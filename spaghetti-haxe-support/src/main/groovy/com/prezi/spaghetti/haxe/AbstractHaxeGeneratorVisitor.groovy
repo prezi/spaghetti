@@ -31,7 +31,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
-		def returnType = ctx.returnType().accept(this)
+		def returnType = ctx.returnTypeChain().accept(this)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
 			ctx.parameters != null ? ctx.parameters.accept(this) : ""
 		})
@@ -73,9 +73,9 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitVoidReturnType(@NotNull @NotNull ModuleParser.VoidReturnTypeContext ctx)
+	String visitNormalTypeChain(@NotNull @NotNull ModuleParser.NormalTypeChainContext ctx)
 	{
-		return "Void"
+		return ctx.returnType().collect { it.accept(this) }.join("->")
 	}
 
 	@Override
@@ -93,6 +93,12 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		def fqTypeName = config.resolveTypeName(localTypeName, module.name)
 		def haxeType = fqTypeName.fullyQualifiedName
 		return haxeType
+	}
+
+	@Override
+	String visitVoidType(@NotNull @NotNull ModuleParser.VoidTypeContext ctx)
+	{
+		return "Void"
 	}
 
 	@Override
