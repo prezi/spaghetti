@@ -32,8 +32,10 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull SpaghettiModuleParser.MethodDefinitionContext ctx)
 	{
-		def returnType = resolveHaxeType(ctx.returnType)
-		return generateMethod(ctx.documentation, returnType, ctx.name.text, ctx.params)
+		def returnType = visitValueType(ctx.returnType)
+		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
+			ctx.parameters != null ? visitTypedNameList(ctx.parameters) : ""
+		})
 	}
 
 	@Override
@@ -41,40 +43,46 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	{
 		def propertyName = HaxeUtils.capitalize(ctx.property.name.text)
 		def propertyType = ctx.property.type
-		def resolvedPropertyType = resolveHaxeType(propertyType)
+		def resolvedPropertyType = visitValueType(propertyType)
 
-		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, [])
-		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, [ ctx.property ])
+		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, { "" })
+		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, { visitTypedName(ctx.property) })
 		return result
 	}
 
-	private String generateMethod(Token doc,
+	private static String generateMethod(Token doc,
 								  String resolvedReturnType,
 								  String name,
-								  Iterable<SpaghettiModuleParser.TypedNameContext> params) {
+								  Closure<String> generateParams) {
 		return ModuleUtils.formatDocumentation(doc, "\t") +
-"""	function ${name}(${generateParameters(params)}):${resolvedReturnType};
+"""	function ${name}(${generateParams()}):${resolvedReturnType};
 """
 	}
 
-	private String generateParameters(Iterable<SpaghettiModuleParser.TypedNameContext> params) {
-		return params.collect { paramCtx ->
-			def paramName = paramCtx.name.text
-			def paramType = resolveHaxeType(paramCtx.type)
-			return "${paramName}:${paramType}"
+	@Override
+	String visitTypedNameList(@NotNull @NotNull SpaghettiModuleParser.TypedNameListContext ctx)
+	{
+		return ctx.elements.collect { elementCtx ->
+			visitTypedName(elementCtx)
 		}.join(", ")
 	}
 
-	protected String resolveHaxeType(SpaghettiModuleParser.ValueTypeContext valueTypeContext)
+	@Override
+	String visitTypedName(@NotNull @NotNull SpaghettiModuleParser.TypedNameContext ctx)
 	{
-		def localTypeName = FQName.fromContext(valueTypeContext.name)
+		return "${ctx.name.text}:${visitValueType(ctx.type)}"
+	}
+
+	@Override
+	String visitValueType(@NotNull @NotNull SpaghettiModuleParser.ValueTypeContext ctx)
+	{
+		def localTypeName = FQName.fromContext(ctx.name)
 		def fqTypeName = config.resolveTypeName(localTypeName, module.name)
 		def haxeTypeName = HAXE_TYPE_NAME_CONVERSION.get(fqTypeName) ?: fqTypeName.fullyQualifiedName
 		String haxeType = haxeTypeName
-		valueTypeContext.arrayDimensions.each { haxeType = "Array<${haxeType}>" }
+		ctx.arrayDimensions.each { haxeType = "Array<${haxeType}>" }
 		return haxeType
 	}
-
 
 	@Override
 	protected String aggregateResult(String aggregate, String nextResult) {

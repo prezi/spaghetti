@@ -35,17 +35,15 @@ typeElement	: methodDefinition
 
 methodDefinition :
 	(documentation = Doc)?
-	(returnType = valueType) (name = Name) '('
-		(
-			( params += typedName )
-			( ',' params += typedName )*
-		)?
-	')'
+	(returnType = valueType) (name = Name) '(' ( parameters = typedNameList )? ')'
 	;
 
 propertyDefinition :
 	(documentation = Doc)?
     (property = typedName)
+	;
+
+typedNameList : ( elements += typedName ) ( ',' elements += typedName )*
 	;
 
 typedName : (type = valueType) (name = Name)
