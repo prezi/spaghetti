@@ -33,7 +33,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	{
 		def returnType = ctx.returnType().accept(this)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
-			ctx.parameters != null ? visitTypedNameList(ctx.parameters) : ""
+			ctx.parameters != null ? visitTypeNamePairs(ctx.parameters) : ""
 		})
 	}
 
@@ -45,7 +45,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 		def resolvedPropertyType = visitValueType(propertyType)
 
 		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, { "" })
-		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, { visitTypedName(ctx.property) })
+		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, { visitTypeNamePair(ctx.property) })
 		return result
 	}
 
@@ -59,15 +59,15 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitTypedNameList(@NotNull @NotNull ModuleParser.TypedNameListContext ctx)
+	String visitTypeNamePairs(@NotNull @NotNull ModuleParser.TypeNamePairsContext ctx)
 	{
 		return ctx.elements.collect { elementCtx ->
-			visitTypedName(elementCtx)
+			visitTypeNamePair(elementCtx)
 		}.join(", ")
 	}
 
 	@Override
-	String visitTypedName(@NotNull @NotNull ModuleParser.TypedNameContext ctx)
+	String visitTypeNamePair(@NotNull @NotNull ModuleParser.TypeNamePairContext ctx)
 	{
 		return "${ctx.name.text}:${visitValueType(ctx.type)}"
 	}

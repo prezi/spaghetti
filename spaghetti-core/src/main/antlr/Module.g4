@@ -32,17 +32,17 @@ typeElement	: methodDefinition
 	;
 
 methodDefinition : (documentation = Doc)?
-	returnType (name = Name) '(' ( parameters = typedNameList )? ')'
+	returnType (name = Name) '(' ( parameters = typeNamePairs )? ')'
 	;
 
 propertyDefinition : (documentation = Doc)?
-	(property = typedName)
+	(property = typeNamePair)
 	;
 
-typedNameList : ( elements += typedName ) ( ',' elements += typedName )*
+typeNamePairs : ( elements += typeNamePair ) ( ',' elements += typeNamePair )*
 	;
 
-typedName : (type = valueType) (name = Name)
+typeNamePair : (type = valueType) (name = Name)
 	;
 
 returnType	: 'void'		# voidReturnType
