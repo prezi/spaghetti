@@ -81,10 +81,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitValueType(@NotNull @NotNull ModuleParser.ValueTypeContext ctx)
 	{
-		def primitiveType = ctx.primitiveType()
-		def moduleType = ctx.moduleType()
-		def typeInsideArray = primitiveType ? primitiveType.accept(this) : moduleType.accept(this)
-		String type = typeInsideArray
+		String type = ctx.getChild(0).accept(this)
 		ctx.ArrayQualifier().each { type = "Array<${type}>" }
 		return type
 	}
