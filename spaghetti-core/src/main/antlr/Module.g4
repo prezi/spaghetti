@@ -1,7 +1,6 @@
 grammar Module;
 
-moduleDefinition :
-	(documentation = Doc)?
+moduleDefinition : (documentation = Doc)?
 	'module' (name = qualifiedName) '{'
 		moduleElement*
 	'}'
@@ -12,34 +11,31 @@ moduleElement	: typeDefinition
 				| typeElement
 	;
 
-typeDefinition :
-	(documentation = Doc)?
+typeDefinition : (documentation = Doc)?
 	'interface' (name = Name) ('extends' (superType = qualifiedName))? '{'
 		typeElement*
 	'}'
 	;
 
-enumDefinition :
-	(documentation = Doc)?
+enumDefinition : (documentation = Doc)?
 	'enum' (name = Name) '{'
 		(values += enumValue)*
 	'}'
 	;
 
-enumValue : (documentation = Doc)? (name = Name)
+enumValue : (documentation = Doc)?
+ 	(name = Name)
 	;
 
 typeElement	: methodDefinition
 			| propertyDefinition
 	;
 
-methodDefinition :
-	(documentation = Doc)?
+methodDefinition : (documentation = Doc)?
 	(returnType = valueType) (name = Name) '(' ( parameters = typedNameList )? ')'
 	;
 
-propertyDefinition :
-	(documentation = Doc)?
+propertyDefinition : (documentation = Doc)?
     (property = typedName)
 	;
 
