@@ -32,11 +32,11 @@ typeElement	: methodDefinition
 	;
 
 methodDefinition : (documentation = Doc)?
-	(returnType = valueType) (name = Name) '(' ( parameters = typedNameList )? ')'
+	returnType (name = Name) '(' ( parameters = typedNameList )? ')'
 	;
 
 propertyDefinition : (documentation = Doc)?
-    (property = typedName)
+	(property = typedName)
 	;
 
 typedNameList : ( elements += typedName ) ( ',' elements += typedName )*
@@ -45,7 +45,22 @@ typedNameList : ( elements += typedName ) ( ',' elements += typedName )*
 typedName : (type = valueType) (name = Name)
 	;
 
-valueType : (name = qualifiedName) (arrayDimensions += ArrayQualifier)*
+returnType	: 'void'		# voidReturnType
+			| valueType		# normalReturnType
+	;
+
+valueType	: primitiveType ArrayQualifier*
+			| moduleType ArrayQualifier*
+	;
+
+primitiveType	: 'bool'
+				| 'int'
+				| 'float'
+				| 'String'
+				| 'any'
+	;
+
+moduleType : ( name = qualifiedName )
 	;
 
 qualifiedName : ( parts += Name ) ( '.' parts += Name )*

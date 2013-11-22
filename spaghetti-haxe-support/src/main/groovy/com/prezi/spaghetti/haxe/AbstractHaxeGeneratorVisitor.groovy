@@ -12,13 +12,12 @@ import org.antlr.v4.runtime.misc.NotNull
  * Created by lptr on 16/11/13.
  */
 abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String> {
-	static Map<FQName, String> HAXE_TYPE_NAME_CONVERSION = [
-			(ModuleConfiguration.TYPE_VOID): "Void",
-			(ModuleConfiguration.TYPE_BOOL): "Bool",
-			(ModuleConfiguration.TYPE_INT): "Int",
-			(ModuleConfiguration.TYPE_FLOAT): "Float",
-			(ModuleConfiguration.TYPE_STRING): "String",
-			(ModuleConfiguration.TYPE_ANY): "Dynamic"
+	private static final def PRIMITIVE_TYPES = [
+			bool: "Bool",
+			int: "Int",
+			float: "Float",
+			String: "String",
+			any: "Dynamic"
 	]
 
 	protected final ModuleConfiguration config
@@ -32,7 +31,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
-		def returnType = visitValueType(ctx.returnType)
+		def returnType = ctx.returnType().accept(this)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
 			ctx.parameters != null ? visitTypedNameList(ctx.parameters) : ""
 		})
@@ -74,14 +73,35 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
+	String visitVoidReturnType(@NotNull @NotNull ModuleParser.VoidReturnTypeContext ctx)
+	{
+		return "Void"
+	}
+
+	@Override
 	String visitValueType(@NotNull @NotNull ModuleParser.ValueTypeContext ctx)
+	{
+		def primitiveType = ctx.primitiveType()
+		def moduleType = ctx.moduleType()
+		def typeInsideArray = primitiveType ? visitPrimitiveType(primitiveType) : visitModuleType(moduleType)
+		String type = typeInsideArray
+		ctx.ArrayQualifier().each { type = "Array<${type}>" }
+		return type
+	}
+
+	@Override
+	String visitModuleType(@NotNull @NotNull ModuleParser.ModuleTypeContext ctx)
 	{
 		def localTypeName = FQName.fromContext(ctx.name)
 		def fqTypeName = config.resolveTypeName(localTypeName, module.name)
-		def haxeTypeName = HAXE_TYPE_NAME_CONVERSION.get(fqTypeName) ?: fqTypeName.fullyQualifiedName
-		String haxeType = haxeTypeName
-		ctx.arrayDimensions.each { haxeType = "Array<${haxeType}>" }
+		def haxeType = fqTypeName.fullyQualifiedName
 		return haxeType
+	}
+
+	@Override
+	String visitPrimitiveType(@NotNull @NotNull ModuleParser.PrimitiveTypeContext ctx)
+	{
+		return PRIMITIVE_TYPES.get(ctx.text)
 	}
 
 	@Override
