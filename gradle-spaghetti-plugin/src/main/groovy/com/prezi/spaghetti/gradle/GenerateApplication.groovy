@@ -18,7 +18,7 @@ class GenerateApplication extends AbstractGenerateTask {
 		if (namespace == null || namespace.length() == 0) {
 			throw new IllegalArgumentException("Parameter \"namespace\" is not specified")
 		}
-		generator.generateApplication(readConfig(), namespace, outputDirectory)
+		createGenerator(readConfig()).generateApplication(namespace, outputDirectory)
 	}
 
 	void namespace(String namespace) {

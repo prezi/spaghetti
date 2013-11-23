@@ -15,14 +15,12 @@ class BundleApplication extends AbstractBundleTask {
 
 	@TaskAction
 	bundle() {
-		def definitions = ModuleDefinitionLookup.getAllDefinitions(configuration)
-		def config = ModuleConfigurationParser.parse(definitions, [])
-		def generator = project.plugins.getPlugin(SpaghettiPlugin).getGeneratorForPlatform(platform)
-		def bundledJavaScript = generator.processApplicationJavaScript(config, inputFile.text)
+		def config = readConfig()
+		def bundledJavaScript = createGenerator(config).processApplicationJavaScript(inputFile.text)
 
 		outputFile.delete()
 		outputFile << "require(["
-		outputFile << config.modules.values().collect { module -> "\"${module.name.localName}\"" }.join(",")
+		outputFile << config.modules.values().collect { "\"${it.name.localName}\"" }.join(",")
 		outputFile << "], function() {\n"
 		outputFile << "var __modules = arguments;\n"
 		outputFile << bundledJavaScript

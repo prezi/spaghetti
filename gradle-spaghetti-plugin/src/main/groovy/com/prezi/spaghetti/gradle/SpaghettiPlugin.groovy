@@ -1,6 +1,8 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.Generator
+import com.prezi.spaghetti.GeneratorFactory
+import com.prezi.spaghetti.ModuleConfiguration
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -10,15 +12,15 @@ import org.gradle.api.Project
 class SpaghettiPlugin implements Plugin<Project> {
 	static final String CONFIGURATION_NAME = "modules"
 
-	private final Map<String, Generator> generators = [:];
+	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
 	@Override
 	void apply(Project project)
 	{
-		for (generator in ServiceLoader.load(Generator)) {
-			generators.put generator.platform, generator
+		for (generator in ServiceLoader.load(GeneratorFactory)) {
+			generatorFactories.put generator.platform, generator
 		}
-		project.logger.info "Loaded generators for ${generators.keySet()}"
+		project.logger.info "Loaded generators for ${generatorFactories.keySet()}"
 
 		def defaultConfiguration = project.configurations.findByName(CONFIGURATION_NAME)
 		if (defaultConfiguration == null) {
@@ -31,13 +33,13 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 	}
 
-	Generator getGeneratorForPlatform(String platform)
+	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config)
 	{
-		def generator = generators.get(platform)
-		if (generator == null) {
+		def generatorFactory = generatorFactories.get(platform)
+		if (generatorFactory == null) {
 			throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
-					+ generators.keySet().sort().join(", "))
+					+ generatorFactories.keySet().sort().join(", "))
 		}
-		return generator
+		return generatorFactory.createGenerator(config)
 	}
 }

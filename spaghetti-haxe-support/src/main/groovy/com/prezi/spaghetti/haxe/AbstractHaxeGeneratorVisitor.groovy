@@ -20,12 +20,9 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 			any: "Dynamic"
 	]
 
-	protected final ModuleConfiguration config
-
 	protected AbstractHaxeGeneratorVisitor(ModuleConfiguration config, ModuleDefinition module)
 	{
-		super(module)
-		this.config = config
+		super(config, module)
 	}
 
 	@Override

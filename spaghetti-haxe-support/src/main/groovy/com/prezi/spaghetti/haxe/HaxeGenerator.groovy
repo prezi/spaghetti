@@ -4,36 +4,39 @@ import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+
 /**
  * Created by lptr on 12/11/13.
  */
-class HaxeGenerator extends Generator {
+class HaxeGenerator implements Generator {
 
-	HaxeGenerator() {
-		super("haxe")
+	private final ModuleConfiguration config
+
+	HaxeGenerator(ModuleConfiguration config) {
+		this.config = config
 	}
 
 	@Override
-	void generateModuleHeaders(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
 	{
-		generateModuleInterface(module, outputDirectory, config)
+		generateModuleInterface(module, outputDirectory)
 		generateModuleInitializer(module, outputDirectory)
-		generateInterfacesForModuleInterfaces(config, module, outputDirectory)
+		generateInterfacesForModuleInterfaces(module, outputDirectory)
 		generateEnumClasses(module, outputDirectory)
 
 		def modulesClassName = module.name.resolveLocalName(FQName.fromString("Modules"))
-		generateStuffForDependentModules(config, modulesClassName, outputDirectory)
+		generateStuffForDependentModules(modulesClassName, outputDirectory)
 	}
 
 	@Override
-	void generateApplication(ModuleConfiguration config, String namespace, File outputDirectory)
+	void generateApplication(String namespace, File outputDirectory)
 	{
 		def modulesClassName = FQName.fromString("${namespace}.Modules")
-		generateStuffForDependentModules(config, modulesClassName, outputDirectory)
+		generateStuffForDependentModules(modulesClassName, outputDirectory)
 	}
 
 	@Override
-	String processModuleJavaScript(ModuleConfiguration config, ModuleDefinition module, String javaScript)
+	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
 		return \
 """var __module;
@@ -42,18 +45,24 @@ return __module;
 """
 	}
 
-	private static void generateStuffForDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory) {
+	@Override
+	String processApplicationJavaScript(String javaScript)
+	{
+		return javaScript
+	}
+
+	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
 		config.dependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(config, dependentModule, outputDirectory)
+			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
 			generateEnumClasses(dependentModule, outputDirectory)
 		}
-		generateClassToAccessDependentModules(config, modulesClassName, outputDirectory)
+		generateClassToAccessDependentModules(modulesClassName, outputDirectory)
 	}
 
 	/**
 	 * Generates main interface for module.
 	 */
-	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory, ModuleConfiguration config)
+	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
 		def contents = new HaxeModuleGeneratorVisitor(
 				config, module, { moduleName -> "interface ${moduleName} {" }
@@ -81,9 +90,9 @@ return __module;
 	/**
 	 * Generates interfaces the module should implement.
 	 */
-	private static void generateInterfacesForModuleInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	private void generateInterfacesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
-		new HaxeTypeIteratorVisitor(module, outputDirectory, {
+		new HaxeTypeIteratorVisitor(config, module, outputDirectory, {
 			new HaxeInterfaceGeneratorVisitor(config, module, { String typeName, FQName superType ->
 				def declaration = "interface ${typeName}"
 				if (superType != null)
@@ -99,9 +108,9 @@ return __module;
 	/**
 	 * Generates typedefs (typedef <Enum> = Int;) and value classes for enums.
 	 */
-	private static void generateEnumClasses(ModuleDefinition module, File outputDirectory)
+	private void generateEnumClasses(ModuleDefinition module, File outputDirectory)
 	{
-		new HaxeEnumIteratorVisitor(module, outputDirectory, {
+		new HaxeEnumIteratorVisitor(config, module, outputDirectory, {
 			new HaxeEnumGeneratorVisitor()
 		}).processModule()
 	}
@@ -109,7 +118,7 @@ return __module;
 	/**
 	 * Generates Modules.hx with methods like <code>get<ModuleName>():<ModuleName> { ... }</code>.
 	 */
-	private static void generateClassToAccessDependentModules(ModuleConfiguration config, FQName modulesClassName, File outputDirectory)
+	private void generateClassToAccessDependentModules(FQName modulesClassName, File outputDirectory)
 	{
 		def dependentModules = config.dependentModules
 
@@ -140,14 +149,14 @@ return __module;
 		}
 	}
 
-	private static void generateStructuralTypesForModuleInterfaces(ModuleConfiguration config, ModuleDefinition module, File outputDirectory)
+	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new HaxeModuleGeneratorVisitor(
 				config, module, { moduleName -> "typedef ${moduleName} = {" }
 		).processModule()
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, moduleFileContents)
 
-		new HaxeTypeIteratorVisitor(module, outputDirectory, {
+		new HaxeTypeIteratorVisitor(config, module, outputDirectory, {
 			new HaxeInterfaceGeneratorVisitor(config, module, { String typeName, FQName superType ->
 				def declaration = "typedef ${typeName} = {"
 				if (superType != null)
@@ -159,3 +168,4 @@ return __module;
 		}).processModule()
 	}
 }
+

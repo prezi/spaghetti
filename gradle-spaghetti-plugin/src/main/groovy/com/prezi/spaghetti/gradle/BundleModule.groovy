@@ -21,12 +21,11 @@ class BundleModule extends AbstractBundleTask {
 	bundle() {
 		def config = readConfig(definition.text)
 		def module = config.localModules.first()
-		def generator = project.getPlugins().getPlugin(SpaghettiPlugin).getGeneratorForPlatform(platform)
-		def processedJavaScript = generator.processModuleJavaScript(config, module, inputFile.text)
+		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputFile.text)
 
 		def bundledJavaScript = ""
 		bundledJavaScript += "define(["
-		bundledJavaScript += config.dependentModules.collect { dependentModule -> "\"${dependentModule.name.localName}\"" }.join(",")
+		bundledJavaScript += config.dependentModules.collect { "\"${it.name.localName}\"" }.join(",")
 		bundledJavaScript += "], function() {\n"
 		bundledJavaScript += "var __modules = arguments;\n"
 		bundledJavaScript += processedJavaScript
