@@ -25,7 +25,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		def typeName = ctx.name.text
 		FQName superType = null
 		if (ctx.superType != null) {
-			superType = module.name.resolveLocalName(FQName.fromContext(ctx.superType))
+			superType = module.name.qualifyLocalName(FQName.fromContext(ctx.superType))
 		}
 
 		return ModuleUtils.formatDocumentation(ctx.documentation) +

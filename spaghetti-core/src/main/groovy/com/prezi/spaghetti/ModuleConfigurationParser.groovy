@@ -1,34 +1,32 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleLexer
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.misc.NotNull
 
 /**
  * Created by lptr on 15/11/13.
  */
 class ModuleConfigurationParser {
 	public static ModuleConfiguration parse(Iterable<ModuleDefinitionContext> contexts, Iterable<ModuleDefinitionContext> localContexts) {
-		def typeNames = new HashSet<FQName>(ModuleConfiguration.BUILT_IN_TYPE_NAMES)
+		def typeNames = new LinkedHashSet<FQName>()
+		def globalScope = new GlobalScope(typeNames)
 		def modules = contexts.collect { context ->
-			return parseModule(context, typeNames)
+			return parseModule(context, globalScope)
 		}
 		def localModules = localContexts.collect { context ->
-			return parseModule(context, typeNames)
+			return parseModule(context, globalScope)
 		}
-		return new ModuleConfiguration(modules + localModules, localModules, typeNames)
+		return new ModuleConfiguration(modules + localModules, localModules, globalScope)
 	}
 
-	private static ModuleDefinition parseModule(ModuleDefinitionContext context, Set<FQName> typeNames)
+	private static ModuleDefinition parseModule(ModuleDefinitionContext context, GlobalScope globalScope)
 	{
-		def moduleDef = new ModuleDefinition(FQName.fromContext(context.name), context)
-		def typeCollector = new TypeCollectorVisitor(moduleDef, typeNames)
-		typeCollector.visit(context)
-		return moduleDef
+		def module = new ModuleDefinition(context, globalScope)
+		globalScope.registerNames(module.typeNames)
+		return module
 	}
 
 	public static ModuleDefinitionContext parse(String descriptor) {
@@ -41,36 +39,29 @@ class ModuleConfigurationParser {
 	}
 }
 
-class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
-	final Set<FQName> typeNames
-	final ModuleDefinition moduleDefinition
+class GlobalScope implements Scope {
 
-	TypeCollectorVisitor(ModuleDefinition moduleDefinition, Set<FQName> typeNames) {
-		this.moduleDefinition = moduleDefinition
-		this.typeNames = typeNames
+	private final Set<FQName> names
+
+	GlobalScope(Set<FQName> names) {
+		this.names = names
 	}
 
 	@Override
-	public Void visitTypeDefinition(@NotNull ModuleParser.TypeDefinitionContext ctx)
+	FQName resolveName(FQName name)
 	{
-		registerTypeName(ctx.name.text)
-		return null
-	}
-
-	@Override
-	Void visitEnumDefinition(@NotNull ModuleParser.EnumDefinitionContext ctx)
-	{
-		registerTypeName(ctx.name.text)
-		return null
-	}
-
-	private void registerTypeName(String localName)
-	{
-		def typeName = moduleDefinition.name.resolveLocalName(FQName.fromString(localName))
-		if (typeNames.contains(typeName))
-		{
-			throw new IllegalStateException("Type already defined: ${typeName}")
+		if (!names.contains(name)) {
+			throw new IllegalStateException("Name not found: ${name}, names registered: ${names}")
 		}
-		typeNames.add(typeName)
+		return name
+	}
+
+	void registerNames(Collection<FQName> names) {
+		names.each {
+			if (this.names.contains(it)) {
+				throw new IllegalStateException("Global name registered multiple times: ${it}")
+			}
+		}
+		this.names.addAll(names)
 	}
 }

@@ -24,7 +24,7 @@ class HaxeGenerator implements Generator {
 		generateInterfacesForModuleInterfaces(module, outputDirectory)
 		generateEnumClasses(module, outputDirectory)
 
-		def modulesClassName = module.name.resolveLocalName(FQName.fromString("Modules"))
+		def modulesClassName = module.name.qualifyLocalName(FQName.fromString("Modules"))
 		generateStuffForDependentModules(modulesClassName, outputDirectory)
 	}
 

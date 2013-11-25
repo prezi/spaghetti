@@ -87,7 +87,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	String visitModuleType(@NotNull @NotNull ModuleParser.ModuleTypeContext ctx)
 	{
 		def localTypeName = FQName.fromContext(ctx.name)
-		def fqTypeName = config.resolveTypeName(localTypeName, module.name)
+		def fqTypeName = module.resolveName(localTypeName)
 		def haxeType = fqTypeName.fullyQualifiedName
 		return haxeType
 	}

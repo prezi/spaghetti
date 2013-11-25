@@ -36,7 +36,7 @@ final public class FQName {
 		return fromString(context.parts.collect() { it.text }.join("."))
 	}
 
-	public FQName resolveLocalName(FQName name) {
+	public FQName qualifyLocalName(FQName name) {
 		if (name.hasNamespace()) {
 			return name
 		} else {
