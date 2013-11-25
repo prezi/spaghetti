@@ -12,7 +12,7 @@ class ModuleDefinitionLookup {
 		def bundles = configuration.files.collect { File file ->
 			try {
 				return ModuleBundle.load(file)
-			} catch (e) {
+			} catch (ignore) {
 				return null
 			}
 		}
