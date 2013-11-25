@@ -6,8 +6,13 @@ evaluationDependsOn(':text-renderer')
 
 apply plugin: "spaghetti"
 
+configurations {
+	requirejs
+}
+
 dependencies {
 	modules project(path: ":text-renderer", configuration: "modules")
+	requirejs "org.webjars:requirejs:2.1.8"
 }
 
 spaghetti {
@@ -35,10 +40,24 @@ task bundleApplication(type: BundleApplication) {
 	inputFile compileHaxe.outputFile
 }
 
+def testWebappDir = file("${buildDir}/webapp")
+
+task unzipRequireJS << {
+	testWebappDir.mkdirs()
+	configurations.requirejs.files.each { zipFile ->
+		zipTree(zipFile).each { file ->
+			if (file.name == "require.js") {
+				def output = new File(testWebappDir, "require.js")
+				output << file.text
+			}
+		}
+	}
+}
+
 task packApplication(type: ExtractModules) {
 	dependsOn bundleApplication
+	dependsOn unzipRequireJS
 
-	def testWebappDir = file("${buildDir}/webapp")
 	outputDirectory testWebappDir
 
 	doLast {
