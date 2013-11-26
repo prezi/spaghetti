@@ -1,5 +1,6 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
 import org.antlr.v4.runtime.Token
 
 /**
@@ -17,5 +18,12 @@ final class ModuleUtils {
 			result += prefix + line.replaceFirst(/^\s+ \*/, " *") + "\n"
 		}
 		return "\n" + result
+	}
+
+	public static Map<String, Annotation> extractAnnotations(AnnotationsContext context) {
+		return context?.annotation()?.collectEntries { annotationCtx ->
+			def annotation = Annotation.fromContext(annotationCtx)
+			return [ annotation.name, annotation ]
+		}?.asImmutable() ?: Collections.emptyMap()
 	}
 }

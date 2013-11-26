@@ -66,7 +66,12 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitTypeNamePair(@NotNull @NotNull ModuleParser.TypeNamePairContext ctx)
 	{
-		return "${ctx.name.text}:${ ctx.type.accept(this) }"
+		def annotations = ModuleUtils.extractAnnotations(ctx.annotations())
+		def result = ctx.name.text + ":"
+		def type = ctx.type.accept(this)
+		boolean nullable = annotations.containsKey("nullable")
+		result += nullable ? "Null<${type}>" : type
+		return result
 	}
 
 	@Override

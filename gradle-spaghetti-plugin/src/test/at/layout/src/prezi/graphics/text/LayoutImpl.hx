@@ -39,7 +39,7 @@ class TextImpl implements Text
 		return text;
 	}
 
-	public function insert(offset:Int, textToInsert:String, withStyles:Array<CharacterStyle>)
+	public function insert(offset:Int, textToInsert:String, withStyles:Null<Array<CharacterStyle>>)
 	{
 		for (style in withStyles) {
 			trace("Got style: " + style.getType().name() + " = " + style.getValue());
