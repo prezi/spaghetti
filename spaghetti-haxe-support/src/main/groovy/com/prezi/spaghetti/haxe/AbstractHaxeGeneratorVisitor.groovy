@@ -75,7 +75,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	}
 
 	@Override
-	String visitNormalTypeChain(@NotNull @NotNull ModuleParser.NormalTypeChainContext ctx)
+	String visitCallbackTypeChain(@NotNull @NotNull ModuleParser.CallbackTypeChainContext ctx)
 	{
 		return ctx.returnType().collect { it.accept(this) }.join("->")
 	}

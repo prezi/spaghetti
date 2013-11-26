@@ -67,8 +67,8 @@ returnTypeChain	: voidType		# voidReturnTypeChain
 				| typeChain		# normalReturnTypeChain
 	;
 
-typeChain	: valueType							# unchainedValueType
-			| returnType ( '->' returnType )+	# normalTypeChain
+typeChain	: valueType							# normalValueTypeChain
+			| returnType ( '->' returnType )+	# callbackTypeChain
 	;
 
 returnType	: voidType
