@@ -8,7 +8,7 @@ moduleDefinition : (documentation = Doc)?
 
 moduleElement	: typeDefinition
 				| enumDefinition
-				| typeElement
+				| methodDefinition
 	;
 
 typeDefinition : (documentation = Doc)? annotations?
