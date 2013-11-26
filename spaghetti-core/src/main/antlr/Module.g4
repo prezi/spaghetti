@@ -45,10 +45,11 @@ annotations : annotation+
 annotation : '@' (name = Name) ( '(' annotationParameters? ')' )?
 	;
 
-annotationParameters : annotationParameter ( ',' annotationParameter )*
+annotationParameters	: ( singleValue = annotationValue )
+						| annotationParameter ( ',' annotationParameter )*
 	;
 
-annotationParameter : ( name = Name )? '=' annotationValue
+annotationParameter : ( name = Name ) '=' annotationValue
 	;
 
 annotationValue : ( stringValue = '"' .*? '"' )	# annotationStringParameter

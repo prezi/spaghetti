@@ -11,36 +11,38 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 @EqualsAndHashCode
 class Annotation {
-	final String name
-	final List<ParameterValue> parameters
+	public static final def DEFAULT_PARAMETER = "default"
 
-	private Annotation(String name, List<ParameterValue> parameters) {
+	final String name
+	final Map<String, Object> parameters
+
+	private Annotation(String name, Map<String, Object> parameters) {
 		this.name = name
 		this.parameters = parameters
 	}
 
-	public List getParameterValues() {
-		parameters.collect { it.value }
+	public def getDefaultParameterValue() {
+		return parameters.get(DEFAULT_PARAMETER)
 	}
 
 	public static Annotation fromContext(AnnotationContext context) {
-		def parameters = context.annotationParameters()?.annotationParameter()?.collect { paramCtx ->
-			def name = paramCtx.name?.text
-			def value = paramCtx.annotationValue().accept(new AnnotationValueExtractor())
-			return new ParameterValue(name, value)
+		def parametersContext = context.annotationParameters()
+		Map<String, Object> parameters
+		if (parametersContext) {
+			if (parametersContext.singleValue != null) {
+				def value = parametersContext.singleValue.accept(new AnnotationValueExtractor())
+				parameters = Collections.singletonMap(DEFAULT_PARAMETER, value)
+			} else {
+				parameters = parametersContext.annotationParameter().collectEntries() { paramCtx ->
+					def name = paramCtx.name?.text
+					def value = paramCtx.annotationValue().accept(new AnnotationValueExtractor())
+					return [ name, value ]
+				}
+			}
+		} else {
+			parameters = Collections.emptyMap()
 		}
-		return new Annotation(context.name.text, parameters ?: [])
-	}
-}
-
-@EqualsAndHashCode
-class ParameterValue {
-	final String name
-	final def value
-
-	ParameterValue(String name, def value) {
-		this.name = name
-		this.value = value
+		return new Annotation(context.name.text, parameters)
 	}
 }
 
