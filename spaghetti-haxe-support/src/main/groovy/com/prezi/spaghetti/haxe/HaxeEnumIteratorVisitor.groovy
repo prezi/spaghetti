@@ -14,10 +14,9 @@ class HaxeEnumIteratorVisitor extends AbstractModuleVisitor<Void> {
 	private final File outputDirectory
 	private final Closure<ModuleVisitor<String>> createVisitor
 
-	HaxeEnumIteratorVisitor(ModuleConfiguration config,
-							ModuleDefinition module, File outputDirectory,
+	HaxeEnumIteratorVisitor(ModuleDefinition module, File outputDirectory,
 							Closure<ModuleVisitor<String>> createVisitor) {
-		super(config, module)
+		super(module)
 		this.outputDirectory = outputDirectory
 		this.createVisitor = createVisitor
 	}

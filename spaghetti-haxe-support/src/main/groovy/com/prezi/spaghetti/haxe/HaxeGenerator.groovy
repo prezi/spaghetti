@@ -62,10 +62,10 @@ return __module;
 	/**
 	 * Generates main interface for module.
 	 */
-	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
+	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
 		def contents = new HaxeModuleGeneratorVisitor(
-				config, module, { moduleName -> "interface ${moduleName} {" }
+				module, { moduleName -> "interface ${moduleName} {" }
 		).processModule()
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
 	}
@@ -90,10 +90,10 @@ return __module;
 	/**
 	 * Generates interfaces the module should implement.
 	 */
-	private void generateInterfacesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
+	private static void generateInterfacesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
-		new HaxeTypeIteratorVisitor(config, module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(config, module, { String typeName, FQName superType ->
+		new HaxeTypeIteratorVisitor(module, outputDirectory, {
+			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
 				def declaration = "interface ${typeName}"
 				if (superType != null)
 				{
@@ -108,9 +108,9 @@ return __module;
 	/**
 	 * Generates typedefs (typedef <Enum> = Int;) and value classes for enums.
 	 */
-	private void generateEnumClasses(ModuleDefinition module, File outputDirectory)
+	private static void generateEnumClasses(ModuleDefinition module, File outputDirectory)
 	{
-		new HaxeEnumIteratorVisitor(config, module, outputDirectory, {
+		new HaxeEnumIteratorVisitor(module, outputDirectory, {
 			new HaxeEnumGeneratorVisitor()
 		}).processModule()
 	}
@@ -149,15 +149,15 @@ return __module;
 		}
 	}
 
-	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
+	private static void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new HaxeModuleGeneratorVisitor(
-				config, module, { moduleName -> "typedef ${moduleName} = {" }
+				module, { moduleName -> "typedef ${moduleName} = {" }
 		).processModule()
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, moduleFileContents)
 
-		new HaxeTypeIteratorVisitor(config, module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(config, module, { String typeName, FQName superType ->
+		new HaxeTypeIteratorVisitor(module, outputDirectory, {
+			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
 				def declaration = "typedef ${typeName} = {"
 				if (superType != null)
 				{
