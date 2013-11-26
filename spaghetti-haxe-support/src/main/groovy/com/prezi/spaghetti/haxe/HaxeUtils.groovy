@@ -25,11 +25,4 @@ final class HaxeUtils {
 		file << contents
 		return file
 	}
-
-	public static String capitalize(String name) {
-		if (name == null || name == "") {
-			return name
-		}
-		return name[0].toUpperCase() + name.substring(1)
-	}
 }

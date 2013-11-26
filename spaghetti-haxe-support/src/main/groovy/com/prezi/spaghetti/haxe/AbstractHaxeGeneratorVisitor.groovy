@@ -30,14 +30,14 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	{
 		def returnType = ctx.returnTypeChain().accept(this)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
-			ctx.parameters != null ? ctx.parameters.accept(this) : ""
+			ctx.parameters?.accept(this) ?: ""
 		})
 	}
 
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
-		def propertyName = HaxeUtils.capitalize(ctx.property.name.text)
+		def propertyName = ctx.property.name.text.capitalize()
 		def propertyType = ctx.property.type
 		def resolvedPropertyType = propertyType.accept(this)
 
