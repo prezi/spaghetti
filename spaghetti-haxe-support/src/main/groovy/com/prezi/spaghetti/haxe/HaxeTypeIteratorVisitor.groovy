@@ -24,7 +24,7 @@ class HaxeTypeIteratorVisitor extends AbstractModuleVisitor<Void> {
 	@Override
 	Void visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
-		def contents = createVisitor(ctx).visitTypeDefinition(ctx)
+		def contents = ctx.accept(createVisitor())
 		HaxeUtils.createHaxeSourceFile(ctx.name.text, module.name, outputDirectory, contents)
 		return null
 	}
