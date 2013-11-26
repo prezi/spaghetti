@@ -43,34 +43,34 @@ module prezi.graphics.text.Layout {
 		URL
 	}
 
-    interface CharacterStyle {
-        CharacterStyleType type
-        any value
-    }
+	interface CharacterStyle {
+		CharacterStyleType type
+		any value
+	}
 
-    interface AbstractText {
-        void insert(int offset, String text, @nullable CharacterStyle[] withStyles)
-        void delete(int offset, int end)
-    }
+	interface AbstractText {
+		void insert(int offset, String text, @nullable CharacterStyle[] withStyles)
+		void delete(int offset, int end)
+	}
 
-    /**
-     * Describes a block of text.
-     */
-    interface Text extends AbstractText {
-        /**
-         * Inserts the given String at <code>offset</code>.
-         */
-        String getRawText()
-    }
+	/**
+	 * Describes a block of text.
+	 */
+	interface Text extends AbstractText {
+		/**
+		 * Inserts the given String at <code>offset</code>.
+		 */
+		String getRawText()
+	}
 
-    /**
-     * Stuff here only to test code generation features.
-     */
-    interface TestStuff {
-        void registerCallback(String->void callback)
-    }
+	/**
+	 * Stuff here only to test code generation features.
+	 */
+	interface TestStuff {
+		void registerCallback(String->void callback)
+	}
 
-    Text createText()
-    CharacterStyle createCharacterStyle(CharacterStyleType type, any value)
-    TestStuff createTestStuff()
+	Text createText()
+	CharacterStyle createCharacterStyle(CharacterStyleType type, any value)
+	TestStuff createTestStuff()
 }
