@@ -26,9 +26,9 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 
 		result +=
 """
-	static var values = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
-	static var names =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
-	static var namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
+	static var _values = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
+	static var _names =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
+	static var _namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
@@ -39,7 +39,7 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	}
 
 	@:from public static inline function fromValue(value:Int):${enumName} {
-		var result = values[value];
+		var result = _values[value];
 		if (result == null) {
 			throw untyped Error("Invlaid value for ${enumName}: " + value);
 		}
@@ -47,15 +47,19 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	}
 
 	@:to public inline function name():String {
-		return names[this];
+		return _names[this];
 	}
 
 	@:from public static inline function valueOf(name:String) {
-		var value = untyped namesToValues[name];
+		var value = untyped _namesToValues[name];
 		if (value == null) {
 			throw untyped Error("Invalid name for ${enumName}: " + name);
 		}
 		return value;
+	}
+
+	public static function values():Array<${enumName}> {
+		return _values.copy();
 	}
 }
 """
