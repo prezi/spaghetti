@@ -65,15 +65,14 @@ ${super.visitTypeDefinition(ctx)}
         def valueLines = []
         ctx.values.eachWithIndex{ valueCtx, index ->
             def val = ModuleUtils.formatDocumentation(valueCtx.documentation, "\t")
-            val += "\t${valueCtx.name.text}: ${index}"
-            index++
+            val += "\t${valueCtx.name.text} = ${index}"
             valueLines += val
         }
         def values = valueLines.join(",\n\t")
 
         def enumName = ctx.name.text
         def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-        def result = docs + "export var ${enumName} = {" + values + "\n}\n"
+        def result = docs + "export enum ${enumName} {" + values + "\n}\n"
         return result
     }
 }
