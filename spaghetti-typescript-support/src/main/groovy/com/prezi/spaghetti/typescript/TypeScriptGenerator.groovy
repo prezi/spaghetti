@@ -95,7 +95,7 @@ class ${modulesClassName.localName} {
 """
 			dependentModules.eachWithIndex { module, index ->
 				modulesContents +=
-""" get${module.name.localName}():${module.name} {
+"""\tget${module.name.localName}():${module.name} {
 		return __modules[${index}];
 	}
 """
