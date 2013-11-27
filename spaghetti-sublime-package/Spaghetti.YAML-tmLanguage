@@ -1,0 +1,34 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: Spaghetti syntax
+scopeName: source.spaghetti
+fileTypes: [ "module" ]
+uuid: 5ad0d2f7-e9e3-49d1-affb-3bcf4c90fb06
+
+patterns:
+- match: "\\b(void|bool|float|int|String|any)\\b"
+  name: "keyword.spaghetti"
+  captures:
+    "1":
+      name: "keyword.type.spaghetti"
+
+- match: "\\b(interface|enum|module)\\s+(\\w+)\\b"
+  name: "keyword.spaghetti"
+  captures:
+    "1":
+      name: "keyword.type.spaghetti"
+    "2":
+      name: "entity.name.class.spaghetti"
+
+- match: "(//).*$\\n?"
+  name: "comment.line.double-slash.spaghetti"
+  captures:
+    "1":
+      name: "punctuation.definition.comment.spaghetti"
+
+- name: "comment.block.documentation.spaghetti"
+  begin: "/\\*\\*"
+  end: "\\*/"
+  captures:
+    "0":
+      name: "punctuation.definition.comment.spaghetti"
