@@ -20,7 +20,6 @@ class TypeScriptGenerator implements Generator {
 	void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
 	{
 		generateModuleInterface(module, outputDirectory)
-		generateModuleInitializer(module, outputDirectory)
 
 		def modulesClassName = module.name.qualifyLocalName(FQName.fromString("Modules"))
 		generateStuffForDependentModules(modulesClassName, outputDirectory)
@@ -37,9 +36,9 @@ class TypeScriptGenerator implements Generator {
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
 		return \
-"""var __module;
+"""
 ${javaScript}
-return __module;
+return new ${module.name.getFullyQualifiedName()}Impl();
 """
 	}
 
@@ -63,19 +62,6 @@ return __module;
 	{
 		def contents = new TypeScriptModuleGeneratorVisitor(module).processModule()
 		TypeScriptUtils.createSourceFile(module.name, outputDirectory, contents)
-	}
-
-	/**
-	 * Generates initializer for module.
-	 */
-	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
-	{
-		def initializerName = "__" + module.name.localName + "Init"
-		def initializerContents =
-"""declare var __module:${module.name.localName};
-__module = new ${module.name.localName}Impl();
-"""
-		TypeScriptUtils.createSourceFile(initializerName, module.name, outputDirectory, initializerContents)
 	}
 
 	/**
