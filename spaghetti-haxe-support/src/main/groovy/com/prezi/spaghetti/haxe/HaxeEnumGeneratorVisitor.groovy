@@ -14,7 +14,11 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	{
 		def enumName = ctx.name.text
 		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
-"""abstract ${enumName}(Int) {
+"""#if flash
+import flash.errors.Error;
+#end
+
+abstract ${enumName}(Int) {
 """
 
 		ctx.values.eachWithIndex { valueCtx, index ->
@@ -26,26 +30,23 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 
 		result +=
 """
-	static var _values = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
-#if js
-	static var _names =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
+	static var _values:Array<${enumName}> = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
+	static var _names:Array<String> =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
 	static var _namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
-#end
 
 	inline function new(value:Int) {
 		this = value;
 	}
 
-#if js
-	@:to public inline function value():Int {
+	@:to public function value():Int {
 		return this;
 	}
 
-	@:from public static inline function fromValue(value:Int):${enumName} {
-		var result = _values[value];
-		if (result == null) {
+	@:from public static function fromValue(value:Int) {
+		if (value < 0 || value >= _values.length) {
 			throw untyped Error("Invlaid value for ${enumName}: " + value);
 		}
+		var result = _values[value];
 		return result;
 	}
 
@@ -60,7 +61,6 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 		}
 		return value;
 	}
-#end
 
 	public static function values():Array<${enumName}> {
 		return _values.copy();
