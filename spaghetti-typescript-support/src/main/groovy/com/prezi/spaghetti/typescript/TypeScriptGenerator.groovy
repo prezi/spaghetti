@@ -110,7 +110,7 @@ class ${modulesClassName.localName} {
 	private static void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module).processModule()
-		TypeScriptUtils.createSourceFile(module.name, outputDirectory, moduleFileContents)
+		TypeScriptUtils.createDeclarationSourceFile(module.name, outputDirectory, moduleFileContents)
 	}
 }
 

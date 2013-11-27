@@ -4,10 +4,18 @@ import com.prezi.spaghetti.FQName
 
 final class TypeScriptUtils {
 	public static File createSourceFile(FQName fqName, File outputDirectory, String contents) {
-		return createSourceFile(fqName.localName, fqName, outputDirectory, contents)
+		return sourceFile(fqName.localName, fqName, outputDirectory, contents, false)
 	}
 
-	public static File createSourceFile(String name, FQName baseName, File outputDirectory, String contents) {
+    public static File createSourceFile(String name, FQName baseName, File outputDirectory, String contents) {
+        return sourceFile(name, baseName, outputDirectory, contents, false);
+    }
+
+    public static File createDeclarationSourceFile(FQName fqName, File outputDirectory, String contents) {
+        return sourceFile(fqName.localName, fqName, outputDirectory, contents, true)
+    }
+
+	public static File sourceFile(String name, FQName baseName, File outputDirectory, String contents, boolean declarationOnly) {
 		def file = new File(outputDirectory, name + ".ts")
 		file.delete()
 		file << "/*\n"
@@ -15,7 +23,12 @@ final class TypeScriptUtils {
 		file << " */\n"
 		if (baseName.hasNamespace())
 		{
-			file << "module ${baseName.namespace} {\n"
+            if (declarationOnly) {
+			    file << "declare module ${baseName.namespace} {\n"
+            }
+            else {
+			    file << "module ${baseName.namespace} {\n"
+            }
             file << contents
             file << "}"
 		}
