@@ -89,19 +89,14 @@ __module = new ${module.name.localName}Impl();
 		if (!dependentModules.empty)
 		{
 			String modulesContents =
-"""class ${modulesClassName.localName} {
-
-	static var modules:Array<Dynamic>;
-
-	static function __init__() {
-		modules = untyped __modules;
-	}
+"""
+declare var __modules:Array<any>;
+class ${modulesClassName.localName} {
 """
 			dependentModules.eachWithIndex { module, index ->
 				modulesContents +=
-"""
-	public static inline function get${module.name.localName}():${module.name} {
-		return modules[${index}];
+""" get${module.name.localName}():${module.name} {
+		return __modules[${index}];
 	}
 """
 			}
