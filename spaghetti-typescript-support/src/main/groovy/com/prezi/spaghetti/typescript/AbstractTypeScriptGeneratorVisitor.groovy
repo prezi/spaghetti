@@ -70,12 +70,11 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	}
 
 	@Override
-	String visitNormalTypeChain(@NotNull @NotNull ModuleParser.CallbackTypeChainContext ctx)
+	String visitCallbackTypeChain(@NotNull @NotNull ModuleParser.CallbackTypeChainContext ctx)
 	{
         def typeChain = ctx.returnType()
         def lastType = typeChain.remove(typeChain.size() - 1)
 
-        def functionDef
         if (typeChain.size() == 0) {
             return lastType.accept(this);
         }
