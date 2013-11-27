@@ -10,25 +10,23 @@ dependencies {
 }
 
 spaghetti {
-	platform "haxe"
+	platform "typescript"
 	definition "TextRenderer.module"
 }
 
 task generateHeaders(type: GenerateModuleHeaders) {
 }
 
-task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
+task compileTsc(type: TypeScriptTask) {
 	dependsOn generateHeaders
-	configuration configurations.modules
-	targetPlatform "js"
 	source generateHeaders.outputDirectory
 	source "src"
-	include "prezi.graphics.text"
+	dest = file("${buildDir}/module.js");
 }
 
 task bundleModule(type: BundleModule) {
-	dependsOn compileHaxe
-	inputFile compileHaxe.outputFile
+	dependsOn compileTsc
+	inputFile compileTsc.dest
 }
 
 artifacts {
@@ -39,3 +37,37 @@ artifacts {
 			builtBy bundleModule
 	}
 }
+
+class TypeScriptTask extends SourceTask {
+	@OutputFile
+	def dest;
+	def jsSrcs = [];
+
+	def appendJs(s) {
+		jsSrcs.add(new File(s));
+		inputs.file(new File(s));
+	}
+
+	@TaskAction
+	def run() {
+		println "Executing TypeScriptTask"
+		def typeScriptTemp = new File(project.buildDir, "typescript-output.js");
+
+		def command = ["tsc", "--out", typeScriptTemp] + source.files;
+		println command.join(" ");
+		def process = command.execute()
+		process.waitForProcessOutput(System.out, System.err);
+
+		if (process.exitValue() != 0) {
+			throw new RuntimeException("Failed TSC build: " + process.exitValue())
+		}
+
+		ant.concat(destfile: (dest as File).canonicalPath, fixlastline: 'yes') {
+            jsSrcs.each {
+                fileset(file: it)
+            }
+			fileset(file: typeScriptTemp);
+        }
+	}
+}
+

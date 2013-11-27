@@ -1,4 +1,5 @@
 rootProject.name = "spaghetti"
 include "spaghetti-core"
 include "spaghetti-haxe-support"
+include "spaghetti-typescript-support"
 include "gradle-spaghetti-plugin"

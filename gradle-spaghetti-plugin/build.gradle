@@ -1,10 +1,12 @@
 evaluationDependsOn(":spaghetti-core")
 evaluationDependsOn(":spaghetti-haxe-support")
+evaluationDependsOn(":spaghetti-typescript-support")
 
 dependencies {
 	compile gradleApi()
 	compile project(path: ":spaghetti-core")
 	compile project(path: ":spaghetti-haxe-support")
+	compile project(path: ":spaghetti-typescript-support")
 }
 
 task run(type: Exec) {
