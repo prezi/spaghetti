@@ -1,13 +1,13 @@
 module prezi.graphics.text.render {
 
-class TextRendererImpl implements TextRenderer {
+export class TextRendererImpl implements TextRenderer {
 	constructor() {}
 	createRenderer(prefix:string, suffix:string):Renderer {
 		return new RendererImpl(prefix, suffix);
 	}
 }
 
-class RendererImpl implements Renderer {
+export class RendererImpl implements Renderer {
 	prefix:string;
 	suffix:string;
 
