@@ -27,13 +27,16 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 		result +=
 """
 	static var _values = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
+#if js
 	static var _names =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
 	static var _namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
+#end
 
 	inline function new(value:Int) {
 		this = value;
 	}
 
+#if js
 	@:to public inline function value():Int {
 		return this;
 	}
@@ -57,6 +60,7 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 		}
 		return value;
 	}
+#end
 
 	public static function values():Array<${enumName}> {
 		return _values.copy();

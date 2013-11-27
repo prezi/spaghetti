@@ -78,10 +78,12 @@ return __module;
 		def initializerName = "__" + module.name.localName + "Init"
 		def initializerContents =
 """class ${initializerName} {
+#if (js && !test)
 	public static function __init__() {
 		var module:${module.name.localName} = new ${module.name.localName}Impl();
 		untyped __module = module;
 	}
+#end
 }
 """
 		HaxeUtils.createHaxeSourceFile(initializerName, module.name, outputDirectory, initializerContents)
@@ -127,7 +129,7 @@ return __module;
 		{
 			String modulesContents =
 """class ${modulesClassName.localName} {
-
+#if js
 	static var modules:Array<Dynamic>;
 
 	static function __init__() {
@@ -143,7 +145,9 @@ return __module;
 """
 			}
 			modulesContents +=
-"""}
+"""
+#end
+}
 """
 			HaxeUtils.createHaxeSourceFile(modulesClassName, outputDirectory, modulesContents)
 		}
