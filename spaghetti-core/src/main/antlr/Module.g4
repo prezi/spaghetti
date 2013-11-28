@@ -52,9 +52,10 @@ annotationParameters	: ( singleValue = annotationValue )
 annotationParameter : ( name = Name ) '=' annotationValue
 	;
 
-annotationValue : ( stringValue = '"' .*? '"' )	# annotationStringParameter
-					| ( numberValue = Number )		# annotationNumberParameter
-					| ( boolValue = ( 'true' | 'false' ) ) # annotationBooleanParameter
+annotationValue	: ( nullValue = 'null' )				# annotationNullParameter
+				| ( boolValue = ( 'true' | 'false' ) )	# annotationBooleanParameter
+				| ( numberValue = Number )				# annotationNumberParameter
+ 				| ( stringValue = '"' .*? '"' )			# annotationStringParameter
 	;
 
 typeNamePairs : ( elements += typeNamePair ) ( ',' elements += typeNamePair )*

@@ -21,8 +21,27 @@ class Annotation {
 		this.parameters = parameters
 	}
 
-	public def getDefaultParameterValue() {
+	public boolean hasDefaultParameter()
+	{
+		return parameters.containsKey(DEFAULT_PARAMETER)
+	}
+
+	public def getDefaultParameter() {
+		if (!hasDefaultParameter()) {
+			throw new IllegalStateException("No default parameter specified for ${this}")
+		}
 		return parameters.get(DEFAULT_PARAMETER)
+	}
+
+	public boolean hasParameter(String parameter) {
+		return parameters.containsKey(parameter)
+	}
+
+	public def getParameter(String parameter) {
+		if (!hasParameter(parameter)) {
+			throw new IllegalStateException("No parameter '${parameter}' specified for ${this}")
+		}
+		return parameters.get(parameter);
 	}
 
 	public static Annotation fromContext(AnnotationContext context) {
@@ -44,19 +63,30 @@ class Annotation {
 		}
 		return new Annotation(context.name.text, parameters)
 	}
+
+	@Override
+	String toString() {
+		return "@${name}(${parameters.collect { key, value -> "${key} = ${value}"}.join(", ")})"
+	}
 }
 
 class AnnotationValueExtractor extends ModuleBaseVisitor<Object> {
 	@Override
-	Object visitAnnotationNumberParameter(@NotNull @NotNull ModuleParser.AnnotationNumberParameterContext ctx)
+	Object visitAnnotationNullParameter(@NotNull @NotNull ModuleParser.AnnotationNullParameterContext ctx)
 	{
-		return Double.parseDouble(ctx.numberValue.text)
+		return null
 	}
 
 	@Override
 	Object visitAnnotationBooleanParameter(@NotNull @NotNull ModuleParser.AnnotationBooleanParameterContext ctx)
 	{
 		return ctx.boolValue.text == "true"
+	}
+
+	@Override
+	Object visitAnnotationNumberParameter(@NotNull @NotNull ModuleParser.AnnotationNumberParameterContext ctx)
+	{
+		return Double.parseDouble(ctx.numberValue.text)
 	}
 
 	@Override
