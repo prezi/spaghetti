@@ -3,6 +3,7 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -19,6 +20,7 @@ class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = ctx.returnTypeChain().accept(this)
+		returnType = wrapNullable(ctx.annotations(), returnType)
 		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
 			ctx.parameters?.accept(this) ?: ""
 		})
@@ -56,11 +58,15 @@ class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitTypeNamePair(@NotNull @NotNull ModuleParser.TypeNamePairContext ctx)
 	{
-		def annotations = ModuleUtils.extractAnnotations(ctx.annotations())
 		def result = ctx.name.text + ":"
 		def type = ctx.type.accept(this)
-		boolean nullable = annotations.containsKey("nullable")
-		result += nullable ? "Null<${type}>" : type
+		result += wrapNullable(ctx.annotations(), type)
 		return result
+	}
+
+	private static String wrapNullable(AnnotationsContext annotationsContext, String type) {
+		def annotations = ModuleUtils.extractAnnotations(annotationsContext)
+		boolean nullable = annotations.containsKey("nullable")
+		return nullable ? "Null<${type}>" : type
 	}
 }
