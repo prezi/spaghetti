@@ -7,13 +7,13 @@ final class TypeScriptUtils {
 		return sourceFile(fqName.localName, fqName, outputDirectory, contents, false)
 	}
 
-    public static File createSourceFile(String name, FQName baseName, File outputDirectory, String contents) {
-        return sourceFile(name, baseName, outputDirectory, contents, false);
-    }
+	public static File createSourceFile(String name, FQName baseName, File outputDirectory, String contents) {
+		return sourceFile(name, baseName, outputDirectory, contents, false);
+	}
 
-    public static File createDeclarationSourceFile(FQName fqName, File outputDirectory, String contents) {
-        return sourceFile(fqName.localName, fqName, outputDirectory, contents, true)
-    }
+	public static File createDeclarationSourceFile(FQName fqName, File outputDirectory, String contents) {
+		return sourceFile(fqName.localName, fqName, outputDirectory, contents, true)
+	}
 
 	public static File sourceFile(String name, FQName baseName, File outputDirectory, String contents, boolean declarationOnly) {
 		def file = new File(outputDirectory, name + ".ts")
@@ -23,18 +23,18 @@ final class TypeScriptUtils {
 		file << " */\n"
 		if (baseName.hasNamespace())
 		{
-            if (declarationOnly) {
-			    file << "declare module ${baseName.namespace} {\n"
-            }
-            else {
-			    file << "module ${baseName.namespace} {\n"
-            }
-            file << contents
-            file << "}"
+			if (declarationOnly) {
+				file << "declare module ${baseName.namespace} {\n"
+			}
+			else {
+				file << "module ${baseName.namespace} {\n"
+			}
+			file << contents
+			file << "}"
 		}
-        else {
-		    file << contents
-        }
+		else {
+			file << contents
+		}
 		return file
 	}
 

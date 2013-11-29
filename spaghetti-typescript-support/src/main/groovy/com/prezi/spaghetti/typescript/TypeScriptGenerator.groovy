@@ -12,7 +12,7 @@ class TypeScriptGenerator implements Generator {
 
 	private final ModuleConfiguration config
 
-    TypeScriptGenerator(ModuleConfiguration config) {
+	TypeScriptGenerator(ModuleConfiguration config) {
 		this.config = config
 	}
 
