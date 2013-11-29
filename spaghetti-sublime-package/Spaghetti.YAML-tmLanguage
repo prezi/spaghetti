@@ -7,7 +7,7 @@ uuid: 5ad0d2f7-e9e3-49d1-affb-3bcf4c90fb06
 
 patterns:
 - name: "definition.type.spaghetti"
-  match: "\\b(interface|enum|module)\\s+(\\w+)(?:\\s+(extends)\\s+(\\w+))?"
+  match: "\\b(interface|enum|struct|module)\\s+(\\w+)(?:\\s+(extends)\\s+(\\w+))?"
   captures:
     "1":
       name: "storage.type.definition.spaghetti"
