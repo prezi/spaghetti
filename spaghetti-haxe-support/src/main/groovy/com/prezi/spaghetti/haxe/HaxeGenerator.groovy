@@ -21,8 +21,7 @@ class HaxeGenerator implements Generator {
 	{
 		generateModuleInterface(module, outputDirectory)
 		generateModuleInitializer(module, outputDirectory)
-		generateInterfacesForModuleInterfaces(module, outputDirectory)
-		generateEnumClasses(module, outputDirectory)
+		generateInterfacesForModuleTypes(module, outputDirectory)
 
 		def modulesClassName = module.name.qualifyLocalName(FQName.fromString("Modules"))
 		generateStuffForDependentModules(modulesClassName, outputDirectory)
@@ -53,8 +52,7 @@ return __module;
 
 	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
 		config.dependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
-			generateEnumClasses(dependentModule, outputDirectory)
+			generateStructuralTypesForModuleTypes(dependentModule, outputDirectory)
 		}
 		generateClassToAccessDependentModules(modulesClassName, outputDirectory)
 	}
@@ -92,9 +90,9 @@ return __module;
 	/**
 	 * Generates interfaces the module should implement.
 	 */
-	private static void generateInterfacesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
+	private static void generateInterfacesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
-		new HaxeTypeIteratorVisitor(module, outputDirectory, {
+		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
 			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
 				def declaration = "interface ${typeName}"
 				if (superType != null)
@@ -108,12 +106,24 @@ return __module;
 	}
 
 	/**
-	 * Generates typedefs (typedef <Enum> = Int;) and value classes for enums.
+	 * Generates structural types on the caller side.
 	 */
-	private static void generateEnumClasses(ModuleDefinition module, File outputDirectory)
+	private static void generateStructuralTypesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
-		new HaxeEnumIteratorVisitor(module, outputDirectory, {
-			new HaxeEnumGeneratorVisitor()
+		def moduleFileContents = new HaxeModuleGeneratorVisitor(
+				module, { moduleName -> "typedef ${moduleName} = {" }
+		).processModule()
+		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, moduleFileContents)
+
+		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
+			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
+				def declaration = "typedef ${typeName} = {"
+				if (superType != null)
+				{
+					declaration += " > ${superType.fullyQualifiedName},"
+				}
+				return declaration
+			})
 		}).processModule()
 	}
 
@@ -152,24 +162,4 @@ return __module;
 			HaxeUtils.createHaxeSourceFile(modulesClassName, outputDirectory, modulesContents)
 		}
 	}
-
-	private static void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
-	{
-		def moduleFileContents = new HaxeModuleGeneratorVisitor(
-				module, { moduleName -> "typedef ${moduleName} = {" }
-		).processModule()
-		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, moduleFileContents)
-
-		new HaxeTypeIteratorVisitor(module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
-				def declaration = "typedef ${typeName} = {"
-				if (superType != null)
-				{
-					declaration += " > ${superType.fullyQualifiedName},"
-				}
-				return declaration
-			})
-		}).processModule()
-	}
 }
-
