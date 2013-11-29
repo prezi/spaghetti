@@ -87,7 +87,7 @@ ${super.visitTypeDefinition(ctx)}
 
 		def structName = ctx.name.text
 		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-		def result = docs + "export interface ${structName} {" + values + "\n}\n"
+		def result = docs + "export interface ${structName} {\n" + values + "\n}\n"
 		return result
 	}
 }
