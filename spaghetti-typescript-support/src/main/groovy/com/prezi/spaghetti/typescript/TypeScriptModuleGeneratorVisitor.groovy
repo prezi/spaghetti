@@ -75,4 +75,19 @@ ${super.visitTypeDefinition(ctx)}
 		def result = docs + "export enum ${enumName} {" + values + "\n}\n"
 		return result
 	}
+
+	@Override
+	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
+	{
+		def valueLines = []
+		def values = ctx.propertyDefinition().collect { propertyCtx ->
+			return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
+				"\t${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)};\n"
+		}.join("")
+
+		def structName = ctx.name.text
+		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
+		def result = docs + "export interface ${structName} {" + values + "\n}\n"
+		return result
+	}
 }

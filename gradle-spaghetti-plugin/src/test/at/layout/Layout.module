@@ -43,7 +43,7 @@ module prezi.graphics.text.Layout {
 		URL
 	}
 
-	interface CharacterStyle {
+	struct CharacterStyle {
 		/**
 		 * The type of the style.
 		 */
@@ -77,6 +77,5 @@ module prezi.graphics.text.Layout {
 	}
 
 	Text createText()
-	CharacterStyle createCharacterStyle(CharacterStyleType type, any value)
 	TestStuff createTestStuff()
 }

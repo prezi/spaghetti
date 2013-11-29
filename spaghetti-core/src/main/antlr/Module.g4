@@ -7,6 +7,7 @@ moduleDefinition : (documentation = Doc)?
 	;
 
 moduleElement	: typeDefinition
+				| structDefinition
 				| enumDefinition
 				| methodDefinition
 	;
@@ -14,6 +15,12 @@ moduleElement	: typeDefinition
 typeDefinition : (documentation = Doc)? annotations?
 	'interface' (name = Name) ('extends' (superType = qualifiedName))? '{'
 		typeElement*
+	'}'
+	;
+
+structDefinition : (documentation = Doc)? annotations?
+	'struct' (name = Name) '{'
+		propertyDefinition*
 	'}'
 	;
 

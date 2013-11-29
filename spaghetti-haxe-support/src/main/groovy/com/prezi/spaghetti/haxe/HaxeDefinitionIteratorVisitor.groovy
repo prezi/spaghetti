@@ -4,7 +4,9 @@ import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleVisitor
+import org.antlr.v4.runtime.RuleContext
 import org.antlr.v4.runtime.misc.NotNull
+import org.antlr.v4.runtime.tree.ParseTreeVisitor
 
 /**
  * Created by lptr on 20/11/13.
@@ -22,20 +24,29 @@ class HaxeDefinitionIteratorVisitor extends AbstractModuleVisitor<Void> {
 		this.createTypeVisitor = createTypeVisitor
 	}
 
+	private void createSourceFile(String name, RuleContext ctx, ParseTreeVisitor<String> visitor) {
+		def contents = ctx.accept(visitor)
+		HaxeUtils.createHaxeSourceFile(name, module.name, outputDirectory, contents)
+	}
+
 	@Override
 	Void visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
-		def contents = ctx.accept(createTypeVisitor())
-		HaxeUtils.createHaxeSourceFile(ctx.name.text, module.name, outputDirectory, contents)
+		createSourceFile(ctx.name.text, ctx, createTypeVisitor())
 		return null
 	}
 
 	@Override
 	Void visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
-		def contents = ctx.accept(new HaxeEnumGeneratorVisitor())
-		HaxeUtils.createHaxeSourceFile(ctx.name.text, module.name, outputDirectory, contents)
+		createSourceFile(ctx.name.text, ctx, new HaxeEnumGeneratorVisitor())
 		return null
 	}
 
+	@Override
+	Void visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
+	{
+		createSourceFile(ctx.name.text, ctx, new HaxeStructGeneratorVisitor(module))
+		return null
+	}
 }

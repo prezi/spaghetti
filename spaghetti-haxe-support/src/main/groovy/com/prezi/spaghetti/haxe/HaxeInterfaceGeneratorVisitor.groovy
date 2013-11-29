@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeInterfaceGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	private final Closure<String> defineType
 

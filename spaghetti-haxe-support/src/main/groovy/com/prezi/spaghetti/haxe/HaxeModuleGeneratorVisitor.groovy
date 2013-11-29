@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeModuleGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeModuleGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	private final Closure<String> defineType
 
@@ -32,6 +32,20 @@ ${super.visitModuleDefinition(ctx)}
 	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
 		// Do not generate code for types
+		return ""
+	}
+
+	@Override
+	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
+	{
+		// Do not generate code for enums
+		return ""
+	}
+
+	@Override
+	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
+	{
+		// Do not generate code for structs
 		return ""
 	}
 }

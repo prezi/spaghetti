@@ -68,6 +68,13 @@ private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
 		return null
 	}
 
+	@Override
+	Void visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
+	{
+		registerTypeName(ctx.name.text)
+		return null
+	}
+
 	private void registerTypeName(String localName)
 	{
 		if (names.contains(localName))
