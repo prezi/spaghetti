@@ -30,6 +30,6 @@ artifacts {
 		builtBy bundleModule
 	}
 	modules(bundleModule.outputFile) {
-			builtBy bundleModule
+		builtBy bundleModule
 	}
 }
