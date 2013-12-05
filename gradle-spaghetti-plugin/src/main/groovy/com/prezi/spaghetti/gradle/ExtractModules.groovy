@@ -12,12 +12,6 @@ class ExtractModules extends AbstractGenerateTask {
 
 	@TaskAction
 	extract() {
-		outputDirectory.mkdirs()
-		def bundles = ModuleDefinitionLookup.getAllBundles(configuration)
-		bundles.each { bundle ->
-			def outputFile = new File(outputDirectory, bundle.name.localName + ".js")
-			outputFile.delete()
-			outputFile << bundle.bundledJavaScript
-		}
+		ModuleExtractor.extractModules(configuration, outputDirectory)
 	}
 }
