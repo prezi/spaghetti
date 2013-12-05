@@ -52,7 +52,7 @@ return __module;
 
 	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
 		config.dependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleTypes(dependentModule, outputDirectory)
+			generateExternsForModuleTypes(dependentModule, outputDirectory)
 		}
 		generateClassToAccessDependentModules(modulesClassName, outputDirectory)
 	}
@@ -108,21 +108,21 @@ return __module;
 	/**
 	 * Generates structural types on the caller side.
 	 */
-	private static void generateStructuralTypesForModuleTypes(ModuleDefinition module, File outputDirectory)
+	private static void generateExternsForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new HaxeModuleGeneratorVisitor(
-				module, { moduleName -> "typedef ${moduleName} = {" }
+				module, { moduleName -> "extern class ${moduleName} {" }
 		).processModule()
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, moduleFileContents)
 
 		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
 			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
-				def declaration = "typedef ${typeName} = {"
+				def declaration = "extern class ${typeName} "
 				if (superType != null)
 				{
-					declaration += " > ${superType.fullyQualifiedName},"
+					declaration += "extends ${superType.fullyQualifiedName} "
 				}
-				return declaration
+				return declaration + "{"
 			})
 		}).processModule()
 	}
