@@ -140,17 +140,12 @@ return __module;
 			String modulesContents =
 """class ${modulesClassName.localName} {
 #if js
-	static var modules:Array<Dynamic>;
-
-	static function __init__() {
-		modules = untyped __modules;
-	}
 """
 			dependentModules.eachWithIndex { module, index ->
 				modulesContents +=
 """
 	public static inline function get${module.name.localName}():${module.name} {
-		return modules[${index}];
+		return untyped __modules[${index}];
 	}
 """
 			}
