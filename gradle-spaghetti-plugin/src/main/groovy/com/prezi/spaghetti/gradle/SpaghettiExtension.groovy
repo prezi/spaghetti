@@ -6,11 +6,11 @@ import org.gradle.api.artifacts.Configuration
 /**
  * Created by lptr on 19/11/13.
  */
-class ModulesExtension {
+class SpaghettiExtension {
 	@Delegate
 	Parameters params
 
-	ModulesExtension(Project project, Configuration defaultConfiguration) {
+	SpaghettiExtension(Project project, Configuration defaultConfiguration) {
 		this.params = new Parameters(project)
 		params.configuration = defaultConfiguration
 	}

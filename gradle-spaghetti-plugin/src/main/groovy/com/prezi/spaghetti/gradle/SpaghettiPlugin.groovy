@@ -27,7 +27,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 			defaultConfiguration = project.configurations.create(CONFIGURATION_NAME)
 		}
 
-		def extension = project.extensions.create "spaghetti", ModulesExtension, project, defaultConfiguration
+		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration
 		project.tasks.withType(AbstractSpaghettiTask) { AbstractSpaghettiTask task ->
 			task.applyParameters(extension.params)
 		}
