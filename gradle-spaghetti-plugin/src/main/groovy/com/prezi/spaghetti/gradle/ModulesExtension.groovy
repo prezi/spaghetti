@@ -12,6 +12,6 @@ class ModulesExtension {
 
 	ModulesExtension(Project project, Configuration defaultConfiguration) {
 		this.params = new Parameters(project)
-		this.configuration = defaultConfiguration
+		params.configuration = defaultConfiguration
 	}
 }
