@@ -1,9 +1,7 @@
-package com.prezi.spaghetti.elm
+package com.prezi.spaghetti.elm.elm
 
-import com.prezi.spaghetti.elm.Value
+import com.prezi.spaghetti.elm.elm.Value
 
-interface Type {
-
-  abstract Value defaultValue ();
+interface Type extends ElmRep {
 
 }

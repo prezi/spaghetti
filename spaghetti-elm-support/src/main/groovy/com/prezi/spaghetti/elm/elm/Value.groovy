@@ -1,4 +1,7 @@
-package com.prezi.spaghetti.elm
+package com.prezi.spaghetti.elm.elm
 
-class Value {
+import com.prezi.spaghetti.elm.elm.ElmRep
+
+interface Value extends ElmRep {
+
 }
