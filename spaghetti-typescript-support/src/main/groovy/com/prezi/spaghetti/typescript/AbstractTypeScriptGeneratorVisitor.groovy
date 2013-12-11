@@ -104,9 +104,34 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	String visitModuleType(@NotNull @NotNull ModuleParser.ModuleTypeContext ctx)
 	{
 		def localTypeName = FQName.fromContext(ctx.name)
-		def fqTypeName = module.resolveName(localTypeName)
-		def haxeType = fqTypeName.fullyQualifiedName
-		return haxeType
+		def fqTypeName = resolveName(localTypeName)
+		def typeScriptType = fqTypeName.fullyQualifiedName
+		if (ctx.arguments != null) {
+			typeScriptType += ctx.arguments.accept(this)
+		}
+		return typeScriptType
+	}
+
+	@Override
+	String visitTypeParameters(@NotNull @NotNull ModuleParser.TypeParametersContext ctx)
+	{
+		return "<" + ctx.parameters.collect { param ->
+			param.accept(this)
+		}.join(", ") + ">"
+	}
+
+	@Override
+	String visitTypeParameter(@NotNull @NotNull ModuleParser.TypeParameterContext ctx)
+	{
+		return ctx.name.text
+	}
+
+	@Override
+	String visitTypeArguments(@NotNull @NotNull ModuleParser.TypeArgumentsContext ctx)
+	{
+		return "<" + ctx.arguments.collect { arg ->
+			arg.accept(this)
+		}.join(", ") + ">"
 	}
 
 	@Override
@@ -129,5 +154,10 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	@Override
 	protected String defaultResult() {
 		return ""
+	}
+
+	protected FQName resolveName(FQName localTypeName)
+	{
+		return module.resolveName(localTypeName)
 	}
 }

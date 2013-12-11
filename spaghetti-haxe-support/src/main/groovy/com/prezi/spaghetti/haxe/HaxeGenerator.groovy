@@ -52,7 +52,7 @@ return __module;
 
 	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
 		config.dependentModules.each { dependentModule ->
-			generateExternsForModuleTypes(dependentModule, outputDirectory)
+			generateStructuralTypesForModuleTypes(dependentModule, outputDirectory)
 		}
 		generateClassToAccessDependentModules(modulesClassName, outputDirectory)
 	}
@@ -108,7 +108,7 @@ return __module;
 	/**
 	 * Generates structural types on the caller side.
 	 */
-	private static void generateExternsForModuleTypes(ModuleDefinition module, File outputDirectory)
+	private static void generateStructuralTypesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new HaxeModuleGeneratorVisitor(
 				module, { moduleName -> "extern class ${moduleName} {" }

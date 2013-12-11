@@ -13,9 +13,15 @@ moduleElement	: typeDefinition
 	;
 
 typeDefinition : (documentation = Doc)? annotations?
-	'interface' (name = Name) ('extends' (superType = qualifiedName))? '{'
+	'interface' (name = Name) typeParameters? ('extends' (superType = qualifiedName))? '{'
 		typeElement*
 	'}'
+	;
+
+typeParameters : '<' (parameters += typeParameter ) ( ',' ( parameters += typeParameter ) )* '>'
+	;
+
+typeParameter : (name = Name)
 	;
 
 structDefinition : (documentation = Doc)? annotations?
@@ -97,7 +103,10 @@ primitiveType	: 'bool'
 				| 'any'
 	;
 
-moduleType : ( name = qualifiedName )
+moduleType : ( name = qualifiedName ) ( arguments = typeArguments )?
+	;
+
+typeArguments : '<' ( arguments += returnType ) ( ',' ( arguments += returnType ) )* '>'
 	;
 
 qualifiedName : ( parts += Name ) ( '.' parts += Name )*

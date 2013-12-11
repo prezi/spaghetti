@@ -12,6 +12,7 @@ import org.antlr.v4.runtime.misc.NotNull
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	private final Closure<String> defineType
+	private final typeParams = []
 
 	HaxeInterfaceGeneratorVisitor(ModuleDefinition module, Closure<String> defineType)
 	{
@@ -28,10 +29,30 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			superType = module.name.qualifyLocalName(FQName.fromContext(ctx.superType))
 		}
 
-		return ModuleUtils.formatDocumentation(ctx.documentation) +
+		def typeParamsCtx = ctx.typeParameters()
+		if (typeParamsCtx != null) {
+			typeName += typeParamsCtx.accept(this)
+			typeParamsCtx.parameters.each { param ->
+				typeParams.add(FQName.fromString(param.name.text))
+			}
+		}
+
+		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
 """${defineType(typeName, superType)}
-${super.visitTypeDefinition(ctx)}
+${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 }
 """
+		typeParams.clear()
+		return result
+	}
+
+	@Override
+	protected FQName resolveName(FQName localTypeName)
+	{
+		if (typeParams.contains(localTypeName))
+		{
+			return localTypeName
+		}
+		return super.resolveName(localTypeName)
 	}
 }
