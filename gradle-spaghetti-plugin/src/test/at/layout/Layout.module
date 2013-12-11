@@ -72,10 +72,11 @@ module prezi.graphics.text.Layout {
 	/**
 	 * Stuff here only to test code generation features.
 	 */
-	interface TestStuff {
+	interface TestStuff<Pre, Post> {
 		void registerCallback(String->void callback)
+		String doSomething(Pre pre, String text, Post post)
 	}
 
 	Text createText()
-	TestStuff createTestStuff()
+	TestStuff<String, String> createTestStuff()
 }

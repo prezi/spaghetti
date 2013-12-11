@@ -8,16 +8,19 @@ class LayoutImpl implements Layout {
 		return new TextImpl();
 	}
 
-	public function createTestStuff():TestStuff
+	public function createTestStuff():TestStuff<String, String>
 	{
-		return new TestStuffImpl();
+		return new TestStuffImpl<String, String>();
 	}
 }
 
-class TestStuffImpl implements TestStuff {
+class TestStuffImpl<Pre, Post> implements TestStuff<Pre, Post> {
 	public function new() {}
 	public function registerCallback(callback:String->Void) {
 		callback("Calling callback");
+	}
+	public function doSomething(pre:Pre, text:String, post:Post):String {
+		return '${pre}-${text}-${post}';
 	}
 }
 

@@ -17,5 +17,6 @@ class Client {
 		testStuff.registerCallback(function (message:String) {
 			trace("Received callback message: " + message);
 		});
+		trace("TestStuff.doSomething(): " + testStuff.doSomething("pre", "text", "pos"));
 	}
 }
