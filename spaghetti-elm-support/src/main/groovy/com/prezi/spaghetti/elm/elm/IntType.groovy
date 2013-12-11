@@ -1,22 +1,22 @@
 package com.prezi.spaghetti.elm.elm
 
-class StringType implements DefaultType, Type {
+class IntType implements DefaultType, Type {
 
-  StringType() {
+  IntType() {
   }
 
   @Override
   public Value defaultValue() {
-    return new StringValue("");
+    return new IntValue(0);
   }  
 
   @Override
   public String elmRep() {
-    return "String";
+    return "Int";
   }  
 
   @Override
   public Type toJSType() {
-    return new JSString(this);
+    return new JSNumber(JSNumberType.INT);
   }
 }

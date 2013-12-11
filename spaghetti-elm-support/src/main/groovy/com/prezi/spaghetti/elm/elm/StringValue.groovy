@@ -29,9 +29,7 @@ class StringValue implements Value {
   }
 
   @Override
-  public List<String> elmRep() {
-    def ret = new ArrayList<String>();
-    ret.add("\"" + escapeStr(d_str) + "\"");
-    return ret;
+  public String elmRep() {
+    return "\"" + escapeStr(d_str) + "\"";
   }
 }

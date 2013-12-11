@@ -15,20 +15,24 @@ class DictValue implements Value {
   }
 
   @Override
-  public List<String> elmRep() {
+  public String elmRep() {
 
-    def ret = new ArrayList<String>();
+    def ret = "";
 
-    ret.add("{");
-    for (e in d_map) {
+    ret += "{";
 
-      ret.add(e.key + " = " + e.value.elmRep());
-      if (e.hasNext()) {
+    def it = d_map.entrySet().iterator();
+    while (it.hasNext()) {
 
-        ret.add(",");
+      def e = it.next();
+      ret += e.key + " = " + e.value.elmRep();
+
+      if (it.hasNext()) {
+        ret += ", ";
       }
     }
-    ret.add("}");
+
+    ret += "}";
 
     return ret;
   }

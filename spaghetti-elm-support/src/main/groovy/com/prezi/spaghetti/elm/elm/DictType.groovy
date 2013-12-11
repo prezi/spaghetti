@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.elm.elm
 
 import java.util.Map
+import java.util.HashMap
 
 class DictType implements DefaultType, Type {
 
@@ -15,7 +16,7 @@ class DictType implements DefaultType, Type {
   @Override
   public Value defaultValue() {
 
-    def valueMap = new Map<String, Value>();
+    def valueMap = new HashMap<String, Value>();
 
     for (e in d_map) {
 
@@ -27,22 +28,24 @@ class DictType implements DefaultType, Type {
   }  
 
   @Override
-  public List<String> elmRep() {
+  public String elmRep() {
 
-    def ret = new ArrayList<String>();
+    def ret = "";
 
-    ret.add("{");
+    ret += "{";
 
-    for (e in d_map) {
+    def it = d_map.entrySet().iterator();
+    while (it.hasNext()) {
 
-      ret.add(e.key + " : " + e.value.elmRep());
+      def e = it.next();
+      ret += e.key + " : " + e.value.elmRep();
 
-      if (e.hasNext()) {
-        ret.add(",");
+      if (it.hasNext()) {
+        ret += ", ";
       }
     }
 
-    ret.add("}");
+    ret += "}";
 
     return ret;
   }  

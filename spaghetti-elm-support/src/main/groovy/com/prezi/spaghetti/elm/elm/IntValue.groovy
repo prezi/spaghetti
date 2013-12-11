@@ -16,9 +16,7 @@ class IntValue implements Value {
   }
 
   @Override
-  public List<String> elmRep() {
-    def ret = new ArrayList<String>();
-    ret.add(Integer.toString(d_int));
-    return ret;
+  public String elmRep() {
+    return Integer.toString(d_int);
   }
 }

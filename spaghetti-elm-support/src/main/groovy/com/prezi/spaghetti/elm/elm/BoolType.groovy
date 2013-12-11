@@ -1,22 +1,23 @@
 package com.prezi.spaghetti.elm.elm
 
-class StringType implements DefaultType, Type {
+class BoolType implements DefaultType, Type, ToJSType {
 
-  StringType() {
+  BoolType() {
   }
 
   @Override
   public Value defaultValue() {
-    return new StringValue("");
+    return new BoolValue(false);
   }  
 
   @Override
   public String elmRep() {
-    return "String";
-  }  
+    return "Bool";
+  }
 
   @Override
   public Type toJSType() {
-    return new JSString(this);
+    return new JSBool(this);
   }
+
 }

@@ -5,20 +5,19 @@ import com.prezi.spaghetti.elm.elm.Value
 import java.util.ArrayList
 
 class BoolValue implements Value {
-  private final bool d_bool;
 
-  BoolValue(bool b) {
+  private final boolean d_bool;
+
+  BoolValue(boolean b) {
     this.d_bool = b;
   }
 
-  public bool getBool() {
+  public boolean getBool() {
     return this.d_bool;
   }
 
   @Override
-  public List<String> elmRep() {
-    def ret = new ArrayList<String>();
-    ret.add(d_bool ? "True" : "False");
-    return ret;
+  public String elmRep() {
+    return (d_bool ? "True" : "False");
   }
 }

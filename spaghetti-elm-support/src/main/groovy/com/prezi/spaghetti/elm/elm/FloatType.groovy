@@ -1,22 +1,22 @@
 package com.prezi.spaghetti.elm.elm
 
-class StringType implements DefaultType, Type {
+class FloatType implements DefaultType, Type {
 
-  StringType() {
+  FloatType() {
   }
 
   @Override
   public Value defaultValue() {
-    return new StringValue("");
+    return new FloatValue(0.0);
   }  
 
   @Override
   public String elmRep() {
-    return "String";
+    return "Float";
   }  
 
   @Override
   public Type toJSType() {
-    return new JSString(this);
+    return new JSNumber(JSNumberType.FLOAT);
   }
 }
