@@ -1,6 +1,8 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleConfigurationParser
+import com.prezi.spaghetti.Wrapper
+import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
@@ -16,14 +18,10 @@ class BundleApplication extends AbstractBundleTask {
 	@TaskAction
 	bundle() {
 		def config = readConfig()
-		def bundledJavaScript = createGenerator(config).processApplicationJavaScript(inputFile.text)
+		def wrappedJavaScript = createGenerator(config).processApplicationJavaScript(inputFile.text)
 
+		outputFile.parentFile.mkdirs()
 		outputFile.delete()
-		outputFile << "require(["
-		outputFile << config.modules.values().collect { "\"${it.name.localName}\"" }.join(",")
-		outputFile << "], function() {\n"
-		outputFile << "var __modules = arguments;\n"
-		outputFile << bundledJavaScript
-		outputFile << "});\n"
+		outputFile << Wrapper.wrap(config, Wrapping.application, wrappedJavaScript)
 	}
 }

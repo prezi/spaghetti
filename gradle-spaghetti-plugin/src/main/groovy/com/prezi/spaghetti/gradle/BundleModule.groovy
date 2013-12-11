@@ -1,6 +1,8 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.Wrapper
+import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 /**
@@ -22,20 +24,13 @@ class BundleModule extends AbstractBundleTask {
 		def config = readConfig(definition.text)
 		def module = config.localModules.first()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputFile.text)
-
-		def bundledJavaScript = ""
-		bundledJavaScript += "define(["
-		bundledJavaScript += config.dependentModules.collect { "\"${it.name.localName}\"" }.join(",")
-		bundledJavaScript += "], function() {\n"
-		bundledJavaScript += "var __modules = arguments;\n"
-		bundledJavaScript += processedJavaScript
-		bundledJavaScript += "});\n"
+		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
 
 		jsFile.parentFile.mkdirs()
 		jsFile.delete()
-		jsFile << bundledJavaScript
+		jsFile << wrappedJavaScript
 
-		def bundle = new ModuleBundle(module.name, definition.text, bundledJavaScript)
+		def bundle = new ModuleBundle(module.name, definition.text, wrappedJavaScript)
 		bundle.save(outputFile)
 	}
 
