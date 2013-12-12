@@ -17,6 +17,6 @@ class IntType implements DefaultType, Type {
 
   @Override
   public Type toJSType() {
-    return new JSNumber(JSNumberType.INT);
+    return new JSNumberType(JSNumberType.INT);
   }
 }

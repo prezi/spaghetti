@@ -8,7 +8,6 @@ class JSBoolType implements DefaultType, Type {
   @Override
   public Value defaultValue() {
     return new AppValue (new IdenValue ("JS.fromBool"), new BoolType().defaultValue());
-    }
   }  
 
   @Override

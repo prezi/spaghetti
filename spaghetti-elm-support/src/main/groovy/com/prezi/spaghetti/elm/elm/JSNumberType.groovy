@@ -15,8 +15,8 @@ class JSNumberType implements DefaultType, Type {
   @Override
   public Value defaultValue() {
     switch (d_numberType) {
-    case INT: return new AppValue (new IdenValue ("JS.fromInt"), new IntType().defaultValue());
-    case FLOAT: return new AppValue (new IdenValue ("JS.fromFloat"), new FloatType().defaultValue());
+    case NumberType.INT: return new AppValue (new IdenValue ("JS.fromInt"), new IntType().defaultValue());
+    case NumberType.FLOAT: return new AppValue (new IdenValue ("JS.fromFloat"), new FloatType().defaultValue());
     }
   }  
 

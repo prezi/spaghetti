@@ -17,6 +17,6 @@ class FloatType implements DefaultType, Type {
 
   @Override
   public Type toJSType() {
-    return new JSNumber(JSNumberType.FLOAT);
+    return new JSNumberType(JSNumberType.FLOAT);
   }
 }

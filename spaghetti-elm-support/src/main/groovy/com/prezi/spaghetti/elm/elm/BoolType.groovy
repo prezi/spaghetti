@@ -17,7 +17,7 @@ class BoolType implements DefaultType, Type, ToJSType {
 
   @Override
   public Type toJSType() {
-    return new JSBool(this);
+    return new JSBoolType();
   }
 
 }

@@ -17,6 +17,6 @@ class StringType implements DefaultType, Type {
 
   @Override
   public Type toJSType() {
-    return new JSString(this);
+    return new JSStringType();
   }
 }

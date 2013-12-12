@@ -1,8 +1,9 @@
 package com.prezi.spaghetti.elm.elm
 
-// type and body belongs together
+// type and body belong together in Elm
 
 class FunDec implements Dec {
+
   private String d_funName;
   private Type d_type;
   private Value d_body;

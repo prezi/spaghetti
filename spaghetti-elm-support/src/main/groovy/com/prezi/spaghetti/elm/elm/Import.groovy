@@ -4,12 +4,12 @@ class Import implements ElmRep {
   private final String d_moduleName;
   private final String d_qualified; // may be null
 
-  ElmRep(String moduleName, String qualified) {
+  Import(String moduleName, String qualified) {
     d_moduleName = moduleName;
     d_qualified = qualified;
   }
 
-  ElmRep(String moduleName) {
+  Import(String moduleName) {
     d_moduleName = moduleName;
     d_qualified = null;
   }
@@ -21,7 +21,7 @@ class Import implements ElmRep {
 
     ret += "import " + d_moduleName;
     if (d_qualified != null) {
-      ref += " as " + d_qualified;
+      ret += " as " + d_qualified;
     }
     ret += "\n";
 

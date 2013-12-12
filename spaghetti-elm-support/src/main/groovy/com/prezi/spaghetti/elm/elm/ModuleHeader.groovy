@@ -16,17 +16,22 @@ class ModuleHeader implements ElmRep {
   public String elmRep() {
     def ret = "";
     
-    ret += "module " + d_moduleName + "(";
+    ret += "module " + d_moduleName;
 
-    for (i in d_exports) {
+    if (d_exports.size() > 0) {
+      ret += "(";
 
-      ret += d_exports;
-      if (i.hasNext()) {
-        ret += ", ";
+      for (i in d_exports) {
+
+        ret += d_exports;
+        if (i.hasNext()) {
+          ret += ", ";
+        }
       }
+
+      ret += ")";
     }
-
-    ret += ") where\n";
+    ret += " where\n";
   }
-
+  
 }

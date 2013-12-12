@@ -8,7 +8,7 @@ class Module implements ElmRep {
   private final List<Import> d_importList;
   private final List<Dec> d_decList;
 
-  ElmRep(ModuleHeader moduleHeader, List<Import> importList, List<Dec> decList) {
+  Module(ModuleHeader moduleHeader, List<Import> importList, List<Dec> decList) {
     d_moduleHeader = moduleHeader;
     d_importList = importList;
     d_decList = decList;
@@ -17,7 +17,7 @@ class Module implements ElmRep {
   @Override
   public String elmRep() {
     def ret = "";
-    ret += moduleHeader.elmRep();
+    ret += d_moduleHeader.elmRep();
     ret += "\n";
     for (i in d_importList) {
       ret += i.elmRep();
@@ -26,5 +26,7 @@ class Module implements ElmRep {
     for (i in d_decList) {
       ret += i.elmRep();
     }
+
+    return ret;
   }  
 }
