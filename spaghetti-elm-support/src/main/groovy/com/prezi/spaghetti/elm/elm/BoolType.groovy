@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class BoolType implements DefaultType, Type, ToJSType {
+class BoolType implements IfaceType {
 
   BoolType() {
   }
@@ -20,4 +20,8 @@ class BoolType implements DefaultType, Type, ToJSType {
     return new JSBoolType();
   }
 
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toBool");
+  }
 }

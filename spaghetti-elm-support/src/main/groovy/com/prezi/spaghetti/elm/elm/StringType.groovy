@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class StringType implements DefaultType, Type {
+class StringType implements IfaceType {
 
   StringType() {
   }
@@ -18,5 +18,10 @@ class StringType implements DefaultType, Type {
   @Override
   public Type toJSType() {
     return new JSStringType();
+  }
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toString");
   }
 }

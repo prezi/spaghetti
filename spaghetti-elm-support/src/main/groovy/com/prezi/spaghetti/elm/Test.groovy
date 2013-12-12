@@ -1,5 +1,6 @@
-package com.prezi.spaghetti.elm.elm
+package com.prezi.spaghetti.elm
 
+import com.prezi.spaghetti.elm.elm.*
 import java.util.Map
 
 import com.prezi.spaghetti.ModuleConfigurationParser
@@ -20,17 +21,19 @@ class Main {
     def moduleHeader = new ModuleHeader("Try", ["hey"]);
     def importList = [new Import("JavaScript", "JS")];
     def jsInt = new JSNumberType(JSNumberType.NumberType.INT);
-    def decList = [new ForeignImportDec("asd", jsInt.defaultValue(), "js_asd", signal(jsInt))];
+    def decList = [new ForeignImportDec("asd", dictType.defaultValue(), "js_asd", signal(dictType))];
 
     def module = new Module(moduleHeader, importList, decList);
 
+
     String m = new File("Test.module").text;
 
-    def cxt = ModuleConfigurationParser.parse(m);
+    def configCxt = ModuleConfigurationParser.parse(m);
+    def config = ModuleConfigurationParser.parse([], [configCxt]);
 
-    
+    def elmGen = new ElmGenerator(config);
 
-    System.out.println(module.elmRep());
+    elmGen.generateModuleHeaders(config.localModules.first(), new File("build"));
   }
 
 

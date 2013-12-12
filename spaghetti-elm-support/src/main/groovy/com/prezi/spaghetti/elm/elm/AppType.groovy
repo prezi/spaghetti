@@ -2,7 +2,7 @@ package com.prezi.spaghetti.elm.elm
 
 
 class AppType implements Type {
-  private final Type d_fun
+  private final Type d_fun;
 
   private final List<Type> d_argList; // Must do all type args at once, partial application doesn't work in Elm (e.g. "((Either Int) String)")
 

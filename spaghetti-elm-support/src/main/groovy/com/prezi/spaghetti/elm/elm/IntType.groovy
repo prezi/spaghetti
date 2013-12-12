@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class IntType implements DefaultType, Type {
+class IntType implements IfaceType {
 
   IntType() {
   }
@@ -18,5 +18,10 @@ class IntType implements DefaultType, Type {
   @Override
   public Type toJSType() {
     return new JSNumberType(JSNumberType.INT);
+  }
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toInt");
   }
 }

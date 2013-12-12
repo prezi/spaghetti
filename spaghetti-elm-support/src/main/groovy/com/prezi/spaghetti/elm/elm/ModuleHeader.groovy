@@ -19,17 +19,7 @@ class ModuleHeader implements ElmRep {
     ret += "module " + d_moduleName;
 
     if (d_exports.size() > 0) {
-      ret += "(";
-
-      for (i in d_exports) {
-
-        ret += d_exports;
-        if (i.hasNext()) {
-          ret += ", ";
-        }
-      }
-
-      ret += ")";
+      ret += "(" + d_exports.join(", ") + ")";
     }
     ret += " where\n";
   }

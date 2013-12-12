@@ -3,7 +3,7 @@ package com.prezi.spaghetti.elm.elm
 import java.util.Map
 import java.util.HashMap
 
-class DictType implements DefaultType, Type {
+class DictType implements IfaceType {
 
   private Map<String, Type> d_map;
 
@@ -50,5 +50,15 @@ class DictType implements DefaultType, Type {
     return ret;
   }  
   
+  @Override
+  public Type toJSType() {
+    return new JSObjectType(this);
+  }
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toRecord");
+  }
+
 }
 

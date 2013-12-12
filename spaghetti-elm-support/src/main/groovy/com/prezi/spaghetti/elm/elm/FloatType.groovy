@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class FloatType implements DefaultType, Type {
+class FloatType implements IfaceType {
 
   FloatType() {
   }
@@ -18,5 +18,10 @@ class FloatType implements DefaultType, Type {
   @Override
   public Type toJSType() {
     return new JSNumberType(JSNumberType.FLOAT);
+  }
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toFloat");
   }
 }
