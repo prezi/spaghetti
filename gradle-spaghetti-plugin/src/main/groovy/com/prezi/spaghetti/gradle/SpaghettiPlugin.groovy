@@ -17,8 +17,8 @@ class SpaghettiPlugin implements Plugin<Project> {
 	@Override
 	void apply(Project project)
 	{
-		for (generator in ServiceLoader.load(GeneratorFactory)) {
-			generatorFactories.put generator.platform, generator
+		for (factory in ServiceLoader.load(GeneratorFactory)) {
+			generatorFactories.put factory.platform, factory
 		}
 		project.logger.info "Loaded generators for ${generatorFactories.keySet()}"
 
@@ -30,6 +30,18 @@ class SpaghettiPlugin implements Plugin<Project> {
 		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration
 		project.tasks.withType(AbstractSpaghettiTask) { AbstractSpaghettiTask task ->
 			task.applyParameters(extension.params)
+		}
+
+		project.tasks.create("spaghetti-platforms") {
+			if (generatorFactories.keySet().empty) {
+				println "No platform support for Spaghetti is found"
+			} else {
+				println "Spaghetti supports the following platforms:\n"
+				def length = generatorFactories.keySet().max { a, b -> a.length() <=> b.length() }.length()
+				generatorFactories.values().each { factory ->
+					println "  " + factory.platform.padRight(length) + " - " + factory.description
+				}
+			}
 		}
 	}
 

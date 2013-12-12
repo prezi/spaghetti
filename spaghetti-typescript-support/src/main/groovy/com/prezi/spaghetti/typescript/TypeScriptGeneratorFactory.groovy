@@ -16,6 +16,12 @@ public class TypeScriptGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
+	String getDescription()
+	{
+		return "generates TypeScript code"
+	}
+
+	@Override
 	Generator createGenerator(ModuleConfiguration configuration)
 	{
 		return new TypeScriptGenerator(configuration)

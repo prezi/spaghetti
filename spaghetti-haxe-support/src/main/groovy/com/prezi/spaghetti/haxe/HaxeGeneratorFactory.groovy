@@ -16,6 +16,12 @@ public class HaxeGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
+	String getDescription()
+	{
+		return "generates Haxe code"
+	}
+
+	@Override
 	Generator createGenerator(ModuleConfiguration configuration)
 	{
 		return new HaxeGenerator(configuration)

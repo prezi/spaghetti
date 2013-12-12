@@ -5,5 +5,6 @@ package com.prezi.spaghetti
  */
 public interface GeneratorFactory {
 	String getPlatform()
+	String getDescription()
 	Generator createGenerator(ModuleConfiguration configuration)
 }
