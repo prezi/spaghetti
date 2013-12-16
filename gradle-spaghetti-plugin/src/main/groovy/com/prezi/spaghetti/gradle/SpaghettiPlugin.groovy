@@ -33,13 +33,15 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 
 		project.tasks.create("spaghetti-platforms") {
-			if (generatorFactories.keySet().empty) {
-				println "No platform support for Spaghetti is found"
-			} else {
-				println "Spaghetti supports the following platforms:\n"
-				def length = generatorFactories.keySet().max { a, b -> a.length() <=> b.length() }.length()
-				generatorFactories.values().each { factory ->
-					println "  " + factory.platform.padRight(length) + " - " + factory.description
+			doLast {
+				if (generatorFactories.keySet().empty) {
+					println "No platform support for Spaghetti is found"
+				} else {
+					println "Spaghetti supports the following platforms:\n"
+					def length = generatorFactories.keySet().max { a, b -> a.length() <=> b.length() }.length()
+					generatorFactories.values().each { factory ->
+						println "  " + factory.platform.padRight(length) + " - " + factory.description
+					}
 				}
 			}
 		}
