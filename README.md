@@ -35,22 +35,21 @@ Language defined in [ANTLR](http://antlr.org/), grammar can be reused without mo
 /**
  * Layout module.
  */
-module prezi.graphics.text.Layout {
+module prezi.graphics.text.Layout
 
-    /**
-     * Describes a block of text.
-     */
-    interface Text {
-        /**
-         * Inserts the given String at <code>offset</code>.
-         */
-        void insert(int offset, String text)
-        void delete(int offset, int end)
-        String getRawText()
-    }
-
-    Text createText()
+/**
+ * Describes a block of text.
+ */
+interface Text {
+	/**
+	 * Inserts the given String at <code>offset</code>.
+	 */
+	void insert(int offset, String text)
+	void delete(int offset, int end)
+	String getRawText()
 }
+
+Text createText()
 ```
 
 ## Build the module

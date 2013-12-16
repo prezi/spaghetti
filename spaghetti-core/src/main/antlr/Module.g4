@@ -1,9 +1,8 @@
 grammar Module;
 
 moduleDefinition : (documentation = Doc)?
-	'module' (name = qualifiedName) '{'
-		moduleElement*
-	'}'
+	'module' (name = qualifiedName)
+	moduleElement*
 	;
 
 moduleElement	: typeDefinition

@@ -1,82 +1,81 @@
 /**
  * Layout module.
  */
-module prezi.graphics.text.Layout {
+module prezi.graphics.text.Layout
+
+/**
+ * Different types of character styles.
+ */
+enum CharacterStyleType {
+	/**
+	 * This takes an int.
+	 */
+	COLOR
 
 	/**
-	 * Different types of character styles.
+	 * A String with the name of the font family.
 	 */
-	enum CharacterStyleType {
-		/**
-		 * This takes an int.
-		 */
-		COLOR
-
-		/**
-		 * A String with the name of the font family.
-		 */
-		FONT_FAMILY
-
-		/**
-		 * This one can be "italic" or "normal".
-		 */
-		FONT_STYLE
-
-		/**
-		 * Something like "condensed", or our favorite: "normal".
-		 */
-		FONT_STRETCH
-
-		/**
-		 * The ever so famous "bold" (or "normal").
-		 */
-		FONT_WEIGHT
-
-		/**
-		 * This'll be a bool.
-		 */
-		UNDERLINE
-
-		/**
-		 * Again, a bool saying whether or not the text is an URL.
-		 */
-		URL
-	}
-
-	struct CharacterStyle {
-		/**
-		 * The type of the style.
-		 */
-		CharacterStyleType type
-		/**
-		 * The value of the style.
-		 */
-		any value
-	}
-
-	interface AbstractText {
-		void insert(int offset, String text, @nullable CharacterStyle[] withStyles)
-		void delete(int offset, int end)
-	}
+	FONT_FAMILY
 
 	/**
-	 * Describes a block of text.
+	 * This one can be "italic" or "normal".
 	 */
-	interface Text extends AbstractText {
-		/**
-		 * Inserts the given String at <code>offset</code>.
-		 */
-		String getRawText()
-	}
+	FONT_STYLE
 
 	/**
-	 * Stuff here only to test code generation features.
+	 * Something like "condensed", or our favorite: "normal".
 	 */
-	interface TestStuff<Pre, Post> {
-		void registerCallback(String->void callback)
-		String doSomething(Pre pre, String text, Post post)
-	}
+	FONT_STRETCH
 
-	Text createText()
-	TestStuff<String, String> createTestStuff()
+	/**
+	 * The ever so famous "bold" (or "normal").
+	 */
+	FONT_WEIGHT
+
+	/**
+	 * This'll be a bool.
+	 */
+	UNDERLINE
+
+	/**
+	 * Again, a bool saying whether or not the text is an URL.
+	 */
+	URL
 }
+
+struct CharacterStyle {
+	/**
+	 * The type of the style.
+	 */
+	CharacterStyleType type
+	/**
+	 * The value of the style.
+	 */
+	any value
+}
+
+interface AbstractText {
+	void insert(int offset, String text, @nullable CharacterStyle[] withStyles)
+	void delete(int offset, int end)
+}
+
+/**
+ * Describes a block of text.
+ */
+interface Text extends AbstractText {
+	/**
+	 * Inserts the given String at <code>offset</code>.
+	 */
+	String getRawText()
+}
+
+/**
+ * Stuff here only to test code generation features.
+ */
+interface TestStuff<Pre, Post> {
+	void registerCallback(String->void callback)
+	String doSomething(Pre pre, String text, Post post)
+}
+
+Text createText()
+TestStuff<String, String> createTestStuff()

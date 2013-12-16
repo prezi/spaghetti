@@ -1,10 +1,10 @@
 /**
  * Text renderer module.
  */
-module prezi.graphics.text.render.TextRenderer {
-    interface Renderer {
-        String render(prezi.graphics.text.Text text)
-    }
+module prezi.graphics.text.render.TextRenderer
 
-    Renderer createRenderer(String prefix, String suffix)
+interface Renderer {
+	String render(prezi.graphics.text.Text text)
 }
+
+Renderer createRenderer(String prefix, String suffix)
