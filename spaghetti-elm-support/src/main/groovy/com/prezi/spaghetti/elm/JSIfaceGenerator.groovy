@@ -8,11 +8,11 @@ class JSIfaceGenerator {
 
   private final ModuleParser.ModuleDefinitionContext d_moduleDef;
   // elm module name->module map
-  private final Map<String, JSElmModule> d_moduleMap;
+  private final Map<String, Module> d_moduleMap;
   
-  JSIfaceGenerator(ModuleParser.ModuleDefinitionContext moduleDef, List<JSElmModule> elmModules) {
+  JSIfaceGenerator(ModuleParser.ModuleDefinitionContext moduleDef, List<Module> elmModules) {
     d_moduleDef = moduleDef;
-    d_moduleMap = elmModules.collectEntries{[it.module().moduleHeader().moduleName(), it]};
+    d_moduleMap = elmModules.collectEntries{[it.moduleHeader().moduleName(), it]};
   }
 
   public List<IfaceFunction> generateIfaceFunctions() {

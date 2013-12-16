@@ -36,7 +36,8 @@ class JSTupleType implements JSType {
 
   @Override
   public Value toJSFunction() {
-    def els = [0 .. d_tupleType.types().size() - 1].collect{"a" + it};
+    def i = 0;
+    def els = d_tupleType.types().collect{def r = "a" + i; i++; return r};
     def lambda = "(\\(" + els.join(", ") + ") -> {" + els.collect{it + " = " + it}.join(", ") +
                  "})";
 

@@ -1,0 +1,66 @@
+import com.prezi.spaghetti.gradle.BundleModule
+import com.prezi.spaghetti.gradle.GenerateModuleHeaders
+
+apply plugin: "spaghetti"
+
+spaghetti {
+	platform "elm"
+	definition "UserList.module"
+}
+
+task generateHeaders(type: GenerateModuleHeaders) {
+}
+
+task compileElm(type: ElmTask) {
+	dependsOn generateHeaders
+	source generateHeaders.outputDirectory
+	source "src"
+	dest = file("${buildDir}/module.js");
+}
+
+task bundleModule(type: BundleModule) {
+	dependsOn compileElm
+	inputFile compileElm.dest
+}
+
+artifacts {
+	archives(bundleModule.outputFile) {
+		builtBy bundleModule
+	}
+	modules(bundleModule.outputFile) {
+			builtBy bundleModule
+	}
+}
+
+class ElmTask extends SourceTask {
+	@OutputFile
+	def dest;
+	def jsSrcs = [];
+
+	@TaskAction
+	def run() {
+		println "Executing ElmTask"
+		def elmTemp = new File(project.buildDir, "elm-output.js");
+
+        def tmpDir=new File("./tmp/");
+
+		def command = ["elm", "--make", "--only-js", "--build-dir=" + tmpDir] + source.files;
+		println command.join(" ");
+		def process = command.execute()
+		process.waitForProcessOutput(System.out, System.err);
+
+		if (process.exitValue() != 0) {
+			throw new RuntimeException("Failed ELM build: " + process.exitValue())
+		}
+
+        def jsFiles = ant.fileScanner{fileset(dir : tmpDir)};
+
+		ant.concat(destfile: (dest as File).canonicalPath, fixlastline: 'yes') {
+            jsFiles.each {
+                fileset(file: it)
+            }
+			// fileset(file: elmTemp);
+        }
+	}
+}
+

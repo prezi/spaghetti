@@ -28,7 +28,7 @@ class Module implements ElmRep {
   public String elmRep() {
     def ret = d_moduleHeader.elmRep() + "\n" +
       d_importList.collect{it.elmRep()}.join("") + "\n" +
-      d_foreignFunctions.collect{it.foreignDec().elmRep()}.join("") +
+      d_foreignFunctions.collect{it.foreignDec().elmRep()}.join("") + "\n\n" +
       d_foreignFunctions.collect{it.functionDec().elmRep()}.join("") +
       d_decList.collect{it.elmRep()}.join("");
 

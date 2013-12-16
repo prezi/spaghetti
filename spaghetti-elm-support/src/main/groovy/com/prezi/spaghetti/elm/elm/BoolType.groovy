@@ -24,4 +24,10 @@ class BoolType implements IfaceType {
   public String generateSignallingJSFun(String signalName, String elmIface) {
     return ElmUtils.unarySignallingJSFun(signalName, elmIface);
   }
+
+
+  @Override
+  public String generateCallbackJSFun(String signalName, String elmIface) {
+    return ElmUtils.unaryCallbackJSFun(signalName, elmIface);
+  }
 }

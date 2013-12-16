@@ -44,16 +44,14 @@ class ElmGenerator implements Generator {
     
     def elmModules = new ElmModuleGenerator(module.context).generateModules();
 
-    // def jsGenerator = new JSIfaceGenerator(module.context, elmModules);
+    def jsGenerator = new JSIfaceGenerator(module.context, elmModules);
 
-    // def ifaceFunctions = jsGenerator.generateIfaceFunctions();
+    def ifaceFunctions = jsGenerator.generateIfaceFunctions();
 
-    // def returnStatement = "return {\n" + ifaceFunctions.collect{it.jsRep()}.join(",\n") + "\n};"
+    def returnStatement = "return {\n" + ifaceFunctions.collect{it.jsRep()}.join(",\n") + "\n};"
 
-    // // System.out.("weel wtf" + returnStatement);
     
-    // return javaScript + returnStatement;
-    return javaScript;
+    return javaScript + returnStatement;
   }
 
 

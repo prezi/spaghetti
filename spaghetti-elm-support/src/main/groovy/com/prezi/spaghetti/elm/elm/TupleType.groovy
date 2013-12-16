@@ -30,14 +30,19 @@ class TupleType implements IfaceType {
   }  
 
   public DictType toDictType() {
-    def dictType = [ : ];
-    d_types.eachWithIndex{ty, i -> dictType["a" + i] = ty};
-    return dictType;
+    def i = 0;
+    return d_types.collectEntries{def tmp = i; i++; return ["a" + tmp, it]};
   }
 
   @Override
   public String generateSignallingJSFun(String signalName, String elmIface) {
     return ElmUtils.nonUnarySignallingJSFun(signalName, elmIface, this.toDictType());
+  }
+
+
+  @Override
+  public String generateCallbackJSFun(String signalName, String elmIface) {
+    return ElmUtils.nonUnaryCallbackJSFun(signalName, elmIface, this.toDictType());
   }
   
 }

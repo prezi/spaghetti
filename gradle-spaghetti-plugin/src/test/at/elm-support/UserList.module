@@ -1,0 +1,10 @@
+module prezi.ui.UserList {
+    interface UserListUI {
+        void userJoined(String userId, int hey)
+        void userLeft(String userId)
+        void setPresentingUser(String userId)
+    }
+
+    UserListUI createUI()
+}
+

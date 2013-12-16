@@ -34,7 +34,7 @@ class Main {
     def elmGen = new ElmGenerator(config);
 
     elmGen.generateModuleHeaders(config.localModules.first(), new File("build"));
-    System.out.println(elmGen.processModuleJavaScript(config.localModules.first(), "balls"));
+    System.out.println(elmGen.processModuleJavaScript(config.localModules.first(), ""));
   }
 
 

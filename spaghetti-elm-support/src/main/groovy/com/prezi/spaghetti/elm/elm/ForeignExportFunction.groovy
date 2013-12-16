@@ -28,4 +28,10 @@ class ForeignExportFunction implements ForeignFunction {
     def functionBody = new AppValue(new IdenValue("constant"), d_ifaceType.defaultValue());
     return new FunDec(d_methodName, ElmUtils.signal(d_ifaceType), functionBody);
   }
+
+  @Override
+  public String generateJS(String elmIface) {
+    return d_methodName + " : " + d_ifaceType.generateCallbackJSFun(d_methodName, elmIface);
+  }
+
 }

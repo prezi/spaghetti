@@ -25,4 +25,9 @@ class IntType implements IfaceType {
     return ElmUtils.unarySignallingJSFun(signalName, elmIface);
   }
 
+  @Override
+  public String generateCallbackJSFun(String signalName, String elmIface) {
+    return ElmUtils.unaryCallbackJSFun(signalName, elmIface);
+  }
+
 }

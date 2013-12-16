@@ -28,4 +28,10 @@ class ForeignImportFunction implements ForeignFunction {
 
     return new FunDec(d_methodName, ElmUtils.signal(d_ifaceType), functionBody);
   }
+
+  @Override
+  public String generateJS(String elmIface) {
+    return d_methodName + " : " + d_ifaceType.generateSignallingJSFun(d_methodName, elmIface);
+  }
+
 }

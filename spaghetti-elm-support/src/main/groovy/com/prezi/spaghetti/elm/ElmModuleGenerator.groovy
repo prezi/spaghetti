@@ -25,7 +25,7 @@ class ElmModuleGenerator {
     d_module = module;
   }
 
-  public static List<JSElmModule> generateModules()
+  public static List<Module> generateModules()
   {
 
     def typeDefCxts = d_module.moduleElement().collect{it.typeDefinition()} - null;

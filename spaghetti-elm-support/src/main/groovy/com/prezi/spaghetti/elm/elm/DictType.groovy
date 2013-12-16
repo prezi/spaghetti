@@ -30,7 +30,7 @@ class DictType implements IfaceType {
   @Override
   public String elmRep() {
 
-    return "{" + d_map.collect{it.key + " : " + e.value.elmRep()}.join(", ") + "}";
+    return "{" + d_map.collect{it.key + " : " + it.value.elmRep()}.join(", ") + "}";
   }  
 
   public Map<String, Type> map() {
@@ -45,6 +45,12 @@ class DictType implements IfaceType {
   @Override
   public String generateSignallingJSFun(String signalName, String elmIface) {
     return ElmUtils.nonUnarySignallingJSFun(signalName, elmIface, this);
+  }
+
+
+  @Override
+  public String generateCallbackJSFun(String signalName, String elmIface) {
+    return ElmUtils.nonUnaryCallbackJSFun(signalName, elmIface, this);
   }
 
 }
