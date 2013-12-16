@@ -11,7 +11,7 @@ import com.prezi.spaghetti.ModuleConfiguration
 public class HaxeGeneratorFactory implements GeneratorFactory {
 
 	private static def EXTERNS = [
-	        "HTMLCanvasElement": "js.html.CanvasElement",
+			"HTMLCanvasElement": "js.html.CanvasElement",
 			"CanvasRenderingContext2D": "js.html.CanvasRenderingContext2D"
 		].asImmutable()
 
