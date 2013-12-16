@@ -56,7 +56,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 	Map<FQName, FQName> getExterns(String platform) {
 		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
-		return generatorFactory.getExterns().collectEntries([:]) { extern, impl ->
+		return generatorFactory.getExternMapping().collectEntries([:]) { extern, impl ->
 			return [ FQName.fromString(extern), FQName.fromString(impl) ]
 		}
 	}

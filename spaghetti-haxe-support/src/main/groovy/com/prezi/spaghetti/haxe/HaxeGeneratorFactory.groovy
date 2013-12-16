@@ -28,7 +28,7 @@ public class HaxeGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
-	Map<String, String> getExterns()
+	Map<String, String> getExternMapping()
 	{
 		return EXTERNS
 	}

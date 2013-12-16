@@ -7,5 +7,5 @@ public interface GeneratorFactory {
 	String getPlatform()
 	String getDescription()
 	Generator createGenerator(ModuleConfiguration configuration)
-	Map<String, String> getExterns()
+	Map<String, String> getExternMapping()
 }

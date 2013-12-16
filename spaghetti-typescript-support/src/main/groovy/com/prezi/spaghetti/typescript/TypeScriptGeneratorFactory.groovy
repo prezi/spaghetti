@@ -10,10 +10,7 @@ import com.prezi.spaghetti.ModuleConfiguration
  */
 public class TypeScriptGeneratorFactory implements GeneratorFactory {
 
-	private static def EXTERNS = [
-			"HTMLCanvasElement": "HTMLCanvasElement",
-			"CanvasRenderingContext2D": "CanvasRenderingContext2D"
-		].asImmutable()
+	private static def EXTERNS = [:].asImmutable()
 
 	@Override
 	String getPlatform()
@@ -28,7 +25,7 @@ public class TypeScriptGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
-	Map<String, String> getExterns()
+	Map<String, String> getExternMapping()
 	{
 		return EXTERNS
 	}

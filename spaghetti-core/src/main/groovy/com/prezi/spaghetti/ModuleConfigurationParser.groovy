@@ -61,10 +61,13 @@ class GlobalScope implements Scope {
 	@Override
 	FQName resolveExtern(FQName name)
 	{
-		if (!externs.containsKey(name)) {
-			throw new IllegalStateException("Extern not found: ${name}, externs registered: ${externs}")
+		if (externs.containsKey(name)) {
+			return externs.get(name)
 		}
-		return externs.get(name)
+		else {
+			// If we have no mapping for the extern, use the defined name
+			return name
+		}
 	}
 
 	void registerNames(Collection<FQName> names) {
