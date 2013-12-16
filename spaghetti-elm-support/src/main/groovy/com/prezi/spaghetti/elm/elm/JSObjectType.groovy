@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class JSObjectType implements DefaultType, Type {
+class JSObjectType implements JSType {
 
   // The underlying dictionary
   private final DictType d_dictType;
@@ -22,4 +22,15 @@ class JSObjectType implements DefaultType, Type {
   public String elmRep() {
     return "JS.JSObject";
   }  
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toRecord");
+  }
+
+  @Override
+  public Value toJSFunction() {
+    return new IdenValue("JS.fromRecord");
+  }
+
 }

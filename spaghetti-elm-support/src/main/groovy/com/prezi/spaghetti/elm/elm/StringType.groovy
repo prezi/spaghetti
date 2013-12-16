@@ -16,12 +16,12 @@ class StringType implements IfaceType {
   }  
 
   @Override
-  public Type toJSType() {
+  public JSType toJSType() {
     return new JSStringType();
   }
 
   @Override
-  public Value fromJSFunction() {
-    return new IdenValue("JS.toString");
+  public String generateSignallingJSFun(String signalName, String elmIface) {
+    return ElmUtils.unarySignallingJSFun(signalName, elmIface);
   }
 }

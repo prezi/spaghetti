@@ -6,15 +6,15 @@ import com.prezi.spaghetti.ModuleConfiguration
 
 public class ElmGeneratorFactory implements GeneratorFactory {
 
-	@Override
-	String getPlatform()
-	{
-		return "elm"
-	}
+  @Override
+  String getPlatform()
+  {
+    return "elm";
+  }
 
-	@Override
-	Generator createGenerator(ModuleConfiguration configuration)
-	{
-		return new ElmGenerator(configuration)
-	}
+  @Override
+  Generator createGenerator(ModuleConfiguration configuration)
+  {
+    return new ElmGenerator(configuration);
+  }
 }

@@ -16,12 +16,12 @@ class BoolType implements IfaceType {
   }
 
   @Override
-  public Type toJSType() {
+  public JSType toJSType() {
     return new JSBoolType();
   }
 
   @Override
-  public Value fromJSFunction() {
-    return new IdenValue("JS.toBool");
+  public String generateSignallingJSFun(String signalName, String elmIface) {
+    return ElmUtils.unarySignallingJSFun(signalName, elmIface);
   }
 }

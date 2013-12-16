@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class JSStringType implements DefaultType, Type {
+class JSStringType implements JSType {
 
   JSStringType() {
   }
@@ -14,4 +14,14 @@ class JSStringType implements DefaultType, Type {
   public String elmRep() {
     return "JS.JSString";
   }  
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toString");
+  }
+
+  @Override
+  public Value toJSFunction() {
+    return new IdenValue("JS.fromString");
+  }
 }

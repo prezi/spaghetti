@@ -18,12 +18,12 @@ class Main {
     def arrowType = new ArrowType(jsType, dictType);
 
 
-    def moduleHeader = new ModuleHeader("Try", ["hey"]);
-    def importList = [new Import("JavaScript", "JS")];
-    def jsInt = new JSNumberType(JSNumberType.NumberType.INT);
-    def decList = [new ForeignImportDec("asd", dictType.defaultValue(), "js_asd", signal(dictType))];
+    // def moduleHeader = new ModuleHeader("Try", "This", ["hey"]);
+    // def importList = [new Import("JavaScript", "JS")];
+    // def jsInt = new JSNumberType(JSNumberType.NumberType.INT);
+    // def decList = [new ForeignImportDec("asd", dictType.defaultValue(), "js_asd", signal(dictType))];
 
-    def module = new Module(moduleHeader, importList, decList);
+    // def module = new Module(moduleHeader, importList, decList);
 
 
     String m = new File("Test.module").text;
@@ -34,6 +34,7 @@ class Main {
     def elmGen = new ElmGenerator(config);
 
     elmGen.generateModuleHeaders(config.localModules.first(), new File("build"));
+    System.out.println(elmGen.processModuleJavaScript(config.localModules.first(), "balls"));
   }
 
 

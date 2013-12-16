@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class JSBoolType implements DefaultType, Type {
+class JSBoolType implements JSType {
 
   JSBoolType() {
   }
@@ -13,6 +13,16 @@ class JSBoolType implements DefaultType, Type {
   @Override
   public String elmRep() {
     return "JS.JSBool";
+  }
+
+  @Override
+  public Value fromJSFunction() {
+    return new IdenValue("JS.toBool");
+  }
+
+  @Override
+  public Value toJSFunction() {
+    return new IdenValue("JS.fromBool");
   }
 
 }

@@ -17,23 +17,6 @@ class DictValue implements Value {
   @Override
   public String elmRep() {
 
-    def ret = "";
-
-    ret += "{";
-
-    def it = d_map.entrySet().iterator();
-    while (it.hasNext()) {
-
-      def e = it.next();
-      ret += e.key + " = " + e.value.elmRep();
-
-      if (it.hasNext()) {
-        ret += ", ";
-      }
-    }
-
-    ret += "}";
-
-    return ret;
+    return "{" + d_map.collect{it.key + " = " + e.value.elmRep()}.join(", ") + "}";
   }
 }

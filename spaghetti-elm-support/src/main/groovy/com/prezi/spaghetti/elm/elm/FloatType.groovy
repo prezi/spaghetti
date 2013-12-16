@@ -16,12 +16,12 @@ class FloatType implements IfaceType {
   }  
 
   @Override
-  public Type toJSType() {
+  public JSType toJSType() {
     return new JSNumberType(JSNumberType.FLOAT);
   }
 
   @Override
-  public Value fromJSFunction() {
-    return new IdenValue("JS.toFloat");
+  public String generateSignallingJSFun(String signalName, String elmIface) {
+    return ElmUtils.unarySignallingJSFun(signalName, elmIface);
   }
 }

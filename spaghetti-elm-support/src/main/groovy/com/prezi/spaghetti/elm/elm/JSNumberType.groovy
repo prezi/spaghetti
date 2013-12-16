@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class JSNumberType implements DefaultType, Type {
+class JSNumberType implements JSType {
 
   public enum NumberType {
     INT, FLOAT                 // Float not used for now
@@ -24,4 +24,21 @@ class JSNumberType implements DefaultType, Type {
   public String elmRep() {
     return "JS.JSNumber";
   }  
+
+  @Override
+  public Value fromJSFunction() {
+    switch (d_numberType) {
+    case INT: return new IdenValue("JS.toInt");
+    case FLOAT: return new IdenValue("JS.toFloat");
+    }
+  }
+
+  @Override
+  public Value toJSFunction() {
+    switch (d_numberType) {
+    case INT: return new IdenValue("JS.fromInt");
+    case FLOAT: return new IdenValue("JS.fromFloat");
+    }
+  }
+  
 }

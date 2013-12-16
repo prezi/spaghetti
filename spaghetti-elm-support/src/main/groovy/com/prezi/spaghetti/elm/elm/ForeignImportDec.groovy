@@ -2,12 +2,12 @@ package com.prezi.spaghetti.elm.elm
 
 class ForeignImportDec implements Dec {
 
-  private String d_exposedName;
-  private Value d_defaultValue;
-  private String d_internalName;
-  private Type d_type;
+  private final String d_exposedName;
+  private final Value d_defaultValue;
+  private final String d_internalName;
+  private final Type d_type;
 
-  ForeignImportDec(String exposedName, Value defaultValue, String internalName, Type type) {
+  ForeignImportDec(String exposedName, String internalName, Type type, Value defaultValue) {
     d_exposedName = exposedName;
     d_defaultValue = defaultValue;
     d_internalName = internalName;

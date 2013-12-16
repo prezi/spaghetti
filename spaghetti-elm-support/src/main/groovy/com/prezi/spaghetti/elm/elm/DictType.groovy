@@ -5,7 +5,7 @@ import java.util.HashMap
 
 class DictType implements IfaceType {
 
-  private Map<String, Type> d_map;
+  private final Map<String, Type> d_map;
 
   DictType(Map<String, Type> map) {
     d_map = map;
@@ -30,34 +30,21 @@ class DictType implements IfaceType {
   @Override
   public String elmRep() {
 
-    def ret = "";
-
-    ret += "{";
-
-    def it = d_map.entrySet().iterator();
-    while (it.hasNext()) {
-
-      def e = it.next();
-      ret += e.key + " : " + e.value.elmRep();
-
-      if (it.hasNext()) {
-        ret += ", ";
-      }
-    }
-
-    ret += "}";
-
-    return ret;
+    return "{" + d_map.collect{it.key + " : " + e.value.elmRep()}.join(", ") + "}";
   }  
+
+  public Map<String, Type> map() {
+    return d_map;
+  }
   
   @Override
-  public Type toJSType() {
+  public JSType toJSType() {
     return new JSObjectType(this);
   }
 
   @Override
-  public Value fromJSFunction() {
-    return new IdenValue("JS.toRecord");
+  public String generateSignallingJSFun(String signalName, String elmIface) {
+    return ElmUtils.nonUnarySignallingJSFun(signalName, elmIface, this);
   }
 
 }
