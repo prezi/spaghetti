@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration
@@ -8,6 +9,11 @@ import com.prezi.spaghetti.ModuleConfiguration
  * Created by lptr on 23/11/13.
  */
 public class HaxeGeneratorFactory implements GeneratorFactory {
+
+	private static def EXTERNS = [
+	        "HTMLCanvasElement": "js.html.CanvasElement",
+			"CanvasRenderingContext2D": "js.html.CanvasRenderingContext2D"
+		].asImmutable()
 
 	@Override
 	String getPlatform()
@@ -19,6 +25,12 @@ public class HaxeGeneratorFactory implements GeneratorFactory {
 	String getDescription()
 	{
 		return "generates Haxe code"
+	}
+
+	@Override
+	Map<String, String> getExterns()
+	{
+		return EXTERNS
 	}
 
 	@Override

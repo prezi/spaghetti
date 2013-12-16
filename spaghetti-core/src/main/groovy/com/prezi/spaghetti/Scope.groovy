@@ -7,4 +7,5 @@ import com.prezi.spaghetti.grammar.ModuleParser
  */
 public interface Scope {
 	FQName resolveName(FQName name)
+	FQName resolveExtern(FQName name)
 }

@@ -9,6 +9,7 @@ moduleElement	: typeDefinition
 				| structDefinition
 				| enumDefinition
 				| methodDefinition
+				| externTypeDefinition
 	;
 
 typeDefinition : (documentation = Doc)? annotations?
@@ -16,6 +17,10 @@ typeDefinition : (documentation = Doc)? annotations?
 		typeElement*
 	'}'
 	;
+
+externTypeDefinition : (documentation = Doc)? annotations?
+	'extern' 'interface' (name = qualifiedName)
+    ;
 
 typeParameters : '<' (parameters += typeParameter ) ( ',' ( parameters += typeParameter ) )* '>'
 	;

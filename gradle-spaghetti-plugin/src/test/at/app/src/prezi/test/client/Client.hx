@@ -18,5 +18,8 @@ class Client {
 			trace("Received callback message: " + message);
 		});
 		trace("TestStuff.doSomething(): " + testStuff.doSomething("pre", "text", "pos"));
+
+		var canvas = untyped __js__("document.getElementById('canvas')");
+		testStuff.drawSomething(canvas);
 	}
 }

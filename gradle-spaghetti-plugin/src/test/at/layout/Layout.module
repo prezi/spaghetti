@@ -69,12 +69,15 @@ interface Text extends AbstractText {
 	String getRawText()
 }
 
+extern interface HTMLCanvasElement
+
 /**
  * Stuff here only to test code generation features.
  */
 interface TestStuff<Pre, Post> {
 	void registerCallback(String->void callback)
 	String doSomething(Pre pre, String text, Post post)
+	void drawSomething(HTMLCanvasElement canvas)
 }
 
 Text createText()

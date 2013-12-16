@@ -22,6 +22,9 @@ class TestStuffImpl<Pre, Post> implements TestStuff<Pre, Post> {
 	public function doSomething(pre:Pre, text:String, post:Post):String {
 		return '${pre}-${text}-${post}';
 	}
+	public function drawSomething(canvas:js.html.CanvasElement) {
+		canvas.getContext("2d").fillRect(10, 10, 100, 50);
+	}
 }
 
 class TextImpl implements Text

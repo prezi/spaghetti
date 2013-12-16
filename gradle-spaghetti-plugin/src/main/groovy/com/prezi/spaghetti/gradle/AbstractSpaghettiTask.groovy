@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
@@ -14,8 +15,17 @@ class AbstractSpaghettiTask extends DefaultTask {
 	@Delegate
 	Parameters params = new Parameters(project)
 
+	protected SpaghettiPlugin getPlugin()
+	{
+		return project.getPlugins().getPlugin(SpaghettiPlugin)
+	}
+
 	protected Generator createGenerator(ModuleConfiguration config) {
-		project.getPlugins().getPlugin(SpaghettiPlugin).createGeneratorForPlatform(platform, config)
+		return plugin.createGeneratorForPlatform(platform, config)
+	}
+
+	protected Map<FQName, FQName> getExterns() {
+		return plugin.getExterns(platform)
 	}
 
 	public void applyParameters(Parameters params) {
@@ -44,7 +54,7 @@ class AbstractSpaghettiTask extends DefaultTask {
 			def moduleDefCtx = ModuleConfigurationParser.parse(definition)
 			return moduleDefCtx
 		}
-		def config = ModuleConfigurationParser.parse(dependentDefinitionContexts, localDefinitionContexts)
+		def config = ModuleConfigurationParser.parse(dependentDefinitionContexts, localDefinitionContexts, externs)
 		return config
 	}
 }

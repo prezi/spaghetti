@@ -13,6 +13,7 @@ class ModuleDefinition implements Scope {
 	final ModuleDefinitionContext context
 
 	private final Set<String> localTypeNames
+	private final Set<String> externs
 	private final Scope parentScope
 
 	ModuleDefinition(ModuleDefinitionContext context, Scope parentScope)
@@ -21,10 +22,12 @@ class ModuleDefinition implements Scope {
 		this.context = context
 		this.parentScope = parentScope
 
-		def localNames = new LinkedHashSet<String>()
-		def typeCollector = new TypeCollectorVisitor(localNames)
+		Set<String> localNames = []
+		Set<FQName> externs = []
+		def typeCollector = new TypeCollectorVisitor(localNames, externs)
 		typeCollector.visit(context)
 		this.localTypeNames = localNames.asImmutable()
+		this.externs = externs.asImmutable()
 	}
 
 	@Override
@@ -37,7 +40,17 @@ class ModuleDefinition implements Scope {
 			}
 		}
 
+		if (externs.contains(unresolvedName)) {
+			return resolveExtern(unresolvedName)
+		}
+
 		return parentScope.resolveName(unresolvedName)
+	}
+
+	@Override
+	FQName resolveExtern(FQName name)
+	{
+		return parentScope.resolveExtern(name)
 	}
 
 	Collection<FQName> getTypeNames() {
@@ -48,10 +61,12 @@ class ModuleDefinition implements Scope {
 }
 
 private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
-	final Set<String> names
+	private final Set<String> names
+	private final Set<FQName> externs
 
-	TypeCollectorVisitor(Set<String> names) {
+	TypeCollectorVisitor(Set<String> names, Set<FQName> externs) {
 		this.names = names
+		this.externs = externs
 	}
 
 	@Override
@@ -73,6 +88,21 @@ private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
 	{
 		registerTypeName(ctx.name.text)
 		return null
+	}
+
+	@Override
+	Void visitExternTypeDefinition(@NotNull @NotNull ModuleParser.ExternTypeDefinitionContext ctx)
+	{
+		registerExternType(FQName.fromContext(ctx.name))
+		return null
+	}
+
+	private void registerExternType(FQName name)
+	{
+		if (externs.contains(name)) {
+			throw new IllegalStateException("Extern already defined: ${name}")
+		}
+		externs.add(name)
 	}
 
 	private void registerTypeName(String localName)

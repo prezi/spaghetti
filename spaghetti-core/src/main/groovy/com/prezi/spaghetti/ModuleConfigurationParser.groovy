@@ -10,9 +10,10 @@ import org.antlr.v4.runtime.CommonTokenStream
  * Created by lptr on 15/11/13.
  */
 class ModuleConfigurationParser {
-	public static ModuleConfiguration parse(Iterable<ModuleDefinitionContext> contexts, Iterable<ModuleDefinitionContext> localContexts) {
-		def typeNames = new LinkedHashSet<FQName>()
-		def globalScope = new GlobalScope(typeNames)
+	public static ModuleConfiguration parse(Iterable<ModuleDefinitionContext> contexts,
+											Iterable<ModuleDefinitionContext> localContexts,
+											Map<FQName, FQName> externs) {
+		def globalScope = new GlobalScope(externs)
 		def modules = contexts.collect { context ->
 			return parseModule(context, globalScope)
 		}
@@ -41,10 +42,11 @@ class ModuleConfigurationParser {
 
 class GlobalScope implements Scope {
 
-	private final Set<FQName> names
+	private final Set<FQName> names = []
+	private final Map<FQName, FQName> externs
 
-	GlobalScope(Set<FQName> names) {
-		this.names = names
+	GlobalScope(Map<FQName, FQName> externs) {
+		this.externs = externs
 	}
 
 	@Override
@@ -54,6 +56,15 @@ class GlobalScope implements Scope {
 			throw new IllegalStateException("Name not found: ${name}, names registered: ${names}")
 		}
 		return name
+	}
+
+	@Override
+	FQName resolveExtern(FQName name)
+	{
+		if (!externs.containsKey(name)) {
+			throw new IllegalStateException("Extern not found: ${name}, externs registered: ${externs}")
+		}
+		return externs.get(name)
 	}
 
 	void registerNames(Collection<FQName> names) {

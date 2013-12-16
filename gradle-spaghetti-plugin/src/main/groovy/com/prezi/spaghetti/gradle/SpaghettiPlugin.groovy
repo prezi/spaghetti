@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration
@@ -49,11 +50,25 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config)
 	{
+		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
+		return generatorFactory.createGenerator(config)
+	}
+
+	Map<FQName, FQName> getExterns(String platform) {
+		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
+		return generatorFactory.getExterns().collectEntries([:]) { extern, impl ->
+			return [ FQName.fromString(extern), FQName.fromString(impl) ]
+		}
+	}
+
+	private GeneratorFactory getGeneratorFactory(String platform)
+	{
 		def generatorFactory = generatorFactories.get(platform)
-		if (generatorFactory == null) {
+		if (generatorFactory == null)
+		{
 			throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
 					+ generatorFactories.keySet().sort().join(", "))
 		}
-		return generatorFactory.createGenerator(config)
+		generatorFactory
 	}
 }
