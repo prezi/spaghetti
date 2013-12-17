@@ -30,7 +30,7 @@ ${ctx.propertyDefinition().collect {
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
 		def mutable = ModuleUtils.extractAnnotations(ctx.annotations()).containsKey("mutable")
-		def modifiers = "(default,${mutable?'default':'null'})"
+		def modifiers = mutable ? "" : " (default, never)"
 		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
 """	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
 """
