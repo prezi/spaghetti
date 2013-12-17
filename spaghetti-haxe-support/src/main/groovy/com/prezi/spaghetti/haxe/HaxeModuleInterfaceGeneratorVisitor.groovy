@@ -8,21 +8,18 @@ import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeModuleGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
+class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final Closure<String> defineType
-
-	HaxeModuleGeneratorVisitor(ModuleDefinition module, Closure<String> defineType)
+	HaxeModuleInterfaceGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
-		this.defineType = defineType
 	}
 
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
 		return ModuleUtils.formatDocumentation(ctx.documentation) +
-"""${defineType(module.name.localName)}
+"""interface ${module.name.localName} {
 ${super.visitModuleDefinition(ctx)}
 }
 """

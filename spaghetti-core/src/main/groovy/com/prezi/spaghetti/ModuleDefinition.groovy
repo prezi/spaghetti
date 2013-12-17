@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 15/11/13.
  */
-class ModuleDefinition implements Scope {
+class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final FQName name
 	final ModuleDefinitionContext context
 
@@ -57,6 +57,11 @@ class ModuleDefinition implements Scope {
 		return localTypeNames.collect {
 			name.qualifyLocalName(FQName.fromString(it))
 		}
+	}
+
+	@Override
+	int compareTo(ModuleDefinition o) {
+		return name.fullyQualifiedName.compareTo(o.name.fullyQualifiedName)
 	}
 }
 

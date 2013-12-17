@@ -9,8 +9,8 @@ class ModuleConfiguration {
 	final Scope globalScope
 
 	public ModuleConfiguration(Collection<ModuleDefinition> modules, Collection<ModuleDefinition> localModules, Scope globalScope) {
-		this.modules = modules.collectEntries { module -> [ (module.name): module ] }
-		this.localModules = localModules
+		this.modules = new TreeMap<FQName, ModuleDefinition>(modules.collectEntries { module -> [ (module.name): module ] }).asImmutable()
+		this.localModules = localModules.sort().asImmutable()
 		this.globalScope = globalScope
 	}
 

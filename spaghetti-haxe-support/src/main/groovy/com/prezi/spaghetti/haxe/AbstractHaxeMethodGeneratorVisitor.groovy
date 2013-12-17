@@ -64,7 +64,7 @@ class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		return result
 	}
 
-	private static String wrapNullable(AnnotationsContext annotationsContext, String type) {
+	protected static String wrapNullable(AnnotationsContext annotationsContext, String type) {
 		def annotations = ModuleUtils.extractAnnotations(annotationsContext)
 		boolean nullable = annotations.containsKey("nullable")
 		return nullable ? "Null<${type}>" : type

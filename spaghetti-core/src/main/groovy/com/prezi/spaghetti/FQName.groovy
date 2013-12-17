@@ -6,7 +6,7 @@ import groovy.transform.EqualsAndHashCode
  * Fully qualified name.
  */
 @EqualsAndHashCode
-final public class FQName {
+final public class FQName implements Comparable<FQName> {
 	final String namespace
 	final String localName
 
@@ -67,5 +67,10 @@ final public class FQName {
 	@Override
 	String toString() {
 		return fullyQualifiedName
+	}
+
+	@Override
+	int compareTo(FQName o) {
+		return fullyQualifiedName.compareTo(o.fullyQualifiedName)
 	}
 }

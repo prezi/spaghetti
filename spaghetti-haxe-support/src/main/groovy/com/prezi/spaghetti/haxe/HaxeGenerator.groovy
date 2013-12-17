@@ -23,15 +23,13 @@ class HaxeGenerator implements Generator {
 		generateModuleInitializer(module, outputDirectory)
 		generateInterfacesForModuleTypes(module, outputDirectory)
 
-		def modulesClassName = module.name.qualifyLocalName(FQName.fromString("Modules"))
-		generateStuffForDependentModules(modulesClassName, outputDirectory)
+		generateStuffForDependentModules(outputDirectory)
 	}
 
 	@Override
 	void generateApplication(String namespace, File outputDirectory)
 	{
-		def modulesClassName = FQName.fromString("${namespace}.Modules")
-		generateStuffForDependentModules(modulesClassName, outputDirectory)
+		generateStuffForDependentModules(outputDirectory)
 	}
 
 	@Override
@@ -50,11 +48,11 @@ return __module;
 		return javaScript
 	}
 
-	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
-		config.dependentModules.each { dependentModule ->
+	private void generateStuffForDependentModules(File outputDirectory) {
+		config.dependentModules.eachWithIndex { dependentModule, index ->
 			generateStructuralTypesForModuleTypes(dependentModule, outputDirectory)
+			generateModuleProxy(dependentModule, index, outputDirectory)
 		}
-		generateClassToAccessDependentModules(modulesClassName, outputDirectory)
 	}
 
 	/**
@@ -62,9 +60,16 @@ return __module;
 	 */
 	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new HaxeModuleGeneratorVisitor(
-				module, { moduleName -> "interface ${moduleName} {" }
-		).processModule()
+		def contents = new HaxeModuleInterfaceGeneratorVisitor(module).processModule()
+		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
+	}
+
+	/**
+	 * Generates proxy for module.
+	 */
+	private static void generateModuleProxy(ModuleDefinition module, int moduleIndex, File outputDirectory)
+	{
+		def contents = new HaxeModuleProxyGeneratorVisitor(module, moduleIndex).processModule()
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
 	}
 
@@ -110,11 +115,6 @@ return __module;
 	 */
 	private static void generateStructuralTypesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
-		def moduleFileContents = new HaxeModuleGeneratorVisitor(
-				module, { moduleName -> "extern class ${moduleName} {" }
-		).processModule()
-		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, moduleFileContents)
-
 		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
 			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
 				def declaration = "extern class ${typeName} "
@@ -125,36 +125,5 @@ return __module;
 				return declaration + "{"
 			})
 		}).processModule()
-	}
-
-	/**
-	 * Generates Modules.hx with methods like <code>get<ModuleName>():<ModuleName> { ... }</code>.
-	 */
-	private void generateClassToAccessDependentModules(FQName modulesClassName, File outputDirectory)
-	{
-		def dependentModules = config.dependentModules
-
-		// Generate Modules.hx to access dependent modules
-		if (!dependentModules.empty)
-		{
-			String modulesContents =
-"""class ${modulesClassName.localName} {
-#if js
-"""
-			dependentModules.eachWithIndex { module, index ->
-				modulesContents +=
-"""
-	public static inline function get${module.name.localName}():${module.name} {
-		return untyped __modules[${index}];
-	}
-"""
-			}
-			modulesContents +=
-"""
-#end
-}
-"""
-			HaxeUtils.createHaxeSourceFile(modulesClassName, outputDirectory, modulesContents)
-		}
 	}
 }

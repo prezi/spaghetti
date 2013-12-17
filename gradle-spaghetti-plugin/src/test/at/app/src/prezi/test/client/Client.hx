@@ -1,20 +1,20 @@
 package prezi.test.client;
 
 import prezi.graphics.text.CharacterStyleType;
+import prezi.graphics.text.Layout;
+import prezi.graphics.text.render.TextRenderer;
 
 class Client {
 	public static function main() {
-		var layout = Modules.getLayout();
-		var text = layout.createText();
+		var text = Layout.createText();
 		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
 		style.value = "normal";
 		text.insert(0, "World", [ style ]);
 		text.insert(0, "Hello ", []);
-		var textRenderer = Modules.getTextRenderer();
-		var renderer = textRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
+		var renderer = TextRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
 		trace(renderer.render(text));
 
-		var testStuff = layout.createTestStuff();
+		var testStuff = Layout.createTestStuff();
 		testStuff.registerCallback(function (message:String) {
 			trace("Received callback message: " + message);
 		});
