@@ -51,7 +51,7 @@ struct CharacterStyle {
 	/**
 	 * The value of the style.
 	 */
-	any value
+	@mutable any value
 }
 
 interface AbstractText {

@@ -6,7 +6,8 @@ class Client {
 	public static function main() {
 		var layout = Modules.getLayout();
 		var text = layout.createText();
-		var style = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
+		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
+		style.value = "normal";
 		text.insert(0, "World", [ style ]);
 		text.insert(0, "Hello ", []);
 		var textRenderer = Modules.getTextRenderer();

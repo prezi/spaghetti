@@ -2,7 +2,6 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 /**
@@ -30,8 +29,10 @@ ${ctx.propertyDefinition().collect {
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
+		def mutable = ModuleUtils.extractAnnotations(ctx.annotations()).containsKey("mutable")
+		def modifiers = "(default,${mutable?'default':'null'})"
 		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-"""	var ${ctx.property.name.text}:${ctx.property.type.accept(this)};
+"""	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
 """
 	}
 }
