@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration

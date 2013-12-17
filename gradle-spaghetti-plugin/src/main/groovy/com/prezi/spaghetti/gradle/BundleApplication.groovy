@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.ModuleConfigurationParser
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.TaskAction
+
 /**
  * Created by lptr on 16/11/13.
  */

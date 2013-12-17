@@ -1,8 +1,4 @@
 package com.prezi.spaghetti
-
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.Wrapping
-
 /**
  * Created by lptr on 11/12/13.
  */
