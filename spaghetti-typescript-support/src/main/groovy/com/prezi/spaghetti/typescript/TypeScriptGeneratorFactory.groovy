@@ -10,7 +10,9 @@ import com.prezi.spaghetti.ModuleConfiguration
  */
 public class TypeScriptGeneratorFactory implements GeneratorFactory {
 
-	private static def EXTERNS = [:].asImmutable()
+	private static def EXTERNS = [
+	        "UnicodeString": "string"
+		].asImmutable()
 
 	@Override
 	String getPlatform()
