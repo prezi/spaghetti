@@ -14,7 +14,7 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 			bool: "Bool",
 			int: "Int",
 			float: "Float",
-			String: "String",
+			string: "String",
 			any: "Dynamic"
 	]
 

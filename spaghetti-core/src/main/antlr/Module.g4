@@ -103,7 +103,7 @@ voidType : 'void'
 primitiveType	: 'bool'
 				| 'int'
 				| 'float'
-				| 'String'
+				| 'string'
 				| 'any'
 	;
 

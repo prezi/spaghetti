@@ -4,7 +4,7 @@
 module prezi.graphics.text.render.TextRenderer
 
 interface Renderer {
-	String render(prezi.graphics.text.Text text)
+	string render(prezi.graphics.text.Text text)
 }
 
-Renderer createRenderer(String prefix, String suffix)
+Renderer createRenderer(string prefix, string suffix)

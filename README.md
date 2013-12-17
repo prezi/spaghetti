@@ -42,11 +42,11 @@ module prezi.graphics.text.Layout
  */
 interface Text {
 	/**
-	 * Inserts the given String at <code>offset</code>.
+	 * Inserts the given string at <code>offset</code>.
 	 */
-	void insert(int offset, String text)
+	void insert(int offset, string text)
 	void delete(int offset, int end)
-	String getRawText()
+	string getRawText()
 }
 
 Text createText()

@@ -15,7 +15,7 @@ enum CharacterStyleType {
 	COLOR
 
 	/**
-	 * A String with the name of the font family.
+	 * A string with the name of the font family.
 	 */
 	FONT_FAMILY
 
@@ -66,7 +66,7 @@ interface AbstractText {
  */
 interface Text extends AbstractText {
 	/**
-	 * Inserts the given String at <code>offset</code>.
+	 * Inserts the given string at <code>offset</code>.
 	 */
 	UnicodeString getRawText()
 }
@@ -77,10 +77,10 @@ extern interface HTMLCanvasElement
  * Stuff here only to test code generation features.
  */
 interface TestStuff<Pre, Post> {
-	void registerCallback(String->void callback)
-	String doSomething(Pre pre, String text, Post post)
+	void registerCallback(string->void callback)
+	string doSomething(Pre pre, string text, Post post)
 	void drawSomething(HTMLCanvasElement canvas)
 }
 
 Text createText()
-TestStuff<String, String> createTestStuff()
+TestStuff<string, string> createTestStuff()

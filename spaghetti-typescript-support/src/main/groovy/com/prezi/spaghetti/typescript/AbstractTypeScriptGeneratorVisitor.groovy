@@ -16,7 +16,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 			bool: "boolean",
 			int: "number",
 			float: "number",
-			String: "string",
+			string: "string",
 			any: "any"
 	]
 
