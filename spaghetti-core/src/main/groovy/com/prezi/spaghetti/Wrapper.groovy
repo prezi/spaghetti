@@ -41,6 +41,6 @@ var __modules = [];
 
 	static String getFileName(ModuleDefinition module)
 	{
-		return module.name.localName
+		return module.name.fullyQualifiedName
 	}
 }
