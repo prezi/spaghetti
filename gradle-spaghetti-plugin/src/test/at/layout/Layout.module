@@ -3,7 +3,7 @@
  */
 module prezi.graphics.text.Layout
 
-extern UnicodeString
+extern interface UnicodeString
 
 /**
  * Different types of character styles.
