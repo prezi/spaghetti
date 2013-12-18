@@ -79,9 +79,10 @@ declare var __modules:Array<any>;
 """
 			dependentModules.eachWithIndex { module, index ->
 				modulesContents +=
-"""export var ${module.name.localName}:${module.name} = __modules[${index}];\n
+"""export var ${module.name.localName}:${module.name} = __modules[${index}];
 """
 			}
+			modulesContents += "\n"
 			TypeScriptUtils.createSourceFile(modulesClassName, outputDirectory, modulesContents)
 		}
 	}
