@@ -13,7 +13,7 @@ moduleElement	: typeDefinition
 	;
 
 typeDefinition : (documentation = Doc)? annotations?
-	'interface' (name = Name) typeParameters? ('extends' (superType = qualifiedName))? '{'
+	'interface' (name = Name) typeParameters? ('extends' (superType = qualifiedName) typeArguments? )? '{'
 		typeElement*
 	'}'
 	;

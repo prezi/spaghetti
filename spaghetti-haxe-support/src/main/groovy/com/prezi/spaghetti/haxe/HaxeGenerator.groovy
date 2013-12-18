@@ -98,11 +98,11 @@ return __module;
 	private static void generateInterfacesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
 		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
+			new HaxeInterfaceGeneratorVisitor(module, { String typeName, String superType ->
 				def declaration = "interface ${typeName}"
 				if (superType != null)
 				{
-					declaration += " extends ${superType.fullyQualifiedName}"
+					declaration += " extends ${superType}"
 				}
 				declaration += " {"
 				return declaration
@@ -116,11 +116,11 @@ return __module;
 	private static void generateStructuralTypesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
 		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(module, { String typeName, FQName superType ->
+			new HaxeInterfaceGeneratorVisitor(module, { String typeName, String superType ->
 				def declaration = "extern class ${typeName} "
 				if (superType != null)
 				{
-					declaration += "extends ${superType.fullyQualifiedName} "
+					declaration += "extends ${superType} "
 				}
 				return declaration + "{"
 			})

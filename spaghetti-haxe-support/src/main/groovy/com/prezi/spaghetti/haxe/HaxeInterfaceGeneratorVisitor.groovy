@@ -24,17 +24,18 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
 		def typeName = ctx.name.text
-		FQName superType = null
-		if (ctx.superType != null) {
-			superType = module.name.qualifyLocalName(FQName.fromContext(ctx.superType))
-		}
-
 		def typeParamsCtx = ctx.typeParameters()
 		if (typeParamsCtx != null) {
 			typeName += typeParamsCtx.accept(this)
 			typeParamsCtx.parameters.each { param ->
 				typeParams.add(FQName.fromString(param.name.text))
 			}
+		}
+
+		String superType = null
+		if (ctx.superType != null) {
+			superType = module.name.qualifyLocalName(FQName.fromContext(ctx.superType)).fullyQualifiedName
+			superType += ctx.typeArguments()?.accept(this) ?: ""
 		}
 
 		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
