@@ -71,24 +71,17 @@ return new ${module.name.getFullyQualifiedName()}Impl();
 	{
 		def dependentModules = config.dependentModules
 
-		// Generate Modules.hx to access dependent modules
 		if (!dependentModules.empty)
 		{
 			String modulesContents =
 """
 declare var __modules:Array<any>;
-class ${modulesClassName.localName} {
 """
 			dependentModules.eachWithIndex { module, index ->
 				modulesContents +=
-"""\tget${module.name.localName}():${module.name} {
-		return __modules[${index}];
-	}
+"""export var ${module.name.localName}:${module.name} = __modules[${index}];\n
 """
 			}
-			modulesContents +=
-"""}
-"""
 			TypeScriptUtils.createSourceFile(modulesClassName, outputDirectory, modulesContents)
 		}
 	}
