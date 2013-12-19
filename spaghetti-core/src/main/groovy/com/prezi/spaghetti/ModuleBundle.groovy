@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class ModuleBundle {
+class ModuleBundle implements Comparable<ModuleBundle> {
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	public static final String DEFINITION_PATH = "module.def"
@@ -90,5 +90,10 @@ class ModuleBundle {
 			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
 		}
 		return new ModuleBundle(name, definition, compiledJavaScript)
+	}
+
+	@Override
+	int compareTo(ModuleBundle o) {
+		return name.compareTo(o.name)
 	}
 }
