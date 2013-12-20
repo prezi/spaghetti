@@ -30,7 +30,7 @@ class HaxeDefinitionIteratorVisitor extends AbstractModuleVisitor<Void> {
 	}
 
 	@Override
-	Void visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
+	Void visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
 		createSourceFile(ctx.name.text, ctx, createTypeVisitor())
 		return null

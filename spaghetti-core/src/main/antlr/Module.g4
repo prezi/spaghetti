@@ -6,13 +6,16 @@ moduleDefinition : (documentation = Doc)?
 	;
 
 moduleElement	: typeDefinition
-				| structDefinition
-				| enumDefinition
-				| methodDefinition
 				| externTypeDefinition
+				| methodDefinition
 	;
 
-typeDefinition : (documentation = Doc)? annotations?
+typeDefinition	: interfaceDefinition
+				| structDefinition
+				| enumDefinition
+	;
+
+interfaceDefinition : (documentation = Doc)? annotations?
 	'interface' (name = Name) typeParameters? ('extends' (superType = qualifiedName) typeArguments? )? '{'
 		typeElement*
 	'}'

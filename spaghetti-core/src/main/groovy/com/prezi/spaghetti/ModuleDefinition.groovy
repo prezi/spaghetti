@@ -75,7 +75,7 @@ private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitTypeDefinition(@NotNull ModuleParser.TypeDefinitionContext ctx)
+	public Void visitInterfaceDefinition(@NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
 		registerTypeName(ctx.name.text)
 		return null

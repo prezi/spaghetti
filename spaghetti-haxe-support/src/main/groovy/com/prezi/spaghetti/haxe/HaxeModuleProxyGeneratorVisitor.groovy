@@ -36,20 +36,6 @@ ${super.visitModuleDefinition(ctx)}
 	}
 
 	@Override
-	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
-	{
-		// Do not generate code for enums
-		return ""
-	}
-
-	@Override
-	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
-	{
-		// Do not generate code for structs
-		return ""
-	}
-
-	@Override
 	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = ctx.returnTypeChain().accept(this)

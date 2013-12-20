@@ -28,21 +28,6 @@ ${super.visitModuleDefinition(ctx)}
 	@Override
 	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
 	{
-		// Do not generate code for types
-		return ""
-	}
-
-	@Override
-	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
-	{
-		// Do not generate code for enums
-		return ""
-	}
-
-	@Override
-	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
-	{
-		// Do not generate code for structs
 		return ""
 	}
 }

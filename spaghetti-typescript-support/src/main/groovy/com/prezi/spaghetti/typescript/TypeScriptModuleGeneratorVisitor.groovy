@@ -46,7 +46,7 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 	}
 
 	@Override
-	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
+	String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
 		def typeName = ctx.name.text
 		def typeParamsCtx = ctx.typeParameters()
