@@ -63,6 +63,11 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	int compareTo(ModuleDefinition o) {
 		return name.fullyQualifiedName.compareTo(o.name.fullyQualifiedName)
 	}
+
+	@Override
+	String toString() {
+		return "Module ${name}"
+	}
 }
 
 private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {

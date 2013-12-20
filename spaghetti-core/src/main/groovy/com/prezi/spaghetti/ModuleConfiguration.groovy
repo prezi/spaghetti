@@ -20,6 +20,7 @@ class ModuleConfiguration {
 
 	@Override
 	String toString() {
-		return "modules: " + modules.values().collect { it.name }.join(", ")
+		return "Dependent modules: " + dependentModules.collect { it.name }.join(", ") +
+			", Local modules: " + localModules.collect { it.name }.join(", ")
 	}
 }
