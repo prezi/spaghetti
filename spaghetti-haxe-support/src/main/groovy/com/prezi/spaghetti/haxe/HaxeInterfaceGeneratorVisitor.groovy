@@ -11,13 +11,20 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final Closure<String> defineType
 	private final typeParams = []
 
-	HaxeInterfaceGeneratorVisitor(ModuleDefinition module, Closure<String> defineType)
+	HaxeInterfaceGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
-		this.defineType = defineType
+	}
+
+	private static String defineType(String typeName, String superType) {
+		def declaration = "interface ${typeName}"
+		if (superType != null)
+		{
+			declaration += " extends ${superType}"
+		}
+		return declaration + " {"
 	}
 
 	@Override

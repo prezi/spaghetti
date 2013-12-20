@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
@@ -50,7 +49,7 @@ return __module;
 
 	private void generateStuffForDependentModules(File outputDirectory) {
 		config.dependentModules.eachWithIndex { dependentModule, index ->
-			generateStructuralTypesForModuleTypes(dependentModule, outputDirectory)
+			generateInterfacesForModuleTypes(dependentModule, outputDirectory)
 			generateModuleProxy(dependentModule, index, outputDirectory)
 		}
 	}
@@ -98,32 +97,7 @@ return __module;
 	private static void generateInterfacesForModuleTypes(ModuleDefinition module, File outputDirectory)
 	{
 		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(module, { String typeName, String superType ->
-				def declaration = "interface ${typeName}"
-				if (superType != null)
-				{
-					declaration += " extends ${superType}"
-				}
-				declaration += " {"
-				return declaration
-			})
-		}).processModule()
-	}
-
-	/**
-	 * Generates structural types on the caller side.
-	 */
-	private static void generateStructuralTypesForModuleTypes(ModuleDefinition module, File outputDirectory)
-	{
-		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
-			new HaxeInterfaceGeneratorVisitor(module, { String typeName, String superType ->
-				def declaration = "extern class ${typeName} "
-				if (superType != null)
-				{
-					declaration += "extends ${superType} "
-				}
-				return declaration + "{"
-			})
+			new HaxeInterfaceGeneratorVisitor(module)
 		}).processModule()
 	}
 }
