@@ -5,9 +5,13 @@ moduleDefinition : (documentation = Doc)?
 	moduleElement*
 	;
 
-moduleElement	: typeDefinition
+moduleElement	: importDeclaration
+				| typeDefinition
 				| externTypeDefinition
 				| methodDefinition
+	;
+
+importDeclaration : 'import' (name = qualifiedName) ('as' (alias = Name))?
 	;
 
 typeDefinition	: interfaceDefinition

@@ -14,6 +14,7 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 
 	private final Set<String> localTypeNames
 	private final Set<FQName> externs
+	private final Map<String, FQName> imports
 	private final Scope parentScope
 
 	ModuleDefinition(ModuleDefinitionContext context, Scope parentScope)
@@ -24,14 +25,24 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 
 		Set<String> localNames = []
 		Set<FQName> externs = []
-		def typeCollector = new TypeCollectorVisitor(localNames, externs)
+		Map<String, FQName> imports = [:]
+		def typeCollector = new TypeCollectorVisitor(localNames, externs, imports)
 		typeCollector.visit(context)
 		this.localTypeNames = localNames.asImmutable()
 		this.externs = externs.asImmutable()
+		this.imports = imports.asImmutable()
 	}
 
 	@Override
 	FQName resolveName(FQName unresolvedName) {
+		if (!unresolvedName.hasNamespace())
+		{
+			if (imports.containsKey(unresolvedName.localName))
+			{
+				unresolvedName = imports.get(unresolvedName.localName)
+			}
+		}
+
 		if (!unresolvedName.hasNamespace() || unresolvedName.namespace == name.namespace)
 		{
 			if (localTypeNames.contains(unresolvedName.localName))
@@ -73,10 +84,19 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
 	private final Set<String> names
 	private final Set<FQName> externs
+	private final Map<String, FQName> imports
 
-	TypeCollectorVisitor(Set<String> names, Set<FQName> externs) {
+	TypeCollectorVisitor(Set<String> names, Set<FQName> externs, Map<String, FQName> imports) {
 		this.names = names
 		this.externs = externs
+		this.imports = imports
+	}
+
+	@Override
+	Void visitImportDeclaration(@NotNull @NotNull ModuleParser.ImportDeclarationContext ctx)
+	{
+		registerImport(FQName.fromContext(ctx.name), ctx.alias?.text);
+		return null
 	}
 
 	@Override
@@ -122,5 +142,15 @@ private class TypeCollectorVisitor extends ModuleBaseVisitor<Void> {
 			throw new IllegalStateException("Type already defined: ${localName}")
 		}
 		names.add(localName)
+	}
+
+	private void registerImport(FQName name, String alias)
+	{
+		def localName = alias ?: name.localName
+		if (imports.containsKey(localName))
+		{
+			throw new IllegalStateException("Import collision: ${localName}")
+		}
+		imports.put(localName, name)
 	}
 }

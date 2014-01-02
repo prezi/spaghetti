@@ -3,8 +3,10 @@
  */
 module prezi.graphics.text.render.TextRenderer
 
+import prezi.graphics.text.Text as Texty
+
 interface Renderer {
-	string render(prezi.graphics.text.Text text)
+	string render(Texty text)
 }
 
 Renderer createRenderer(string prefix, string suffix)
