@@ -13,7 +13,7 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final ModuleDefinitionContext context
 
 	private final Set<String> localTypeNames
-	private final Set<String> externs
+	private final Set<FQName> externs
 	private final Scope parentScope
 
 	ModuleDefinition(ModuleDefinitionContext context, Scope parentScope)
