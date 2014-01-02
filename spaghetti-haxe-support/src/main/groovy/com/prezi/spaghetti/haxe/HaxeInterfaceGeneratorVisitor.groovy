@@ -41,7 +41,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 		String superType = null
 		if (ctx.superType != null) {
-			superType = module.name.qualifyLocalName(FQName.fromContext(ctx.superType)).fullyQualifiedName
+			superType = resolveName(FQName.fromContext(ctx.superType)).fullyQualifiedName
 			superType += ctx.typeArguments()?.accept(this) ?: ""
 		}
 
