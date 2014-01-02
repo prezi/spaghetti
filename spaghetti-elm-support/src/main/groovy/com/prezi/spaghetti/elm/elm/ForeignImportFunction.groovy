@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.elm.elm
 
-class ForeignImportFunction implements ForeignFunction {
+class ForeignImportFunction extends ForeignFunction {
 
   IfaceType d_ifaceType;
   String d_methodName;
@@ -10,7 +10,6 @@ class ForeignImportFunction implements ForeignFunction {
     d_methodName = methodName;
   }
 
-  @Override
   public Dec foreignDec() {
     return new ForeignImportDec(d_methodName, "js_" + d_methodName,
                                 ElmUtils.signal(d_ifaceType.toJSType()),
@@ -18,6 +17,20 @@ class ForeignImportFunction implements ForeignFunction {
   }
 
   @Override
+  public String elmRep() {
+    return foreignDec().elmRep() + functionDec().elmRep() + "\n";
+  }
+
+  @Override
+  public IfaceType ifaceType() {
+    return d_ifaceType;
+  }
+
+  @Override
+  public String methodName() {
+    return d_methodName;
+  }
+
   public FunDec functionDec() {
     def functionBody =
       new AppValue(

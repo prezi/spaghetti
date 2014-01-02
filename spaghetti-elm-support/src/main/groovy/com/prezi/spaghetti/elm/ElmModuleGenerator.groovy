@@ -12,9 +12,13 @@ import org.antlr.v4.runtime.misc.NotNull
 
 class ElmModuleGenerator {
 
-  private static ModuleParser.ModuleDefinitionContext d_module;
+  private final ModuleParser.ModuleDefinitionContext d_module;
+
+  private static final s_implSuffix = "Impl";
+  private static final s_exportSuffix = "Export";
+  private static final s_importSuffix = "Import";
   
-  private static final def PRIMITIVE_TYPES =
+  private static final def s_primitiveTypes =
     [ bool: new BoolType(),
       int: new IntType(),
       float: new FloatType(),
@@ -25,27 +29,93 @@ class ElmModuleGenerator {
     d_module = module;
   }
 
-  public static List<Module> generateModules()
+  public List<Module> generateModules()
   {
 
     def typeDefCxts = d_module.moduleElement().collect{it.typeDefinition()} - null;
 
-    return typeDefCxts.collect{generateModule(it)};
+    return typeDefCxts.collect{generateTri(it)}.flatten();
   }
 
-  private static Module generateModule(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
+  // returns the (import, export, implementationSkeleton) module triple
+  private List<Module> generateTri(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
   {
     def methodDefs = ctx.typeElement().collect{ it.methodDefinition() } - null; // i feel like such a pro groovy hacker
-    def methodNames = methodDefs.collect{ it.Name().getText() };
-    def moduleHeader = new ModuleHeader(d_module.name.Name.getText(), ctx.name.text, methodNames);
 
     def foreignFunctions = methodDefs.collect{createForeignFunction(it)};
 
 
-    def imports = [new Import("JavaScript", "JS"),
-                   new Import("JavaScript.Experimental", "JS")];
+    def foreignExports = [];
+    def foreignImports = [];
 
-    return new Module(moduleHeader, imports, foreignFunctions, []);
+    foreignFunctions.each{
+      it.elim
+      {
+        ForeignImportFunction f -> foreignImports.add(f);
+      }
+      {
+        ForeignExportFunction f -> foreignExports.add(f);
+      };
+    };
+
+    def modules = [createImportModule(foreignImports, ctx.name.text),
+                   createExportModule(foreignExports, ctx.name.text),
+                   createImplModule(foreignImports, foreignExports, ctx.name.text)];
+
+    return modules;
+  }
+
+  private Module createExportModule(List<ForeignFunction> exportFs, String name) {
+
+    def moduleHeader = new ModuleHeader(d_module.name.Name.getText(), name + s_exportSuffix, []);
+
+    def methodNames = exportFs.collect{it.methodName()};
+
+    def imports = [new Import(null, "JavaScript", "JS"),
+                   new Import(null, "JavaScript.Experimental", "JS"),
+                   new Import(d_module.name.Name.getText(),
+                              name + s_implSuffix, s_implSuffix)];
+
+    def main = new FunDec("main", ElmUtils.signal(new IdenType("Element")),
+                          new IdenValue(s_implSuffix + ".main"));
+
+    return new Module(moduleHeader, imports, exportFs, [main], true);
+  }
+
+  private Module createImportModule(List<ForeignFunction> importFs, String name) {
+    def methodNames = importFs.collect{it.methodName()};
+    
+    def moduleHeader = new ModuleHeader(d_module.name.Name.getText(), name + s_importSuffix, methodNames);
+
+    def imports = [new Import(null, "JavaScript", "JS"),
+                   new Import(null, "JavaScript.Experimental", "JS")];
+
+
+    return new Module(moduleHeader, imports, importFs, [], true);
+  }
+
+  // Creates a skeleton implementation module
+  private Module createImplModule(List<ForeignFunction> importFs, List<ForeignFunction> exportFs, String name) {
+    def exportMethodNames = exportFs.collect{it.methodName()};
+    def importMethodNames = importFs.collect{it.methodName()};
+
+    def moduleHeader = new ModuleHeader(d_module.name.Name.getText(), name + s_implSuffix, ["main"] + exportMethodNames);
+
+    def imports = [new Import(d_module.name.Name.getText(), name + s_importSuffix)];
+
+    def main = new FunDec("main", ElmUtils.signal(new IdenType("Element")),
+                 new AppValue(
+                   new IdenValue("constant"),
+                   new AppValue(
+                     new IdenValue("plainText"),
+                     new StringValue("Hello World! I AM ELM SKELETON"))));
+
+    def skels = exportFs.collect{
+      new FunDec(it.methodName(), ElmUtils.signal(it.ifaceType()),
+                 ElmUtils.defaultSignalValue(it.ifaceType()));
+    };
+
+    return new Module(moduleHeader, imports, [], [main] + skels, false);
   }
 
   // private static IfaceType createIfaceType(ModuleParser.MethodDefinitionContext method) {
@@ -77,7 +147,7 @@ class ElmModuleGenerator {
   //   }
   // }
 
-  private static ForeignFunction createForeignFunction(ModuleParser.MethodDefinitionContext method) {
+  private ForeignFunction createForeignFunction(ModuleParser.MethodDefinitionContext method) {
 
     // Check void return
     if (!(method.returnTypeChain() instanceof ModuleParser.VoidReturnTypeChainContext)) {
@@ -112,9 +182,8 @@ class ElmModuleGenerator {
       };
 
       
-      // RESUME (do tuples)
       def ifaceType = createExportIfaceType(valueTypes);
-      return new ForeignExportFunction(ifaceType, method.name.getText());
+      return new ForeignExportFunction(ifaceType, method.name.getText(), s_implSuffix);
       
     } else {
 
@@ -133,7 +202,7 @@ class ElmModuleGenerator {
     
   }
 
-  private static IfaceType createExportIfaceType(List<ModuleParser.ValueTypeContext> types) {
+  private IfaceType createExportIfaceType(List<ModuleParser.ValueTypeContext> types) {
     
     if (types.size() == 1) {
       return createPrimitiveType(types.first());
@@ -142,7 +211,7 @@ class ElmModuleGenerator {
     }
   }
 
-  private static IfaceType createImportIfaceType(List<String> names, List<ModuleParser.ValueTypeContext> types) {
+  private IfaceType createImportIfaceType(List<String> names, List<ModuleParser.ValueTypeContext> types) {
 
     // If it's a single type no need to create a dictionary
     if (types.size() == 1) {
@@ -156,7 +225,7 @@ class ElmModuleGenerator {
     }
   }
 
-  private static IfaceType createPrimitiveType(ModuleParser.ValueTypeContext type) {
+  private IfaceType createPrimitiveType(ModuleParser.ValueTypeContext type) {
 
     def exc = {
       throw new ElmException("Type '" + type + "' is unsupported, you may only " +
@@ -168,7 +237,7 @@ class ElmModuleGenerator {
       exc();
     }
 
-    def ifaceType = PRIMITIVE_TYPES.get(primType.text);
+    def ifaceType = s_primitiveTypes.get(primType.text);
     if (!ifaceType) {
       exc();
     }
@@ -177,7 +246,7 @@ class ElmModuleGenerator {
   }
 
 
-  private static ForeignImportDec createForeignImport(String methodName, IfaceType type) {
+  private ForeignImportDec createForeignImport(String methodName, IfaceType type) {
     def jsType = type.toJSType();
     def defaultValue = jsType.defaultValue();
     def internalName = "js_" + methodName;
@@ -185,7 +254,7 @@ class ElmModuleGenerator {
     return new ForeignImportDec(methodName, defaultValue, internalName, signal(jsType));
   }
 
-  private static FunDec createExportFunctionDec(String methodName, IfaceType type) {
+  private FunDec createExportFunctionDec(String methodName, IfaceType type) {
     def functionBody =
       new AppValue(
         new AppValue(

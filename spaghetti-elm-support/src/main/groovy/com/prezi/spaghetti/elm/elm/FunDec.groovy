@@ -4,14 +4,18 @@ package com.prezi.spaghetti.elm.elm
 
 class FunDec implements Dec {
 
-  private String d_funName;
-  private Type d_type;
-  private Value d_body;
+  private final String d_funName;
+  private final Type d_type;
+  private final Value d_body;
 
   FunDec(String funName, Type type, Value body) {
     d_funName = funName;
     d_type = type;
     d_body = body;
+  }
+
+  public funName() {
+    return d_funName;
   }
 
   @Override

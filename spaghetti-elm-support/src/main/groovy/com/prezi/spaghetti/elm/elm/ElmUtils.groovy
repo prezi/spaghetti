@@ -24,7 +24,11 @@ public class ElmUtils {
   }
 
   public static Type signal(Type t) {
-    new AppType(new IdenType("Signal"), [t]);
+    return new AppType(new IdenType("Signal"), [t]);
+  }
+
+  public static Value defaultSignalValue(IfaceType t) {
+    return new AppValue(new IdenValue("constant"), t.defaultValue());
   }
 
 }
