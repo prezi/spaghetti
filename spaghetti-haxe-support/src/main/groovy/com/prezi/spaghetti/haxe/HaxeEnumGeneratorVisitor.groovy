@@ -38,11 +38,11 @@ abstract ${enumName}(Int) {
 		this = value;
 	}
 
-	public function value():Int {
+	@:to public function value():Int {
 		return this;
 	}
 
-	public static function fromValue(value:Int) {
+	@:from public static function fromValue(value:Int) {
 		if (value < 0 || value >= _values.length) {
 			throw untyped Error("Invlaid value for ${enumName}: " + value);
 		}
@@ -50,11 +50,11 @@ abstract ${enumName}(Int) {
 		return result;
 	}
 
-	public inline function name():String {
+	@:to public inline function name():String {
 		return _names[this];
 	}
 
-	public static inline function valueOf(name:String) {
+	@:from public static inline function valueOf(name:String) {
 		var value = untyped _namesToValues[name];
 		if (value == null) {
 			throw untyped Error("Invalid name for ${enumName}: " + name);
