@@ -92,8 +92,15 @@ returnTypeChain	: voidType		# voidReturnTypeChain
 				| typeChain		# normalReturnTypeChain
 	;
 
-typeChain	: valueType							# normalValueTypeChain
-			| returnType ( '->' returnType )+	# callbackTypeChain
+typeChain	: valueType
+			| callbackTypeChain
+	;
+
+callbackTypeChain	: ( elements += typeChainElement ) ( '->' ( elements += typeChainElement)  )+
+	;
+
+typeChainElement	: returnType		# simpleTypeChainElement
+					| '(' typeChain ')'	# subTypeChainElement
 	;
 
 returnType	: voidType

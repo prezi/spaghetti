@@ -72,24 +72,34 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	@Override
 	String visitCallbackTypeChain(@NotNull @NotNull ModuleParser.CallbackTypeChainContext ctx)
 	{
-		def typeChain = ctx.returnType()
-		def lastType = typeChain.remove(typeChain.size() - 1)
+		def elements = ctx.elements
+		def lastType = elements.pop()
 
-		if (typeChain.size() == 0) {
+		if (elements.empty) {
 			return lastType.accept(this);
 		}
 		else {
 			def retType = lastType.accept(this);
-			if (typeChain.size() == 1 && typeChain.get(0).voidType() != null)
+			if (elements.size() == 1)
 			{
-				return "() => ${retType}"
+				def singleElement = elements.get(0)
+				if (singleElement instanceof ModuleParser.SimpleTypeChainElementContext)
+				{
+					if (singleElement.returnType().voidType() != null)
+					{
+						return "() => ${retType}"
+					}
+				}
 			}
-			else {
-				def params = typeChain.collect { elem -> elem.accept(this) }
-				return "(${params.join(", ")}) => ${retType}"
-
-			}
+			def params = elements.collect { elem -> elem.accept(this) }
+			return "(${params.join(", ")}) => ${retType}"
 		}
+	}
+
+	@Override
+	String visitSubTypeChainElement(@NotNull @NotNull ModuleParser.SubTypeChainElementContext ctx)
+	{
+		return "Function"
 	}
 
 	@Override

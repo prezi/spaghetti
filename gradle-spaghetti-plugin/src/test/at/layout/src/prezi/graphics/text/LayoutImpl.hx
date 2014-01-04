@@ -19,6 +19,10 @@ class TestStuffImpl<Pre, Post> implements TestStuff<Pre, Post> {
 	public function registerCallback(callback:String->Void) {
 		callback("Calling callback");
 	}
+	public function doAsync(callback:String->(Int->String)->Void, converter:Int->String) {
+		callback("Calling async callback", converter);
+		return 12;
+	}
 	public function doSomething(pre:Pre, text:String, post:Post):String {
 		return '${pre}-${text}-${post}';
 	}

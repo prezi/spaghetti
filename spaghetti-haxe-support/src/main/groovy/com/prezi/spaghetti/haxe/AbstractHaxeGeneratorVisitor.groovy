@@ -26,7 +26,13 @@ abstract class AbstractHaxeGeneratorVisitor extends AbstractModuleVisitor<String
 	@Override
 	String visitCallbackTypeChain(@NotNull @NotNull ModuleParser.CallbackTypeChainContext ctx)
 	{
-		return ctx.returnType().collect { it.accept(this) }.join("->")
+		return ctx.elements.collect { it.accept(this) }.join("->")
+	}
+
+	@Override
+	String visitSubTypeChainElement(@NotNull @NotNull ModuleParser.SubTypeChainElementContext ctx)
+	{
+		return "(${ctx.typeChain().accept(this)})"
 	}
 
 	@Override
