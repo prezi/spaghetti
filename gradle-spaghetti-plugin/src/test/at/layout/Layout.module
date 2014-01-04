@@ -78,6 +78,7 @@ extern interface HTMLCanvasElement
  */
 interface TestStuff<Pre, Post> {
 	void registerCallback(string->void callback)
+	int doVoidCallback(void->int callback)
 	int doAsync(string->(int->string)->void callback, int->string converter)
 	string doSomething(Pre pre, string text, Post post)
 	void drawSomething(HTMLCanvasElement canvas)
