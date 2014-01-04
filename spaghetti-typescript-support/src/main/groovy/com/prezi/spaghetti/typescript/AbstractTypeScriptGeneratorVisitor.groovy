@@ -74,32 +74,24 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	{
 		def elements = ctx.elements
 		def lastType = elements.pop()
+		def retType = lastType.accept(this);
 
-		if (elements.empty) {
-			return lastType.accept(this);
-		}
-		else {
-			def retType = lastType.accept(this);
-			if (elements.size() == 1)
+		if (elements.size() == 1)
+		{
+			def singleElement = elements.get(0)
+			if (singleElement instanceof ModuleParser.SimpleTypeChainElementContext)
 			{
-				def singleElement = elements.get(0)
-				if (singleElement instanceof ModuleParser.SimpleTypeChainElementContext)
+				if (singleElement.returnType().voidType() != null)
 				{
-					if (singleElement.returnType().voidType() != null)
-					{
-						return "() => ${retType}"
-					}
+					return "() => ${retType}"
 				}
 			}
-			def params = elements.collect { elem -> elem.accept(this) }
-			return "(${params.join(", ")}) => ${retType}"
 		}
-	}
-
-	@Override
-	String visitSubTypeChainElement(@NotNull @NotNull ModuleParser.SubTypeChainElementContext ctx)
-	{
-		return "Function"
+		def params = []
+		elements.eachWithIndex { elem, index ->
+			params.push("arg${index}: ${elem.accept(this)}")
+		}
+		return "(${params.join(", ")}) => ${retType}"
 	}
 
 	@Override
