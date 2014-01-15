@@ -17,7 +17,7 @@ class Wrap extends AbstractBundleTask {
 		outputFile << Wrapper.wrap(config, type, inputFile.text)
 	}
 
-	Wrapping type
+	Wrapping type = Wrapping.module
 	void type(Object type) {
 		if (type instanceof Wrapping) {
 			this.type = type
