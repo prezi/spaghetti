@@ -19,6 +19,11 @@ class Wrap extends AbstractBundleTask {
 
 	Wrapping type = Wrapping.module
 	void type(Object type) {
+		if (type == "nodeApp") {
+			logger.warn("The value 'nodeApp' for wrapping type is deprecated, and is going to be removed in a future version. Please use 'nodeModule' instead.")
+			type = Wrapping.nodeModule
+		}
+
 		if (type instanceof Wrapping) {
 			this.type = type
 		} else if (type instanceof String) {

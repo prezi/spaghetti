@@ -9,7 +9,7 @@ class Wrapper {
 				return wrapAsRequireJsModule(config, "require", contents)
 			case Wrapping.module:
 				return wrapAsRequireJsModule(config, "define", contents)
-			case Wrapping.nodeApp:
+			case Wrapping.nodeModule:
 				return wrapAsNodeJsModule(config, contents)
 		}
 	}

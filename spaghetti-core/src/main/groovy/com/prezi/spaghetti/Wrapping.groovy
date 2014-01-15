@@ -5,6 +5,6 @@ package com.prezi.spaghetti
  */
 public enum Wrapping {
 	application,
-	nodeApp,
+	nodeModule,
 	module,
 }
