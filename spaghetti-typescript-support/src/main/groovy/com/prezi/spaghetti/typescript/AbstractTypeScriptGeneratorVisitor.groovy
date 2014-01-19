@@ -20,6 +20,8 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 			any: "any"
 	]
 
+	final methodTypeParams = []
+
 	protected AbstractTypeScriptGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
@@ -28,10 +30,16 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
+		def typeParams = ctx.typeParameters()
+		typeParams?.parameters?.each { param ->
+			methodTypeParams.add(FQName.fromString(param.name.text))
+		}
 		def returnType = ctx.returnTypeChain().accept(this)
-		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
+		def result = generateMethod(ctx.documentation, typeParams, returnType, ctx.name.text, {
 			ctx.parameters != null ? ctx.parameters.accept(this) : ""
 		})
+		methodTypeParams.clear()
+		return result
 	}
 
 	@Override
@@ -41,17 +49,21 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 		def propertyType = ctx.property.type
 		def resolvedPropertyType = propertyType.accept(this)
 
-		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, { "" })
-		result += generateMethod(ctx.documentation, "void", "set" + propertyName, { ctx.property.accept(this) })
+		def result = generateMethod(ctx.documentation, null, resolvedPropertyType, "get" + propertyName, { "" })
+		result += generateMethod(ctx.documentation, null, "void", "set" + propertyName, { ctx.property.accept(this) })
 		return result
 	}
 
-	private static String generateMethod(Token doc,
-								  String resolvedReturnType,
-								  String name,
-								  Closure<String> generateParams) {
-		return ModuleUtils.formatDocumentation(doc, "\t") +
-"""	${name}(${generateParams()}):${resolvedReturnType};
+	private String generateMethod(Token doc,
+										 ModuleParser.TypeParametersContext typeParameters,
+										 String resolvedReturnType,
+										 String name,
+										 Closure<String> generateParams)
+	{
+		def docResult = ModuleUtils.formatDocumentation(doc, "\t")
+		def typeParamsResult = typeParameters?.accept(this) ?: ""
+		return """	${docResult}
+	${name}${typeParamsResult}(${generateParams()}):${resolvedReturnType};
 """
 	}
 
@@ -160,6 +172,10 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 
 	protected FQName resolveName(FQName localTypeName)
 	{
+		if (methodTypeParams.contains(localTypeName))
+		{
+			return localTypeName
+		}
 		return module.resolveName(localTypeName)
 	}
 }

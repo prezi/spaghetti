@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.ModuleParser
@@ -10,7 +11,10 @@ import org.antlr.v4.runtime.misc.NotNull
 /**
  * Created by lptr on 29/11/13.
  */
-class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+
+	final methodTypeParams = []
+
 	protected AbstractHaxeMethodGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
@@ -19,11 +23,17 @@ class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
+		def typeParams = ctx.typeParameters()
+		typeParams?.parameters?.each { param ->
+			methodTypeParams.add(FQName.fromString(param.name.text))
+		}
 		def returnType = ctx.returnTypeChain().accept(this)
 		returnType = wrapNullable(ctx.annotations(), returnType)
-		return generateMethod(ctx.documentation, returnType, ctx.name.text, {
+		def result = generateMethod(ctx.documentation, typeParams, returnType, ctx.name.text, {
 			ctx.parameters?.accept(this) ?: ""
 		})
+		methodTypeParams.clear()
+		return result
 	}
 
 	@Override
@@ -33,17 +43,21 @@ class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		def propertyType = ctx.property.type
 		def resolvedPropertyType = propertyType.accept(this)
 
-		def result = generateMethod(ctx.documentation, resolvedPropertyType, "get" + propertyName, { "" })
-		result += generateMethod(ctx.documentation, "Void", "set" + propertyName, { ctx.property.accept(this) })
+		def result = generateMethod(ctx.documentation, null, resolvedPropertyType, "get" + propertyName, { "" })
+		result += generateMethod(ctx.documentation, null, "Void", "set" + propertyName, { ctx.property.accept(this) })
 		return result
 	}
 
-	private static String generateMethod(Token doc,
-								  String resolvedReturnType,
-								  String name,
-								  Closure<String> generateParams) {
-		return ModuleUtils.formatDocumentation(doc, "\t") +
-"""	function ${name}(${generateParams()}):${resolvedReturnType};
+	private String generateMethod(Token doc,
+										 ModuleParser.TypeParametersContext typeParameters,
+										 String resolvedReturnType,
+										 String name,
+										 Closure<String> generateParams)
+	{
+		def docResult = ModuleUtils.formatDocumentation(doc, "\t")
+		def typeParamsResult = typeParameters?.accept(this) ?: ""
+	return """	${docResult}
+	function ${name}${typeParamsResult}(${generateParams()}):${resolvedReturnType};
 """
 	}
 
@@ -68,5 +82,15 @@ class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		def annotations = ModuleUtils.extractAnnotations(annotationsContext)
 		boolean nullable = annotations.containsKey("nullable")
 		return nullable ? "Null<${type}>" : type
+	}
+
+	@Override
+	protected FQName resolveName(FQName localTypeName)
+	{
+		if (methodTypeParams.contains(localTypeName))
+		{
+			return localTypeName
+		}
+		return super.resolveName(localTypeName)
 	}
 }

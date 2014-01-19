@@ -89,7 +89,7 @@ interface Dummy {
 }
 
 interface TestStuff2<T> extends TestStuff<T, T>, Dummy {
-
+	<X> X readValue(T object, string name, X defaultValue)
 }
 
 Text createText()

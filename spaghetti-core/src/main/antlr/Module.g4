@@ -61,7 +61,10 @@ typeElement	: methodDefinition
 	;
 
 methodDefinition : (documentation = Doc)? annotations?
-	returnTypeChain (name = Name) '(' ( parameters = typeNamePairs )? ')'
+	typeParameters?
+	returnTypeChain
+	(name = Name)
+	'(' ( parameters = typeNamePairs )? ')'
 	;
 
 propertyDefinition : (documentation = Doc)? annotations?

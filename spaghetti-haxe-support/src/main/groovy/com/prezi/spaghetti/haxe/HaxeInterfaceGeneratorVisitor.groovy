@@ -11,7 +11,7 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final typeParams = []
+	private final interfaceTypeParams = []
 
 	HaxeInterfaceGeneratorVisitor(ModuleDefinition module)
 	{
@@ -34,7 +34,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 		if (typeParamsCtx != null) {
 			typeName += typeParamsCtx.accept(this)
 			typeParamsCtx.parameters.each { param ->
-				typeParams.add(FQName.fromString(param.name.text))
+				interfaceTypeParams.add(FQName.fromString(param.name.text))
 			}
 		}
 
@@ -47,7 +47,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 }
 """
-		typeParams.clear()
+		interfaceTypeParams.clear()
 		return result
 	}
 
@@ -62,7 +62,7 @@ ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 	@Override
 	protected FQName resolveName(FQName localTypeName)
 	{
-		if (typeParams.contains(localTypeName))
+		if (interfaceTypeParams.contains(localTypeName))
 		{
 			return localTypeName
 		}
