@@ -84,7 +84,11 @@ interface TestStuff<Pre, Post> {
 	void drawSomething(HTMLCanvasElement canvas)
 }
 
-interface TestStuff2<T> extends TestStuff<T, T> {
+interface Dummy {
+	int value
+}
+
+interface TestStuff2<T> extends TestStuff<T, T>, Dummy {
 
 }
 

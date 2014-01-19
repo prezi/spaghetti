@@ -20,9 +20,14 @@ typeDefinition	: interfaceDefinition
 	;
 
 interfaceDefinition : (documentation = Doc)? annotations?
-	'interface' (name = Name) typeParameters? ('extends' (superType = qualifiedName) typeArguments? )? '{'
+	'interface' (name = Name) typeParameters?
+	( 'extends' superInterfaceDefinition (',' superInterfaceDefinition )* )?
+	'{'
 		typeElement*
 	'}'
+	;
+
+superInterfaceDefinition : qualifiedName typeArguments?
 	;
 
 externTypeDefinition : (documentation = Doc)? annotations?

@@ -35,11 +35,10 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 		return docs + "export interface ${module.name.localName} {\n" + methods.join("") + "}\n" + types.join("\n")
 	}
 
-	private static String defineType(String typeName, String superType) {
+	private static String defineType(String typeName, List<String> superTypes) {
 		def declaration = "export interface ${typeName}"
-		if (superType != null)
-		{
-			declaration += " extends ${superType}"
+		if (!superTypes.empty) {
+			declaration += " extends ${superTypes.join(", ")}"
 		}
 		declaration += " {"
 		return declaration
@@ -57,14 +56,12 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 			}
 		}
 
-		String superType = null
-		if (ctx.superType != null) {
-			superType = resolveName(FQName.fromContext(ctx.superType)).fullyQualifiedName
-			superType += ctx.typeArguments()?.accept(this) ?: ""
+		def superTypes = ctx.superInterfaceDefinition().collect { superTypeCtx ->
+			return superTypeCtx.accept(this)
 		}
 
 		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
-				"""${defineType(typeName, superType)}
+				"""${defineType(typeName, superTypes)}
 ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 }
 """
@@ -92,7 +89,6 @@ ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 	@Override
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
-		def valueLines = []
 		def values = ctx.propertyDefinition().collect { propertyCtx ->
 			return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
 				"\t${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)};\n"
@@ -102,6 +98,14 @@ ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
 		def result = docs + "export interface ${structName} {\n" + values + "\n}\n"
 		return result
+	}
+
+	@Override
+	String visitSuperInterfaceDefinition(@NotNull @NotNull ModuleParser.SuperInterfaceDefinitionContext ctx)
+	{
+		def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
+		superType += ctx.typeArguments()?.accept(this) ?: ""
+		return superType
 	}
 
 	@Override

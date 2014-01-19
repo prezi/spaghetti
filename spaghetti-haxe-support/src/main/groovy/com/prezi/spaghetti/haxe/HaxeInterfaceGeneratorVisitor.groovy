@@ -18,10 +18,9 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 		super(module)
 	}
 
-	private static String defineType(String typeName, String superType) {
+	private static String defineType(String typeName, List<String> superTypes) {
 		def declaration = "interface ${typeName}"
-		if (superType != null)
-		{
+		superTypes.each { superType ->
 			declaration += " extends ${superType}"
 		}
 		return declaration + " {"
@@ -39,19 +38,25 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			}
 		}
 
-		String superType = null
-		if (ctx.superType != null) {
-			superType = resolveName(FQName.fromContext(ctx.superType)).fullyQualifiedName
-			superType += ctx.typeArguments()?.accept(this) ?: ""
+		def superTypes = ctx.superInterfaceDefinition().collect { superTypeCtx ->
+			return superTypeCtx.accept(this)
 		}
 
 		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
-"""${defineType(typeName, superType)}
+"""${defineType(typeName, superTypes)}
 ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 }
 """
 		typeParams.clear()
 		return result
+	}
+
+	@Override
+	String visitSuperInterfaceDefinition(@NotNull @NotNull ModuleParser.SuperInterfaceDefinitionContext ctx)
+	{
+		def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
+		superType += ctx.typeArguments()?.accept(this) ?: ""
+		return superType
 	}
 
 	@Override
