@@ -32,8 +32,7 @@ class TypeScriptGenerator implements Generator {
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
 		return \
-"""
-${javaScript}
+"""${javaScript}
 return new ${module.name.getFullyQualifiedName()}Impl();
 """
 	}
