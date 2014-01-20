@@ -13,11 +13,12 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		def enumName = ctx.name.text
-		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
-"""#if flash
+		def result = """
+#if flash
 import flash.errors.Error;
 #end
 
+${ModuleUtils.formatDocumentation(ctx.documentation)}
 abstract ${enumName}(Int) {
 """
 
