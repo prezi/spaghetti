@@ -10,12 +10,9 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final int moduleIndex
-
-	HaxeModuleProxyGeneratorVisitor(ModuleDefinition module, int moduleIndex)
+	HaxeModuleProxyGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
-		this.moduleIndex = moduleIndex
 	}
 
 	@Override
@@ -53,7 +50,7 @@ ${super.visitModuleDefinition(ctx)}
 
 		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
 """	@:extern public static inline function ${ctx.name.text}(${params}):${returnType} {
-		${returnType == "void"?"":"return "}untyped __modules[${moduleIndex}].${ctx.name.text}(${callParams});
+		${returnType == "void"?"":"return "}untyped __modules[\"${module.name.fullyQualifiedName}\"].${ctx.name.text}(${callParams});
 	}
 """
 	}

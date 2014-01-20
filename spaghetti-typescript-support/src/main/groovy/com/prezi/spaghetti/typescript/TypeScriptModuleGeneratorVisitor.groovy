@@ -40,10 +40,10 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 """
 declare var __modules:Array<any>;
 """
-			dependentModules.eachWithIndex { module, index ->
+			dependentModules.each { module ->
 				modulesContents +=
-"""export var ${module.name.localName}:${module.name} = __modules[${index}];
-export var __${module.name.localName}:any = __modules[${index}]
+"""export var ${module.name.localName}:${module.name} = __modules[\"${module.name.fullyQualifiedName}\"];
+export var __${module.name.localName}:any = __modules[\"${module.name.fullyQualifiedName}\"];
 """
 			}
 			modulesContents += "\n"

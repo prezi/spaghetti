@@ -35,8 +35,7 @@ class HaxeGenerator implements Generator {
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
 		return \
-"""var __module;
-${javaScript}
+"""var __module; ${javaScript}
 return __module;
 """
 	}
@@ -48,9 +47,9 @@ return __module;
 	}
 
 	private void generateStuffForDependentModules(File outputDirectory) {
-		config.dependentModules.eachWithIndex { dependentModule, index ->
+		config.dependentModules.each { dependentModule ->
 			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
-			generateModuleProxy(dependentModule, index, outputDirectory)
+			generateModuleProxy(dependentModule, outputDirectory)
 		}
 	}
 
@@ -66,9 +65,9 @@ return __module;
 	/**
 	 * Generates proxy for module.
 	 */
-	private static void generateModuleProxy(ModuleDefinition module, int moduleIndex, File outputDirectory)
+	private static void generateModuleProxy(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new HaxeModuleProxyGeneratorVisitor(module, moduleIndex).processModule()
+		def contents = new HaxeModuleProxyGeneratorVisitor(module).processModule()
 		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
 	}
 
