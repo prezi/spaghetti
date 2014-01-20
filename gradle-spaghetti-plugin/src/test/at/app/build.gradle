@@ -5,14 +5,25 @@ import com.prezi.spaghetti.gradle.GenerateApplication
 evaluationDependsOn(':text-renderer')
 
 apply plugin: "spaghetti"
+apply plugin: "haxe"
 
 configurations {
 	requirejs
+	testlibs { extendsFrom modules }
 }
 
 dependencies {
 	modules project(path: ":text-renderer", configuration: "modules")
 	requirejs "org.webjars:requirejs:2.1.8"
+
+	testlibs group: "haxelib3", name: "mconsole", version: "1.4.0"
+	testlibs group: "haxelib3", name: "mcover", version: "2.0.3"
+	testlibs group: "haxelib3", name: "mlib", version: "2.0.2"
+	testlibs group: "haxelib3", name: "munit", version: "2.0.2"
+	testlibs group: "haxelib3", name: "hamcrest", version: "1.2.1"
+	testlibs group: "haxelib3", name: "tink_core", version: "1.0.0-alpha"
+	testlibs group: "haxelib3", name: "tink_macro", version: "0.0.0-alpha"
+	testlibs group: "haxelib3", name: "mockatoo", version: "2.1.0"
 }
 
 spaghetti {
@@ -34,6 +45,12 @@ task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
 	source generateApplication.outputDirectory
 	source "src"
 	main "prezi.test.client.Client"
+}
+
+task testHaxe(type: com.prezi.gradle.haxe.MUnit) {
+	configuration configurations.testlibs
+	test compileHaxe
+	source "test"
 }
 
 task bundleApplication(type: BundleApplication) {
