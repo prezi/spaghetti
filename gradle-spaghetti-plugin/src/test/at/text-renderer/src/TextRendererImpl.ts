@@ -19,7 +19,7 @@ export class RendererImpl implements Renderer {
 	}
 
     render(text:prezi.graphics.text.Text):string {
-		return this.prefix + text.getRawText() + this.suffix;
+		return this.prefix + text.getRawText() + this.suffix + " (" + prezi.graphics.text.Values.HELLO + ")";
 	}
 }
 

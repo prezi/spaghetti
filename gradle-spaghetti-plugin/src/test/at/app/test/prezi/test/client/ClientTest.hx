@@ -40,7 +40,7 @@ class ClientTest extends MatchersBase {
 		var text = Layout.createText();
 		text.insert(0, "Hello World", []);
 		var renderer = TextRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
-		assertThat(renderer.render(text), is("Text rendered with TextRenderer module: [Hello World]"));
+		assertThat(renderer.render(text), is("Text rendered with TextRenderer module: [Hello World] (12)"));
 	}
 
 	@Test
