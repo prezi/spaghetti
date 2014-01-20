@@ -3,7 +3,6 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.grammar.ModuleParser
 
 /**
  * Created by lptr on 12/11/13.
@@ -27,7 +26,7 @@ class HaxeGenerator implements Generator {
 	}
 
 	@Override
-	void generateApplication(String namespace, File outputDirectory)
+	void generateApplication(File outputDirectory)
 	{
 		generateStuffForDependentModules(outputDirectory)
 	}

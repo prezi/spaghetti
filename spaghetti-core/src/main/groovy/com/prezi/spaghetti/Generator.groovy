@@ -4,7 +4,7 @@ package com.prezi.spaghetti
  */
 public interface Generator {
 	abstract void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
-	abstract void generateApplication(String namespace, File outputDirectory)
+	abstract void generateApplication(File outputDirectory)
 
 	/**
 	 * Process the JavaScript code of a module before wrapping it into a Require JS wrapper.

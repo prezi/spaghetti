@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
@@ -20,16 +19,13 @@ class TypeScriptGenerator implements Generator {
 	void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
 	{
 		generateModuleInterface(module, outputDirectory)
-
-		def modulesClassName = module.name.qualifyLocalName(FQName.fromString("Modules"))
-		generateStuffForDependentModules(modulesClassName, outputDirectory)
+		generateStuffForDependentModules(outputDirectory)
 	}
 
 	@Override
-	void generateApplication(String namespace, File outputDirectory)
+	void generateApplication(File outputDirectory)
 	{
-		def modulesClassName = FQName.fromString("${namespace}.Modules")
-		generateStuffForDependentModules(modulesClassName, outputDirectory)
+		generateStuffForDependentModules(outputDirectory)
 	}
 
 	@Override
@@ -48,7 +44,7 @@ return new ${module.name.getFullyQualifiedName()}Impl();
 		return javaScript
 	}
 
-	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
+	private void generateStuffForDependentModules(File outputDirectory) {
 		config.dependentModules.each { dependentModule ->
 			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
 		}

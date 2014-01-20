@@ -23,6 +23,7 @@ spaghetti {
  * Generate type definitions for every client
  */
 task generateApplication(type: GenerateApplication) {
+	// This is deprecated, left here to test backwards compatibility
 	namespace "prezi.test.client"
 }
 
