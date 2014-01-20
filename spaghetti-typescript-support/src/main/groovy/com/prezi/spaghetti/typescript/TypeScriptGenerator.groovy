@@ -90,7 +90,7 @@ declare var __modules:Array<any>;
 	private static void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module).processModule()
-		TypeScriptUtils.createDeclarationSourceFile(module.name, outputDirectory, moduleFileContents)
+		TypeScriptUtils.createSourceFile(module.name, outputDirectory, moduleFileContents)
 	}
 }
 
