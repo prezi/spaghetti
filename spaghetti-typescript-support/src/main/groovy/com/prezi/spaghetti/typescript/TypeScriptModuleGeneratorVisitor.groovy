@@ -12,10 +12,12 @@ import org.antlr.v4.runtime.misc.NotNull
 class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	private final typeParams = []
+	private final List<ModuleDefinition> dependentModules
 
-	TypeScriptModuleGeneratorVisitor(ModuleDefinition module)
+	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, List<ModuleDefinition> dependentModules)
 	{
 		super(module)
+		this.dependentModules = dependentModules
 	}
 
 	@Override
@@ -31,8 +33,24 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 			}
 		}
 
+		def modulesContents = ""
+		if (!dependentModules.empty)
+		{
+			modulesContents =
+"""
+declare var __modules:Array<any>;
+"""
+			dependentModules.eachWithIndex { module, index ->
+				modulesContents +=
+"""export var ${module.name.localName}:${module.name} = __modules[${index}];
+export var __${module.name.localName}:any = __modules[${index}]
+"""
+			}
+			modulesContents += "\n"
+		}
+
 		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-		return docs + "export interface ${module.name.localName} {\n" + methods.join("") + "}\n" + types.join("\n")
+		return modulesContents + "\n" + docs + "export interface ${module.name.localName} {\n" + methods.join("") + "}\n" + types.join("\n")
 	}
 
 	private static String defineType(String typeName, List<String> superTypes) {
@@ -97,6 +115,20 @@ ${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
 		def structName = ctx.name.text
 		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
 		def result = docs + "export interface ${structName} {\n" + values + "\n}\n"
+		return result
+	}
+
+	@Override
+	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
+	{
+		def values = ctx.propertyDefinition().collect { propertyCtx ->
+			return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
+				"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = __${module.name.localName}.__consts.${ctx.name.text}.${propertyCtx.property.name.text};\n"
+		}.join("")
+
+		def constName = ctx.name.text
+		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
+		def result = docs + "export class ${constName} {\n" + values + "\n}\n"
 		return result
 	}
 

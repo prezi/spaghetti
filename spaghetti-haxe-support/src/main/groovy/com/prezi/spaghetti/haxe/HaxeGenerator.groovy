@@ -3,6 +3,7 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.grammar.ModuleParser
 
 /**
  * Created by lptr on 12/11/13.
@@ -20,7 +21,7 @@ class HaxeGenerator implements Generator {
 	{
 		generateModuleInterface(module, outputDirectory)
 		generateModuleInitializer(module, outputDirectory)
-		generateInterfacesForModuleTypes(module, outputDirectory)
+		generateInterfacesForModuleTypes(module, outputDirectory, false)
 
 		generateStuffForDependentModules(outputDirectory)
 	}
@@ -49,7 +50,7 @@ return __module;
 
 	private void generateStuffForDependentModules(File outputDirectory) {
 		config.dependentModules.eachWithIndex { dependentModule, index ->
-			generateInterfacesForModuleTypes(dependentModule, outputDirectory)
+			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
 			generateModuleProxy(dependentModule, index, outputDirectory)
 		}
 	}
@@ -78,25 +79,16 @@ return __module;
 	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
 	{
 		def initializerName = "__" + module.name.localName + "Init"
-		def initializerContents =
-"""class ${initializerName} {
-#if (js && !test)
-	public static function __init__() {
-		var module:${module.name.localName} = new ${module.name.localName}Impl();
-		untyped __module = module;
-	}
-#end
-}
-"""
+		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module).visitModuleDefinition(module.context)
 		HaxeUtils.createHaxeSourceFile(initializerName, module.name, outputDirectory, initializerContents)
 	}
 
 	/**
 	 * Generates interfaces the module should implement.
 	 */
-	private static void generateInterfacesForModuleTypes(ModuleDefinition module, File outputDirectory)
+	private static void generateInterfacesForModuleTypes(ModuleDefinition module, File outputDirectory, boolean dependentModule)
 	{
-		new HaxeDefinitionIteratorVisitor(module, outputDirectory, {
+		new HaxeDefinitionIteratorVisitor(module, outputDirectory, dependentModule, {
 			new HaxeInterfaceGeneratorVisitor(module)
 		}).processModule()
 	}

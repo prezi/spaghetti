@@ -2,6 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleVisitor
 import org.antlr.v4.runtime.RuleContext
@@ -14,13 +15,17 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor
 class HaxeDefinitionIteratorVisitor extends AbstractModuleVisitor<Void> {
 
 	private final File outputDirectory
+	private final boolean dependentModule
 	private final Closure<ModuleVisitor<String>> createTypeVisitor
 
-	HaxeDefinitionIteratorVisitor(ModuleDefinition module, File outputDirectory,
-						Closure<ModuleVisitor<String>> createTypeVisitor
+	HaxeDefinitionIteratorVisitor(ModuleDefinition module,
+								  File outputDirectory,
+								  boolean dependentModule,
+								  Closure<ModuleVisitor<String>> createTypeVisitor
 	) {
 		super(module)
 		this.outputDirectory = outputDirectory
+		this.dependentModule = dependentModule
 		this.createTypeVisitor = createTypeVisitor
 	}
 
@@ -47,6 +52,22 @@ class HaxeDefinitionIteratorVisitor extends AbstractModuleVisitor<Void> {
 	Void visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
 		createSourceFile(ctx.name.text, ctx, new HaxeStructGeneratorVisitor(module))
+		return null
+	}
+
+	@Override
+	Void visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
+	{
+		ModuleBaseVisitor<String> constGenerator
+		def fileName
+		if (dependentModule) {
+			fileName = ctx.name.text
+			constGenerator = new HaxeConstProxyGeneratorVisitor(module)
+		} else {
+			fileName = "__" + ctx.name.text
+			constGenerator = new HaxeConstGeneratorVisitor(module)
+		}
+		createSourceFile(fileName, ctx, constGenerator)
 		return null
 	}
 }

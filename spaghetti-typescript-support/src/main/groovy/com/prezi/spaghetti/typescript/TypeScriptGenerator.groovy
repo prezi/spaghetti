@@ -52,44 +52,20 @@ return new ${module.name.getFullyQualifiedName()}Impl();
 		config.dependentModules.each { dependentModule ->
 			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
 		}
-		generateClassToAccessDependentModules(modulesClassName, outputDirectory)
 	}
 
 	/**
 	 * Generates main interface for module.
 	 */
-	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
+	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new TypeScriptModuleGeneratorVisitor(module).processModule()
+		def contents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules).processModule()
 		TypeScriptUtils.createSourceFile(module.name, outputDirectory, contents)
 	}
 
-	/**
-	 * Generates Modules.hx with methods like <code>get<ModuleName>():<ModuleName> { ... }</code>.
-	 */
-	private void generateClassToAccessDependentModules(FQName modulesClassName, File outputDirectory)
+	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
-		def dependentModules = config.dependentModules
-
-		if (!dependentModules.empty)
-		{
-			String modulesContents =
-"""
-declare var __modules:Array<any>;
-"""
-			dependentModules.eachWithIndex { module, index ->
-				modulesContents +=
-"""export var ${module.name.localName}:${module.name} = __modules[${index}];
-"""
-			}
-			modulesContents += "\n"
-			TypeScriptUtils.createSourceFile(modulesClassName, outputDirectory, modulesContents)
-		}
-	}
-
-	private static void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
-	{
-		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module).processModule()
+		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules).processModule()
 		TypeScriptUtils.createSourceFile(module.name, outputDirectory, moduleFileContents)
 	}
 }

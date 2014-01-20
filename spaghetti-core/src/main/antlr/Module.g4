@@ -16,6 +16,7 @@ importDeclaration : 'import' (name = qualifiedName) ('as' (alias = Name))?
 
 typeDefinition	: interfaceDefinition
 				| structDefinition
+				| constDefinition
 				| enumDefinition
 	;
 
@@ -42,6 +43,12 @@ typeParameter : (name = Name)
 
 structDefinition : (documentation = Doc)? annotations?
 	'struct' (name = Name) '{'
+		propertyDefinition*
+	'}'
+	;
+
+constDefinition : (documentation = Doc)? annotations?
+	'const' ( name = Name ) '{'
 		propertyDefinition*
 	'}'
 	;

@@ -92,5 +92,25 @@ interface TestStuff2<T> extends TestStuff<T, T>, Dummy {
 	<X> X readValue(T object, string name, X defaultValue)
 }
 
+/**
+ * Some constants.
+ */
+const Values {
+	/**
+	 * To say hello.
+	 */
+	int HELLO
+
+	/**
+	 * To say Hi.
+	 */
+	string HI
+
+	/**
+	 * Some object
+	 */
+	CharacterStyle defaultStyle
+}
+
 Text createText()
 TestStuff<string, string> createTestStuff()
