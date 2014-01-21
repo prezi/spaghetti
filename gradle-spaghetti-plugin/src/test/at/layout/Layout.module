@@ -85,7 +85,7 @@ interface TestStuff<Pre, Post> {
 }
 
 interface Dummy {
-	int value
+	int getValue()
 }
 
 interface TestStuff2<T> extends TestStuff<T, T>, Dummy {

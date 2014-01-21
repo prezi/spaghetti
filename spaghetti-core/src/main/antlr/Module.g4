@@ -24,7 +24,7 @@ interfaceDefinition : (documentation = Doc)? annotations?
 	'interface' (name = Name) typeParameters?
 	( 'extends' superInterfaceDefinition (',' superInterfaceDefinition )* )?
 	'{'
-		typeElement*
+		methodDefinition*
 	'}'
 	;
 
@@ -61,10 +61,6 @@ enumDefinition : (documentation = Doc)? annotations?
 
 enumValue : (documentation = Doc)? annotations?
  	(name = Name)
-	;
-
-typeElement	: methodDefinition
-			| propertyDefinition
 	;
 
 methodDefinition : (documentation = Doc)? annotations?

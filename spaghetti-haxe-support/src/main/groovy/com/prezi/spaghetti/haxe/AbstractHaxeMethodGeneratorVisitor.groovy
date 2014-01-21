@@ -5,7 +5,6 @@ import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
-import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
 
 /**
@@ -29,36 +28,16 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		}
 		def returnType = ctx.returnTypeChain().accept(this)
 		returnType = wrapNullable(ctx.annotations(), returnType)
-		def result = generateMethod(ctx.documentation, typeParams, returnType, ctx.name.text, {
-			ctx.parameters?.accept(this) ?: ""
-		})
+
+		def docResult = ModuleUtils.formatDocumentation(ctx.documentation, "\t")
+		def typeParamsResult = typeParams?.accept(this) ?: ""
+		def paramsResult = ctx.parameters?.accept(this) ?: ""
+		def name = ctx.name.text
+		def result = docResult +
+"""	function ${name}${typeParamsResult}(${paramsResult}):${returnType};
+"""
 		methodTypeParams.clear()
 		return result
-	}
-
-	@Override
-	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
-	{
-		def propertyName = ctx.property.name.text.capitalize()
-		def propertyType = ctx.property.type
-		def resolvedPropertyType = propertyType.accept(this)
-
-		def result = generateMethod(ctx.documentation, null, resolvedPropertyType, "get" + propertyName, { "" })
-		result += generateMethod(ctx.documentation, null, "Void", "set" + propertyName, { ctx.property.accept(this) })
-		return result
-	}
-
-	private String generateMethod(Token doc,
-										 ModuleParser.TypeParametersContext typeParameters,
-										 String resolvedReturnType,
-										 String name,
-										 Closure<String> generateParams)
-	{
-		def docResult = ModuleUtils.formatDocumentation(doc, "\t")
-		def typeParamsResult = typeParameters?.accept(this) ?: ""
-	return """	${docResult}
-	function ${name}${typeParamsResult}(${generateParams()}):${resolvedReturnType};
-"""
 	}
 
 	@Override
