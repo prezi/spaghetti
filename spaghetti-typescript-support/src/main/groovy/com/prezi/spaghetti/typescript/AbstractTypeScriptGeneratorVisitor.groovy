@@ -38,9 +38,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 		def docResult = ModuleUtils.formatDocumentation(ctx.documentation, "\t")
 		def typeParamsResult = typeParams?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
-		def result = docResult +
-"""	${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};
-"""
+		def result = docResult + "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};"
 		methodTypeParams.clear()
 		return result
 	}
