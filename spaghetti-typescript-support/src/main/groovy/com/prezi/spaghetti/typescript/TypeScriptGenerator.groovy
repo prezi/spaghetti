@@ -34,7 +34,7 @@ class TypeScriptGenerator implements Generator {
 		return \
 """${javaScript}
 	var moduleImpl = new ${module.name.getFullyQualifiedName()}Impl();
-	var constants = new ${module.name.getFullyQualifiedName()}Constants();
+	var constants = new __${module.name.getFullyQualifiedName()}Constants();
 	moduleImpl.__consts = constants;
 	return moduleImpl;
 """
