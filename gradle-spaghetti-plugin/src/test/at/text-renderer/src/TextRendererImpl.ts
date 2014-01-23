@@ -1,5 +1,13 @@
 module prezi.graphics.text.render {
 
+
+export var Values = {
+	MAX_LENGTH: 5, 
+	PLACEHOLDER: 'string',
+	DEFAULT_RENDERER: new RendererImpl('x','y')
+};
+
+
 export class TextRendererImpl implements TextRenderer {
 	constructor() {}
 	createRenderer(prefix:string, suffix:string):Renderer {
@@ -7,10 +15,12 @@ export class TextRendererImpl implements TextRenderer {
 	}
 }
 
+
 export class RendererImpl implements Renderer {
 	prefix:string;
 	suffix:string;
 	testStuff:prezi.graphics.text.TestStuff<string, string>;
+
 
 	constructor(prefix:string, suffix:string) {
 		this.prefix = prefix;
@@ -19,8 +29,17 @@ export class RendererImpl implements Renderer {
 	}
 
     render(text:prezi.graphics.text.Text):string {
-		return this.prefix + text.getRawText() + this.suffix;
+		return this.prefix + text.getRawText() + this.suffix + " (" + prezi.graphics.text.Values.HELLO + ")";
 	}
+
+	f() {
+		var x = Values.MAX_LENGTH;
+		var y = text.Values.HI;
+
+	}
+
 }
+
+
 
 }

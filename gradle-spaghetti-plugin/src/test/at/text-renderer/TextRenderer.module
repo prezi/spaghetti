@@ -10,3 +10,20 @@ interface Renderer {
 }
 
 Renderer createRenderer(string prefix, string suffix)
+
+const Values {
+	/**
+	 * Some length
+	 */
+	int MAX_LENGTH
+
+	/**
+	 * Some placeholder
+	 */
+	string PLACEHOLDER
+
+	/**
+	 * Some object
+	 */
+	Renderer DEFAULT_RENDERER
+}

@@ -23,14 +23,17 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 		def consts = ctx.moduleElement()*.accept(this) - ""
 
 		def initializerContents =
-"""class ${initializerName} {
+"""@:keep class ${initializerName} {
 #if (js && !test)
-	public static function __init__() {
+	public static var delayedInitFinished = delayedInit();
+	static function delayedInit():Bool {
 		var module:${module.name.localName} = new ${module.name.localName}Impl();
-		untyped module.__consts = {
+		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};
+		untyped module.__consts = consts;
 		untyped __module = module;
+		return true;
 	}
 #end
 }

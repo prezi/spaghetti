@@ -115,10 +115,11 @@ This is how you can access your module from an application or another module:
 ```haxe
 package prezi.test.client;
 
+import prezi.graphics.text.Layout;
+
 class Client {
 	public static function main() {
-		var layout = Modules.getLayout();
-		var text = layout.createText(2);
+		var text = Layout.createText();
 		text.insert(0, "World");
 		text.insert(0, "Hello ");
 		trace(text.getRawText());

@@ -6,8 +6,6 @@ import org.gradle.api.tasks.TaskAction
  */
 class GenerateApplication extends AbstractGenerateTask {
 
-	String namespace
-
 	GenerateApplication()
 	{
 		this.outputDirectory = new File(project.buildDir, "spaghetti/application")
@@ -15,14 +13,13 @@ class GenerateApplication extends AbstractGenerateTask {
 
 	@TaskAction
 	generate() {
-		if (namespace == null || namespace.length() == 0) {
-			throw new IllegalArgumentException("Parameter \"namespace\" is not specified")
-		}
 		def config = readConfig()
-		createGenerator(config).generateApplication(namespace, outputDirectory)
+		createGenerator(config).generateApplication(outputDirectory)
 	}
 
+	@Deprecated
 	void namespace(String namespace) {
-		this.namespace = namespace
+		logger.warn("The 'namespace' property is deprecated and will be removed in a future version. " +
+				"It is not needed anymore, please remove.")
 	}
 }

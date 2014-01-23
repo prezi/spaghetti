@@ -44,7 +44,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
 """${defineType(typeName, superTypes)}
-${ctx.typeElement().collect { elem -> elem.accept(this) }.join("")}
+${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 }
 """
 		interfaceTypeParams.clear()

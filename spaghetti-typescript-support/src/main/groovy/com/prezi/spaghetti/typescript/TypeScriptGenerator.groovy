@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
@@ -20,25 +19,24 @@ class TypeScriptGenerator implements Generator {
 	void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
 	{
 		generateModuleInterface(module, outputDirectory)
-
-		def modulesClassName = module.name.qualifyLocalName(FQName.fromString("Modules"))
-		generateStuffForDependentModules(modulesClassName, outputDirectory)
+		generateStuffForDependentModules(outputDirectory)
 	}
 
 	@Override
-	void generateApplication(String namespace, File outputDirectory)
+	void generateApplication(File outputDirectory)
 	{
-		def modulesClassName = FQName.fromString("${namespace}.Modules")
-		generateStuffForDependentModules(modulesClassName, outputDirectory)
+		generateStuffForDependentModules(outputDirectory)
 	}
 
 	@Override
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
 		return \
-"""
-${javaScript}
-return new ${module.name.getFullyQualifiedName()}Impl();
+"""${javaScript}
+	var moduleImpl = new ${module.name.getFullyQualifiedName()}Impl();
+	var constants = new ${module.name.getFullyQualifiedName()}Constants();
+	moduleImpl.__consts = constants;
+	return moduleImpl;
 """
 	}
 
@@ -48,7 +46,7 @@ return new ${module.name.getFullyQualifiedName()}Impl();
 		return javaScript
 	}
 
-	private void generateStuffForDependentModules(FQName modulesClassName, File outputDirectory) {
+	private void generateStuffForDependentModules(File outputDirectory) {
 		config.dependentModules.each { dependentModule ->
 			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
 		}
@@ -59,13 +57,13 @@ return new ${module.name.getFullyQualifiedName()}Impl();
 	 */
 	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules).processModule()
+		def contents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules, true).processModule()
 		TypeScriptUtils.createSourceFile(module.name, outputDirectory, contents)
 	}
 
 	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
-		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules).processModule()
+		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules, false).processModule()
 		TypeScriptUtils.createSourceFile(module.name, outputDirectory, moduleFileContents)
 	}
 }
