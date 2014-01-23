@@ -10,12 +10,12 @@ import org.gradle.api.tasks.TaskAction
  */
 class BundleModule extends AbstractBundleTask {
 
-	private final File jsFile
+	public final File jsModuleFile
 
 	BundleModule()
 	{
 		this.inputFile = new File(project.buildDir, "module.js")
-		this.jsFile = new File(project.buildDir, "spaghetti/module.js")
+		this.jsModuleFile = new File(project.buildDir, "spaghetti/module.js")
 		this.outputFile = new File(project.buildDir, "spaghetti/module.zip")
 	}
 
@@ -26,9 +26,9 @@ class BundleModule extends AbstractBundleTask {
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputFile.text)
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
 
-		jsFile.parentFile.mkdirs()
-		jsFile.delete()
-		jsFile << wrappedJavaScript
+		jsModuleFile.parentFile.mkdirs()
+		jsModuleFile.delete()
+		jsModuleFile << wrappedJavaScript
 
 		def bundle = new ModuleBundle(module.name, definition.text, wrappedJavaScript)
 		bundle.save(outputFile)
