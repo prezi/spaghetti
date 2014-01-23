@@ -1,4 +1,5 @@
 import com.prezi.spaghetti.gradle.BundleModule
+import com.prezi.spaghetti.gradle.Obfuscate
 import com.prezi.spaghetti.gradle.GenerateModuleHeaders
 
 apply plugin: "spaghetti"
@@ -25,6 +26,12 @@ task bundleModule(type: BundleModule) {
 	inputFile compileHaxe.outputFile
 }
 
+task obfuscate(type: Obfuscate) {
+  dependsOn bundleModule
+  inputFile bundleModule.jsModuleFile
+  withClosure()
+}
+
 artifacts {
 	archives(bundleModule.outputFile) {
 		builtBy bundleModule
@@ -33,3 +40,4 @@ artifacts {
 		builtBy bundleModule
 	}
 }
+
