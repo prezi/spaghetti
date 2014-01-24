@@ -2,6 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 /**
@@ -14,10 +15,11 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		super(module)
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
-		return ModuleUtils.formatDocumentation(ctx.documentation) +
+		return \
 """typedef ${ctx.name.text} = {
 ${ctx.propertyDefinition().collect {
 	it.accept(this)
@@ -26,12 +28,13 @@ ${ctx.propertyDefinition().collect {
 """
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
 		def mutable = ModuleUtils.extractAnnotations(ctx.annotations()).containsKey("mutable")
 		def modifiers = mutable ? "" : " (default, never)"
-		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
+		return \
 """	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
 """
 	}

@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
@@ -9,13 +10,13 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 
+	@WithJavaDoc
 	@Override
 	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		def enumName = ctx.name.text
-		def result = """
-${ModuleUtils.formatDocumentation(ctx.documentation)}
-abstract ${enumName}(Int) {
+		def result = \
+"""abstract ${enumName}(Int) {
 """
 
 		ctx.values.eachWithIndex { valueCtx, index ->

@@ -2,6 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -18,6 +19,7 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	}
 
 	@Override
+	@WithJavaDoc
 	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
 	{
 		this.constName = ctx.name.text
@@ -33,7 +35,7 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			return "\t\tthis.${propertyName} = ${constName}.${propertyName};"
 		}
 
-		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
+		def result = \
 """@:final class __${constName} {
 	public function new() {
 ${initializers.join("\n")}

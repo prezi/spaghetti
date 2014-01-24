@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -15,10 +15,11 @@ class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVis
 		super(module)
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
-		return ModuleUtils.formatDocumentation(ctx.documentation) +
+		return \
 """interface ${module.name.localName} {
 ${super.visitModuleDefinition(ctx)}
 }

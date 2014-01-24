@@ -2,7 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -26,6 +26,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 		return declaration + " {"
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
@@ -42,7 +43,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			return superTypeCtx.accept(this)
 		}
 
-		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
+		def result = \
 """${defineType(typeName, superTypes)}
 ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 }
