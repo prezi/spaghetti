@@ -32,7 +32,7 @@ import java.lang.annotation.Target
  * Automatically prepend JavaDoc to generated code.
  */
 
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.SOURCE)
 @Target([ElementType.METHOD])
 @GroovyASTTransformationClass(classes = [ Transform ])
 public @interface WithJavaDoc {
