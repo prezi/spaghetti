@@ -75,23 +75,30 @@ class Transform implements ASTTransformation {
 			addError("@WithJavaDoc method only works on contexts that have a 'documentation' property, but not on ${paramType}", annotation, sourceUnit)
 		}
 
+		// Wrap the original method code in a closure
+		// 		{ -> ... }
 		def closure = new ClosureExpression(Parameter.EMPTY_ARRAY, method.code)
 
-		def arguments = new ArgumentListExpression([
-				new PropertyExpression(
-						new VariableExpression(ctxParam.name),
-						"documentation"),
-				new MethodCallExpression(closure, "call", ArgumentListExpression.EMPTY_ARGUMENTS)
-		])
+		// Call the closure
+		// 		{ -> ... }()
+		def closureCall = new MethodCallExpression(closure, "call", ArgumentListExpression.EMPTY_ARGUMENTS)
 
-		method.code = new BlockStatement([
-				new ReturnStatement(
-						new StaticMethodCallExpression(
-								new ClassNode(ModuleUtils),
-								"formatDocumentationWithAutoPrefix",
-								arguments)
-				)
-		], method.variableScope)
+		// Get documentation from context
+		//		ctx.documentation
+		def ctxDocumentation = new PropertyExpression(new VariableExpression(ctxParam.name), "documentation")
+
+		// Build argument list
+		// 		(ctx.documentation, { -> ... }())
+		def arguments = new ArgumentListExpression([ ctxDocumentation, closureCall ])
+
+		// Call the ModuleUtils with argument list
+		// 		ModuleUtils.formatDocumentationWithAutoPrefix(ctx.documentation, { -> ... }())
+		def callModuleUtils = new StaticMethodCallExpression(new ClassNode(ModuleUtils), "formatDocumentationWithAutoPrefix", arguments)
+
+		// Prepend return statement and replace original method code
+		//		return ModuleUtils.formatDocumentationWithAutoPrefix(ctx.documentation, { -> ... }())
+		method.code = new BlockStatement([ new ReturnStatement(callModuleUtils) ], method.variableScope)
+
 		visitVariableScopes(sourceUnit)
 	}
 
