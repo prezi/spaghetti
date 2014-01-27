@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -15,10 +15,11 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor
 		super(module)
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
-		return ModuleUtils.formatDocumentation(ctx.documentation) +
+		return \
 """@:final class ${module.name.localName} {
 ${super.visitModuleDefinition(ctx)}
 }
@@ -32,6 +33,7 @@ ${super.visitModuleDefinition(ctx)}
 		return ""
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
@@ -48,7 +50,7 @@ ${super.visitModuleDefinition(ctx)}
 			callParams = ""
 		}
 
-		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
+		return \
 """	@:extern public static inline function ${ctx.name.text}(${params}):${returnType} {
 		${returnType == "void"?"":"return "}untyped __modules[\"${module.name.fullyQualifiedName}\"].${ctx.name.text}(${callParams});
 	}

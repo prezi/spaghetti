@@ -4,6 +4,7 @@ import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -26,6 +27,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 		super(module)
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
@@ -35,10 +37,9 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 		}
 		def returnType = ctx.returnTypeChain().accept(this)
 
-		def docResult = ModuleUtils.formatDocumentation(ctx.documentation, "\t")
 		def typeParamsResult = typeParams?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
-		def result = docResult + "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};"
+		def result = "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};"
 		methodTypeParams.clear()
 		return result
 	}

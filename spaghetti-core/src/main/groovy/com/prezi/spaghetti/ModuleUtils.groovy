@@ -20,6 +20,12 @@ final class ModuleUtils {
 		return "\n" + result
 	}
 
+	public static String formatDocumentationWithAutoPrefix(Token doc, String text)
+	{
+		def m = text =~ /^([ \t]*).*/
+		return formatDocumentation(doc, m[0][1]) + text
+	}
+
 	public static Map<String, Annotation> extractAnnotations(AnnotationsContext context) {
 		return context?.annotation()?.collectEntries { annotationCtx ->
 			def annotation = Annotation.fromContext(annotationCtx)

@@ -3,6 +3,7 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
 import org.antlr.v4.runtime.misc.NotNull
@@ -19,6 +20,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		super(module)
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
@@ -29,11 +31,10 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		def returnType = ctx.returnTypeChain().accept(this)
 		returnType = wrapNullable(ctx.annotations(), returnType)
 
-		def docResult = ModuleUtils.formatDocumentation(ctx.documentation, "\t")
 		def typeParamsResult = typeParams?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
 		def name = ctx.name.text
-		def result = docResult +
+		def result = \
 """	function ${name}${typeParamsResult}(${paramsResult}):${returnType};
 """
 		methodTypeParams.clear()

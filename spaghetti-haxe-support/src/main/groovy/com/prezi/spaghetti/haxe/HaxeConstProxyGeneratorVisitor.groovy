@@ -2,6 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -17,6 +18,7 @@ class HaxeConstProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		super(module)
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
 	{
@@ -26,7 +28,7 @@ class HaxeConstProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			propertyCtx.accept(this)
 		}
 
-		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
+		def result = \
 """@:final class ${constName} {
 ${constants.join("\n")}
 }
@@ -35,12 +37,12 @@ ${constants.join("\n")}
 		return result
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
 		def propertyName = ctx.property.name.text
 		def resolvedPropertyType = ctx.property.type.accept(this)
-		return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-		"\tpublic static var ${propertyName} (default, null):${resolvedPropertyType} = untyped __modules[\"${module.name.fullyQualifiedName}\"].__consts.${constName}.${propertyName};"
+		return "\tpublic static var ${propertyName} (default, null):${resolvedPropertyType} = untyped __modules[\"${module.name.fullyQualifiedName}\"].__consts.${constName}.${propertyName};"
 	}
 }

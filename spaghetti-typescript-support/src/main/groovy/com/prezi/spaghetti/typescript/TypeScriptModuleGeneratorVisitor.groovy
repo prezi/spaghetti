@@ -4,6 +4,7 @@ import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.AbstractModuleVisitor
+import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -14,9 +15,9 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 
 	private final typeParams = []
 	private final List<ModuleDefinition> dependentModules
-	private final Boolean localModule
+	private final boolean localModule
 
-	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, List<ModuleDefinition> dependentModules, Boolean localModule)
+	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, List<ModuleDefinition> dependentModules, boolean localModule)
 	{
 		super(module)
 		this.dependentModules = dependentModules
@@ -63,7 +64,7 @@ export var __${module.name.localName}:any = __modules[\"${module.name.fullyQuali
 			(new ConstCollectorVisitor(module, consts)).processModule();
 			
 			def ctor = consts.collect { name -> 
-				return "\t\tthis.${name} = ${module.name.namespace}.${name};"	// fixme -- rvalue may come from a different package
+				return "\t\tthis.${name} = ${module.name.namespace}.${name};"
 			}.join("\n")
 
 			def members = consts.collect { name -> 
@@ -72,7 +73,7 @@ export var __${module.name.localName}:any = __modules[\"${module.name.fullyQuali
 
 			constContents += 
 """
-export class ${module.name.localName}Constants {
+export class __${module.name.localName}Constants {
 	constructor() {
 ${ctor}
 	}
@@ -94,6 +95,7 @@ ${members}
 		return declaration
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
@@ -110,8 +112,8 @@ ${members}
 			return superTypeCtx.accept(this)
 		}
 
-		def result = ModuleUtils.formatDocumentation(ctx.documentation) +
-				"""${defineType(typeName, superTypes)}
+		def result = \
+"""${defineType(typeName, superTypes)}
 ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 }
 """
@@ -119,6 +121,7 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 		return result
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
@@ -131,11 +134,11 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 		def values = valueLines.join(",\n\t")
 
 		def enumName = ctx.name.text
-		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-		def result = docs + "export enum ${enumName} {" + values + "\n}\n"
+		def result = "export enum ${enumName} {" + values + "\n}\n"
 		return result
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
@@ -145,11 +148,11 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 		}.join("")
 
 		def structName = ctx.name.text
-		def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-		def result = docs + "export interface ${structName} {\n" + values + "\n}\n"
+		def result = "export interface ${structName} {\n" + values + "\n}\n"
 		return result
 	}
 
+	@WithJavaDoc
 	@Override
 	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
 	{
@@ -160,8 +163,7 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 			}.join("\n")
 
 			def constName = ctx.name.text
-			def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-			def result = docs + "export class ${constName} {\n" + values + "\n}\n"
+			def result = "export class ${constName} {\n" + values + "\n}\n"
 			return result
 		}
 		else {
@@ -171,8 +173,7 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 			}.join("\n")
 			
 			def constName = ctx.name.text
-			def docs = ModuleUtils.formatDocumentation(ctx.documentation)
-			def result = docs + "export interface __${constName} {\n" + values + "\n}\n"
+			def result = "export interface __${constName} {\n" + values + "\n}\n"
 			return result
 		}
 	}
