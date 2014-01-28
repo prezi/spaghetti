@@ -13,6 +13,8 @@ import static com.google.common.base.Preconditions.checkNotNull
 class ModuleBundle implements Comparable<ModuleBundle> {
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
+	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
+	static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
 	public static final String DEFINITION_PATH = "module.def"
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
@@ -20,9 +22,13 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final FQName name
 	final String definition
 	final String bundledJavaScript
+	final String version
+	final String source
 
-	public ModuleBundle(FQName name, String definition, String bundledJavaScript) {
+	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript) {
 		this.name = checkNotNull(name)
+		this.version = version ?: ""
+		this.source = source ?: ""
 		this.definition = checkNotNull(definition)
 		this.bundledJavaScript = checkNotNull(bundledJavaScript)
 	}
@@ -36,8 +42,10 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				zipStream.putNextEntry(new ZipEntry(MANIFEST_MF_PATH))
 				Manifest manifest = new Manifest()
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
-				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, "1.0")
+				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name.fullyQualifiedName)
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version)
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, source)
 				manifest.write(zipStream)
 
 				// Store definition
@@ -79,8 +87,8 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (spaghettiVersion == null) {
 			throw new IllegalArgumentException("Not a module, module version missing from manifest: " + inputFile)
 		}
-		if (spaghettiVersion != "1.0") {
-			throw new IllegalArgumentException("Not a module, module version mismatch (should be \"1.0\", but was \"" + spaghettiVersion + "\"): " + inputFile)
+		if (spaghettiVersion != Version.SPAGHETTI_VERSION) {
+			throw new IllegalArgumentException("Not a module, module version mismatch (should be \"${Version.SPAGHETTI_VERSION}\", but was \"" + spaghettiVersion + "\"): " + inputFile)
 		}
 		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
 		if (definition == null) {
@@ -89,7 +97,9 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (compiledJavaScript == null) {
 			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
 		}
-		return new ModuleBundle(name, definition, compiledJavaScript)
+		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
+		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
+		return new ModuleBundle(name, definition, version, source, compiledJavaScript)
 	}
 
 	@Override
