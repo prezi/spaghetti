@@ -14,17 +14,20 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	public static final String DEFINITION_PATH = "module.def"
+	public static final String SOURCE_MAP_PATH = "module.map"
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
-	final FQName name
-	final String definition
-	final String bundledJavaScript
+	final FQName name;
+	final String definition;
+	final String bundledJavaScript;
+    final String sourceMap;
 
-	public ModuleBundle(FQName name, String definition, String bundledJavaScript) {
+	public ModuleBundle(FQName name, String definition, String bundledJavaScript, String sourceMap = null) {
 		this.name = checkNotNull(name)
 		this.definition = checkNotNull(definition)
 		this.bundledJavaScript = checkNotNull(bundledJavaScript)
+        this.sourceMap = sourceMap;
 	}
 
 	public void save(File outputFile) {
@@ -47,6 +50,12 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				// Store module itself
 				zipStream.putNextEntry(new ZipEntry(COMPILED_JAVASCRIPT_PATH))
 				zipStream << bundledJavaScript
+
+                // Store sourcemap
+                if (sourceMap != null) {
+                  zipStream.putNextEntry(new ZipEntry(SOURCE_MAP_PATH));
+                  zipStream << sourceMap;
+                }
 			}
 		}
 	}
@@ -57,20 +66,20 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		String definition = null
 		String compiledJavaScript = null
 		Manifest manifest = null
+        String sourceMap = null;
 
 		zipFile.entries().each { ZipEntry entry ->
-			Closure<String> contents = { zipFile.getInputStream(entry).text }
-			switch (entry.name) {
-				case DEFINITION_PATH:
-					definition = contents()
-					break
-				case COMPILED_JAVASCRIPT_PATH:
-					compiledJavaScript = contents()
-					break
-				case MANIFEST_MF_PATH:
-					manifest = new Manifest(zipFile.getInputStream(entry))
-					break
-			}
+          Closure<String> contents = { zipFile.getInputStream(entry).text }
+          switch (entry.name) {
+          case DEFINITION_PATH: definition = contents();
+            break;
+          case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents();
+            break;
+          case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry));
+            break;
+          case SOURCE_MAP_PATH: sourceMap = contents();
+            break;
+          }
 		}
 		if (manifest == null) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + inputFile)
@@ -89,7 +98,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (compiledJavaScript == null) {
 			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
 		}
-		return new ModuleBundle(name, definition, compiledJavaScript)
+		return new ModuleBundle(name, definition, compiledJavaScript, sourceMap)
 	}
 
 	@Override
