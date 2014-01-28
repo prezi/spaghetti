@@ -72,6 +72,7 @@ class ObfuscateBundle extends AbstractBundleTask
     {
     case With.Closure: _: {
       def closureFile = new File(obfuscateDir, "closure.js");
+      closureFile.delete();
       closureFile << bundle.bundledJavaScript << "\nvar __a = {};\n" + symbols.collect{
         "/** @expose */\n__a." + it + " = {};\n"
       }.join("");
@@ -81,7 +82,7 @@ class ObfuscateBundle extends AbstractBundleTask
     }
     case With.UglifyJS: _: {
       def uglifyFile = new File(obfuscateDir, "uglify.js");
-
+      uglifyFile.delete();
       uglifyFile << bundle.bundledJavaScript;
       cmdLine = uglifyJSCommandLine(symbols, uglifyFile, mapJStoMinFile);
       break;
