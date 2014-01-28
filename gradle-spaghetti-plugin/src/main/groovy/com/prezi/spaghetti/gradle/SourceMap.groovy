@@ -16,7 +16,7 @@ var map = sourceMap.SourceMapGenerator.fromSourceMap(new sourceMap.SourceMapCons
 map.applySourceMap(new sourceMap.SourceMapConsumer(mapAtoB), mapBtoC.sources[0]);
 var mapAtoC = map.toJSON();
 mapAtoC.file = '${mapAtoCName}';
-console.log(mapAtoC);
+console.log(JSON.stringify(mapAtoC));
 """;
 
     def nodeJsFile = File.createTempFile("nodejs_map", ".js");
