@@ -1,6 +1,7 @@
 import com.prezi.spaghetti.gradle.BundleApplication
 import com.prezi.spaghetti.gradle.ExtractModules
 import com.prezi.spaghetti.gradle.GenerateApplication
+import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 evaluationDependsOn(':text-renderer')
 
@@ -56,6 +57,12 @@ task testHaxe(type: com.prezi.gradle.haxe.MUnit) {
 task bundleApplication(type: BundleApplication) {
 	dependsOn compileHaxe
 	inputFile compileHaxe.outputFile
+}
+
+task obfuscate(type: ObfuscateBundle) {
+  dependsOn bundleApplication
+  inputFile bundleApplication.outputFile
+  withClosure()
 }
 
 def testWebappDir = file("${buildDir}/webapp")
