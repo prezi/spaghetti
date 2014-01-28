@@ -8,6 +8,7 @@ apply plugin: "spaghetti"
 
 dependencies {
 	modules project(path: ":layout", configuration: "modules")
+	modulesObf project(path: ":layout", configuration: "modulesObf");
 }
 
 spaghetti {
@@ -34,7 +35,9 @@ task bundleModule(type: BundleModule) {
 
 task obfuscate(type: Obfuscate) {
   dependsOn bundleModule
-  withClosure()
+  // inputFile outputFile
+  // outputFile ("${outputFile}.2")
+  withUglifyJS()
 }
 
 artifacts {
