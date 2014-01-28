@@ -7,8 +7,6 @@ import com.prezi.spaghetti.SourceMap;
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 
-import java.util.Set;
-
 class ObfuscateBundle extends AbstractBundleTask
 {
   private static final List<String> s_protectedSymbols = ["define", "prototype", "__consts"];
