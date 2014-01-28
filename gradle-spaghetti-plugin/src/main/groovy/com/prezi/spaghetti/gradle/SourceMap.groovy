@@ -13,7 +13,7 @@ var mapBtoC = ${mapBtoC};
 var mapAtoB = ${mapAtoB};
 
 var map = sourceMap.SourceMapGenerator.fromSourceMap(new sourceMap.SourceMapConsumer(mapBtoC));
-map.applySourceMap(new sourceMap.SourceMapConsumer(mapAtoB));
+map.applySourceMap(new sourceMap.SourceMapConsumer(mapAtoB), mapBtoC.sources[0]);
 var mapAtoC = map.toJSON();
 mapAtoC.file = '${mapAtoCName}';
 console.log(mapAtoC);
