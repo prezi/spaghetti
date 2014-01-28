@@ -35,4 +35,10 @@ class Parameters {
 	{
 		return definition
 	}
+
+	String sourceBaseUrl = "http://github.com/prezi/${project.rootProject.name}"
+
+	void sourceBaseUrl(String source) {
+		this.sourceBaseUrl = source
+	}
 }

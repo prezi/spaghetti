@@ -34,7 +34,7 @@ class BundleModule extends AbstractBundleTask {
 		jsModuleFile.delete()
 		jsModuleFile << wrappedJavaScript
 
-		def bundle = new ModuleBundle(module.name, definition.text, wrappedJavaScript, sourceMap)
+		def bundle = new ModuleBundle(module.name, definition.text, String.valueOf(project.version), sourceBaseUrl, wrappedJavaScript, sourceMap)
 		bundle.save(outputFile)
 	}
 

@@ -36,6 +36,12 @@ task generateGrammar(type: JavaExec) {
 	classpath = buildscript.configurations.classpath
 }
 
+processResources {
+	def version = project.version =~ /^(\d+(?:[\.]\d+)+)-.*/
+
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [ version: version[0][1] ])
+}
+
 idea.module {
 	sourceDirs += generatedGrammar
 	excludeDirs -= project.buildDir

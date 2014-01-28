@@ -19,7 +19,6 @@ buildscript {
 
 configure(allprojects) {
 	group = "prezi.test"
-	version = "0.1-SNAPSHOT"
 
 	apply plugin: "prezi"
 

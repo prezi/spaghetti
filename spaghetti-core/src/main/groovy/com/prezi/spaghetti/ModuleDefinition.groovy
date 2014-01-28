@@ -10,6 +10,8 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final FQName name
+	final String version
+	final String source
 	final ModuleDefinitionContext context
 
 	private final Set<String> localTypeNames
@@ -17,9 +19,11 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	private final Map<String, FQName> imports
 	private final Scope parentScope
 
-	ModuleDefinition(ModuleDefinitionContext context, Scope parentScope)
+	ModuleDefinition(ModuleDefinitionContext context, String version, String source, Scope parentScope)
 	{
 		this.name = FQName.fromContext(context.name)
+		this.version = version
+		this.source = source
 		this.context = context
 		this.parentScope = parentScope
 

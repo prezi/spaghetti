@@ -40,9 +40,7 @@ class AbstractSpaghettiTask extends DefaultTask {
 	}
 
 	ModuleConfiguration readConfig(String... localDefinitions) {
-		def config = readConfig(localDefinitions.toList())
-		logger.info("Loaded configuration: ${config}")
-		return config
+		return readConfig(localDefinitions.toList())
 	}
 
 	ModuleConfiguration readConfig(Iterable<String> localDefinitions) {
@@ -56,7 +54,14 @@ class AbstractSpaghettiTask extends DefaultTask {
 			def moduleDefCtx = ModuleConfigurationParser.parse(definition)
 			return moduleDefCtx
 		}
-		def config = ModuleConfigurationParser.parse(dependentDefinitionContexts, localDefinitionContexts, externs)
+		def config = ModuleConfigurationParser.parse(
+				dependentDefinitionContexts,
+				localDefinitionContexts,
+				externs,
+				String.valueOf(project.version),
+				this.sourceBaseUrl
+		)
+		logger.info("Loaded configuration: ${config}")
 		return config
 	}
 }
