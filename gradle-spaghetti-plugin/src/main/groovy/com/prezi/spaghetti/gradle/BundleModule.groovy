@@ -26,11 +26,15 @@ class BundleModule extends AbstractBundleTask {
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputFile.text)
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
 
+        // is a sourcemap present?
+        def sourceMapFile = new File(inputFile.toString() + ".map");
+        def sourceMap = sourceMapFile.canRead() ? sourceMapFile.text : null;
+
 		jsModuleFile.parentFile.mkdirs()
 		jsModuleFile.delete()
 		jsModuleFile << wrappedJavaScript
 
-		def bundle = new ModuleBundle(module.name, definition.text, wrappedJavaScript)
+		def bundle = new ModuleBundle(module.name, definition.text, wrappedJavaScript, sourceMap)
 		bundle.save(outputFile)
 	}
 
