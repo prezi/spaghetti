@@ -87,10 +87,10 @@ annotationParameters	: ( singleValue = annotationValue )
 annotationParameter : ( name = Name ) '=' annotationValue
 	;
 
-annotationValue	: ( nullValue = 'null' )				# annotationNullParameter
-				| ( boolValue = ( 'true' | 'false' ) )	# annotationBooleanParameter
-				| ( numberValue = Number )				# annotationNumberParameter
- 				| ( stringValue = '"' .*? '"' )			# annotationStringParameter
+annotationValue	: ( nullValue = Null )		# annotationNullParameter
+				| ( boolValue = Bool )		# annotationBooleanParameter
+				| ( numberValue = Number )	# annotationNumberParameter
+ 				| ( stringValue = String )	# annotationStringParameter
 	;
 
 typeNamePairs : ( elements += typeNamePair ) ( ',' elements += typeNamePair )*
@@ -142,10 +142,16 @@ qualifiedName : ( parts += Name ) ( '.' parts += Name )*
 	;
 
 Name				: [_a-zA-Z][_a-zA-Z0-9]*;
+Null				: 'null';
+Bool				: ( 'true' | 'false' );
 Number				: [0-9]+ ( '.' [0-9]+ )?;
+String				: '"' STRING_GUTS '"';
 Doc					: '/**' .*? '*/' '\r'* '\n'?;
 ArrayQualifier		: '[' ']';
 
 BlockComment		: '/*' (.*?) '*/' -> skip;
 LineComment			: '//' .*? '\n' -> skip;
 WhiteSpace			: [ \t\r\n]+ -> skip;
+
+fragment STRING_GUTS : (ESC | ~('\\' | '"'))*;
+fragment ESC :  '\\' ('\\' | '"');
