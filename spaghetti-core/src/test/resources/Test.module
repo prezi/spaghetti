@@ -1,0 +1,92 @@
+/**
+ * Test "module".
+ */
+module prezi.test.Test
+
+extern interface UnicodeString
+
+/**
+ * Different types of character styles.
+ */
+enum CharacterStyleType {
+	/**
+	 * This takes an int.
+	 */
+	COLOR
+
+	/**
+	 * A string with the name of the font family.
+	 */
+	FONT_FAMILY
+}
+
+@annotated(name="meta", param=true)
+struct CharacterStyle {
+	/**
+	 * The type of the style.
+	 */
+	CharacterStyleType type
+	/**
+	 * The value of the style.
+	 */
+	@mutable any value
+}
+
+interface AbstractText {
+	void insert(int offset, UnicodeString text, @nullable CharacterStyle[] withStyles)
+	void delete(int offset, int end)
+}
+
+/**
+ * Describes a block of text.
+ */
+interface Text extends AbstractText {
+	/**
+	 * Inserts the given string at <code>offset</code>.
+	 */
+	UnicodeString getRawText()
+}
+
+extern interface HTMLCanvasElement
+
+/**
+ * Stuff here only to test code generation features.
+ */
+interface TestStuff<Pre, Post> {
+	void registerCallback(string->void callback)
+	int doVoidCallback(void->int callback)
+	int doAsync(string->(int->string)->void callback, int->string converter)
+	string doSomething(Pre pre, string text, Post post)
+	void drawSomething(HTMLCanvasElement canvas)
+}
+
+interface Dummy {
+	int getValue()
+}
+
+interface TestStuff2<T> extends TestStuff<T, T>, Dummy {
+	<X> X readValue(T object, string name, X defaultValue)
+}
+
+/**
+ * Some constants.
+ */
+const Values {
+	/**
+	 * To say hello.
+	 */
+	int HELLO
+
+	/**
+	 * To say Hi.
+	 */
+	string HI
+
+	/**
+	 * Some object
+	 */
+	CharacterStyle defaultStyle
+}
+
+Text createText()
+TestStuff<string, string> createTestStuff()

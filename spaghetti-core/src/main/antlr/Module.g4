@@ -80,8 +80,8 @@ annotations : annotation+
 annotation : '@' (name = Name) ( '(' annotationParameters? ')' )?
 	;
 
-annotationParameters	: annotationValue
-						| annotationParameter ( ',' annotationParameter )*
+annotationParameters	: annotationValue									# singleAnnotationParameter
+						| annotationParameter ( ',' annotationParameter )*  # multipleAnnotationParameters
 	;
 
 annotationParameter : ( name = Name ) '=' annotationValue

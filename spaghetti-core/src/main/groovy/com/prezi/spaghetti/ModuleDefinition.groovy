@@ -19,7 +19,7 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	private final Map<String, FQName> imports
 	private final Scope parentScope
 
-	ModuleDefinition(ModuleDefinitionContext context, String version, String source, Scope parentScope)
+	public ModuleDefinition(ModuleDefinitionContext context, String version, String source, Scope parentScope)
 	{
 		this.name = FQName.fromContext(context.name)
 		this.version = version
