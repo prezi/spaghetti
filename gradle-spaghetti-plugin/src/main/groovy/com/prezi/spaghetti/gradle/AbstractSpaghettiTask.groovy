@@ -39,19 +39,21 @@ class AbstractSpaghettiTask extends DefaultTask {
 		return params.configuration
 	}
 
-	ModuleConfiguration readConfig(String... localDefinitions) {
-		return readConfig(localDefinitions.toList())
+	ModuleConfiguration readConfig(File... files) {
+		readConfig(files.collectEntries() { file ->
+			[ file.toString(), file.text ]
+		})
 	}
 
-	ModuleConfiguration readConfig(Iterable<String> localDefinitions) {
+	ModuleConfiguration readConfig(Map<String, String> localDefinitions = [:]) {
 		def dependentDefinitionContexts
 		if (configuration != null) {
 			dependentDefinitionContexts = ModuleDefinitionLookup.getAllDefinitions(configuration)
 		} else {
 			dependentDefinitionContexts = []
 		}
-		def localDefinitionContexts = localDefinitions.collect { String definition ->
-			def moduleDefCtx = ModuleConfigurationParser.parse(definition)
+		def localDefinitionContexts = localDefinitions.collect { location, definition ->
+			def moduleDefCtx = ModuleConfigurationParser.parse(definition, location)
 			return moduleDefCtx
 		}
 		def config = ModuleConfigurationParser.parse(
