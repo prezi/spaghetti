@@ -80,7 +80,7 @@ annotations : annotation+
 annotation : '@' (name = Name) ( '(' annotationParameters? ')' )?
 	;
 
-annotationParameters	: ( singleValue = annotationValue )
+annotationParameters	: annotationValue
 						| annotationParameter ( ',' annotationParameter )*
 	;
 
@@ -141,17 +141,18 @@ typeArguments : '<' ( arguments += returnType ) ( ',' ( arguments += returnType 
 qualifiedName : ( parts += Name ) ( '.' parts += Name )*
 	;
 
-Name				: [_a-zA-Z][_a-zA-Z0-9]*;
 Null				: 'null';
 Bool				: ( 'true' | 'false' );
 Number				: [0-9]+ ( '.' [0-9]+ )?;
 String				: '"' STRING_GUTS '"';
 Doc					: '/**' .*? '*/' '\r'* '\n'?;
+Name				: [_a-zA-Z][_a-zA-Z0-9]*;
 ArrayQualifier		: '[' ']';
 
 BlockComment		: '/*' (.*?) '*/' -> skip;
 LineComment			: '//' .*? '\n' -> skip;
 WhiteSpace			: [ \t\r\n]+ -> skip;
+
 
 fragment STRING_GUTS : (ESC | ~('\\' | '"'))*;
 fragment ESC :  '\\' ('\\' | '"');
