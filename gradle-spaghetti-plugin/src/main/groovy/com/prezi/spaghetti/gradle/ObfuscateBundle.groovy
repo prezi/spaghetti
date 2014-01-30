@@ -34,14 +34,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		return ["uglifyjs", uglifyFile, "--compress", "--mangle",
 				"--reserved=" + symbols.join(","),
 				"--source-map=" + mapJStoMinFile,
-				"--source-map-url=''"];
-	}
-
-	private List<String> closureCommandLine(File closureFile, File mapJStoMinFile)
-	{
-
-		return ["closure", "--js=" + closureFile, "--compilation_level=ADVANCED_OPTIMIZATIONS",
-				"--create_source_map=" + mapJStoMinFile];
+				"--source-map-url="];
 	}
 
 	public ObfuscateBundle()
@@ -57,15 +50,14 @@ class ObfuscateBundle extends AbstractBundleTask
 
 		def config = readConfig(definition.text);
 		def modules = config.localModules + config.getDependentModules();
-		def cmdLine = "";
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
 		obfuscateDir.mkdirs();
-		def mapJStoMinFile = new File(obfuscateDir, "JStoMin.map");
 		Set<String> symbols = s_protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten();
-
+		def mapJStoMin;
 		def bundle = ModuleBundle.load(inputFile);
 
 		// OBFUSCATE
+		def compressedJS = new StringBuilder();
 		switch (d_with)
 		{
 		case With.Closure: _: {
@@ -75,32 +67,30 @@ class ObfuscateBundle extends AbstractBundleTask
 				"/** @expose */\n__a." + it + " = {};\n"
 			}.join("");
 
-			cmdLine = closureCommandLine(closureFile, mapJStoMinFile);
+			def sourceMapBuilder = new StringBuilder();
+			Closure.compile(closureFile.toString(), compressedJS, "JStoMin.map", sourceMapBuilder);
+			mapJStoMin = sourceMapBuilder.toString();
 			break;
 		}
 		case With.UglifyJS: _: {
 			def uglifyFile = new File(obfuscateDir, "uglify.js");
+			def mapJStoMinFile = new File(obfuscateDir, "JStoMin.map");
 			uglifyFile.delete();
 			uglifyFile << bundle.bundledJavaScript;
-			cmdLine = uglifyJSCommandLine(symbols, uglifyFile, mapJStoMinFile);
+			def cmdLine = uglifyJSCommandLine(symbols, uglifyFile, mapJStoMinFile);
+
+			def process = cmdLine.execute();
+			process.waitForProcessOutput(compressedJS, System.err);
+			if (process.exitValue() != 0) {
+				throw new RuntimeException("Obfuscation failed with exit code " + process.exitValue());
+			}
+			mapJStoMin = mapJStoMinFile.text;
 			break;
 		}
 		default: throw new RuntimeException("Invalid d_with: " + d_with);
 		};
 
-		println("Protected API symbols: " + symbols.join(","))
-		println("Executing \"" + cmdLine.join(" ") + "\"...");
-
-		def process = cmdLine.execute();
-		def compressedJS = new StringBuilder();
-		process.waitForProcessOutput(compressedJS, System.err);
-
-		if (process.exitValue() != 0) {
-			throw new RuntimeException("Obfuscation failed with exit code " + process.exitValue());
-		}
-
 		// SOURCEMAP
-		def mapJStoMin = mapJStoMinFile.text;
 		def finalSourceMap;
 		if (bundle.sourceMap != null)
 		{
