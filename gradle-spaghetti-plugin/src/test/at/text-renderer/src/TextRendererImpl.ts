@@ -1,13 +1,6 @@
 module prezi.graphics.text.render {
 
 
-export var Values = {
-	MAX_LENGTH: 5, 
-	PLACEHOLDER: 'string',
-	DEFAULT_RENDERER: new RendererImpl('x','y')
-};
-
-
 export class TextRendererImpl implements TextRenderer {
 	constructor() {}
 	createRenderer(prefix:string, suffix:string):Renderer {
@@ -40,6 +33,11 @@ export class RendererImpl implements Renderer {
 
 }
 
+export var Values = {
+	MAX_LENGTH: 5, 
+	PLACEHOLDER: 'string',
+	DEFAULT_RENDERER: new RendererImpl('x','y')
+};
 
 
 }
