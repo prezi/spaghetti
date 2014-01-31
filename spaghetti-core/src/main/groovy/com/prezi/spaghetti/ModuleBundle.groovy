@@ -22,12 +22,12 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
-	final FQName name;
-	final String definition;
-	final String bundledJavaScript;
-	final String version;
-	final String source;
-	final String sourceMap;
+	final FQName name
+	final String definition
+	final String bundledJavaScript
+	final String version
+	final String source
+	final String sourceMap
 
 	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
@@ -81,14 +81,18 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		zipFile.entries().each { ZipEntry entry ->
 			Closure<String> contents = { zipFile.getInputStream(entry).text }
 			switch (entry.name) {
-			case DEFINITION_PATH: definition = contents()
-				break;
-			case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents()
-				break;
-			case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry))
-				break;
-			case SOURCE_MAP_PATH: sourceMap = contents()
-				break;
+				case DEFINITION_PATH:
+					definition = contents()
+					break;
+				case COMPILED_JAVASCRIPT_PATH:
+					compiledJavaScript = contents()
+					break;
+				case MANIFEST_MF_PATH:
+					manifest = new Manifest(zipFile.getInputStream(entry))
+					break;
+				case SOURCE_MAP_PATH:
+					sourceMap = contents()
+					break;
 			}
 		}
 		if (manifest == null) {
