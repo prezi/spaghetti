@@ -11,8 +11,8 @@ import org.gradle.api.Project
  * Created by lptr on 12/11/13.
  */
 class SpaghettiPlugin implements Plugin<Project> {
-  static final String CONFIGURATION_NAME = "modules";
-  static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
+	static final String CONFIGURATION_NAME = "modules";
+	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
 
 	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
@@ -29,9 +29,9 @@ class SpaghettiPlugin implements Plugin<Project> {
 			defaultConfiguration = project.configurations.create(CONFIGURATION_NAME)
 		}
 
-        if (project.configurations.findByName(OBFUSCATED_CONFIGURATION_NAME) == null) {
-          project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
-        }
+		if (project.configurations.findByName(OBFUSCATED_CONFIGURATION_NAME) == null) {
+			project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
+		}
 
 		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration
 		project.tasks.withType(AbstractSpaghettiTask) { AbstractSpaghettiTask task ->
@@ -70,10 +70,10 @@ class SpaghettiPlugin implements Plugin<Project> {
 	{
 		def generatorFactory = generatorFactories.get(platform)
 		if (generatorFactory == null)
-		{
-			throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
-					+ generatorFactories.keySet().sort().join(", "))
-		}
-		generatorFactory
+			{
+				throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
+												   + generatorFactories.keySet().sort().join(", "))
+			}
+			generatorFactory
 	}
 }

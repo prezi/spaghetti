@@ -79,17 +79,17 @@ class ModuleBundle implements Comparable<ModuleBundle> {
         String sourceMap = null;
 
 		zipFile.entries().each { ZipEntry entry ->
-          Closure<String> contents = { zipFile.getInputStream(entry).text }
-          switch (entry.name) {
-          case DEFINITION_PATH: definition = contents();
-            break;
-          case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents();
-            break;
-          case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry));
-            break;
-          case SOURCE_MAP_PATH: sourceMap = contents();
-            break;
-          }
+			Closure<String> contents = { zipFile.getInputStream(entry).text }
+			switch (entry.name) {
+			case DEFINITION_PATH: definition = contents();
+				break;
+			case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents();
+				break;
+			case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry));
+				break;
+			case SOURCE_MAP_PATH: sourceMap = contents();
+				break;
+			}
 		}
 		if (manifest == null) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + inputFile)

@@ -47,11 +47,10 @@ class BundleModule extends AbstractBundleTask {
 	@InputFile
 	File getSourceMap()
 	{
-		if (!sourceMap)
-		{
+		if (!sourceMap) {
 			sourceMap = new File(inputFile.toString() + ".map")
 		}
-		sourceMap
+		return sourceMap
 	}
 
 	@Override

@@ -47,7 +47,6 @@ class ObfuscateBundle extends AbstractBundleTask
 	@TaskAction
 	void run()
 	{
-
 		def config = readConfig(definition.text);
 		def modules = config.localModules + config.getDependentModules();
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
@@ -92,12 +91,9 @@ class ObfuscateBundle extends AbstractBundleTask
 
 		// SOURCEMAP
 		def finalSourceMap;
-		if (bundle.sourceMap != null)
-		{
+		if (bundle.sourceMap != null) {
 			finalSourceMap = SourceMap.compose(bundle.sourceMap, mapJStoMin, "module.map");
-		}
-		else
-		{
+		} else {
 			finalSourceMap = mapJStoMin;
 		}
 
