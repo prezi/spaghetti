@@ -11,8 +11,8 @@ import org.gradle.api.Project
  * Created by lptr on 12/11/13.
  */
 class SpaghettiPlugin implements Plugin<Project> {
-	static final String CONFIGURATION_NAME = "modules";
-	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
+	static final String CONFIGURATION_NAME = "modules"
+	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf"
 
 	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
@@ -70,10 +70,10 @@ class SpaghettiPlugin implements Plugin<Project> {
 	{
 		def generatorFactory = generatorFactories.get(platform)
 		if (generatorFactory == null)
-			{
-				throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
-												   + generatorFactories.keySet().sort().join(", "))
-			}
-			generatorFactory
+		{
+			throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
+					+ generatorFactories.keySet().sort().join(", "))
+		}
+		generatorFactory
 	}
 }

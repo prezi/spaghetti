@@ -38,7 +38,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		}.join("");
 
 		def sourceMapBuilder = new StringBuilder();
-		Closure.compile(closureFile.toString(), compressedJS, "JStoMin.map", sourceMapBuilder);
+		Closure.compile(closureFile.toString(), compressedJS, bundle.name.fullyQualifiedName, sourceMapBuilder);
 		def mapJStoMin = sourceMapBuilder.toString();
 
 		// SOURCEMAP

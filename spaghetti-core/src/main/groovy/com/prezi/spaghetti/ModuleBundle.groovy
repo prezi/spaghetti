@@ -61,11 +61,11 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				zipStream.putNextEntry(new ZipEntry(COMPILED_JAVASCRIPT_PATH))
 				zipStream << bundledJavaScript
 
-                // Store sourcemap
-                if (sourceMap != null) {
-                  zipStream.putNextEntry(new ZipEntry(SOURCE_MAP_PATH));
-                  zipStream << sourceMap;
-                }
+				// Store sourcemap
+				if (sourceMap != null) {
+					zipStream.putNextEntry(new ZipEntry(SOURCE_MAP_PATH));
+					zipStream << sourceMap;
+				}
 			}
 		}
 	}
@@ -76,18 +76,18 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		String definition = null
 		String compiledJavaScript = null
 		Manifest manifest = null
-        String sourceMap = null;
+		String sourceMap = null
 
 		zipFile.entries().each { ZipEntry entry ->
 			Closure<String> contents = { zipFile.getInputStream(entry).text }
 			switch (entry.name) {
-			case DEFINITION_PATH: definition = contents();
+			case DEFINITION_PATH: definition = contents()
 				break;
-			case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents();
+			case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents()
 				break;
-			case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry));
+			case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry))
 				break;
-			case SOURCE_MAP_PATH: sourceMap = contents();
+			case SOURCE_MAP_PATH: sourceMap = contents()
 				break;
 			}
 		}

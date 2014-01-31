@@ -32,14 +32,13 @@ task obfuscate(type: ObfuscateBundle) {
 }
 
 artifacts {
-	archives(obfuscate.outputFile) {
-		builtBy obfuscate
+	archives(bundleModule.outputFile) {
+		builtBy bundleModule
 	}
-	modules(obfuscate.outputFile) {
-		builtBy obfuscate
+	modules(bundleModule.outputFile) {
+		builtBy bundleModule
 	}
 	modulesObf(obfuscate.outputFile) {
 		builtBy obfuscate
 	}
 }
-

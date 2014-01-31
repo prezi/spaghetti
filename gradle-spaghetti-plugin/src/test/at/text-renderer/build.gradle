@@ -19,8 +19,6 @@ spaghetti {
 task generateHeaders(type: GenerateModuleHeaders) {
 }
 
-
-
 task compileTsc(type: TypeScriptTask) {
 	dependsOn generateHeaders
 	source generateHeaders.outputDirectory
@@ -34,20 +32,20 @@ task bundleModule(type: BundleModule) {
 }
 
 task obfuscate(type: ObfuscateBundle) {
-  dependsOn bundleModule
-  inputFile bundleModule.outputFile
+	dependsOn bundleModule
+	inputFile bundleModule.outputFile
 }
 
 artifacts {
-  archives(bundleModule.outputFile) {
-    builtBy bundleModule
-  }
-  modules(bundleModule.outputFile) {
-    builtBy bundleModule
-  }
-  modulesObf(obfuscate.outputFile) {
-    builtBy obfuscate
-  }
+	archives(bundleModule.outputFile) {
+		builtBy bundleModule
+	}
+	modules(bundleModule.outputFile) {
+		builtBy bundleModule
+	}
+	modulesObf(obfuscate.outputFile) {
+		builtBy obfuscate
+	}
 }
 
 class TypeScriptTask extends SourceTask {

@@ -51,7 +51,7 @@ class BundleModule extends AbstractBundleTask {
 	{
 		if (!sourceMap) {
 			def defSourceMap = new File(inputFile.toString() + ".map")
-			if (defSourceMap.canRead()) {
+			if (defSourceMap.exists()) {
 				sourceMap = defSourceMap
 				return sourceMap
 			}

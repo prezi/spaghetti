@@ -18,7 +18,7 @@ class ModuleDefinitionLookup {
 	}
 
 	public static List<ModuleBundle> getAllBundles(Collection<File> files) {
-		LOGGER.debug("\tLooking at files: ${files.join('\n\t')}")
+		LOGGER.debug("\tLooking at files:\n\t${files.join('\n\t')}")
 		def bundles = files.collect { File file ->
 			LOGGER.debug("Trying to load module bundle from ${file}")
 			try {
