@@ -83,16 +83,16 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			switch (entry.name) {
 				case DEFINITION_PATH:
 					definition = contents()
-					break;
+					break
 				case COMPILED_JAVASCRIPT_PATH:
 					compiledJavaScript = contents()
-					break;
+					break
 				case MANIFEST_MF_PATH:
 					manifest = new Manifest(zipFile.getInputStream(entry))
-					break;
+					break
 				case SOURCE_MAP_PATH:
 					sourceMap = contents()
-					break;
+					break
 			}
 		}
 		if (manifest == null) {
