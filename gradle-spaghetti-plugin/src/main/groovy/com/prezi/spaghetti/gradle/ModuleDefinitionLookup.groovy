@@ -13,8 +13,12 @@ class ModuleDefinitionLookup {
 	private static final LOGGER = LoggerFactory.getLogger(ModuleDefinitionLookup)
 
 	public static List<ModuleBundle> getAllBundles(Configuration configuration) {
-		def files = configuration.files
-		LOGGER.debug("Looking for modules in configuration ${configuration.name}:\n\t${files.join('\n\t')}")
+		LOGGER.debug("Looking for modules in configuration ${configuration.name}")
+		return getAllBundles(configuration.files);
+	}
+
+	public static List<ModuleBundle> getAllBundles(Collection<File> files) {
+		LOGGER.debug("\tLooking at files: ${files.join('\n\t')}")
 		def bundles = files.collect { File file ->
 			LOGGER.debug("Trying to load module bundle from ${file}")
 			try {
