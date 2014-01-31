@@ -29,7 +29,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final String source;
     final String sourceMap;
 
-	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap = null) {
+	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
 		this.version = version ?: ""
 		this.source = source ?: ""
