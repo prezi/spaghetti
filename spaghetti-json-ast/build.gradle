@@ -1,0 +1,29 @@
+apply plugin: 'haxe'
+
+configurations {
+	haxelibs
+}
+
+dependencies {
+	haxelibs group: "haxelib3", name: "mconsole", version: "1.4.0"
+	haxelibs group: "haxelib3", name: "mcover", version: "2.0.3"
+	haxelibs group: "haxelib3", name: "mlib", version: "2.0.2"
+	haxelibs group: "haxelib3", name: "munit", version: "2.0.2"
+	haxelibs group: "haxelib3", name: "hamcrest", version: "1.2.1"
+	haxelibs group: "haxelib3", name: "tink_core", version: "1.0.0-alpha"
+	haxelibs group: "haxelib3", name: "tink_macro", version: "0.0.0-alpha"
+	haxelibs group: "haxelib3", name: "mockatoo", version: "2.1.0"
+	haxelibs group: "haxelib3", name: "createjs", version: "1.5.0"
+}
+
+task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
+	configuration configurations.haxelibs
+	targetPlatform "js"
+	source "src/main/haxe"
+	include "com.prezi.spaghetti"
+}
+
+task testHaxe(type: com.prezi.gradle.haxe.MUnit) {
+	test compileHaxe
+	source "src/test/haxe"
+}
