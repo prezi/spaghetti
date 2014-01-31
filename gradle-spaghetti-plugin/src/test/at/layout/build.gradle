@@ -27,8 +27,8 @@ task bundleModule(type: BundleModule) {
 }
 
 task obfuscate(type: ObfuscateBundle) {
-  dependsOn bundleModule
-  inputFile bundleModule.outputFile
+	dependsOn bundleModule
+	inputFile bundleModule.outputFile
 }
 
 artifacts {

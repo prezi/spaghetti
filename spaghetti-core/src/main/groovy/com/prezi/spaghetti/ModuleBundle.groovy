@@ -27,7 +27,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final String bundledJavaScript;
 	final String version;
 	final String source;
-    final String sourceMap;
+	final String sourceMap;
 
 	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
@@ -35,7 +35,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		this.source = source ?: ""
 		this.definition = checkNotNull(definition)
 		this.bundledJavaScript = checkNotNull(bundledJavaScript)
-        this.sourceMap = sourceMap;
+		this.sourceMap = sourceMap;
 	}
 
 	public void save(File outputFile) {
@@ -109,9 +109,9 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
 		}
 
-		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version";
-		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source";
-		return new ModuleBundle(name, definition, version, source, compiledJavaScript, sourceMap);
+		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
+		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
+		return new ModuleBundle(name, definition, version, source, compiledJavaScript, sourceMap)
 	}
 
 	@Override
