@@ -12,6 +12,8 @@ class BundleModule extends AbstractBundleTask {
 
 	public final File jsModuleFile
 
+	File sourceMap
+
 	BundleModule()
 	{
 		this.inputFile = new File(project.buildDir, "module.js")
@@ -27,15 +29,29 @@ class BundleModule extends AbstractBundleTask {
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
 
         // is a sourcemap present?
-        def sourceMapFile = new File(inputFile.toString() + ".map");
-        def sourceMap = sourceMapFile.canRead() ? sourceMapFile.text : null;
+        def sourceMapText = sourceMap.canRead() ? sourceMap.text : null;
 
 		jsModuleFile.parentFile.mkdirs()
 		jsModuleFile.delete()
 		jsModuleFile << wrappedJavaScript
 
-		def bundle = new ModuleBundle(module.name, definition.text, String.valueOf(project.version), sourceBaseUrl, wrappedJavaScript, sourceMap)
+		def bundle = new ModuleBundle(module.name, definition.text, String.valueOf(project.version), sourceBaseUrl, wrappedJavaScript, sourceMapText)
 		bundle.save(outputFile)
+	}
+
+	void sourceMap(Object sourceMap)
+	{
+		this.sourceMap = project.file(sourceMap)
+	}
+
+	@InputFile
+	File getSourceMap()
+	{
+		if (!sourceMap)
+		{
+			sourceMap = new File(inputFile.toString() + ".map")
+		}
+		sourceMap
 	}
 
 	@Override
