@@ -5,6 +5,7 @@ import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.Optional
 /**
  * Created by lptr on 16/11/13.
  */
@@ -29,7 +30,7 @@ class BundleModule extends AbstractBundleTask {
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
 
         // is a sourcemap present?
-        def sourceMapText = sourceMap.canRead() ? sourceMap.text : null;
+        def sourceMapText = sourceMap ? sourceMap.text : null;
 
 		jsModuleFile.parentFile.mkdirs()
 		jsModuleFile.delete()
@@ -45,11 +46,18 @@ class BundleModule extends AbstractBundleTask {
 	}
 
 	@InputFile
+	@Optional
 	File getSourceMap()
 	{
 		if (!sourceMap) {
-			sourceMap = new File(inputFile.toString() + ".map")
+			def defSourceMap = new File(inputFile.toString() + ".map")
+			if (defSourceMap.canRead()) {
+				sourceMap = defSourceMap
+				return sourceMap
+			}
+			return null
 		}
+
 		return sourceMap
 	}
 
