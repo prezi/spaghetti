@@ -29,12 +29,17 @@ class ModuleConfigurationParser {
 		return module
 	}
 
-	public static ModuleDefinitionContext parse(String descriptor) {
+	public static ModuleDefinitionContext parse(String descriptor, String location) {
 		def input = new ANTLRInputStream(descriptor)
 		def lexer = new ModuleLexer(input)
 		def tokens = new CommonTokenStream(lexer)
 		def parser = new ModuleParser(tokens)
+		parser.removeErrorListeners()
+		parser.addErrorListener(new ParserErrorListener(location))
 		def tree = parser.moduleDefinition()
+		if (parser.numberOfSyntaxErrors > 0) {
+			throw new IllegalArgumentException("Could not parse module definition '${location}', see errors reported above")
+		}
 		return tree
 	}
 }

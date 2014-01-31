@@ -45,6 +45,7 @@ enum CharacterStyleType {
 	URL
 }
 
+@annotated(name="meta", param=true)
 struct CharacterStyle {
 	/**
 	 * The type of the style.

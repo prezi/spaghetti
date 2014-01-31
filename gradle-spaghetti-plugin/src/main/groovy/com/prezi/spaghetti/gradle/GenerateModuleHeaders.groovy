@@ -14,7 +14,7 @@ class GenerateModuleHeaders extends AbstractGenerateTask {
 
 	@TaskAction
 	generate() {
-		def config = readConfig(definition.text)
+		def config = readConfig(definition)
 		def moduleDef = config.localModules.first()
 		logger.info("Generating module headers for ${moduleDef}")
 		createGenerator(config).generateModuleHeaders(moduleDef, outputDirectory)

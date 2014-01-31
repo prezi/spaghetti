@@ -23,7 +23,7 @@ class BundleModule extends AbstractBundleTask {
 
 	@TaskAction
 	bundle() {
-		def config = readConfig(definition.text)
+		def config = readConfig(definition)
 		def module = config.localModules.first()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputFile.text)
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
