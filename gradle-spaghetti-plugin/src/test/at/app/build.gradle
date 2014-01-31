@@ -1,6 +1,7 @@
 import com.prezi.spaghetti.gradle.BundleApplication
 import com.prezi.spaghetti.gradle.ExtractModules
 import com.prezi.spaghetti.gradle.GenerateApplication
+import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 evaluationDependsOn(':text-renderer')
 
@@ -14,6 +15,7 @@ configurations {
 
 dependencies {
 	modules project(path: ":text-renderer", configuration: "modules")
+	modulesObf project(path: ":text-renderer", configuration: "modulesObf")
 	requirejs "org.webjars:requirejs:2.1.8"
 
 	testlibs group: "haxelib3", name: "mconsole", version: "1.4.0"
@@ -56,6 +58,11 @@ task testHaxe(type: com.prezi.gradle.haxe.MUnit) {
 task bundleApplication(type: BundleApplication) {
 	dependsOn compileHaxe
 	inputFile compileHaxe.outputFile
+}
+
+task obfuscate(type: ObfuscateBundle) {
+	dependsOn bundleApplication
+	inputFile bundleApplication.outputFile
 }
 
 def testWebappDir = file("${buildDir}/webapp")

@@ -1,5 +1,6 @@
 import com.prezi.spaghetti.gradle.BundleModule
 import com.prezi.spaghetti.gradle.GenerateModuleHeaders
+import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 evaluationDependsOn(':layout')
 
@@ -7,6 +8,7 @@ apply plugin: "spaghetti"
 
 dependencies {
 	modules project(path: ":layout", configuration: "modules")
+	modulesObf project(path: ":layout", configuration: "modulesObf");
 }
 
 spaghetti {
@@ -29,12 +31,20 @@ task bundleModule(type: BundleModule) {
 	inputFile compileTsc.dest
 }
 
+task obfuscate(type: ObfuscateBundle) {
+	dependsOn bundleModule
+	inputFile bundleModule.outputFile
+}
+
 artifacts {
 	archives(bundleModule.outputFile) {
 		builtBy bundleModule
 	}
 	modules(bundleModule.outputFile) {
-			builtBy bundleModule
+		builtBy bundleModule
+	}
+	modulesObf(obfuscate.outputFile) {
+		builtBy obfuscate
 	}
 }
 
@@ -70,4 +80,3 @@ class TypeScriptTask extends SourceTask {
         }
 	}
 }
-

@@ -12,6 +12,7 @@ import org.gradle.api.Project
  */
 class SpaghettiPlugin implements Plugin<Project> {
 	static final String CONFIGURATION_NAME = "modules"
+	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf"
 
 	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
@@ -26,6 +27,10 @@ class SpaghettiPlugin implements Plugin<Project> {
 		def defaultConfiguration = project.configurations.findByName(CONFIGURATION_NAME)
 		if (defaultConfiguration == null) {
 			defaultConfiguration = project.configurations.create(CONFIGURATION_NAME)
+		}
+
+		if (project.configurations.findByName(OBFUSCATED_CONFIGURATION_NAME) == null) {
+			project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
 		}
 
 		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration

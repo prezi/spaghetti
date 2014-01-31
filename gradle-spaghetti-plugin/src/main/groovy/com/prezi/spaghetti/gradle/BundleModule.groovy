@@ -5,17 +5,20 @@ import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.Optional
 /**
  * Created by lptr on 16/11/13.
  */
 class BundleModule extends AbstractBundleTask {
 
-	private final File jsFile
+	public final File jsModuleFile
+
+	File sourceMap
 
 	BundleModule()
 	{
 		this.inputFile = new File(project.buildDir, "module.js")
-		this.jsFile = new File(project.buildDir, "spaghetti/module.js")
+		this.jsModuleFile = new File(project.buildDir, "spaghetti/module.js")
 		this.outputFile = new File(project.buildDir, "spaghetti/module.zip")
 	}
 
@@ -26,12 +29,36 @@ class BundleModule extends AbstractBundleTask {
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputFile.text)
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
 
-		jsFile.parentFile.mkdirs()
-		jsFile.delete()
-		jsFile << wrappedJavaScript
+		// is a sourcemap present?
+		def sourceMapText = sourceMap ? sourceMap.text : null;
 
-		def bundle = new ModuleBundle(module.name, definition.text, String.valueOf(project.version), sourceBaseUrl, wrappedJavaScript)
+		jsModuleFile.parentFile.mkdirs()
+		jsModuleFile.delete()
+		jsModuleFile << wrappedJavaScript
+
+		def bundle = new ModuleBundle(module.name, definition.text, String.valueOf(project.version), sourceBaseUrl, wrappedJavaScript, sourceMapText)
 		bundle.save(outputFile)
+	}
+
+	void sourceMap(Object sourceMap)
+	{
+		this.sourceMap = project.file(sourceMap)
+	}
+
+	@InputFile
+	@Optional
+	File getSourceMap()
+	{
+		if (!sourceMap) {
+			def defSourceMap = new File(inputFile.toString() + ".map")
+			if (defSourceMap.exists()) {
+				sourceMap = defSourceMap
+				return sourceMap
+			}
+			return null
+		}
+
+		return sourceMap
 	}
 
 	@Override

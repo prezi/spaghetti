@@ -18,6 +18,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
 	static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
 	public static final String DEFINITION_PATH = "module.def"
+	public static final String SOURCE_MAP_PATH = "module.map"
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
@@ -26,13 +27,15 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final String bundledJavaScript
 	final String version
 	final String source
+	final String sourceMap
 
-	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript) {
+	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
 		this.version = version ?: ""
 		this.source = source ?: ""
 		this.definition = checkNotNull(definition)
 		this.bundledJavaScript = checkNotNull(bundledJavaScript)
+		this.sourceMap = sourceMap;
 	}
 
 	public void save(File outputFile) {
@@ -57,6 +60,12 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				// Store module itself
 				zipStream.putNextEntry(new ZipEntry(COMPILED_JAVASCRIPT_PATH))
 				zipStream << bundledJavaScript
+
+				// Store sourcemap
+				if (sourceMap != null) {
+					zipStream.putNextEntry(new ZipEntry(SOURCE_MAP_PATH));
+					zipStream << sourceMap;
+				}
 			}
 		}
 	}
@@ -67,6 +76,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		String definition = null
 		String compiledJavaScript = null
 		Manifest manifest = null
+		String sourceMap = null
 
 		zipFile.entries().each { ZipEntry entry ->
 			Closure<String> contents = { zipFile.getInputStream(entry).text }
@@ -79,6 +89,9 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 					break
 				case MANIFEST_MF_PATH:
 					manifest = new Manifest(zipFile.getInputStream(entry))
+					break
+				case SOURCE_MAP_PATH:
+					sourceMap = contents()
 					break
 			}
 		}
@@ -99,9 +112,10 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (compiledJavaScript == null) {
 			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
 		}
+
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
-		return new ModuleBundle(name, definition, version, source, compiledJavaScript)
+		return new ModuleBundle(name, definition, version, source, compiledJavaScript, sourceMap)
 	}
 
 	@Override
