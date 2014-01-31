@@ -36,7 +36,7 @@ task bundleModule(type: BundleModule) {
 task obfuscate(type: ObfuscateBundle) {
   dependsOn bundleModule
   inputFile bundleModule.outputFile
-  withUglifyJS()
+  withClosure()
 }
 
 artifacts {
@@ -45,6 +45,9 @@ artifacts {
   }
   modules(bundleModule.outputFile) {
     builtBy bundleModule
+  }
+  modulesObf(obfuscate.outputFile) {
+    builtBy obfuscate
   }
 }
 
@@ -80,4 +83,3 @@ class TypeScriptTask extends SourceTask {
         }
 	}
 }
-

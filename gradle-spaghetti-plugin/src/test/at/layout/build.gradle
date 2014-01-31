@@ -39,5 +39,8 @@ artifacts {
 	modules(obfuscate.outputFile) {
 		builtBy obfuscate
 	}
+	modulesObf(obfuscate.outputFile) {
+		builtBy obfuscate
+	}
 }
 

@@ -15,6 +15,7 @@ configurations {
 
 dependencies {
 	modules project(path: ":text-renderer", configuration: "modules")
+	modulesObf project(path: ":text-renderer", configuration: "modulesObf")
 	requirejs "org.webjars:requirejs:2.1.8"
 
 	testlibs group: "haxelib3", name: "mconsole", version: "1.4.0"
@@ -60,9 +61,9 @@ task bundleApplication(type: BundleApplication) {
 }
 
 task obfuscate(type: ObfuscateBundle) {
-  dependsOn bundleApplication
-  inputFile bundleApplication.outputFile
-  withClosure()
+	dependsOn bundleApplication
+	inputFile bundleApplication.outputFile
+	withClosure()
 }
 
 def testWebappDir = file("${buildDir}/webapp")
