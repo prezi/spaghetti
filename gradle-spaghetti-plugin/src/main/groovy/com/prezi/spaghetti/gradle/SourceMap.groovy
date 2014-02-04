@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle;
 
 import groovy.json.*;
+import com.google.debugging.sourcemap.*;
 
 // A wrapper class for hacking together handling of sourcemaps
 class SourceMap {
@@ -60,4 +61,17 @@ console.log(JSON.stringify(mapAtoC));
 		return new JsonBuilder(mapJSON).toString();
 	}
 
+	/**
+	 * Does a reverse lookup of the 'lineNumber' in the
+	 * 'sourceMap'. Returns the original line number and appends the
+	 * original souce filename to 'retSource'
+	 */
+	public static int reverseMapping(String sourceMap, int lineNumber, Appendable retSource) {
+		def smV3 = new SourceMapConsumerV3();
+		smV3.parse(sourceMap);
+		// this column number ensures we get a result if there is one
+		def mapping = smV3.getMappingForLine(lineNumber, Integer.MAX_VALUE);
+		retSource.append(mapping.originalFile);
+		return mapping.lineNumber;
+	}
 }
