@@ -1,6 +1,8 @@
-package com.prezi.spaghetti;
+package com.prezi.spaghetti.gradle;
 
-// For composing source-maps; requires "npm install source-map"
+import groovy.json.*;
+
+// A wrapper class for hacking together handling of sourcemaps
 class SourceMap {
 
 	// returns the source map from A to C. ugly.
@@ -32,7 +34,30 @@ console.log(JSON.stringify(mapAtoC));
 				throw new RuntimeException("Source map composition failed with exit code " + process.exitValue());
 			}
 
-			return mapAtoCBuilder.toString();
+			def mapAtoC = mapAtoCBuilder.toString();
+
+			// adding lineCount so that Closure stays happy
+			def slurper = new JsonSlurper();
+			def mAC = slurper.parseText(mapAtoC);
+			def mBC = slurper.parseText(mapBtoC);
+			mAC.lineCount = mBC.lineCount;
+
+			return new JsonBuilder(mAC).toString();
+	}
+
+	/**
+	 * Takes a sourcemap A and gives back a sourcemap B in which paths
+	 * in the "sources" field are the same as in A only relative to
+	 * 'root'. If this is not possible it gives back the original
+	 * path.
+	 */
+	public static String relativizePaths(String sourceMap, URI root) {
+		def slurper = new JsonSlurper();
+		def mapJSON = slurper.parseText(sourceMap);
+
+		mapJSON.sources = mapJSON.sources.collect{root.relativize(new URI(it - ~/^file:\/\//)).toString()};
+
+		return new JsonBuilder(mapJSON).toString();
 	}
 
 }

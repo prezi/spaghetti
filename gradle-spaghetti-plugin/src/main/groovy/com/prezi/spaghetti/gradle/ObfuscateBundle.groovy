@@ -2,7 +2,6 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle;
 import com.prezi.spaghetti.Wrapper;
-import com.prezi.spaghetti.SourceMap;
 
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
@@ -48,6 +47,8 @@ class ObfuscateBundle extends AbstractBundleTask
 		} else {
 			finalSourceMap = mapJStoMin;
 		}
+
+		finalSourceMap = SourceMap.relativizePaths(finalSourceMap, new URI(project.rootDir.toString()));
 
 		// BUNDLE
 		def obfBundle = new ModuleBundle(bundle.name, bundle.definition, bundle.version, bundle.source, compressedJS.toString(), finalSourceMap);
