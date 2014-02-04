@@ -12,7 +12,6 @@ class ResolveStack extends AbstractSpaghettiTask {
 
 	private class Resolution {
 		public String origJsName;
-		public String toString() {return origJsName;}
 		public String bundleName, bundleVersion, bundleHasSourceMap;
 		public int origLineNo, resolvedLineNo, resolvedSourceName, resolvedLink;
 	}
@@ -47,10 +46,6 @@ class ResolveStack extends AbstractSpaghettiTask {
 		if (stackTrace.lines.size() == 0) {
 			throw new RuntimeException("Could not extract enough info from stack trace. Is it malformed?");
 		}
-
-		// println("Doing magic, please stand by...")
-
-		// println("Gathering bundles of configuration '" + configName + "' in " + project.name);
 
 		def bundleMap = gatherBundles(configName);
 
