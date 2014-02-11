@@ -5,6 +5,7 @@ import com.prezi.spaghetti.Wrapper;
 import com.prezi.spaghetti.SourceMap;
 
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 
 class ObfuscateBundle extends AbstractBundleTask
@@ -13,10 +14,13 @@ class ObfuscateBundle extends AbstractBundleTask
 														  "prototype", // class definitions
 														  "__consts"]; // Spaghetti constants
 
+	private List<File> closureExterns;
+
 	public ObfuscateBundle()
 	{
 		inputFile = new File(project.buildDir, "spaghetti/module.zip");
 		outputFile = new File(project.buildDir, "spaghetti/module_obf.zip");
+		closureExterns = [];
 	}
 
 	@TaskAction
@@ -38,7 +42,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		}.join("");
 
 		def sourceMapBuilder = new StringBuilder();
-		Closure.compile(closureFile.toString(), compressedJS, bundle.name.fullyQualifiedName, sourceMapBuilder);
+		Closure.compile(closureFile.toString(), compressedJS, bundle.name.fullyQualifiedName, sourceMapBuilder, closureExterns);
 		def mapJStoMin = sourceMapBuilder.toString();
 
 		// SOURCEMAP
@@ -59,5 +63,19 @@ class ObfuscateBundle extends AbstractBundleTask
 	File getDefinition()
 	{
 		return super.getDefinition()
+	}
+
+	@InputFiles
+	List<File> getClosureExterns()
+	{
+		return closureExterns;
+	}
+
+	public void extern(String externName) {
+		closureExterns.push(new File(externName))
+	}
+
+	public void externs(List<String> externNames) {
+		closureExterns += externNames.collect{new File(it)};
 	}
 }
