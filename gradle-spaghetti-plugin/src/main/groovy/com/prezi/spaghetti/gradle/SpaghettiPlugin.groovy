@@ -36,9 +36,15 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 
 		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration
-		project.tasks.withType(AbstractSpaghettiTask) { AbstractSpaghettiTask task ->
-			task.applyParameters(extension.params)
-		}
+		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
+			@Override
+			void execute(AbstractSpaghettiTask task) {
+				def params = extension.params
+				task.conventionMapping.platform = { params.platform }
+				task.conventionMapping.configuration = { params.configuration }
+				task.conventionMapping.definition = { params.definition }
+			}
+		})
 
 		project.tasks.create("spaghetti-platforms") {
 			doLast {
