@@ -4,8 +4,10 @@ import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.language.base.BinaryContainer
 
 /**
  * Created by lptr on 12/11/13.
@@ -51,6 +53,22 @@ class SpaghettiPlugin implements Plugin<Project> {
 				}
 			}
 		}
+
+		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
+		binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
+			@Override
+			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
+				// Is this a module?
+				if (extension.definition) {
+					def bundleTaskName = "bundle" + binary.name.capitalize()
+					def bundleTask = project.task(bundleTaskName, type: BundleModule) {
+						description = "Bundles ${binary} module"
+					} as BundleModule
+					bundleTask.conventionMapping.inputFile = { binary.javaScriptFile.call() }
+					bundleTask.conventionMapping.sourceMap = { binary.sourceMapFile.call() }
+				}
+			}
+		})
 	}
 
 	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config)
