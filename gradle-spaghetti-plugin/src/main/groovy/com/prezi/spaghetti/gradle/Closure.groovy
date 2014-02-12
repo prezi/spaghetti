@@ -32,7 +32,7 @@ class Closure {
 	 * 'obfuscated' and appends the source map to 'sourceMap' using
 	 * 'sourceMapName' (the 'file' field in the sourcemap)
 	 */
-	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap, List<File> customExterns) {
+	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap, Set<File> customExterns) {
 		def compiler = new Compiler(System.err);
 		def options = new CompilerOptions();
 

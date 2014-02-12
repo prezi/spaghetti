@@ -14,7 +14,7 @@ class ObfuscateBundle extends AbstractBundleTask
 														  "prototype", // class definitions
 														  "__consts"]; // Spaghetti constants
 
-	private List<File> closureExterns;
+	private Set<File> closureExterns;
 
 	public ObfuscateBundle()
 	{
@@ -66,16 +66,12 @@ class ObfuscateBundle extends AbstractBundleTask
 	}
 
 	@InputFiles
-	List<File> getClosureExterns()
+	Set<File> getClosureExterns()
 	{
 		return closureExterns;
 	}
 
-	public void extern(String externName) {
-		closureExterns.push(new File(externName))
-	}
-
-	public void externs(List<String> externNames) {
-		closureExterns += externNames.collect{new File(it)};
+	public void closureExtern(String... externName) {
+		project.files(externName).each{closureExterns.add(it)}
 	}
 }
