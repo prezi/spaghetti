@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle;
-import com.prezi.spaghetti.Wrapper;
 import com.prezi.spaghetti.SourceMap;
 
 import org.gradle.api.tasks.InputFile
@@ -26,7 +25,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		def modules = config.localModules + config.getDependentModules();
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
 		obfuscateDir.mkdirs();
-		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten();
+		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + additionalSymbols;
 		def bundle = ModuleBundle.load(inputFile);
 
 		// OBFUSCATE
@@ -53,6 +52,8 @@ class ObfuscateBundle extends AbstractBundleTask
 		def obfBundle = new ModuleBundle(bundle.name, bundle.definition, bundle.version, bundle.source, compressedJS.toString(), finalSourceMap);
 		obfBundle.save(outputFile);
 	}
+
+	Set<String> additionalSymbols = []
 
 	@Override
 	@InputFile
