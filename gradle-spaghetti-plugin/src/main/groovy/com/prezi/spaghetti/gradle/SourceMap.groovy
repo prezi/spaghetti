@@ -22,18 +22,18 @@ mapAtoC.file = '${mapAtoCName}';
 console.log(JSON.stringify(mapAtoC));
 """;
 
-			def nodeJsFile = File.createTempFile("nodejs_map", ".js");
+		def nodeJsFile = File.createTempFile("nodejs_map", ".js");
 
-			nodeJsFile << nodeJsSource;
+		nodeJsFile << nodeJsSource;
 
-			def mapAtoCBuilder = new StringBuilder();
-			def cmdLine =  ["node", nodeJsFile];
-			def process = cmdLine.execute();
-			process.waitForProcessOutput(mapAtoCBuilder, System.err);
+		def mapAtoCBuilder = new StringBuilder();
+		def cmdLine =  ["node", nodeJsFile];
+		def process = cmdLine.execute();
+		process.waitForProcessOutput(mapAtoCBuilder, System.err);
 
-			if (process.exitValue() != 0) {
-				throw new RuntimeException("Source map composition failed with exit code " + process.exitValue());
-			}
+		if (process.exitValue() != 0) {
+			throw new RuntimeException("Source map composition failed with exit code " + process.exitValue());
+		}
 
 			def mapAtoC = mapAtoCBuilder.toString();
 

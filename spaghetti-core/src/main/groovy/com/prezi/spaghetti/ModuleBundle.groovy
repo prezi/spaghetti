@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle implements Comparable<ModuleBundle> {
-	static final def SUPPORTED_VERSIONS = [ "1.0", "1.1" ]
+	static final def SUPPORTED_VERSIONS = [ "1.0", "1.1", "1.2" ]
 
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
@@ -22,12 +22,12 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
-	final FQName name;
-	final String definition;
-	final String bundledJavaScript;
-	final String version;
-	final String source;
-	final String sourceMap;
+	final FQName name
+	final String definition
+	final String bundledJavaScript
+	final String version
+	final String source
+	final String sourceMap
 
 	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
@@ -81,14 +81,18 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		zipFile.entries().each { ZipEntry entry ->
 			Closure<String> contents = { zipFile.getInputStream(entry).text }
 			switch (entry.name) {
-			case DEFINITION_PATH: definition = contents()
-				break;
-			case COMPILED_JAVASCRIPT_PATH: compiledJavaScript = contents()
-				break;
-			case MANIFEST_MF_PATH: manifest = new Manifest(zipFile.getInputStream(entry))
-				break;
-			case SOURCE_MAP_PATH: sourceMap = contents()
-				break;
+				case DEFINITION_PATH:
+					definition = contents()
+					break
+				case COMPILED_JAVASCRIPT_PATH:
+					compiledJavaScript = contents()
+					break
+				case MANIFEST_MF_PATH:
+					manifest = new Manifest(zipFile.getInputStream(entry))
+					break
+				case SOURCE_MAP_PATH:
+					sourceMap = contents()
+					break
 			}
 		}
 		if (manifest == null) {
@@ -99,7 +103,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			throw new IllegalArgumentException("Not a module, module version missing from manifest: " + inputFile)
 		}
 		if (!(spaghettiVersion in SUPPORTED_VERSIONS)) {
-			throw new IllegalArgumentException("Spaghetti version mismatch (should be \"${Version.SPAGHETTI_VERSION}\", but was \"" + spaghettiVersion + "\"): " + inputFile)
+			throw new IllegalArgumentException("Spaghetti version mismatch (should be one of (${SUPPORTED_VERSIONS.join(", ")}), but was \"" + spaghettiVersion + "\"): " + inputFile)
 		}
 		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
 		if (definition == null) {
