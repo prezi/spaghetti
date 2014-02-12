@@ -1,34 +1,33 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
-
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.artifacts.Configuration
 
 class ResolveStack extends AbstractSpaghettiTask {
 
-	public ResolveStack() {
-	}
-
-	private class Resolution {
-		public String origJsName;
-		public String bundleName, bundleVersion, bundleHasSourceMap;
-		public int origLineNo, resolvedLineNo, resolvedSourceName, resolvedLink;
+	private static class Resolution {
+		String bundleName
+		String bundleVersion
+		String bundleHasSourceMap;
+		String origJsName;
+		String resolvedSourceName
+		String resolvedLink;
+		int origLineNo
+		int resolvedLineNo
 	}
 
 	@TaskAction
 	void run() {
 		def stackFile;
 		if (project.hasProperty("file")) {
-			stackFile = new File(project.file);
+			stackFile = project.file(project.property("file"));
 		} else {
-						
 			throw new RuntimeException("Please give a stack trace file with -Pfile={filename here}");
 		}
 
 		def configName = "modulesObf";
 		if (project.hasProperty("config")) {
-			configName = project.config;
+			configName = project.property("config") as String;
 		}
 
 		def debug = false;
@@ -43,7 +42,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 
 		def stackTrace = StackTrace.parse(stackFile.text);
 
-		if (stackTrace.lines.size() == 0) {
+		if (stackTrace.lines.empty) {
 			throw new RuntimeException("Could not extract enough info from stack trace. Is it malformed?");
 		}
 
@@ -55,22 +54,24 @@ class ResolveStack extends AbstractSpaghettiTask {
 			}
 			def bundle = bundleMap[it.jsName];
 			if (bundle == null) {
-				return [
+				return new Resolution(
 					origJsName : it.jsName,
-					origLineNo : it.lineNo];
+					origLineNo : it.lineNo
+				)
 			}
 			if (bundle.sourceMap == null) {
-				return [
+				return new Resolution(
 					origJsName : it.jsName,
 					origLineNo : it.lineNo,
 					bundleName : bundle.name.fullyQualifiedName,
 					bundleHasSourceMap : false,
-					bundleVersion : bundle.version];
+					bundleVersion : bundle.version
+				)
 			} else {
 				def sourceName = new StringBuilder();
 				def lineNo = SourceMap.reverseMapping(bundle.sourceMap, it.lineNo, sourceName);
 
-				return [
+				return new Resolution(
 					origJsName : it.jsName,
 					origLineNo : it.lineNo,
 					bundleName : bundle.name.fullyQualifiedName,
@@ -78,46 +79,49 @@ class ResolveStack extends AbstractSpaghettiTask {
 					bundleVersion : bundle.version,
 					resolvedLineNo : lineNo,
 					resolvedSourceName : sourceName.toString(),
-					resolvedLink : githubLink(bundle.version, bundle.source,
-											  sourceName.toString(), lineNo)];
+					resolvedLink : githubLink(
+							bundle.version, bundle.source,
+							sourceName.toString(), lineNo
+					)
+				)
 			}
 		};
 
 		if (debug) {
-			[stackFile.text.readLines(), resolvedLinks].transpose().each{
-				println("\"${it[0]}\"");
-				if (it[1] == null) {
+			[stackFile.text.readLines(), resolvedLinks].transpose().each{ line, resolution ->
+				println("\"${line}\"");
+
+				if (resolution == null) {
 					println("    Does not appear to be a valid stack trace line");
-					// feels like PHP spirit
 				} else {
-					def msg = """    JS name:              ${it[1].origJsName}
-    Line number:          ${it[1].origLineNo}""";
-					if (it[1].bundleName == null) {
+					def msg =
+"""    JS name:              ${resolution.origJsName}
+    Line number:          ${resolution.origLineNo}""";
+					if (resolution.bundleName == null) {
 						msg += """
     Bundle name:          Could not find matching bundle""";
 					} else {
 						msg += """
-    Bundle name:          ${it[1].bundleName}
-    Bundle version:       ${it[1].bundleVersion}
-    Sourcemap present:    ${it[1].bundleHasSourceMap ? "yes" : "no"}"""
-						if (it[1].bundleHasSourceMap) {
+    Bundle name:          ${resolution.bundleName}
+    Bundle version:       ${resolution.bundleVersion}
+    Sourcemap present:    ${resolution.bundleHasSourceMap ? "yes" : "no"}"""
+						if (resolution.bundleHasSourceMap) {
 							msg += """
-    Resolved filename:    ${it[1].resolvedSourceName}
-    Resolved line number: ${it[1].resolvedLineNo}
-    Resolved github link: ${it[1].resolvedLink}"""
+    Resolved filename:    ${resolution.resolvedSourceName}
+    Resolved line number: ${resolution.resolvedLineNo}
+    Resolved github link: ${resolution.resolvedLink}"""
 						}
 					}
 					println(msg);
 				}
 			};
 		} else {
-
 			def links = resolvedLinks - null;
 			if (links.size() > 0) {
 				if (all) {
 					links.each{if (it.resolvedLink != null) {println(it.resolvedLink)}};
 				} else {
-					println(links[0].resolvedLink);
+					println(links.first().resolvedLink);
 				}
 			} else {
 				println("Could not resolve anything /sadface");
@@ -127,14 +131,15 @@ class ResolveStack extends AbstractSpaghettiTask {
 
 
 	// bundlename -> bundle
-	public Map<String, ModuleBundle> gatherBundles(String configName) {
-		def files = project.configurations.findByName(configName).files;
-		def bundles = ModuleDefinitionLookup.getAllBundles(files.collect{it});
-		return bundles.collectEntries {[it.name.fullyQualifiedName, it]};
+	private Map<String, ModuleBundle> gatherBundles(String configName) {
+		def configuration = project.configurations.getByName(configName)
+		return ModuleDefinitionLookup.getAllBundles(configuration).collectEntries { bundle ->
+			[ bundle.name.fullyQualifiedName, bundle ]
+		}
 	}
 
 	private static String versionToHash(String version) {
-		def matcher = version =~ /-g([a-f0-9]{7})/;
+		def matcher = version =~ /-g([a-f0-9]{7})$/;
 		if (matcher.size() > 0 && matcher[0].size() > 1) {
 			return matcher[0][1];
 		} else {
