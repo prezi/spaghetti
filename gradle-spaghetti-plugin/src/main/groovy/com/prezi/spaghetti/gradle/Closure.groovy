@@ -25,14 +25,14 @@ import com.google.javascript.jscomp.CommandLineRunner;
 class Closure {
 
 	private static final int lineLengthThreshold = 1;
-	private static CompilationLevel compilationLevel = CompilationLevel.ADVANCED_OPTIMIZATIONS;
+	private static final CompilationLevel compilationLevel = CompilationLevel.ADVANCED_OPTIMIZATIONS;
 
 	/**
 	 * compiles 'jsFileName', appends the obfuscated code to
 	 * 'obfuscated' and appends the source map to 'sourceMap' using
 	 * 'sourceMapName' (the 'file' field in the sourcemap)
 	 */
-	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap) {
+	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap, Set<File> customExterns) {
 		def compiler = new Compiler(System.err);
 		def options = new CompilerOptions();
 
@@ -44,7 +44,8 @@ class Closure {
 		options.setSourceMapOutputPath("dummy.map"); // We need to set this so that Closure generates sourcemap info, it won't actually create a file.
 
 		// Set default externs so that commonly used primitives are protected
-		def externs = CommandLineRunner.getDefaultExterns();
+		def externs = CommandLineRunner.getDefaultExterns() +
+			customExterns.collect{SourceFile.fromFile(it, UTF_8)};
 
 		// COMPILE
 		def res = compiler.compile(externs, [js], options);
