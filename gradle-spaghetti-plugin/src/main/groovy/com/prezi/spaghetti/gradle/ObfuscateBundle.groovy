@@ -14,7 +14,7 @@ class ObfuscateBundle extends AbstractBundleTask
 														  "prototype", // class definitions
 														  "__consts"]; // Spaghetti constants
 
-	private Set<File> closureExterns;
+	private final Set<File> closureExterns;
 
 	public ObfuscateBundle()
 	{
