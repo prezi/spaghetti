@@ -64,7 +64,7 @@ console.log(JSON.stringify(mapAtoC));
 	/**
 	 * Does a reverse lookup of the 'lineNumber' in the
 	 * 'sourceMap'. Returns the original line number and appends the
-	 * original souce filename to 'retSource'
+	 * original source filename to 'retSource'
 	 */
 	public static int reverseMapping(String sourceMap, int lineNumber, Appendable retSource) {
 		def smV3 = new SourceMapConsumerV3();
