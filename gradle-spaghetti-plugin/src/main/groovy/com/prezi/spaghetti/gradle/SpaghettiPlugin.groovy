@@ -48,7 +48,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 		project.tasks.create("spaghetti-platforms") {
 			doLast {
-				if (generatorFactories.keySet().empty) {
+				if (generatorFactories.empty) {
 					println "No platform support for Spaghetti is found"
 				} else {
 					println "Spaghetti supports the following platforms:\n"
@@ -60,21 +60,29 @@ class SpaghettiPlugin implements Plugin<Project> {
 			}
 		}
 
+		// Automatically create bundle module task and artifact
 		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
 		binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
 			@Override
 			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
 				// Is this a module?
 				if (extension.definition) {
-					def bundleTaskName = "bundle" + binary.name.capitalize()
-					def bundleTask = project.task(bundleTaskName, type: BundleModule) {
-						description = "Bundles ${binary} module"
-					} as BundleModule
-					bundleTask.conventionMapping.inputFile = { binary.javaScriptFile.call() }
-					bundleTask.conventionMapping.sourceMap = { binary.sourceMapFile.call() }
+					BundleModule bundleTask = createBundleTask(project, binary)
+					def artifact = new ModuleBundleArtifact(bundleTask)
+					project.artifacts.add(extension.configuration.name, artifact)
 				}
 			}
 		})
+	}
+
+	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
+		def bundleTaskName = "bundle" + binary.name.capitalize()
+		def bundleTask = project.task(bundleTaskName, type: BundleModule) {
+			description = "Bundles ${binary} module"
+		} as BundleModule
+		bundleTask.conventionMapping.inputFile = { binary.javaScriptFile.call() }
+		bundleTask.conventionMapping.sourceMap = { binary.sourceMapFile.call() }
+		return bundleTask
 	}
 
 	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config)
