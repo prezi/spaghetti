@@ -4,6 +4,7 @@ import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration
+import groovy.io.FileType
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -42,7 +43,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 				def params = extension.params
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
-				task.conventionMapping.definition = { params.definition }
+				task.conventionMapping.definition = { params.definition ?: findDefinition(project) }
 			}
 		})
 
@@ -66,13 +67,29 @@ class SpaghettiPlugin implements Plugin<Project> {
 			@Override
 			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
 				// Is this a module?
-				if (extension.definition) {
+				if (extension.definition || findDefinition(project)) {
 					BundleModule bundleTask = createBundleTask(project, binary)
 					def artifact = new ModuleBundleArtifact(bundleTask)
 					project.artifacts.add(extension.configuration.name, artifact)
 				}
 			}
 		})
+	}
+
+	/**
+	 * Try to find a single .module file in the project.
+	 * @return The file found, or <code>null</code> if none or more than one is found.
+	 */
+	private static File findDefinition(Project project) {
+		def definitionRoot = project.file("src/main/spaghetti")
+		if (definitionRoot.exists() && definitionRoot.directory) {
+			List<File> files = []
+			definitionRoot.eachFileMatch FileType.FILES, ~/.*\.module$/, { files << it }
+			if (files.size() == 1) {
+				return files.first()
+			}
+		}
+		return null
 	}
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
