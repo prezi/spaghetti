@@ -1,48 +1,45 @@
 package com.prezi.spaghetti.gradle
 
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 public class StackTrace {
 
-	private class LineMatcher {
-		public Pattern pattern;
-		public int lineIx, jsIx; // index of regex groups
+	private static class LineMatcher {
+		Pattern pattern
+		// index of line number group
+		int lineIx
+		// index of JS source group
+		int jsIx
 	}
 
-	private static final List<LineMatcher> lmatchers =
+	private static final List<LineMatcher> LINE_MATCHERS =
 		[
 			// chrome copy-paste stack,
 			// chrome console stack,
 			// ff console stack
-			[pattern : ~/([a-zA-Z0-9._-]*)\.js:(\d+)/,
-			 lineIx : 2,
-			 jsIx : 1]
+			new LineMatcher(pattern: ~/([a-zA-Z0-9._-]*)\.js:(\d+)/, lineIx: 2, jsIx: 1)
 		];
 
-	public class LineInfo {
-		public int lineNo;
-		public String jsName;
-
-		public LineInfo(int lineNo, String jsName) {
-			this.lineNo = lineNo;
-			this.jsName = jsName;
-		}
+	public static class LineInfo {
+		int lineNo;
+		String jsName;
 	}
 
-	public List<LineInfo> lines;
+	public final List<LineInfo> lines;
 
 	public StackTrace(List<LineInfo> lines) {
 		this.lines = lines;
 	}
 
 	public static StackTrace parse(String rawStackTrace) {
-
 		def lines = rawStackTrace.readLines().collect{
-			for (l in lmatchers) {
-				def m = l.pattern.matcher(it);
-				if (m.size() > 0) {
-					return [lineNo : Integer.decode(m[0][l.lineIx]),
-							jsName : m[0][l.jsIx]];
+			for (lineMatcher in LINE_MATCHERS) {
+				def matcher = lineMatcher.pattern.matcher(it);
+				if (matcher.size() > 0) {
+					return new LineInfo(
+							lineNo: Integer.decode(matcher[0][lineMatcher.lineIx]),
+							jsName: matcher[0][lineMatcher.jsIx]
+					)
 				}
 			}
 			return null;
