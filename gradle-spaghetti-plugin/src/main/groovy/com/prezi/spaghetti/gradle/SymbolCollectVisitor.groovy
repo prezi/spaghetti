@@ -4,18 +4,14 @@ import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
 
 import java.util.Set
 
-class SymbolCollectVisitor extends AbstractModuleVisitor<Set<String>> {
-
-	public SymbolCollectVisitor(ModuleDefinition module)
-	{
-		super(module);
-	}
+class SymbolCollectVisitor extends ModuleBaseVisitor<Set<String>> {
 
 	@Override
 	protected Set<String> aggregateResult(Set<String> aggregate, Set<String> nextResult) {

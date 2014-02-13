@@ -25,8 +25,9 @@ class ModuleDefinitionLookup {
 				def bundle = ModuleBundle.load(file)
 				LOGGER.info("Found module bundle ${bundle.name}")
 				return bundle
-			} catch (ignore) {
-				LOGGER.debug("Not a module bundle: ${file}")
+			} catch (ex) {
+				LOGGER.debug("Not a module bundle: ${file}: ${ex.getMessage()}")
+				LOGGER.trace("Exception", ex)
 				return null
 			}
 		}

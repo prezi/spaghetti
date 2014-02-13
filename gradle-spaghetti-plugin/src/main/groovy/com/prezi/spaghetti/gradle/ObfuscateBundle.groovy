@@ -1,22 +1,32 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle;
-import com.prezi.spaghetti.Wrapper;
 import com.prezi.spaghetti.SourceMap;
 
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 
 class ObfuscateBundle extends AbstractBundleTask
 {
-	private static final List<String> protectedSymbols = ["define",    // RequireJS
-														  "prototype", // class definitions
-														  "__consts"]; // Spaghetti constants
+	private static final List<String> protectedSymbols = [
+		// RequireJS
+		"define",
+		// class definitions
+		"prototype",
+		// Spaghetti constants
+		"__consts",
+		// Haxe class names -- Haxe likes to put this on global objects like Math and String and Date
+		"__name__",
+	]
+
+	private final Set<File> closureExterns;
 
 	public ObfuscateBundle()
 	{
 		inputFile = new File(project.buildDir, "spaghetti/module.zip");
 		outputFile = new File(project.buildDir, "spaghetti/module_obf.zip");
+		closureExterns = [];
 	}
 
 	@TaskAction
@@ -26,7 +36,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		def modules = config.localModules + config.getDependentModules();
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
 		obfuscateDir.mkdirs();
-		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten();
+		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + additionalSymbols;
 		def bundle = ModuleBundle.load(inputFile);
 
 		// OBFUSCATE
@@ -38,7 +48,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		}.join("");
 
 		def sourceMapBuilder = new StringBuilder();
-		Closure.compile(closureFile.toString(), compressedJS, bundle.name.fullyQualifiedName, sourceMapBuilder);
+		Closure.compile(closureFile.toString(), compressedJS, bundle.name.fullyQualifiedName, sourceMapBuilder, closureExterns);
 		def mapJStoMin = sourceMapBuilder.toString();
 
 		// SOURCEMAP
@@ -54,10 +64,22 @@ class ObfuscateBundle extends AbstractBundleTask
 		obfBundle.save(outputFile);
 	}
 
+	Set<String> additionalSymbols = []
+
 	@Override
 	@InputFile
 	File getDefinition()
 	{
 		return super.getDefinition()
+	}
+
+	@InputFiles
+	Set<File> getClosureExterns()
+	{
+		return closureExterns;
+	}
+
+	public void closureExtern(String... externName) {
+		project.files(externName).each{closureExterns.add(it)}
 	}
 }

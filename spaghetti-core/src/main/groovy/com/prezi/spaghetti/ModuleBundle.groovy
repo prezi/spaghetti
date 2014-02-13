@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle implements Comparable<ModuleBundle> {
-	static final def SUPPORTED_VERSIONS = [ "1.0", "1.1" ]
+	static final def SUPPORTED_VERSIONS = [ "1.0", "1.1", "1.2" ]
 
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
@@ -103,7 +103,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			throw new IllegalArgumentException("Not a module, module version missing from manifest: " + inputFile)
 		}
 		if (!(spaghettiVersion in SUPPORTED_VERSIONS)) {
-			throw new IllegalArgumentException("Spaghetti version mismatch (should be \"${Version.SPAGHETTI_VERSION}\", but was \"" + spaghettiVersion + "\"): " + inputFile)
+			throw new IllegalArgumentException("Spaghetti version mismatch (should be one of (${SUPPORTED_VERSIONS.join(", ")}), but was \"" + spaghettiVersion + "\"): " + inputFile)
 		}
 		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
 		if (definition == null) {
