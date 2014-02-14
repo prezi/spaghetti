@@ -70,8 +70,12 @@ class SpaghettiPlugin implements Plugin<Project> {
 				// Is this a module?
 				if (extension.definition || findDefinition(project)) {
 					BundleModule bundleTask = createBundleTask(project, binary)
-					def artifact = new ModuleBundleArtifact(bundleTask)
-					project.artifacts.add(extension.configuration.name, artifact)
+					def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
+					project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
+
+					ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
+					def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
+					project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
 				}
 			}
 		})
@@ -96,11 +100,22 @@ class SpaghettiPlugin implements Plugin<Project> {
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		def bundleTaskName = "bundle" + binary.name.capitalize()
 		def bundleTask = project.task(bundleTaskName, type: BundleModule) {
-			description = "Bundles ${binary} module"
+			description = "Bundles ${binary} module."
 		} as BundleModule
-		bundleTask.conventionMapping.inputFile = { binary.javaScriptFile.call() }
-		bundleTask.conventionMapping.sourceMap = { binary.sourceMapFile.call() }
+		bundleTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
+		bundleTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
+		bundleTask.dependsOn binary
 		return bundleTask
+	}
+
+	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary, BundleModule bundleTask) {
+		def obfuscateTaskName = "obfuscate" + binary.name.capitalize()
+		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateBundle) {
+			description = "Obfuscates ${binary} module."
+		} as ObfuscateBundle
+		obfuscateTask.conventionMapping.inputFile = { bundleTask.getOutputFile() }
+		obfuscateTask.dependsOn bundleTask
+		return obfuscateTask
 	}
 
 	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config)
