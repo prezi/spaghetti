@@ -37,8 +37,8 @@ class AbstractSpaghettiTask extends ConventionTask {
 
 	ModuleConfiguration readConfig(Map<String, String> localDefinitions = [:]) {
 		def dependentDefinitionContexts
-		if (configuration != null) {
-			dependentDefinitionContexts = ModuleDefinitionLookup.getAllDefinitions(configuration)
+		if (getConfiguration()) {
+			dependentDefinitionContexts = ModuleDefinitionLookup.getAllDefinitions(getConfiguration())
 		} else {
 			dependentDefinitionContexts = []
 		}
@@ -51,7 +51,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 				localDefinitionContexts,
 				plugin.getExterns(platform),
 				String.valueOf(project.version),
-				this.sourceBaseUrl
+				getSourceBaseUrl()
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config

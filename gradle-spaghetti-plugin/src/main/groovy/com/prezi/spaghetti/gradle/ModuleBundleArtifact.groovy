@@ -13,9 +13,9 @@ class ModuleBundleArtifact extends AbstractPublishArtifact {
 	Date date
 	File file
 
-	private BundleModule bundleTask
+	private AbstractBundleTask bundleTask
 
-	public ModuleBundleArtifact(BundleModule bundleTask) {
+	public ModuleBundleArtifact(AbstractBundleTask bundleTask) {
 		super(bundleTask)
 		this.bundleTask = bundleTask
 	}
@@ -26,7 +26,7 @@ class ModuleBundleArtifact extends AbstractPublishArtifact {
 
 	public String getType() { type ?: "module" }
 
-	public File getFile() { file ?: bundleTask.outputFile }
+	public File getFile() { file ?: bundleTask.getOutputFile() }
 
 	public Date getDate() { date ?: new Date(getFile().lastModified()) }
 }
