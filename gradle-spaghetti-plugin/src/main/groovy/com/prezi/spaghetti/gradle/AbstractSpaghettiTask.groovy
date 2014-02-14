@@ -24,11 +24,6 @@ class AbstractSpaghettiTask extends ConventionTask {
 		return plugin.createGeneratorForPlatform(platform, config)
 	}
 
-	protected Map<FQName, FQName> getExterns() {
-		return plugin.getExterns(platform)
-	}
-
-
 	@InputFiles
 	Configuration getConfiguration() {
 		return params.configuration
@@ -54,7 +49,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitionContexts,
 				localDefinitionContexts,
-				externs,
+				plugin.getExterns(platform),
 				String.valueOf(project.version),
 				this.sourceBaseUrl
 		)
