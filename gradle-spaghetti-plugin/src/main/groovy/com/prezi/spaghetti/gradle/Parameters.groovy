@@ -20,6 +20,10 @@ class Parameters {
 		this.configuration = configuration
 	}
 
+	Configuration obfuscatedConfiguration
+
+	void obfuscatedConfiguration(Configuration obfuscatedConfiguration) {
+		this.obfuscatedConfiguration = obfuscatedConfiguration
 	}
 
 	File definition

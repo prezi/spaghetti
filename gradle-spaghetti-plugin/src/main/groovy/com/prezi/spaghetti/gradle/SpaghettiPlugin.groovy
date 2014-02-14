@@ -32,11 +32,12 @@ class SpaghettiPlugin implements Plugin<Project> {
 			defaultConfiguration = project.configurations.create(CONFIGURATION_NAME)
 		}
 
-		if (project.configurations.findByName(OBFUSCATED_CONFIGURATION_NAME) == null) {
-			project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
+		def defaultObfuscatedConfiguration = project.configurations.findByName(OBFUSCATED_CONFIGURATION_NAME)
+		if (defaultObfuscatedConfiguration == null) {
+			defaultObfuscatedConfiguration = project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
 		}
 
-		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration
+		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration, defaultObfuscatedConfiguration
 		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			void execute(AbstractSpaghettiTask task) {
