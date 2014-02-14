@@ -20,20 +20,12 @@ class Parameters {
 		this.configuration = configuration
 	}
 
-	Configuration getConfiguration()
-	{
-		return configuration
 	}
 
 	File definition
 
 	void definition(Object file) {
 		this.definition = project.file(file)
-	}
-
-	File getDefinition()
-	{
-		return definition
 	}
 
 	String sourceBaseUrl = "http://github.com/prezi/${project.rootProject.name}"
