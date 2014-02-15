@@ -11,8 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle implements Comparable<ModuleBundle> {
-	static final def SUPPORTED_VERSIONS = [ "1.0", "1.1", "1.2" ]
-
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
@@ -100,22 +98,26 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		}
 		def spaghettiVersion = manifest.mainAttributes.getValue(MANIFEST_ATTR_SPAGHETTI_VERSION)
 		if (spaghettiVersion == null) {
-			throw new IllegalArgumentException("Not a module, module version missing from manifest: " + inputFile)
+			throw new IllegalArgumentException("Not a module, module version missing from manifest: ${inputFile}")
 		}
-		if (!(spaghettiVersion in SUPPORTED_VERSIONS)) {
-			throw new IllegalArgumentException("Spaghetti version mismatch (should be one of (${SUPPORTED_VERSIONS.join(", ")}), but was \"" + spaghettiVersion + "\"): " + inputFile)
+		if (isSpaghettiVersionSupported(spaghettiVersion)) {
+			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${inputFile}")
 		}
 		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
 		if (definition == null) {
-			throw new IllegalArgumentException("Not a module, missing definition: " + inputFile)
+			throw new IllegalArgumentException("Not a module, missing definition: ${inputFile}")
 		}
 		if (compiledJavaScript == null) {
-			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
+			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: ${inputFile}")
 		}
 
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
 		return new ModuleBundle(name, definition, version, source, compiledJavaScript, sourceMap)
+	}
+
+	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
+		return spaghettiVersion?.startsWith("1.")
 	}
 
 	@Override
