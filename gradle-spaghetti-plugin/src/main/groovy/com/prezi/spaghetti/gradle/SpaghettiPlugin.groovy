@@ -158,7 +158,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
-		def bundleTaskName = "bundle" + binary.name.capitalize() + "Module"
+		def bundleTaskName = "bundle" + binary.name.capitalize()
 		def bundleTask = project.task(bundleTaskName, type: BundleModule) {
 			description = "Bundles ${binary} module."
 		} as BundleModule
@@ -169,7 +169,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary, BundleModule bundleTask) {
-		def obfuscateTaskName = "obfuscate" + binary.name.capitalize() + "Module"
+		def obfuscateTaskName = "obfuscate" + binary.name.capitalize()
 		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateBundle) {
 			description = "Obfuscates ${binary} module."
 		} as ObfuscateBundle
