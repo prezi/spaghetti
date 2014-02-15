@@ -13,6 +13,7 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
+import org.slf4j.LoggerFactory
 
 import javax.inject.Inject
 
@@ -23,6 +24,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 	static final String CONFIGURATION_NAME = "modules"
 	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf"
 
+	private static final logger = LoggerFactory.getLogger(SpaghettiPlugin)
 	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
 	private final Instantiator instantiator
@@ -40,7 +42,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		for (factory in ServiceLoader.load(GeneratorFactory)) {
 			generatorFactories.put factory.platform, factory
 		}
-		project.logger.info "Loaded generators for ${generatorFactories.keySet()}"
+		logger.info "Loaded generators for ${generatorFactories.keySet()}"
 		createPlatformsTask(project)
 
 		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
@@ -63,6 +65,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			void execute(AbstractSpaghettiTask task) {
+				logger.debug("Configuring conventions for ${task}")
 				def params = extension.params
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
@@ -77,6 +80,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 			def generateTask = project.task("generateModuleHeaders", type: GenerateModuleHeaders) {
 				description = "Generates Spaghetti module headers."
 			} as GenerateModuleHeaders
+			logger.debug("Created ${generateTask}")
 
 			// Create source set
 			def functionalSourceSet = projectSourceSet.maybeCreate(extension.sourceSet)
@@ -84,6 +88,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 			if (!spaghettiGeneratedSourceSet) {
 				spaghettiGeneratedSourceSet = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet, "spaghetti-generated", functionalSourceSet, fileResolver)
 				functionalSourceSet.add(spaghettiGeneratedSourceSet)
+				logger.debug("Added ${spaghettiGeneratedSourceSet}")
 			}
 			spaghettiGeneratedSourceSet.source.srcDir({ generateTask.getOutputDirectory() })
 			spaghettiGeneratedSourceSet.builtBy(generateTask)
@@ -91,16 +96,20 @@ class SpaghettiPlugin implements Plugin<Project> {
 			binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
 				@Override
 				void execute(SpaghettiCompatibleJavaScriptBinary binary) {
+					logger.debug("Creating bundle and obfuscation for ${binary}")
+
 					// Automatically create bundle module task and artifact
 					BundleModule bundleTask = createBundleTask(project, binary)
 					def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
 					project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
+					logger.debug("Added bundle task ${bundleTask} with artifact ${moduleBundleArtifact}")
 
 					// TODO Probably this should be enabled via command line
 					// Automatically obfuscate bundle
 					ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
 					def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
 					project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
+					logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
 				}
 			})
 		}
