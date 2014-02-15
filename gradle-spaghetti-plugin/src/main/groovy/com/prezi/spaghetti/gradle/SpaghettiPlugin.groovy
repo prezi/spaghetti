@@ -47,6 +47,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
 				task.conventionMapping.definition = { findModuleDefinition(project) }
+				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
 			}
 		})
 
