@@ -22,9 +22,6 @@ import javax.inject.Inject
  * Created by lptr on 12/11/13.
  */
 class SpaghettiPlugin implements Plugin<Project> {
-	static final String CONFIGURATION_NAME = "modules"
-	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf"
-
 	private static final logger = LoggerFactory.getLogger(SpaghettiPlugin)
 	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
@@ -41,26 +38,17 @@ class SpaghettiPlugin implements Plugin<Project> {
 	void apply(Project project)
 	{
 		project.plugins.apply(LanguageBasePlugin)
+		project.plugins.apply(SpaghettiBasePlugin)
+
 		for (factory in ServiceLoader.load(GeneratorFactory)) {
 			generatorFactories.put factory.platform, factory
 		}
 		logger.info "Loaded generators for ${generatorFactories.keySet()}"
 		createPlatformsTask(project)
 
-		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
-		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet.class)
-
-		def defaultConfiguration = project.configurations.findByName(CONFIGURATION_NAME)
-		if (defaultConfiguration == null) {
-			defaultConfiguration = project.configurations.create(CONFIGURATION_NAME)
-		}
-
-		def defaultObfuscatedConfiguration = project.configurations.findByName(OBFUSCATED_CONFIGURATION_NAME)
-		if (defaultObfuscatedConfiguration == null) {
-			defaultObfuscatedConfiguration = project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
-		}
-
-		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration, defaultObfuscatedConfiguration
+		def binaryContainer = project.getExtensions().getByType(BinaryContainer)
+		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet)
+		def extension = project.extensions.getByType(SpaghettiExtension)
 
 		def moduleDefinition = findModuleDefinition(project, extension)
 
