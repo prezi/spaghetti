@@ -46,27 +46,34 @@ class SpaghettiPlugin implements Plugin<Project> {
 				def params = extension.params
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
-				task.conventionMapping.definition = { params.definition ?: findDefinition(project) }
+				task.conventionMapping.definition = { findModuleDefinition(project) }
 			}
 		})
 
-		// Automatically create bundle module task and artifact
-		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
-		binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
-			@Override
-			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
-				// Is this a module?
-				if (extension.definition || findDefinition(project)) {
+		// Do we define a module in the project?
+		if (findModuleDefinition(project)) {
+			// Automatically create generateModuleHeaders task
+			project.task("generateModuleHeaders", type: GenerateModuleHeaders) {
+				description = "Generates Spaghetti module headers."
+			}
+
+			def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
+			binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
+				@Override
+				void execute(SpaghettiCompatibleJavaScriptBinary binary) {
+					// Automatically create bundle module task and artifact
 					BundleModule bundleTask = createBundleTask(project, binary)
 					def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
 					project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
 
+					// TODO Probably this should be enabled via command line
+					// Automatically obfuscate bundle
 					ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
 					def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
 					project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
 				}
-			}
-		})
+			})
+		}
 	}
 
 	private Task createPlatformsTask(Project project) {
@@ -88,10 +95,18 @@ class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	/**
-	 * Try to find a single .module file in the project.
+	 * Try to find the globally defined Spaghetti module.
+	 *
+	 * <p>It first looks at the Spaghetti configuration of the project. If that's not
+	 * specified, it tries to look up a single <code>.module</code> file in the main
+	 * Spaghetti source folder.
 	 * @return The file found, or <code>null</code> if none or more than one is found.
 	 */
-	private static File findDefinition(Project project) {
+	public static File findModuleDefinition(Project project) {
+		def definition = project.extensions.getByType(SpaghettiExtension).getDefinition()
+		if (definition) {
+			return definition
+		}
 		def definitionRoot = project.file("src/main/spaghetti")
 		if (definitionRoot.exists() && definitionRoot.directory) {
 			List<File> files = []
