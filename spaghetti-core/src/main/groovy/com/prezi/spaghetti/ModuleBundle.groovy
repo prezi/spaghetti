@@ -100,7 +100,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (spaghettiVersion == null) {
 			throw new IllegalArgumentException("Not a module, module version missing from manifest: ${inputFile}")
 		}
-		if (isSpaghettiVersionSupported(spaghettiVersion)) {
+		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
 			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${inputFile}")
 		}
 		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
