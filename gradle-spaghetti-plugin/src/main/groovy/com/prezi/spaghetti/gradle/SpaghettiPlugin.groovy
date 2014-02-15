@@ -8,6 +8,7 @@ import groovy.io.FileType
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.language.base.BinaryContainer
 
 /**
@@ -22,6 +23,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 	@Override
 	void apply(Project project)
 	{
+		createPlatformsTask(project)
 		for (factory in ServiceLoader.load(GeneratorFactory)) {
 			generatorFactories.put factory.platform, factory
 		}
@@ -48,20 +50,6 @@ class SpaghettiPlugin implements Plugin<Project> {
 			}
 		})
 
-		project.tasks.create("spaghetti-platforms") {
-			doLast {
-				if (generatorFactories.empty) {
-					println "No platform support for Spaghetti is found"
-				} else {
-					println "Spaghetti supports the following platforms:\n"
-					def length = generatorFactories.keySet().max { a, b -> a.length() <=> b.length() }.length()
-					generatorFactories.values().each { factory ->
-						println "  " + factory.platform.padRight(length) + " - " + factory.description
-					}
-				}
-			}
-		}
-
 		// Automatically create bundle module task and artifact
 		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
 		binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
@@ -79,6 +67,24 @@ class SpaghettiPlugin implements Plugin<Project> {
 				}
 			}
 		})
+	}
+
+	private Task createPlatformsTask(Project project) {
+		return project.tasks.create("spaghetti-platforms") {
+			group = "help"
+			description = "Show supported Spaghetti platforms."
+			doLast {
+				if (generatorFactories.empty) {
+					println "No platform support for Spaghetti is found"
+				} else {
+					println "Spaghetti supports the following platforms:\n"
+					def length = generatorFactories.keySet().max { a, b -> a.length() <=> b.length() }.length()
+					generatorFactories.values().each { factory ->
+						println "  " + factory.platform.padRight(length) + " - " + factory.description
+					}
+				}
+			}
+		}
 	}
 
 	/**
