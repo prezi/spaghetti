@@ -4,8 +4,9 @@ import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
+
 /**
  * Created by lptr on 16/11/13.
  */

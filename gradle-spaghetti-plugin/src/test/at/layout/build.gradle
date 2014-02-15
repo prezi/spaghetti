@@ -1,6 +1,6 @@
 import com.prezi.spaghetti.gradle.BundleModule
-import com.prezi.spaghetti.gradle.ObfuscateBundle
 import com.prezi.spaghetti.gradle.GenerateModuleHeaders
+import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 apply plugin: "spaghetti"
 

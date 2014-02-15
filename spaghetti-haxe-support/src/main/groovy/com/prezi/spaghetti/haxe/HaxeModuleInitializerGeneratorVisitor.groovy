@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 

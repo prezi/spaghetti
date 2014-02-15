@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
