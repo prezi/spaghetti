@@ -13,6 +13,7 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
+import org.gradle.language.base.plugins.LanguageBasePlugin
 import org.slf4j.LoggerFactory
 
 import javax.inject.Inject
@@ -39,6 +40,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 	@Override
 	void apply(Project project)
 	{
+		project.plugins.apply(LanguageBasePlugin)
 		for (factory in ServiceLoader.load(GeneratorFactory)) {
 			generatorFactories.put factory.platform, factory
 		}
