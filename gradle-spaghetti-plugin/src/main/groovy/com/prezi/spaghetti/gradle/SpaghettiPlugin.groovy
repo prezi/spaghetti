@@ -9,7 +9,12 @@ import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.internal.file.FileResolver
+import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
+import org.gradle.language.base.ProjectSourceSet
+
+import javax.inject.Inject
 
 /**
  * Created by lptr on 12/11/13.
@@ -20,14 +25,26 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 	private final Map<String, GeneratorFactory> generatorFactories = [:];
 
+	private final Instantiator instantiator
+	private final FileResolver fileResolver
+
+	@Inject
+	SpaghettiPlugin(Instantiator instantiator, FileResolver fileResolver) {
+		this.instantiator = instantiator
+		this.fileResolver = fileResolver
+	}
+
 	@Override
 	void apply(Project project)
 	{
-		createPlatformsTask(project)
 		for (factory in ServiceLoader.load(GeneratorFactory)) {
 			generatorFactories.put factory.platform, factory
 		}
 		project.logger.info "Loaded generators for ${generatorFactories.keySet()}"
+		createPlatformsTask(project)
+
+		def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
+		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet.class)
 
 		def defaultConfiguration = project.configurations.findByName(CONFIGURATION_NAME)
 		if (defaultConfiguration == null) {
@@ -40,25 +57,37 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 
 		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration, defaultObfuscatedConfiguration
+
+		def moduleDefinition = findModuleDefinition(project, extension)
+
 		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			void execute(AbstractSpaghettiTask task) {
 				def params = extension.params
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
-				task.conventionMapping.definition = { findModuleDefinition(project) }
 				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
+				task.conventionMapping.definition = { moduleDefinition }
 			}
 		})
 
 		// Do we define a module in the project?
-		if (findModuleDefinition(project)) {
-			// Automatically create generateModuleHeaders task
-			project.task("generateModuleHeaders", type: GenerateModuleHeaders) {
+		if (moduleDefinition) {
+			// Automatically generate module headers
+			def generateTask = project.task("generateModuleHeaders", type: GenerateModuleHeaders) {
 				description = "Generates Spaghetti module headers."
-			}
+			} as GenerateModuleHeaders
 
-			def binaryContainer = project.getExtensions().getByType(BinaryContainer.class)
+			// Create source set
+			def functionalSourceSet = projectSourceSet.maybeCreate(extension.sourceSet)
+			def spaghettiGeneratedSourceSet = functionalSourceSet.findByName("spaghetti-generated")
+			if (!spaghettiGeneratedSourceSet) {
+				spaghettiGeneratedSourceSet = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet, "spaghetti-generated", functionalSourceSet, fileResolver)
+				functionalSourceSet.add(spaghettiGeneratedSourceSet)
+			}
+			spaghettiGeneratedSourceSet.source.srcDir({ generateTask.getOutputDirectory() })
+			spaghettiGeneratedSourceSet.builtBy(generateTask)
+
 			binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
 				@Override
 				void execute(SpaghettiCompatibleJavaScriptBinary binary) {
@@ -103,12 +132,12 @@ class SpaghettiPlugin implements Plugin<Project> {
 	 * Spaghetti source folder.
 	 * @return The file found, or <code>null</code> if none or more than one is found.
 	 */
-	public static File findModuleDefinition(Project project) {
-		def definition = project.extensions.getByType(SpaghettiExtension).getDefinition()
+	public static File findModuleDefinition(Project project, SpaghettiExtension extension) {
+		def definition = extension.getDefinition()
 		if (definition) {
 			return definition
 		}
-		def definitionRoot = project.file("src/main/spaghetti")
+		def definitionRoot = project.file("src/${extension.sourceSet}/spaghetti")
 		if (definitionRoot.exists() && definitionRoot.directory) {
 			List<File> files = []
 			definitionRoot.eachFileMatch FileType.FILES, ~/.*\.module$/, { files << it }
