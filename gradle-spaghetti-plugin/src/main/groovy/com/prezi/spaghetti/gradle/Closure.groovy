@@ -1,13 +1,12 @@
 package com.prezi.spaghetti.gradle
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
+import com.google.javascript.jscomp.CommandLineRunner
+import com.google.javascript.jscomp.CompilationLevel
 import com.google.javascript.jscomp.Compiler
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.SourceFile;
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.SourceMap;
-import com.google.javascript.jscomp.CommandLineRunner;
+import com.google.javascript.jscomp.CompilerOptions
+import com.google.javascript.jscomp.SourceFile
+
+import static java.nio.charset.StandardCharsets.UTF_8
 
 /**
  * lineLengthThreshold = 1 forces closure to insert a newline in the

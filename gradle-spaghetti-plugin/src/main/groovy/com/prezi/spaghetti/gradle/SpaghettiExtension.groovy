@@ -10,8 +10,11 @@ class SpaghettiExtension {
 	@Delegate
 	Parameters params
 
-	SpaghettiExtension(Project project, Configuration defaultConfiguration) {
+	String sourceSet = "main"
+
+	SpaghettiExtension(Project project, Configuration defaultConfiguration, Configuration defaultObfuscatedConfiguration) {
 		this.params = new Parameters(project)
 		params.configuration = defaultConfiguration
+		params.obfuscatedConfiguration = defaultObfuscatedConfiguration
 	}
 }

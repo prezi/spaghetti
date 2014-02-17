@@ -9,15 +9,15 @@ class GenerateModuleHeaders extends AbstractGenerateTask {
 
 	GenerateModuleHeaders()
 	{
-		this.outputDirectory = new File(project.buildDir, "spaghetti/module-headers")
+		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/module-headers") }
 	}
 
 	@TaskAction
 	generate() {
-		def config = readConfig(definition)
+		def config = readConfig(getDefinition())
 		def moduleDef = config.localModules.first()
 		logger.info("Generating module headers for ${moduleDef}")
-		createGenerator(config).generateModuleHeaders(moduleDef, outputDirectory)
+		createGenerator(config).generateModuleHeaders(moduleDef, getOutputDirectory())
 	}
 
 	@Override

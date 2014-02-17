@@ -1,17 +1,16 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
-import org.gradle.api.DefaultTask
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.InputFiles
 
 /**
  * Created by lptr on 18/11/13.
  */
-class AbstractSpaghettiTask extends DefaultTask {
+class AbstractSpaghettiTask extends ConventionTask {
 	@Delegate
 	Parameters params = new Parameters(project)
 
@@ -22,16 +21,6 @@ class AbstractSpaghettiTask extends DefaultTask {
 
 	protected Generator createGenerator(ModuleConfiguration config) {
 		return plugin.createGeneratorForPlatform(platform, config)
-	}
-
-	protected Map<FQName, FQName> getExterns() {
-		return plugin.getExterns(platform)
-	}
-
-	public void applyParameters(Parameters params) {
-		this.platform = params.platform
-		this.configuration = params.configuration
-		this.definition = params.definition
 	}
 
 	@InputFiles
@@ -47,8 +36,8 @@ class AbstractSpaghettiTask extends DefaultTask {
 
 	ModuleConfiguration readConfig(Map<String, String> localDefinitions = [:]) {
 		def dependentDefinitionContexts
-		if (configuration != null) {
-			dependentDefinitionContexts = ModuleDefinitionLookup.getAllDefinitions(configuration)
+		if (getConfiguration()) {
+			dependentDefinitionContexts = ModuleDefinitionLookup.getAllDefinitions(getConfiguration())
 		} else {
 			dependentDefinitionContexts = []
 		}
@@ -59,9 +48,9 @@ class AbstractSpaghettiTask extends DefaultTask {
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitionContexts,
 				localDefinitionContexts,
-				externs,
+				plugin.getExterns(platform),
 				String.valueOf(project.version),
-				this.sourceBaseUrl
+				getSourceBaseUrl()
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config

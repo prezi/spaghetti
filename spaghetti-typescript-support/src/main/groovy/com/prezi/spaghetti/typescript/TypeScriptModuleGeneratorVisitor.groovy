@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull

@@ -8,13 +8,13 @@ class GenerateApplication extends AbstractGenerateTask {
 
 	GenerateApplication()
 	{
-		this.outputDirectory = new File(project.buildDir, "spaghetti/application")
+		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/application") }
 	}
 
 	@TaskAction
 	generate() {
 		def config = readConfig()
-		createGenerator(config).generateApplication(outputDirectory)
+		createGenerator(config).generateApplication(getOutputDirectory())
 	}
 
 	@Deprecated

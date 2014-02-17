@@ -69,7 +69,15 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 
 	public static ModuleBundle load(File inputFile) {
-		def zipFile = new ZipFile(inputFile)
+		if (!inputFile.exists()) {
+			throw new IllegalArgumentException("Module file not found: ${inputFile}")
+		}
+		def zipFile
+		try {
+			zipFile = new ZipFile(inputFile)
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Could not open module ZIP file: ${inputFile}", ex)
+		}
 
 		String definition = null
 		String compiledJavaScript = null
