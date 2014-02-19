@@ -9,7 +9,8 @@ import org.antlr.v4.runtime.misc.NotNull
  * Created by lptr on 15/11/13.
  */
 class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
-	final FQName name
+	final String name
+	final String alias
 	final String version
 	final String source
 	final ModuleDefinitionContext context
@@ -21,7 +22,8 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 
 	ModuleDefinition(ModuleDefinitionContext context, String version, String source, Scope parentScope)
 	{
-		this.name = FQName.fromContext(context.name)
+		this.name = context.name.text
+		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
 		this.version = version
 		this.source = source
 		this.context = context
@@ -47,11 +49,11 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 			}
 		}
 
-		if (!unresolvedName.hasNamespace() || unresolvedName.namespace == name.namespace)
+		if (!unresolvedName.hasNamespace() || unresolvedName.namespace == name)
 		{
 			if (localTypeNames.contains(unresolvedName.localName))
 			{
-				return name.qualifyLocalName(unresolvedName)
+				return FQName.qualifyLocalName(name, unresolvedName.localName)
 			}
 		}
 
@@ -70,13 +72,13 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 
 	Collection<FQName> getTypeNames() {
 		return localTypeNames.collect {
-			name.qualifyLocalName(FQName.fromString(it))
+			FQName.qualifyLocalName(name, FQName.fromString(it))
 		}
 	}
 
 	@Override
 	int compareTo(ModuleDefinition o) {
-		return name.fullyQualifiedName.compareTo(o.name.fullyQualifiedName)
+		return name.compareTo(o.name)
 	}
 
 	@Override

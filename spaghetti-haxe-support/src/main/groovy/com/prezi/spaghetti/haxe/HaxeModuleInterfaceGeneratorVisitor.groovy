@@ -20,7 +20,7 @@ class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVis
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
 		return \
-"""interface ${module.name.localName} {
+"""interface ${module.alias} {
 ${super.visitModuleDefinition(ctx)}
 }
 """

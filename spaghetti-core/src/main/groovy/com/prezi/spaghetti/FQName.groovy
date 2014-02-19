@@ -29,7 +29,11 @@ final public class FQName implements Comparable<FQName> {
 			_namespace = fqName.substring(0, lastDot)
 			_name = fqName.substring(lastDot + 1)
 		}
-		return new FQName(_namespace, _name)
+		return fromString(_namespace, _name)
+	}
+
+	public static FQName fromString(String namespace, String name) {
+		return new FQName(namespace, name)
 	}
 
 	public static FQName fromContext(ModuleParser.QualifiedNameContext context) {
@@ -44,20 +48,24 @@ final public class FQName implements Comparable<FQName> {
 		}
 	}
 
+	public static FQName qualifyLocalName(String namespace, FQName name) {
+		if (name.hasNamespace()) {
+			return name
+		} else {
+			return qualifyLocalName(namespace, name.localName)
+		}
+	}
+
+	public static FQName qualifyLocalName(String namespace, String localName) {
+		return new FQName(namespace, localName)
+	}
+
 	public String getFullyQualifiedName() {
 		return namespacePrefix + localName
 	}
 
 	public String getNamespacePrefix() {
 		return (namespace == null ? "" : namespace + ".")
-	}
-
-	public File createNamespacePath(File root) {
-		File result = root
-		if (namespace != null) {
-			namespace.split(/\./).each { name -> result = new File(result, name) }
-		}
-		return result
 	}
 
 	public boolean hasNamespace() {

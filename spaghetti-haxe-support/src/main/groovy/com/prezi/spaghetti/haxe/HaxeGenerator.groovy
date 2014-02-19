@@ -49,7 +49,7 @@ return __module;
 	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
 		def contents = new HaxeModuleInterfaceGeneratorVisitor(module).processModule()
-		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
 	}
 
 	/**
@@ -58,7 +58,7 @@ return __module;
 	private static void generateModuleProxy(ModuleDefinition module, File outputDirectory)
 	{
 		def contents = new HaxeModuleProxyGeneratorVisitor(module).processModule()
-		HaxeUtils.createHaxeSourceFile(module.name, outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
 	}
 
 	/**
@@ -66,9 +66,9 @@ return __module;
 	 */
 	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
 	{
-		def initializerName = "__" + module.name.localName + "Init"
+		def initializerName = "__" + module.alias + "Init"
 		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module).visitModuleDefinition(module.context)
-		HaxeUtils.createHaxeSourceFile(initializerName, module.name, outputDirectory, initializerContents)
+		HaxeUtils.createHaxeSourceFile(module, initializerName, outputDirectory, initializerContents)
 	}
 
 	/**

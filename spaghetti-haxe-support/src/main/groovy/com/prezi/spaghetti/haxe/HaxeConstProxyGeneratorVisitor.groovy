@@ -42,6 +42,6 @@ ${constants.join("\n")}
 	{
 		def propertyName = ctx.property.name.text
 		def resolvedPropertyType = ctx.property.type.accept(this)
-		return "\tpublic static var ${propertyName} (default, null):${resolvedPropertyType} = untyped __modules[\"${module.name.fullyQualifiedName}\"].__consts.${constName}.${propertyName};"
+		return "\tpublic static var ${propertyName} (default, null):${resolvedPropertyType} = untyped __modules[\"${module.name}\"].__consts.${constName}.${propertyName};"
 	}
 }

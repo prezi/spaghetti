@@ -30,8 +30,8 @@ class TypeScriptGenerator implements Generator {
 	{
 		return \
 """${javaScript}
-	var moduleImpl = new ${module.name.getFullyQualifiedName()}Impl();
-	var constants = new ${module.name.namespace}.__${module.name.localName}Constants();
+	var moduleImpl = new ${module.name}.${module.alias}Impl();
+	var constants = new ${module.name}.__${module.alias}Constants();
 	moduleImpl.__consts = constants;
 	return moduleImpl;
 """
@@ -49,13 +49,12 @@ class TypeScriptGenerator implements Generator {
 	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
 		def contents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules, true).processModule()
-		TypeScriptUtils.createSourceFile(module.name, outputDirectory, contents)
+		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 
 	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules, false).processModule()
-		TypeScriptUtils.createSourceFile(module.name, outputDirectory, moduleFileContents)
+		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, moduleFileContents)
 	}
 }
-

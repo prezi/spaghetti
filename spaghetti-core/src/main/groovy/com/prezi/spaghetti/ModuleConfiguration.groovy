@@ -4,12 +4,12 @@ package com.prezi.spaghetti
  */
 class ModuleConfiguration {
 
-	final Map<FQName, ModuleDefinition> modules
+	final Map<String, ModuleDefinition> modules
 	final List<ModuleDefinition> localModules
 	final Scope globalScope
 
 	public ModuleConfiguration(Collection<ModuleDefinition> modules, Collection<ModuleDefinition> localModules, Scope globalScope) {
-		this.modules = new TreeMap<FQName, ModuleDefinition>(modules.collectEntries { module -> [ (module.name): module ] }).asImmutable()
+		this.modules = new TreeMap<String, ModuleDefinition>(modules.collectEntries { module -> [ (module.name): module ] }).asImmutable()
 		this.localModules = localModules.sort().asImmutable()
 		this.globalScope = globalScope
 	}

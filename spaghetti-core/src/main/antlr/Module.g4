@@ -2,6 +2,7 @@ grammar Module;
 
 moduleDefinition : (documentation = Doc)?
 	'module' (name = qualifiedName)
+	('as' (alias = Name))?
 	moduleElement*
 	;
 

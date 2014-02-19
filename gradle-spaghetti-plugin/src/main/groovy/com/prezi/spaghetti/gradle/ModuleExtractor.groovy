@@ -11,7 +11,7 @@ class ModuleExtractor {
 		outputDirectory.mkdirs()
 		def bundles = ModuleDefinitionLookup.getAllBundles(configuration)
 		bundles.each { bundle ->
-			def outputFile = new File(outputDirectory, bundle.name.fullyQualifiedName + ".js")
+			def outputFile = new File(outputDirectory, bundle.name + ".js")
 			outputFile.delete()
 			outputFile << bundle.bundledJavaScript
 		}

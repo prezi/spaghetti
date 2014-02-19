@@ -36,7 +36,7 @@ class ModuleDefinitionLookup {
 
 	public static List<ModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration) {
 		return getAllBundles(configuration).collect { ModuleBundle module ->
-			return ModuleConfigurationParser.parse(module.definition, "module: ${module.name.fullyQualifiedName}")
+			return ModuleConfigurationParser.parse(module.definition, "module: ${module.name}")
 		}
 	}
 }

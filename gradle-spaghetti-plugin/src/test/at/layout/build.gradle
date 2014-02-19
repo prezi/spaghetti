@@ -1,29 +1,31 @@
 import com.prezi.spaghetti.gradle.BundleModule
-import com.prezi.spaghetti.gradle.GenerateModuleHeaders
 import com.prezi.spaghetti.gradle.ObfuscateBundle
 
-apply plugin: "spaghetti"
+apply plugin: "haxe"
 
 spaghetti {
 	platform "haxe"
-	definition "Layout.module"
 }
 
-task generateHeaders(type: GenerateModuleHeaders) {
-}
-
-task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
-	dependsOn generateHeaders
-	configuration configurations.modules
-	targetPlatform "js"
-	source generateHeaders.outputDirectory
-	source "src"
+haxe {
+	targetPlatforms {
+		js
+	}
 	include "prezi.graphics.text"
 }
 
+sources {
+	main {
+		haxe {
+			source.srcDir generateHeaders.outputDirectory
+			builtBy generateHeaders
+		}
+	}
+}
+
 task bundleModule(type: BundleModule) {
-	dependsOn compileHaxe
-	inputFile compileHaxe.outputFile
+	dependsOn compileJs
+	inputFile compileJs.outputFile
 }
 
 task obfuscate(type: ObfuscateBundle) {

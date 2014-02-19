@@ -20,14 +20,14 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
-	final FQName name
+	final String name
 	final String definition
 	final String bundledJavaScript
 	final String version
 	final String source
 	final String sourceMap
 
-	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
+	public ModuleBundle(String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
 		this.version = version ?: ""
 		this.source = source ?: ""
@@ -46,7 +46,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				Manifest manifest = new Manifest()
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
 				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION)
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name.fullyQualifiedName)
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, source)
 				manifest.write(zipStream)
@@ -72,7 +72,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (!inputFile.exists()) {
 			throw new IllegalArgumentException("Module file not found: ${inputFile}")
 		}
-		def zipFile
+		ZipFile zipFile
 		try {
 			zipFile = new ZipFile(inputFile)
 		} catch (Exception ex) {
@@ -111,7 +111,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
 			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${inputFile}")
 		}
-		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
+		String name = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME)
 		if (definition == null) {
 			throw new IllegalArgumentException("Not a module, missing definition: ${inputFile}")
 		}
