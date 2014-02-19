@@ -25,7 +25,15 @@ class BundleModule extends AbstractBundleTask {
 
 	@TaskAction
 	bundle() {
-		def config = readConfig(getDefinition())
+		def moduleDefinitions = getModuleDefinitions()
+		if (moduleDefinitions.empty) {
+			throw new IllegalArgumentException("No module definition present")
+		}
+		if (moduleDefinitions.size() > 1) {
+			throw new IllegalArgumentException("Too many module definitions present: ${moduleDefinitions}")
+		}
+		def moduleDefinition = moduleDefinitions.iterator().next()
+		def config = readConfig([moduleDefinition])
 		def module = config.getLocalModules().first()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
@@ -37,7 +45,7 @@ class BundleModule extends AbstractBundleTask {
 		jsModuleFile.delete()
 		jsModuleFile << wrappedJavaScript
 
-		def bundle = new ModuleBundle(module.name, getDefinition().text, String.valueOf(project.version), getSourceBaseUrl(), wrappedJavaScript, sourceMapText)
+		def bundle = new ModuleBundle(module.name, moduleDefinition.text, String.valueOf(project.version), getSourceBaseUrl(), wrappedJavaScript, sourceMapText)
 		bundle.save(getOutputFile())
 	}
 
@@ -57,12 +65,5 @@ class BundleModule extends AbstractBundleTask {
 			}
 		}
 		return sourceMap
-	}
-
-	@Override
-	@InputFile
-	File getDefinition()
-	{
-		return super.getDefinition()
 	}
 }

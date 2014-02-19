@@ -26,12 +26,6 @@ class Parameters {
 		this.obfuscatedConfiguration = obfuscatedConfiguration
 	}
 
-	File definition
-
-	void definition(Object file) {
-		this.definition = project.file(file)
-	}
-
 	String sourceBaseUrl = "http://github.com/prezi/${project.rootProject.name}"
 
 	void sourceBaseUrl(String source) {

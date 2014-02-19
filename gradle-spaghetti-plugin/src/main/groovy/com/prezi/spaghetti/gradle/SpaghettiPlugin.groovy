@@ -35,8 +35,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	@Override
-	void apply(Project project)
-	{
+	void apply(Project project) {
 		project.plugins.apply(LanguageBasePlugin)
 		project.plugins.apply(SpaghettiBasePlugin)
 
@@ -50,7 +49,11 @@ class SpaghettiPlugin implements Plugin<Project> {
 		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet)
 		def extension = project.extensions.getByType(SpaghettiExtension)
 
-		def moduleDefinition = findModuleDefinition(project, extension)
+		// Add source set
+		def functionalSourceSet = projectSourceSet.maybeCreate("main")
+		def spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet, "spaghetti", functionalSourceSet, fileResolver)
+		spaghettiSourceSet.source.srcDir("src/main/spaghetti")
+		functionalSourceSet.add(spaghettiSourceSet)
 
 		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
 			@Override
@@ -60,49 +63,44 @@ class SpaghettiPlugin implements Plugin<Project> {
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
 				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
-				task.conventionMapping.definition = { moduleDefinition }
 			}
 		})
 
-		// Do we define a module in the project?
-		if (moduleDefinition) {
-			// Automatically generate module headers
-			def generateTask = project.task("generateModuleHeaders", type: GenerateModuleHeaders) {
-				description = "Generates Spaghetti module headers."
-			} as GenerateModuleHeaders
-			logger.debug("Created ${generateTask}")
+		// Automatically generate module headers
+		def generateTask = project.task("generateHeaders", type: GenerateHeaders) {
+			description = "Generates Spaghetti headers."
+		} as GenerateHeaders
+		logger.debug("Created ${generateTask}")
 
-			// Create source set
-			def functionalSourceSet = projectSourceSet.maybeCreate(extension.sourceSet)
-			def spaghettiGeneratedSourceSet = functionalSourceSet.findByName("spaghetti-generated")
-			if (!spaghettiGeneratedSourceSet) {
-				spaghettiGeneratedSourceSet = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet, "spaghetti-generated", functionalSourceSet, fileResolver)
-				functionalSourceSet.add(spaghettiGeneratedSourceSet)
-				logger.debug("Added ${spaghettiGeneratedSourceSet}")
-			}
-			spaghettiGeneratedSourceSet.source.srcDir({ generateTask.getOutputDirectory() })
-			spaghettiGeneratedSourceSet.builtBy(generateTask)
-
-			binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
-				@Override
-				void execute(SpaghettiCompatibleJavaScriptBinary binary) {
-					logger.debug("Creating bundle and obfuscation for ${binary}")
-
-					// Automatically create bundle module task and artifact
-					BundleModule bundleTask = createBundleTask(project, binary)
-					def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
-					project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
-					logger.debug("Added bundle task ${bundleTask} with artifact ${moduleBundleArtifact}")
-
-					// TODO Probably this should be enabled via command line
-					// Automatically obfuscate bundle
-					ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
-					def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
-					project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
-					logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
-				}
-			})
+		// Create source set
+		def spaghettiGeneratedSourceSet = functionalSourceSet.findByName("spaghetti-generated")
+		if (!spaghettiGeneratedSourceSet) {
+			spaghettiGeneratedSourceSet = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet, "spaghetti-generated", functionalSourceSet, fileResolver)
+			functionalSourceSet.add(spaghettiGeneratedSourceSet)
+			logger.debug("Added ${spaghettiGeneratedSourceSet}")
 		}
+		spaghettiGeneratedSourceSet.source.srcDir({ generateTask.getOutputDirectory() })
+		spaghettiGeneratedSourceSet.builtBy(generateTask)
+
+		binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
+			@Override
+			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
+				logger.debug("Creating bundle and obfuscation for ${binary}")
+
+				// Automatically create bundle module task and artifact
+				BundleModule bundleTask = createBundleTask(project, binary)
+				def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
+				project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
+				logger.debug("Added bundle task ${bundleTask} with artifact ${moduleBundleArtifact}")
+
+				// TODO Probably this should be enabled via command line
+				// Automatically obfuscate bundle
+				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
+				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
+				project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
+				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
+			}
+		})
 	}
 
 	private Task createPlatformsTask(Project project) {
@@ -121,30 +119,6 @@ class SpaghettiPlugin implements Plugin<Project> {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Try to find the globally defined Spaghetti module.
-	 *
-	 * <p>It first looks at the Spaghetti configuration of the project. If that's not
-	 * specified, it tries to look up a single <code>.module</code> file in the main
-	 * Spaghetti source folder.
-	 * @return The file found, or <code>null</code> if none or more than one is found.
-	 */
-	public static File findModuleDefinition(Project project, SpaghettiExtension extension) {
-		def definition = extension.getDefinition()
-		if (definition) {
-			return definition
-		}
-		def definitionRoot = project.file("src/${extension.sourceSet}/spaghetti")
-		if (definitionRoot.exists() && definitionRoot.directory) {
-			List<File> files = []
-			definitionRoot.eachFileMatch FileType.FILES, ~/.*\.module$/, { files << it }
-			if (files.size() == 1) {
-				return files.first()
-			}
-		}
-		return null
 	}
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
@@ -168,8 +142,19 @@ class SpaghettiPlugin implements Plugin<Project> {
 		return obfuscateTask
 	}
 
-	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config)
-	{
+	static Set<File> findDefinitions(Project project) {
+		Set<SpaghettiSourceSet> sources = project.extensions.getByType(ProjectSourceSet).getByName("main").withType(SpaghettiSourceSet)
+		Set<File> sourceDirs = sources*.source*.srcDirs.flatten()
+		return sourceDirs.collectMany { File dir ->
+			def definitions = []
+			if (dir.directory) {
+				dir.eachFileMatch(FileType.FILES, ~/^.+\.module$/, { definitions << it })
+			}
+			return definitions
+		}
+	}
+
+	Generator createGeneratorForPlatform(String platform, ModuleConfiguration config) {
 		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
 		return generatorFactory.createGenerator(config)
 	}
@@ -177,15 +162,13 @@ class SpaghettiPlugin implements Plugin<Project> {
 	Map<FQName, FQName> getExterns(String platform) {
 		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
 		return generatorFactory.getExternMapping().collectEntries([:]) { extern, impl ->
-			return [ FQName.fromString(extern), FQName.fromString(impl) ]
+			return [FQName.fromString(extern), FQName.fromString(impl)]
 		}
 	}
 
-	private GeneratorFactory getGeneratorFactory(String platform)
-	{
+	private GeneratorFactory getGeneratorFactory(String platform) {
 		def generatorFactory = generatorFactories.get(platform)
-		if (generatorFactory == null)
-		{
+		if (generatorFactory == null) {
 			throw new IllegalArgumentException("No generator found for platform \"${platform}\". Supported platforms are: "
 					+ generatorFactories.keySet().sort().join(", "))
 		}

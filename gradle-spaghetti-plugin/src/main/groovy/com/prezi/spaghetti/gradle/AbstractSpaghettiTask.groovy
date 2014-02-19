@@ -28,7 +28,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 		return params.configuration
 	}
 
-	ModuleConfiguration readConfig(File... files) {
+	ModuleConfiguration readConfig(Collection<File> files) {
 		readConfig(files.collectEntries() { file ->
 			[ file.toString(), file.text ]
 		})
@@ -54,5 +54,10 @@ class AbstractSpaghettiTask extends ConventionTask {
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config
+	}
+
+	@InputFiles
+	Set<File> getModuleDefinitions() {
+		SpaghettiPlugin.findDefinitions(project)
 	}
 }

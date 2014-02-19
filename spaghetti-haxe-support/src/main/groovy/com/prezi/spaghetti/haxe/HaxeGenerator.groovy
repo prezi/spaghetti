@@ -16,19 +16,16 @@ class HaxeGenerator implements Generator {
 	}
 
 	@Override
-	void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
-	{
-		generateModuleInterface(module, outputDirectory)
-		generateModuleInitializer(module, outputDirectory)
-		generateInterfacesForModuleTypes(module, outputDirectory, false)
-
-		generateStuffForDependentModules(outputDirectory)
-	}
-
-	@Override
-	void generateApplication(File outputDirectory)
-	{
-		generateStuffForDependentModules(outputDirectory)
+	void generateHeaders(File outputDirectory) {
+		config.localModules.each { module ->
+			generateModuleInterface(module, outputDirectory)
+			generateModuleInitializer(module, outputDirectory)
+			generateInterfacesForModuleTypes(module, outputDirectory, false)
+		}
+		config.dependentModules.each { dependentModule ->
+			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
+			generateModuleProxy(dependentModule, outputDirectory)
+		}
 	}
 
 	@Override
@@ -44,13 +41,6 @@ return __module;
 	String processApplicationJavaScript(String javaScript)
 	{
 		return javaScript
-	}
-
-	private void generateStuffForDependentModules(File outputDirectory) {
-		config.dependentModules.each { dependentModule ->
-			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
-			generateModuleProxy(dependentModule, outputDirectory)
-		}
 	}
 
 	/**

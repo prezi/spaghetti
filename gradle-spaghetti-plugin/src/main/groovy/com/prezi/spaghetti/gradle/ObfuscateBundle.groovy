@@ -2,7 +2,6 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.SourceMap
-import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 
@@ -31,7 +30,7 @@ class ObfuscateBundle extends AbstractBundleTask
 	@TaskAction
 	void run()
 	{
-		def config = readConfig(getDefinition())
+		def config = readConfig(getModuleDefinitions())
 		def modules = config.localModules + config.dependentModules
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
 		obfuscateDir.mkdirs();
@@ -64,13 +63,6 @@ class ObfuscateBundle extends AbstractBundleTask
 	}
 
 	Set<String> additionalSymbols = []
-
-	@Override
-	@InputFile
-	File getDefinition()
-	{
-		return super.getDefinition()
-	}
 
 	@InputFiles
 	Set<File> getClosureExterns()

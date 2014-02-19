@@ -3,8 +3,7 @@ package com.prezi.spaghetti
  * Created by lptr on 12/11/13.
  */
 public interface Generator {
-	abstract void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
-	abstract void generateApplication(File outputDirectory)
+	abstract void generateHeaders(File outputDirectory)
 
 	/**
 	 * Process the JavaScript code of a module before wrapping it into a Require JS wrapper.

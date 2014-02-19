@@ -16,16 +16,13 @@ class TypeScriptGenerator implements Generator {
 	}
 
 	@Override
-	void generateModuleHeaders(ModuleDefinition module, File outputDirectory)
-	{
-		generateModuleInterface(module, outputDirectory)
-		generateStuffForDependentModules(outputDirectory)
-	}
-
-	@Override
-	void generateApplication(File outputDirectory)
-	{
-		generateStuffForDependentModules(outputDirectory)
+	void generateHeaders(File outputDirectory) {
+		config.localModules.each { module ->
+			generateModuleInterface(module, outputDirectory)
+		}
+		config.dependentModules.each { dependentModule ->
+			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
+		}
 	}
 
 	@Override
@@ -44,12 +41,6 @@ class TypeScriptGenerator implements Generator {
 	String processApplicationJavaScript(String javaScript)
 	{
 		return javaScript
-	}
-
-	private void generateStuffForDependentModules(File outputDirectory) {
-		config.dependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
-		}
 	}
 
 	/**
