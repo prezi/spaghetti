@@ -9,11 +9,10 @@ import com.prezi.spaghetti.ModuleConfiguration
  */
 public class HaxeGeneratorFactory implements GeneratorFactory {
 
-	private static def EXTERNS = [
-			"UnicodeString": "String",
-			"HTMLCanvasElement": "js.html.CanvasElement",
-			"CanvasRenderingContext2D": "js.html.CanvasRenderingContext2D"
-		].asImmutable()
+	private static def DEFAULT_EXTERNS = [
+	        UnicodeString: "String",
+	]
+	private static def EXTERNS = (DEFAULT_EXTERNS + HaxeJsHtmlExterns.EXTERNS).asImmutable()
 
 	@Override
 	String getPlatform()
