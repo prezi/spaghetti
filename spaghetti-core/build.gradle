@@ -10,13 +10,13 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath "org.antlr:antlr4:4.1"
+		classpath "org.antlr:antlr4:4.2"
 	}
 }
 
 dependencies {
 	compile localGroovy()
-	compile "org.antlr:antlr4-runtime:4.1"
+	compile "org.antlr:antlr4-runtime:4.2"
 	compile "com.google.guava:guava:15.0"
 }
 
