@@ -40,3 +40,8 @@ configure(subprojects) {
 		}
 	}
 }
+
+apply plugin: "spaghetti"
+
+task resolveStack(type:com.prezi.spaghetti.gradle.ResolveStack) {
+}
