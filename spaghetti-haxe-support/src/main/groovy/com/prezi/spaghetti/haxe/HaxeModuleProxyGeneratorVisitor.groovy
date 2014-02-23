@@ -20,7 +20,7 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
 		return \
-"""@:final class ${module.name.localName} {
+"""@:final class ${module.alias} {
 ${super.visitModuleDefinition(ctx)}
 }
 """
@@ -52,7 +52,7 @@ ${super.visitModuleDefinition(ctx)}
 
 		return \
 """	@:extern public static inline function ${ctx.name.text}(${params}):${returnType} {
-		${returnType == "void"?"":"return "}untyped __modules[\"${module.name.fullyQualifiedName}\"].${ctx.name.text}(${callParams});
+		${returnType == "void"?"":"return "}untyped __modules[\"${module.name}\"].${ctx.name.text}(${callParams});
 	}
 """
 	}

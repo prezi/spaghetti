@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -18,7 +17,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
-		def initializerName = "__" + module.name.localName + "Init"
+		def initializerName = "__" + module.alias + "Init"
 
 		def consts = ctx.moduleElement()*.accept(this) - ""
 
@@ -27,7 +26,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		var module:${module.name.localName} = new ${module.name.localName}Impl();
+		var module:${module.alias} = new ${module.alias}Impl();
 		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};

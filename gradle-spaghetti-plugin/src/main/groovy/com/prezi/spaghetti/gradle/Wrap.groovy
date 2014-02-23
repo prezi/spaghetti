@@ -12,9 +12,10 @@ class Wrap extends AbstractBundleTask {
 	@TaskAction
 	wrap() {
 		def config = readConfig()
+		def outputFile = getOutputFile()
 		outputFile.parentFile.mkdirs()
 		outputFile.delete()
-		outputFile << Wrapper.wrap(config, type, inputFile.text)
+		outputFile << Wrapper.wrap(config, type, getInputFile().text)
 	}
 
 	Wrapping type = Wrapping.module

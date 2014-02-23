@@ -1,8 +1,6 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.ModuleBundle;
-
-import org.gradle.api.tasks.InputFile
+import com.prezi.spaghetti.ModuleBundle
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 
@@ -23,20 +21,20 @@ class ObfuscateBundle extends AbstractBundleTask
 
 	public ObfuscateBundle()
 	{
-		inputFile = new File(project.buildDir, "spaghetti/module.zip");
-		outputFile = new File(project.buildDir, "spaghetti/module_obf.zip");
-		closureExterns = [];
+		this.conventionMapping.inputFile = { new File(project.buildDir, "spaghetti/module.zip") }
+		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/module_obf.zip") }
+		this.closureExterns = []
 	}
 
 	@TaskAction
 	void run()
 	{
-		def config = readConfig(definition);
-		def modules = config.localModules + config.getDependentModules();
+		def config = readConfig(getModuleDefinitions())
+		def modules = config.localModules + config.dependentModules
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
 		obfuscateDir.mkdirs();
-		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + additionalSymbols;
-		def bundle = ModuleBundle.load(inputFile);
+		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + getAdditionalSymbols()
+		def bundle = ModuleBundle.load(getInputFile())
 
 		// OBFUSCATE
 		def compressedJS = new StringBuilder();
@@ -47,7 +45,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		}.join("");
 
 		def sourceMapBuilder = new StringBuilder();
-		Closure.compile(closureFile.toString(), compressedJS, bundle.name.fullyQualifiedName, sourceMapBuilder, closureExterns);
+		Closure.compile(closureFile.toString(), compressedJS, bundle.name, sourceMapBuilder, getClosureExterns())
 		def mapJStoMin = sourceMapBuilder.toString();
 
 		// SOURCEMAP
@@ -62,17 +60,10 @@ class ObfuscateBundle extends AbstractBundleTask
 
 		// BUNDLE
 		def obfBundle = new ModuleBundle(bundle.name, bundle.definition, bundle.version, bundle.source, compressedJS.toString(), finalSourceMap);
-		obfBundle.save(outputFile);
+		obfBundle.save(getOutputFile())
 	}
 
 	Set<String> additionalSymbols = []
-
-	@Override
-	@InputFile
-	File getDefinition()
-	{
-		return super.getDefinition()
-	}
 
 	@InputFiles
 	Set<File> getClosureExterns()

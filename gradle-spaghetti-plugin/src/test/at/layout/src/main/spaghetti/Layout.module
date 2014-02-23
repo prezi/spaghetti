@@ -1,7 +1,7 @@
 /**
  * Layout module.
  */
-module prezi.graphics.text.Layout
+module prezi.graphics.text as Layout
 
 extern interface UnicodeString
 

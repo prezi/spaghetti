@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.FQName
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.AbstractModuleVisitor
 import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
@@ -47,8 +47,8 @@ declare var __modules:Array<any>;
 """
 			dependentModules.each { module ->
 				modulesContents +=
-"""export var ${module.name.localName}:${module.name} = __modules[\"${module.name.fullyQualifiedName}\"];
-export var __${module.name.localName}:any = __modules[\"${module.name.fullyQualifiedName}\"];
+"""export var ${module.alias}:${module.name}.${module.alias} = __modules[\"${module.name}\"];
+export var __${module.alias}:any = __modules[\"${module.name}\"];
 """
 			}
 			modulesContents += "\n"
@@ -56,7 +56,7 @@ export var __${module.name.localName}:any = __modules[\"${module.name.fullyQuali
 		}
 
 		result +=  ModuleUtils.formatDocumentation(ctx.documentation)
-		result += "export interface ${module.name.localName} {\n" + methods.join("\n") + "\n}\n" + types.join("\n")
+		result += "export interface ${module.alias} {\n" + methods.join("\n") + "\n}\n" + types.join("\n")
 
 		if (localModule) {
 			Set<String> consts = []
@@ -64,7 +64,7 @@ export var __${module.name.localName}:any = __modules[\"${module.name.fullyQuali
 			(new ConstCollectorVisitor(module, consts)).processModule();
 			
 			def ctor = consts.collect { name -> 
-				return "\t\tthis.${name} = ${module.name.namespace}.${name};"
+				return "\t\tthis.${name} = ${module.name}.${name};"
 			}.join("\n")
 
 			def members = consts.collect { name -> 
@@ -73,7 +73,7 @@ export var __${module.name.localName}:any = __modules[\"${module.name.fullyQuali
 
 			constContents += 
 """
-export class __${module.name.localName}Constants {
+export class __${module.alias}Constants {
 	constructor() {
 ${ctor}
 	}
@@ -159,7 +159,7 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 		if (!localModule) {
 			def values = ctx.propertyDefinition().collect { propertyCtx ->
 				return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = __${module.name.localName}.__consts.${ctx.name.text}.${propertyCtx.property.name.text};"
+					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = __${module.alias}.__consts.${ctx.name.text}.${propertyCtx.property.name.text};"
 			}.join("\n")
 
 			def constName = ctx.name.text

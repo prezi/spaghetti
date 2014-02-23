@@ -11,8 +11,6 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle implements Comparable<ModuleBundle> {
-	static final def SUPPORTED_VERSIONS = [ "1.0", "1.1", "1.2" ]
-
 	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
@@ -22,14 +20,14 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
-	final FQName name
+	final String name
 	final String definition
 	final String bundledJavaScript
 	final String version
 	final String source
 	final String sourceMap
 
-	public ModuleBundle(FQName name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
+	public ModuleBundle(String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
 		this.name = checkNotNull(name)
 		this.version = version ?: ""
 		this.source = source ?: ""
@@ -48,7 +46,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				Manifest manifest = new Manifest()
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
 				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION)
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name.fullyQualifiedName)
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, source)
 				manifest.write(zipStream)
@@ -71,7 +69,15 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 
 	public static ModuleBundle load(File inputFile) {
-		def zipFile = new ZipFile(inputFile)
+		if (!inputFile.exists()) {
+			throw new IllegalArgumentException("Module file not found: ${inputFile}")
+		}
+		ZipFile zipFile
+		try {
+			zipFile = new ZipFile(inputFile)
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Could not open module ZIP file: ${inputFile}", ex)
+		}
 
 		String definition = null
 		String compiledJavaScript = null
@@ -100,22 +106,26 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		}
 		def spaghettiVersion = manifest.mainAttributes.getValue(MANIFEST_ATTR_SPAGHETTI_VERSION)
 		if (spaghettiVersion == null) {
-			throw new IllegalArgumentException("Not a module, module version missing from manifest: " + inputFile)
+			throw new IllegalArgumentException("Not a module, module version missing from manifest: ${inputFile}")
 		}
-		if (!(spaghettiVersion in SUPPORTED_VERSIONS)) {
-			throw new IllegalArgumentException("Spaghetti version mismatch (should be one of (${SUPPORTED_VERSIONS.join(", ")}), but was \"" + spaghettiVersion + "\"): " + inputFile)
+		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
+			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${inputFile}")
 		}
-		FQName name = FQName.fromString(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME))
+		String name = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME)
 		if (definition == null) {
-			throw new IllegalArgumentException("Not a module, missing definition: " + inputFile)
+			throw new IllegalArgumentException("Not a module, missing definition: ${inputFile}")
 		}
 		if (compiledJavaScript == null) {
-			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: " + inputFile)
+			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: ${inputFile}")
 		}
 
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
 		return new ModuleBundle(name, definition, version, source, compiledJavaScript, sourceMap)
+	}
+
+	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
+		return spaghettiVersion?.startsWith("1.")
 	}
 
 	@Override

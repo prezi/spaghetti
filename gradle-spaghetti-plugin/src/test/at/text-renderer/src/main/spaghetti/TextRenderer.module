@@ -1,7 +1,7 @@
 /**
  * Text renderer module.
  */
-module prezi.graphics.text.render.TextRenderer
+module prezi.graphics.text.render as TextRenderer
 
 import prezi.graphics.text.Text as Texty
 

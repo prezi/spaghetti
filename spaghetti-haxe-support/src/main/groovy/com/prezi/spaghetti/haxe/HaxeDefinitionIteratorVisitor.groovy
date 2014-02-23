@@ -31,7 +31,7 @@ class HaxeDefinitionIteratorVisitor extends AbstractModuleVisitor<Void> {
 
 	private void createSourceFile(String name, RuleContext ctx, ParseTreeVisitor<String> visitor) {
 		def contents = ctx.accept(visitor)
-		HaxeUtils.createHaxeSourceFile(name, module.name, outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(module, name, outputDirectory, contents)
 	}
 
 	@Override

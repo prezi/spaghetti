@@ -11,15 +11,16 @@ class BundleApplication extends AbstractBundleTask {
 
 	BundleApplication()
 	{
-		this.inputFile = new File(project.buildDir, "application.js")
-		this.outputFile = new File(project.buildDir, "spaghetti/application.js")
+		this.conventionMapping.inputFile = { new File(project.buildDir, "application.js") }
+		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/application.js") }
 	}
 
 	@TaskAction
 	bundle() {
 		def config = readConfig()
-		def wrappedJavaScript = createGenerator(config).processApplicationJavaScript(inputFile.text)
+		def wrappedJavaScript = createGenerator(config).processApplicationJavaScript(getInputFile().text)
 
+		def outputFile = getOutputFile()
 		outputFile.parentFile.mkdirs()
 		outputFile.delete()
 		outputFile << Wrapper.wrap(config, Wrapping.application, wrappedJavaScript)

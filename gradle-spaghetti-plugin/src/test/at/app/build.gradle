@@ -1,16 +1,15 @@
 import com.prezi.spaghetti.gradle.BundleApplication
 import com.prezi.spaghetti.gradle.ExtractModules
-import com.prezi.spaghetti.gradle.GenerateApplication
+import com.prezi.spaghetti.gradle.GenerateHeaders
 import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 evaluationDependsOn(':text-renderer')
 
-apply plugin: "spaghetti"
 apply plugin: "haxe"
 
 configurations {
 	requirejs
-	testlibs { extendsFrom modules }
+	main { extendsFrom modules }
 }
 
 dependencies {
@@ -18,46 +17,39 @@ dependencies {
 	modulesObf project(path: ":text-renderer", configuration: "modulesObf")
 	requirejs "org.webjars:requirejs:2.1.8"
 
-	testlibs group: "haxelib3", name: "mconsole", version: "1.4.0"
-	testlibs group: "haxelib3", name: "mcover", version: "2.0.3"
-	testlibs group: "haxelib3", name: "mlib", version: "2.0.2"
-	testlibs group: "haxelib3", name: "munit", version: "2.0.2"
-	testlibs group: "haxelib3", name: "hamcrest", version: "1.2.1"
-	testlibs group: "haxelib3", name: "tink_core", version: "1.0.0-alpha"
-	testlibs group: "haxelib3", name: "tink_macro", version: "0.0.0-alpha"
-	testlibs group: "haxelib3", name: "mockatoo", version: "2.1.0"
+	test group: "haxelib3", name: "mconsole", version: "1.4.0"
+	test group: "haxelib3", name: "mcover", version: "2.0.3"
+	test group: "haxelib3", name: "mlib", version: "2.0.2"
+	test group: "haxelib3", name: "munit", version: "2.0.2"
+	test group: "haxelib3", name: "hamcrest", version: "1.2.1"
+	test group: "haxelib3", name: "tink_core", version: "1.0.0-alpha"
+	test group: "haxelib3", name: "tink_macro", version: "0.0.0-alpha"
+	test group: "haxelib3", name: "mockatoo", version: "2.1.0"
 }
 
 spaghetti {
 	platform "haxe"
 }
 
-/**
- * Generate type definitions for every client
- */
-task generateApplication(type: GenerateApplication) {
-	// This is deprecated, left here to test backwards compatibility
-	namespace "prezi.test.client"
-}
-
-task compileHaxe(type: com.prezi.gradle.haxe.CompileHaxe) {
-	dependsOn generateApplication
-	configuration configurations.modules
-	targetPlatform "js"
-	source generateApplication.outputDirectory
-	source "src"
+haxe {
 	main "prezi.test.client.Client"
+	targetPlatforms {
+		js
+	}
 }
 
-task testHaxe(type: com.prezi.gradle.haxe.MUnit) {
-	configuration configurations.testlibs
-	test compileHaxe
-	source "test"
+sources {
+	main {
+		haxe {
+			source.srcDir generateHeaders.outputDirectory
+			builtBy generateHeaders
+		}
+	}
 }
 
 task bundleApplication(type: BundleApplication) {
-	dependsOn compileHaxe
-	inputFile compileHaxe.outputFile
+	dependsOn compileJs
+	inputFile compileJs.outputFile
 }
 
 task obfuscate(type: ObfuscateBundle) {
@@ -91,7 +83,7 @@ task packApplication(type: ExtractModules) {
 			into testWebappDir
 		}
 		copy {
-			from "test"
+			from "src/test/webapp"
 			into testWebappDir
 		}
 	}
