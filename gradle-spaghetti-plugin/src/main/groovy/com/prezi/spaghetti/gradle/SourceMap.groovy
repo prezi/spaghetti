@@ -35,15 +35,15 @@ console.log(JSON.stringify(mapAtoC));
 			throw new RuntimeException("Source map composition failed with exit code " + process.exitValue());
 		}
 
-			def mapAtoC = mapAtoCBuilder.toString();
+		def mapAtoC = mapAtoCBuilder.toString();
 
-			// adding lineCount so that Closure stays happy
-			def slurper = new JsonSlurper();
-			def mAC = slurper.parseText(mapAtoC);
-			def mBC = slurper.parseText(mapBtoC);
-			mAC.lineCount = mBC.lineCount;
+		// adding lineCount so that Closure stays happy
+		def slurper = new JsonSlurper();
+		def mAC = slurper.parseText(mapAtoC);
+		def mBC = slurper.parseText(mapBtoC);
+		mAC.lineCount = mBC.lineCount;
 
-			return new JsonBuilder(mAC).toString();
+		return new JsonBuilder(mAC).toString();
 	}
 
 	/**
