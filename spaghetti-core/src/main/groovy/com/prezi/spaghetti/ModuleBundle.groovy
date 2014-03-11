@@ -38,6 +38,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 	public void save(File outputFile) {
 		outputFile.delete()
+		outputFile.parentFile.mkdirs()
 		outputFile.withOutputStream { fos ->
 			def zipStream = new ZipOutputStream(fos)
 			zipStream.withStream {

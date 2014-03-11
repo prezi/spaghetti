@@ -18,9 +18,9 @@ class BundleModule extends AbstractBundleTask {
 
 	BundleModule()
 	{
-		this.jsModuleFile = new File(project.buildDir, "spaghetti/module.js")
+		this.jsModuleFile = new File(project.buildDir, "spaghetti/bundle/module.js")
 		this.conventionMapping.inputFile = { new File(project.buildDir, "module.js") }
-		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/module.zip") }
+		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/bundle/module.zip") }
 	}
 
 	@TaskAction
