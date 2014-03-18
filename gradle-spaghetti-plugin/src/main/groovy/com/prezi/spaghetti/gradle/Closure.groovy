@@ -41,6 +41,7 @@ class Closure {
 		compilationLevel.setOptionsForCompilationLevel(options);
 		options.setLineLengthThreshold(lineLengthThreshold);
 		options.setSourceMapOutputPath("dummy.map"); // We need to set this so that Closure generates sourcemap info, it won't actually create a file.
+		options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5); // ES5 relaxes some keywords
 
 		// Set default externs so that commonly used primitives are protected
 		def externs = CommandLineRunner.getDefaultExterns() +
