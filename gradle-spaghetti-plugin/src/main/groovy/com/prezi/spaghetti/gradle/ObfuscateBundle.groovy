@@ -45,7 +45,10 @@ class ObfuscateBundle extends AbstractBundleTask
 		}.join("");
 
 		def sourceMapBuilder = new StringBuilder();
-		Closure.compile(closureFile.toString(), compressedJS, bundle.name, sourceMapBuilder, getClosureExterns())
+		def closureRet = Closure.compile(closureFile.toString(), compressedJS, bundle.name, sourceMapBuilder, getClosureExterns())
+		if (closureRet != 0) {
+			throw new RuntimeException("Closure returned with exit code " + closureRet)
+		}
 		def mapJStoMin = sourceMapBuilder.toString();
 
 		// SOURCEMAP
