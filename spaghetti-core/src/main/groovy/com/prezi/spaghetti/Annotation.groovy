@@ -6,6 +6,8 @@ import com.prezi.spaghetti.grammar.ModuleParser.AnnotationContext
 import groovy.transform.EqualsAndHashCode
 import org.antlr.v4.runtime.misc.NotNull
 
+import groovy.json.StringEscapeUtils
+
 /**
  * Created by lptr on 26/11/13.
  */
@@ -92,6 +94,7 @@ class AnnotationValueExtractor extends ModuleBaseVisitor<Object> {
 	@Override
 	Object visitAnnotationStringParameter(@NotNull @NotNull ModuleParser.AnnotationStringParameterContext ctx)
 	{
-		return ctx.stringValue.text
+		def unescaped = StringEscapeUtils.unescapeJava(ctx.stringValue.text);
+		return unescaped[1 .. unescaped.size() - 2] // strip surrounding quotes
 	}
 }
