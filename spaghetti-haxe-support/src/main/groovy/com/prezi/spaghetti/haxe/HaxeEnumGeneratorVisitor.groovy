@@ -15,11 +15,23 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		def enumName = ctx.name.text
-		def result = \
+		def result = ""
+
+		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
+		if (deprecatedAnn != null) {
+			result += Deprecation.annotation(Type.EnumName, enumName, deprecatedAnn) + "\n"
+		}
+
+		result += \
 """abstract ${enumName}(Int) {
 """
 
 		ctx.values.eachWithIndex { valueCtx, index ->
+			def valueDeprecatedAnn = ModuleUtils.extractAnnotations(valueCtx.annotations())["deprecated"]
+			if (valueDeprecatedAnn != null) {
+				result += Deprecation.annotation(Type.EnumField, valueCtx.name.text, valueDeprecatedAnn) + "\n"
+			}
+
 			result += ModuleUtils.formatDocumentation(valueCtx.documentation, "\t")
 			result +=
 """	public static var ${valueCtx.name.text} = new ${enumName}(${index});

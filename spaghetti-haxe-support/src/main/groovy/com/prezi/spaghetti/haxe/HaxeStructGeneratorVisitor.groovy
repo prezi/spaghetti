@@ -19,23 +19,40 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
-		return \
+		def result = ""
+
+		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
+		if (deprecatedAnn != null) {
+			result += Deprecation.annotation(Type.StructName, ctx.name.text, deprecatedAnn) + "\n"
+		}
+
+		result += \
 """typedef ${ctx.name.text} = {
 ${ctx.propertyDefinition().collect {
 	it.accept(this)
 }.join("")}
 }
 """
+		return result
 	}
 
 	@WithJavaDoc
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
-		def mutable = ModuleUtils.extractAnnotations(ctx.annotations()).containsKey("mutable")
+		def annMap = ModuleUtils.extractAnnotations(ctx.annotations())
+		def mutable = annMap.containsKey("mutable")
 		def modifiers = mutable ? "" : " (default, never)"
-		return \
+		def result = ""
+
+		def deprecatedAnn = annMap["deprecated"]
+		if (deprecatedAnn != null) {
+			result += Deprecation.annotation(Type.StructField, ctx.property.name.text, deprecatedAnn) + "\n"
+		}
+
+		result += \
 """	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
 """
+		return result
 	}
 }

@@ -8,10 +8,12 @@ extern interface UnicodeString
 /**
  * Different types of character styles.
  */
+@deprecated("dont use lol")
 enum CharacterStyleType {
 	/**
 	 * This takes an int.
 	 */
+	@deprecated("such bad")
 	COLOR
 
 	/**
@@ -45,11 +47,13 @@ enum CharacterStyleType {
 	URL
 }
 
+@deprecated
 @annotated(name="meta", param=true)
 struct CharacterStyle {
 	/**
 	 * The type of the style.
 	 */
+	@deprecated
 	CharacterStyleType type
 	/**
 	 * The value of the style.
@@ -57,7 +61,9 @@ struct CharacterStyle {
 	@mutable any value
 }
 
+@deprecated
 interface AbstractText {
+	@deprecated("use \"insertNextGen\" instead")
 	void insert(int offset, UnicodeString text, @nullable CharacterStyle[] withStyles)
 	void delete(int offset, int end)
 }
@@ -69,6 +75,7 @@ interface Text extends AbstractText {
 	/**
 	 * Inserts the given string at <code>offset</code>.
 	 */
+	@deprecated
 	UnicodeString getRawText()
 }
 

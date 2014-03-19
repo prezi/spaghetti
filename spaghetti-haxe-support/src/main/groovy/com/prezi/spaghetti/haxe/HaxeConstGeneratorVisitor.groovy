@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
@@ -34,7 +35,15 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			return "\t\tthis.${propertyName} = ${constName}.${propertyName};"
 		}
 
-		def result = \
+		def result = ""
+
+
+		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
+		if (deprecatedAnn != null) {
+			result += Deprecation.annotation(Type.Constant, this.constName, deprecatedAnn) + "\n"
+		}
+
+		result += \
 """@:final class __${constName} {
 	public function new() {
 ${initializers.join("\n")}
