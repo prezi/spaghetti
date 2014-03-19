@@ -27,7 +27,8 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		def constants = ctx.propertyDefinition().collect { propertyCtx ->
 			def propertyName = propertyCtx.property.name.text
 			def resolvedPropertyType = propertyCtx.property.type.accept(this)
-			return "\tpublic var ${propertyName} (default, null):${resolvedPropertyType};"
+			def result = Deprecation.annotationFromCxt(Type.ConstantField, propertyName, propertyCtx.annotations())
+			result += "\tpublic var ${propertyName} (default, null):${resolvedPropertyType};"
 		}
 
 		def initializers = ctx.propertyDefinition().collect { propertyCtx ->
@@ -35,7 +36,7 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			return "\t\tthis.${propertyName} = ${constName}.${propertyName};"
 		}
 
-		def result = Deprecation.annotationFromCxt(Type.Constant, this.constName, ctx.annotations())
+		def result = Deprecation.annotationFromCxt(Type.ConstantName, this.constName, ctx.annotations())
 
 		result += \
 """@:final class __${constName} {

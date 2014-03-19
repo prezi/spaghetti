@@ -2,6 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.Annotation
 import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.ModuleUtils
 
 import groovy.json.StringEscapeUtils
 
@@ -10,7 +11,8 @@ public enum Type {
 	Function,
 	EnumName,
 	EnumField,
-	Constant,
+	ConstantName,
+	ConstantField,
 	StructName,
 	StructField
 }
@@ -18,33 +20,28 @@ public enum Type {
 
 public class Deprecation {
 
-	public static String annotationFromCxt(Type type, String name, AnnotationsContext cxt) {
+	private static Map<Type, String> typeNameMap = [
+		(Type.Function) : "function",
+		(Type.EnumName) : "enum",
+		(Type.EnumField) : "enum field",
+		(Type.ConstantName) : "constant",
+		(Type.ConstantField) : "constant field",
+		(Type.StructName) : "struct",
+		(Type.StructField) : "struct field",
+		(Type.Interface) : "interface",
+	];
+
+	public static String annotationFromCxt(Type type, String name, ModuleParser.AnnotationsContext ctx) {
 		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx)["deprecated"]
 		if (deprecatedAnn != null) {
-			return annotation(Type.StructName, ctx.name.text, deprecatedAnn) + "\n"
+			return annotation(type, name, deprecatedAnn) + "\n"
 		} else {
 			return "";
 		}
 	}
 
 	public static String annotation(Type type, String name, Annotation ann) {
-		def typeName;
-		switch (type) {
-		case Type.Function: typeName = "function"
-			break
-		case Type.EnumName: typeName = "enum"
-			break
-		case Type.EnumField: typeName = "enum field"
-			break
-		case Type.Constant: typeName = "constant"
-			break
-		case Type.StructName: typeName = "struct"
-			break
-		case Type.StructField: typeName = "struct field"
-			break
-		case Type.Interface: typeName = "interface"
-			break
-		}
+		def typeName = typeNameMap[type];
 
 		def deprecationMessage;
 		if (ann.hasParameter("default")) {

@@ -36,10 +36,9 @@ ${ctx.propertyDefinition().collect {
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
 		def annotations = ctx.annotations()
-		def mutable = annotations.containsKey("mutable")
+		def mutable = ModuleUtils.extractAnnotations(annotations).containsKey("mutable")
 		def modifiers = mutable ? "" : " (default, never)"
 		def result = Deprecation.annotationFromCxt(Type.StructField, ctx.property.name.text, annotations) + "\n"
-		}
 
 		result += \
 """	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
