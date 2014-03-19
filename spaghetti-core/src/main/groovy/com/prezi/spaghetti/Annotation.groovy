@@ -48,8 +48,8 @@ class Annotation {
 		def parametersContext = context.annotationParameters()
 		Map<String, Object> parameters
 		if (parametersContext) {
-			if (parametersContext.singleValue != null) {
-				def value = parametersContext.singleValue.accept(new AnnotationValueExtractor())
+			if (parametersContext.annotationValue() != null) {
+				def value = parametersContext.annotationValue().accept(new AnnotationValueExtractor())
 				parameters = Collections.singletonMap(DEFAULT_PARAMETER, value)
 			} else {
 				parameters = parametersContext.annotationParameter().collectEntries() { paramCtx ->
