@@ -44,12 +44,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			return superTypeCtx.accept(this)
 		}
 
-		def result = ""
-
-		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
-		if (deprecatedAnn != null) {
-			result += Deprecation.annotation(Type.Interface, typeName, deprecatedAnn) + "\n"
-		}
+		def result = Deprecation.annotationFromCxt(Type.Interface, typeName, ctx.annotations())
 
 		result += \
 """${defineType(typeName, superTypes)}

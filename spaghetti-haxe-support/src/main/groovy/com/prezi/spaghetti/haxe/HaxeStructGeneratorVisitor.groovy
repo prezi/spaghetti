@@ -19,12 +19,7 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
-		def result = ""
-
-		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
-		if (deprecatedAnn != null) {
-			result += Deprecation.annotation(Type.StructName, ctx.name.text, deprecatedAnn) + "\n"
-		}
+		def result = Deprecation.annotationFromCxt(Type.StructName, ctx.name.text, ctx.annotations())
 
 		result += \
 """typedef ${ctx.name.text} = {
@@ -40,14 +35,10 @@ ${ctx.propertyDefinition().collect {
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
-		def annMap = ModuleUtils.extractAnnotations(ctx.annotations())
-		def mutable = annMap.containsKey("mutable")
+		def annotations = ctx.annotations()
+		def mutable = annotations.containsKey("mutable")
 		def modifiers = mutable ? "" : " (default, never)"
-		def result = ""
-
-		def deprecatedAnn = annMap["deprecated"]
-		if (deprecatedAnn != null) {
-			result += Deprecation.annotation(Type.StructField, ctx.property.name.text, deprecatedAnn) + "\n"
+		def result = Deprecation.annotationFromCxt(Type.StructField, ctx.property.name.text, annotations) + "\n"
 		}
 
 		result += \

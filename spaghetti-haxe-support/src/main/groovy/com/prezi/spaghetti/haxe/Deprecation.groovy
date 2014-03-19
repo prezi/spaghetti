@@ -17,6 +17,16 @@ public enum Type {
 
 
 public class Deprecation {
+
+	public static String annotationFromCxt(Type type, String name, AnnotationsContext cxt) {
+		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx)["deprecated"]
+		if (deprecatedAnn != null) {
+			return annotation(Type.StructName, ctx.name.text, deprecatedAnn) + "\n"
+		} else {
+			return "";
+		}
+	}
+
 	public static String annotation(Type type, String name, Annotation ann) {
 		def typeName;
 		switch (type) {

@@ -34,12 +34,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		def typeParamsResult = typeParams?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
 		def name = ctx.name.text
-		def result = ""
-
-		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
-		if (deprecatedAnn != null) {
-			result += Deprecation.annotation(Type.Function, name, deprecatedAnn) + "\n"
-		}
+		def result = Deprecation.annotationFromCxt(Type.Function, name, ctx.annotations())
 
 		result += \
 """	function ${name}${typeParamsResult}(${paramsResult}):${returnType};

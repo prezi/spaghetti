@@ -35,13 +35,7 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			return "\t\tthis.${propertyName} = ${constName}.${propertyName};"
 		}
 
-		def result = ""
-
-
-		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx.annotations())["deprecated"]
-		if (deprecatedAnn != null) {
-			result += Deprecation.annotation(Type.Constant, this.constName, deprecatedAnn) + "\n"
-		}
+		def result = Deprecation.annotationFromCxt(Type.Constant, this.constName, ctx.annotations())
 
 		result += \
 """@:final class __${constName} {
