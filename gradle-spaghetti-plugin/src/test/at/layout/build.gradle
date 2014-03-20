@@ -1,7 +1,16 @@
 import com.prezi.spaghetti.gradle.BundleModule
 import com.prezi.spaghetti.gradle.ObfuscateBundle
+import com.prezi.gradle.boxfish.NpmArtifactory
 
-apply plugin: "haxe"
+apply plugin: "boxfish-haxe"
+
+configurations {
+	obfuscateNpm
+}
+
+dependencies {
+	obfuscateNpm group: "npm", name: "source-map", version: "0.1.33", ext: "zip"
+}
 
 spaghetti {
 	platform "haxe"
@@ -12,6 +21,10 @@ haxe {
 		js
 	}
 	include "prezi.graphics.text"
+}
+
+compileJs {
+	flag "-debug"
 }
 
 sources {
@@ -28,19 +41,10 @@ task bundleModule(type: BundleModule) {
 	inputFile compileJs.outputFile
 }
 
-task obfuscate(type: ObfuscateBundle) {
-	dependsOn bundleModule
-	inputFile bundleModule.outputFile
+task npmObfuscate(type: NpmArtifactory) {
+	config configurations.obfuscateNpm
 }
 
-artifacts {
-	archives(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modules(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modulesObf(obfuscate.outputFile) {
-		builtBy obfuscate
-	}
+obfuscateJsModule {
+	dependsOn npmObfuscate
 }

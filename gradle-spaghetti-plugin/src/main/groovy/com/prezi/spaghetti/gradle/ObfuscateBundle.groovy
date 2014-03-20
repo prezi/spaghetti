@@ -54,7 +54,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		// SOURCEMAP
 		def finalSourceMap;
 		if (bundle.sourceMap != null) {
-			finalSourceMap = SourceMap.compose(bundle.sourceMap, mapJStoMin, "module.map");
+			finalSourceMap = SourceMap.compose(bundle.sourceMap, mapJStoMin, "module.map", this.nodeSourceMapRoot);
 		} else {
 			finalSourceMap = mapJStoMin;
 		}
@@ -67,14 +67,19 @@ class ObfuscateBundle extends AbstractBundleTask
 	}
 
 	Set<String> additionalSymbols = []
+	String nodeSourceMapRoot = "${project.buildDir}/node_modules"
 
 	@InputFiles
 	Set<File> getClosureExterns()
 	{
-		return closureExterns;
+		return this.closureExterns;
+	}
+
+	public void nodeSourceMapRoot(String sourceMapRoot) {
+		this.nodeSourceMapRoot = sourceMapRoot
 	}
 
 	public void closureExtern(String... externName) {
-		project.files(externName).each{closureExterns.add(it)}
+		project.files(externName).each{this.closureExterns.add(it)}
 	}
 }
