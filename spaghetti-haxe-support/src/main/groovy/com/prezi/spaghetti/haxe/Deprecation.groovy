@@ -20,17 +20,6 @@ public enum Type {
 
 public class Deprecation {
 
-	private static Map<Type, String> typeNameMap = [
-		(Type.Function) : "function",
-		(Type.EnumName) : "enum",
-		(Type.EnumField) : "enum field",
-		(Type.ConstantName) : "constant",
-		(Type.ConstantField) : "constant field",
-		(Type.StructName) : "struct",
-		(Type.StructField) : "struct field",
-		(Type.Interface) : "interface",
-	];
-
 	public static String annotationFromCxt(Type type, String name, ModuleParser.AnnotationsContext ctx) {
 		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx)["deprecated"]
 		if (deprecatedAnn != null) {
@@ -41,7 +30,17 @@ public class Deprecation {
 	}
 
 	public static String annotation(Type type, String name, Annotation ann) {
-		def typeName = typeNameMap[type];
+		def typeName;
+		switch (type) {
+		case Type.Function: typeName = "function"; break
+		case Type.EnumName: typeName = "enum"; break
+		case Type.EnumField: typeName = "enum field"; break
+		case Type.ConstantName: typeName = "constant"; break
+		case Type.ConstantField: typeName = "constant field"; break
+		case Type.StructName: typeName = "struct"; break
+		case Type.StructField: typeName = "struct field"; break
+		case Type.Interface: typeName = "interface"; break
+		}
 
 		def deprecationMessage;
 		if (ann.hasParameter("default")) {
