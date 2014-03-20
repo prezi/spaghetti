@@ -29,7 +29,10 @@ console.log(JSON.stringify(mapAtoC));
 
 		def mapAtoCBuilder = new StringBuilder();
 		def processBuilder = new ProcessBuilder("node", nodeJsFile.toString())
-		processBuilder.environment().put("NODE_PATH", nodeSourceMapRoot)
+		// if user gives a node_modules path use that, otherwise just assume it's there (e.g. global install)
+		if (nodeSourceMapRoot != null) {
+			processBuilder.environment().put("NODE_PATH", nodeSourceMapRoot)
+		}
 		def process = processBuilder.start();
 		process.waitForProcessOutput(mapAtoCBuilder, System.err);
 

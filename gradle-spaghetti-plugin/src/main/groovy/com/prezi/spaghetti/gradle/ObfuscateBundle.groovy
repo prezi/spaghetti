@@ -67,7 +67,7 @@ class ObfuscateBundle extends AbstractBundleTask
 	}
 
 	Set<String> additionalSymbols = []
-	String nodeSourceMapRoot = "${project.buildDir}/node_modules"
+	String nodeSourceMapRoot = null;
 
 	@InputFiles
 	Set<File> getClosureExterns()
