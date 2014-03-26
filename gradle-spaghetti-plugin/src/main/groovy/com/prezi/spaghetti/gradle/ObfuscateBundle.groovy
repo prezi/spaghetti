@@ -67,6 +67,9 @@ class ObfuscateBundle extends AbstractBundleTask
 	}
 
 	Set<String> additionalSymbols = []
+	public additionalSymbols(String... symbols) {
+		additionalSymbols.addAll(symbols)
+	}
 
 	@InputFiles
 	Set<File> getClosureExterns()
