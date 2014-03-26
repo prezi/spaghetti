@@ -12,7 +12,7 @@ import org.gradle.api.tasks.TaskAction
  */
 class BundleModule extends AbstractBundleTask {
 
-	public final File jsModuleFile
+	private final File jsModuleFile
 
 	File sourceMap
 
