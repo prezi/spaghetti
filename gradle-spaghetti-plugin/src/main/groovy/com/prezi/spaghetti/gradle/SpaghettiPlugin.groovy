@@ -142,6 +142,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		return obfuscateTask
 	}
 
+	// TODO Make this into a FileCollection so it can be lazy
 	static Set<File> findDefinitions(Project project) {
 		Set<SpaghettiSourceSet> sources = project.extensions.getByType(ProjectSourceSet).getByName("main").withType(SpaghettiSourceSet)
 		Set<File> sourceDirs = sources*.source*.srcDirs.flatten()
