@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 
@@ -67,7 +68,9 @@ class ObfuscateBundle extends AbstractBundleTask
 	}
 
 	Set<String> additionalSymbols = []
-	String nodeSourceMapRoot = null;
+	public additionalSymbols(String... symbols) {
+		additionalSymbols.addAll(symbols)
+	}
 
 	@InputFiles
 	Set<File> getClosureExterns()
@@ -75,6 +78,8 @@ class ObfuscateBundle extends AbstractBundleTask
 		return this.closureExterns;
 	}
 
+	@Input
+	String nodeSourceMapRoot = null;
 	public void nodeSourceMapRoot(String sourceMapRoot) {
 		this.nodeSourceMapRoot = sourceMapRoot
 	}
