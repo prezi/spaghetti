@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.TaskAction
 
@@ -66,6 +67,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		obfBundle.save(getOutputFile())
 	}
 
+	@Input
 	Set<String> additionalSymbols = []
 	public additionalSymbols(String... symbols) {
 		additionalSymbols.addAll(symbols)
