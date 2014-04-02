@@ -14,6 +14,10 @@ haxe {
 	include "prezi.graphics.text"
 }
 
+compileJs {
+	flag "-debug"
+}
+
 sources {
 	main {
 		haxe {
