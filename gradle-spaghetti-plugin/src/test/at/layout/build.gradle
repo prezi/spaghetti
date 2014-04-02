@@ -16,6 +16,7 @@ haxe {
 
 compileJs {
 	flag "-D deprecation-warnings"
+	flag "-debug"
 }
 
 sources {

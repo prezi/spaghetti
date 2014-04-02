@@ -2,6 +2,7 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -18,6 +19,7 @@ class Wrap extends AbstractBundleTask {
 		outputFile << Wrapper.wrap(config, type, getInputFile().text)
 	}
 
+	@Input
 	Wrapping type = Wrapping.module
 	void type(Object type) {
 		if (type == "nodeApp") {

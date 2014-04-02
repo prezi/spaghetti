@@ -7,7 +7,8 @@ import com.google.debugging.sourcemap.*;
 class SourceMap {
 
 	// returns the source map from A to C. ugly.
-	public static String compose(String mapAtoB, String mapBtoC, String mapAtoCName) {
+	// nodeSourceMapRoot should point to the directory containing /node_modules/source-map
+	public static String compose(String mapAtoB, String mapBtoC, String mapAtoCName, String nodeSourceMapRoot) {
 		String nodeJsSource =
 """
 var sourceMap = require('source-map');
@@ -27,8 +28,12 @@ console.log(JSON.stringify(mapAtoC));
 		nodeJsFile << nodeJsSource;
 
 		def mapAtoCBuilder = new StringBuilder();
-		def cmdLine =  ["node", nodeJsFile];
-		def process = cmdLine.execute();
+		def processBuilder = new ProcessBuilder("node", nodeJsFile.toString())
+		// if user gives a node_modules path use that, otherwise just assume it's there (e.g. global install)
+		if (nodeSourceMapRoot != null) {
+			processBuilder.environment().put("NODE_PATH", nodeSourceMapRoot)
+		}
+		def process = processBuilder.start();
 		process.waitForProcessOutput(mapAtoCBuilder, System.err);
 
 		if (process.exitValue() != 0) {
