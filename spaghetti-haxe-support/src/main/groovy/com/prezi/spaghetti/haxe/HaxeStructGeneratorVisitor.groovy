@@ -19,23 +19,30 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
-		return \
+		def result = Deprecation.annotationFromCxt(Type.StructName, ctx.name.text, ctx.annotations())
+
+		result += \
 """typedef ${ctx.name.text} = {
 ${ctx.propertyDefinition().collect {
 	it.accept(this)
 }.join("")}
 }
 """
+		return result
 	}
 
 	@WithJavaDoc
 	@Override
 	String visitPropertyDefinition(@NotNull @NotNull ModuleParser.PropertyDefinitionContext ctx)
 	{
-		def mutable = ModuleUtils.extractAnnotations(ctx.annotations()).containsKey("mutable")
+		def annotations = ctx.annotations()
+		def mutable = ModuleUtils.extractAnnotations(annotations).containsKey("mutable")
 		def modifiers = mutable ? "" : " (default, never)"
-		return \
+		def result = Deprecation.annotationFromCxt(Type.StructField, ctx.property.name.text, annotations) + "\n"
+
+		result += \
 """	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
 """
+		return result
 	}
 }

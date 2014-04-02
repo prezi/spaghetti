@@ -15,11 +15,15 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		def enumName = ctx.name.text
-		def result = \
+		def result = Deprecation.annotationFromCxt(Type.EnumName, enumName, ctx.annotations())
+
+		result += \
 """abstract ${enumName}(Int) {
 """
 
 		ctx.values.eachWithIndex { valueCtx, index ->
+			result += Deprecation.annotationFromCxt(Type.EnumField, valueCtx.name.text, valueCtx.annotations())
+
 			result += ModuleUtils.formatDocumentation(valueCtx.documentation, "\t")
 			result +=
 """	public static var ${valueCtx.name.text} = new ${enumName}(${index});

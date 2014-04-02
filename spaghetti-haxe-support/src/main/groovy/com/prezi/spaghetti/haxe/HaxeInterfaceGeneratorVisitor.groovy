@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.FQName
+import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
@@ -43,7 +44,9 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			return superTypeCtx.accept(this)
 		}
 
-		def result = \
+		def result = Deprecation.annotationFromCxt(Type.Interface, typeName, ctx.annotations())
+
+		result += \
 """${defineType(typeName, superTypes)}
 ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 }
