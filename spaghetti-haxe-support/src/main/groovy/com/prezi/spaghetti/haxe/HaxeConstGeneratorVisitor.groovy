@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.ModuleUtils
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
@@ -26,7 +27,8 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		def constants = ctx.propertyDefinition().collect { propertyCtx ->
 			def propertyName = propertyCtx.property.name.text
 			def resolvedPropertyType = propertyCtx.property.type.accept(this)
-			return "\tpublic var ${propertyName} (default, null):${resolvedPropertyType};"
+			def result = Deprecation.annotationFromCxt(Type.ConstantField, propertyName, propertyCtx.annotations())
+			result += "\tpublic var ${propertyName} (default, null):${resolvedPropertyType};"
 		}
 
 		def initializers = ctx.propertyDefinition().collect { propertyCtx ->
@@ -34,7 +36,9 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			return "\t\tthis.${propertyName} = ${constName}.${propertyName};"
 		}
 
-		def result = \
+		def result = Deprecation.annotationFromCxt(Type.ConstantName, this.constName, ctx.annotations())
+
+		result += \
 """@:final class __${constName} {
 	public function new() {
 ${initializers.join("\n")}
