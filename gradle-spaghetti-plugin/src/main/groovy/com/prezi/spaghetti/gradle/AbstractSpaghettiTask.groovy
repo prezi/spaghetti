@@ -20,7 +20,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	protected Generator createGenerator(ModuleConfiguration config) {
-		return plugin.createGeneratorForPlatform(platform, config)
+		return Platform.createGeneratorForPlatform(platform, config)
 	}
 
 	@InputFiles
@@ -48,7 +48,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitionContexts,
 				localDefinitionContexts,
-				plugin.getExterns(platform),
+				Platform.getExterns(platform),
 				String.valueOf(project.version),
 				getSourceBaseUrl()
 		)
