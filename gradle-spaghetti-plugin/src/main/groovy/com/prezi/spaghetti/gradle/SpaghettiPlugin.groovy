@@ -45,6 +45,9 @@ class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiSourceSet.source.srcDir("src/main/spaghetti")
 		functionalSourceSet.add(spaghettiSourceSet)
 
+		// Module definitions
+		def moduleDefs = findDefinitions(project)
+
 		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			void execute(AbstractSpaghettiTask task) {
@@ -53,6 +56,8 @@ class SpaghettiPlugin implements Plugin<Project> {
 				task.conventionMapping.platform = { params.platform }
 				task.conventionMapping.configuration = { params.configuration }
 				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
+				logger.debug("Configuring module definitions for ${task}")
+				task.moduleDef(moduleDefs)
 			}
 		})
 

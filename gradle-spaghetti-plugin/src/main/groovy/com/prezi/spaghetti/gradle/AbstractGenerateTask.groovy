@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.InputFiles
 /**
  * Created by lptr on 12/11/13.
  */

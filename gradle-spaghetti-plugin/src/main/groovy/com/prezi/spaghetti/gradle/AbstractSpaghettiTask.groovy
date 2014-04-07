@@ -57,7 +57,13 @@ class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	@InputFiles
-	Set<File> getModuleDefinitions() {
-		SpaghettiPlugin.findDefinitions(project)
+	Set<File> moduleDefs = []
+	public void moduleDef(Object moduleDefs)
+	{
+		this.moduleDefs += project.files(moduleDefs).collect();
+	}
+
+	public Set<File> getModuleDefs() {
+		return this.moduleDefs;
 	}
 }

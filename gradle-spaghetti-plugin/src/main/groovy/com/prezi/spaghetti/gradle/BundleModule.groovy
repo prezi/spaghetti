@@ -25,7 +25,7 @@ class BundleModule extends AbstractBundleTask {
 
 	@TaskAction
 	bundle() {
-		def moduleDefinitions = getModuleDefinitions()
+		def moduleDefinitions = this.moduleDefs;
 		if (moduleDefinitions.empty) {
 			throw new IllegalArgumentException("No module definition present")
 		}
