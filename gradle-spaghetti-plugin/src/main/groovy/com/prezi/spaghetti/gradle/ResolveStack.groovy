@@ -63,7 +63,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 				return new Resolution(
 					origJsName : it.jsName,
 					origLineNo : it.lineNo,
-					bundleName : bundle.name.fullyQualifiedName,
+					bundleName : bundle.name,
 					bundleHasSourceMap : false,
 					bundleVersion : bundle.version
 				)
@@ -74,7 +74,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 				return new Resolution(
 					origJsName : it.jsName,
 					origLineNo : it.lineNo,
-					bundleName : bundle.name.fullyQualifiedName,
+					bundleName : bundle.name,
 					bundleHasSourceMap : true,
 					bundleVersion : bundle.version,
 					resolvedLineNo : lineNo,
@@ -134,7 +134,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 	private Map<String, ModuleBundle> gatherBundles(String configName) {
 		def configuration = project.configurations.getByName(configName)
 		return ModuleDefinitionLookup.getAllBundles(configuration).collectEntries { bundle ->
-			[ bundle.name.fullyQualifiedName, bundle ]
+			[ bundle.name, bundle ]
 		}
 	}
 
