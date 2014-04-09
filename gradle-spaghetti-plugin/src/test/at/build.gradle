@@ -27,6 +27,7 @@ configure(allprojects) {
 		maven downloadRepo("repo")
 	}
 
+
 }
 
 configure(subprojects) {

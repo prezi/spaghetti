@@ -3,6 +3,17 @@ import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 apply plugin: "haxe"
 
+dependencies {
+	test group: "haxelib3", name: "hamcrest", version: "1.2.1"
+	test group: "haxelib3", name: "mconsole", version: "1.6.0"
+	test group: "haxelib3", name: "mcover", version: "2.0.3"
+	test group: "haxelib3", name: "mlib", version: "2.0.2"
+	test group: "haxelib3", name: "munit", version: "2.1.0"
+	test group: "haxelib3", name: "tink_core", version: "1.0.0-beta4"
+	test group: "haxelib3", name: "tink_macro", version: "0.1.1-beta"
+	test group: "haxelib3", name: "mockatoo", version: "2.1.1-haxe31"
+}
+
 spaghetti {
 	platform "haxe"
 }
