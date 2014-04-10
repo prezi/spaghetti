@@ -13,7 +13,7 @@ class GenerateHeaders extends AbstractGenerateTask {
 
 	@TaskAction
 	generate() {
-		def config = readConfig(this.moduleDefs)
+		def config = readConfig(getDefinitions())
 		logger.info("Generating module headers for ${config.localModules.join(", ")}")
 		createGenerator(config).generateHeaders(getOutputDirectory())
 	}

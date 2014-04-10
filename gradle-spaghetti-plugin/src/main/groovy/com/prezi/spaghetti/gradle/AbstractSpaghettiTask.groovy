@@ -57,13 +57,13 @@ class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	@InputFiles
-	Set<File> moduleDefs = []
-	public void moduleDef(Object moduleDefs)
+	Set<File> definitions = []
+	public void definition(Object definitions)
 	{
-		this.moduleDefs += project.files(moduleDefs).collect();
+		this.definitions += project.files(definitions).collect();
 	}
 
-	public Set<File> getModuleDefs() {
-		return this.moduleDefs;
+	public Set<File> getDefinitions() {
+		return this.definitions;
 	}
 }
