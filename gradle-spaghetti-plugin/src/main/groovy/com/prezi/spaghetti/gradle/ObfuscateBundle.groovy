@@ -31,7 +31,7 @@ class ObfuscateBundle extends AbstractBundleTask
 	@TaskAction
 	void run()
 	{
-		def config = readConfig(getModuleDefinitions())
+		def config = readConfig(getDefinitions())
 		def modules = config.localModules + config.dependentModules
 		def obfuscateDir = new File(project.buildDir, "obfuscate");
 		obfuscateDir.mkdirs();
@@ -79,6 +79,7 @@ class ObfuscateBundle extends AbstractBundleTask
 	{
 		return this.closureExterns;
 	}
+
 
 	@Input
 	@Optional
