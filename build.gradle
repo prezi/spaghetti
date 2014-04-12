@@ -14,13 +14,13 @@ buildscript {
 	}
 }
 
-configure(allprojects) {
+allprojects {
 	group = 'com.prezi.spaghetti'
 
 	apply plugin: 'idea'
 }
 
-configure(subprojects) {
+subprojects {
 	apply plugin: 'groovy'
 	apply plugin: 'maven'
 	apply plugin: 'prezi'
@@ -38,15 +38,19 @@ configure(subprojects) {
 		testCompile "org.mockito:mockito-all:1.9.5"
 	}
 
-	uploadArchives {
-		repositories {
+	if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
+		def user = project.getProperty("nexusUser")
+		def password = project.getProperty("nexusPassword")
+		uploadArchives {
 			repositories {
-				mavenDeployer {
-					repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
-						authentication(userName: nexusUser, password: nexusPassword)
-					}
-					snapshotRepository(url: "https://artifactory.prezi.com/plugins-snapshot-local/") {
-						authentication(userName: nexusUser, password: nexusPassword)
+				repositories {
+					mavenDeployer {
+						repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
+							authentication(userName: user, password: password)
+						}
+						snapshotRepository(url: "https://artifactory.prezi.com/plugins-snapshot-local/") {
+							authentication(userName: user, password: password)
+						}
 					}
 				}
 			}
