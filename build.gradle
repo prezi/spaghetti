@@ -57,3 +57,26 @@ subprojects {
 		}
 	}
 }
+
+configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
+	dependencies {
+		compile project(path: ":spaghetti-core")
+	}
+}
+
+project(":gradle-spaghetti-plugin") {
+	dependencies {
+		compile gradleApi()
+		compile "com.google.javascript:closure-compiler:v20131014"
+		compile project(path: ":spaghetti-core")
+		// Add all support projects
+		subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
+			compile project(path: supportProject.path)
+		}
+	}
+
+	task run(type: Exec) {
+		workingDir "src/test/at"
+		commandLine = ["gradle", "clean", "packApplication", "-is"]
+	}
+}

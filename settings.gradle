@@ -1,4 +1,4 @@
-rootProject.name = "spaghetti"
+rootProject.name = "spaghetti-parent"
 include "spaghetti-core"
 include "spaghetti-haxe-support"
 include 'spaghetti-js-support'
