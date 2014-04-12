@@ -36,6 +36,9 @@ subprojects {
 	dependencies {
 		testCompile "junit:junit:4.11"
 		testCompile "org.mockito:mockito-all:1.9.5"
+		testCompile("org.spockframework:spock-core:0.7-groovy-1.8") {
+			exclude group: "org.codehaus.groovy"
+		}
 	}
 
 	if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {

@@ -53,7 +53,7 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 		{
 			if (localTypeNames.contains(unresolvedName.localName))
 			{
-				return FQName.qualifyLocalName(name, unresolvedName.localName)
+				return FQName.fromString(name, unresolvedName.localName)
 			}
 		}
 

@@ -12,10 +12,16 @@ final public class FQName implements Comparable<FQName> {
 
 	private FQName(String namespace, String localName) {
 		this.localName = localName
-		this.namespace = namespace
+		this.namespace = namespace?.empty ? null : namespace
 	}
 
 	public static FQName fromString(String fqName) {
+		if (fqName == null) {
+			throw new IllegalArgumentException("Qualified name cannot be empty")
+		}
+		if (fqName.empty) {
+			throw new IllegalArgumentException("Qualified name cannot be empty")
+		}
 		String _name
 		String _namespace
 		int lastDot = fqName.lastIndexOf('.')
@@ -52,12 +58,8 @@ final public class FQName implements Comparable<FQName> {
 		if (name.hasNamespace()) {
 			return name
 		} else {
-			return qualifyLocalName(namespace, name.localName)
+			return new FQName(namespace, name.localName)
 		}
-	}
-
-	public static FQName qualifyLocalName(String namespace, String localName) {
-		return new FQName(namespace, localName)
 	}
 
 	public String getFullyQualifiedName() {
