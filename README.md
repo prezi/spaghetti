@@ -99,7 +99,7 @@ task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 }
 ```
 
-You can also extract all modules to a directory so that they are readily available to RequreJS:
+You can also extract all modules to a directory so that they are readily available to RequireJS:
 
 ```groovy
 task packApplication(type: com.prezi.spaghetti.gradle.ExtractModules) {

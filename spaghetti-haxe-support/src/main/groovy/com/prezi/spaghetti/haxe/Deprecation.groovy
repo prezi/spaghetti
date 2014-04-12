@@ -44,8 +44,7 @@ public class Deprecation {
 
 		def deprecationMessage;
 		if (ann.hasParameter("default")) {
-			String hey = ann.getParameter('default');
-			deprecationMessage = "Deprecated ${typeName} \\\"${name}\\\": " + StringEscapeUtils.escapeJava(ann.getParameter("default"))
+			deprecationMessage = "Deprecated ${typeName} \\\"${name}\\\": " + StringEscapeUtils.escapeJava(String.valueOf(ann.getParameter("default")))
 		} else {
 			deprecationMessage = "Deprecated ${typeName} \\\"${name}\\\""
 		}

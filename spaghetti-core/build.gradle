@@ -46,7 +46,7 @@ idea.module {
 	sourceDirs += generatedGrammar
 	excludeDirs -= project.buildDir
 	if (project.buildDir.exists()) {
-		project.buildDir.eachDir() {
+		project.buildDir.eachDir {
 			if (it != generatedGrammar) {
 				excludeDirs += it
 			}
