@@ -1,7 +1,3 @@
-evaluationDependsOn(":spaghetti-core")
-evaluationDependsOn(":spaghetti-haxe-support")
-evaluationDependsOn(":spaghetti-typescript-support")
-
 dependencies {
 	compile gradleApi()
 	compile "com.google.javascript:closure-compiler:v20131014"
