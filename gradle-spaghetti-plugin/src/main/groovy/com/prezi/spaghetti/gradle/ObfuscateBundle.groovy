@@ -23,8 +23,8 @@ class ObfuscateBundle extends AbstractBundleTask
 
 	public ObfuscateBundle()
 	{
-		this.conventionMapping.inputFile = { new File(project.buildDir, "spaghetti/module.zip") }
-		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/module_obf.zip") }
+		this.conventionMapping.inputFile = { new File(project.buildDir, "spaghetti/bundle/module.zip") }
+		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/obfuscation/module_obf.zip") }
 		this.closureExterns = []
 	}
 
