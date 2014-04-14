@@ -15,6 +15,10 @@ class GenerateHeaders extends AbstractGenerateTask {
 	generate() {
 		def config = readConfig(getDefinitions())
 		logger.info("Generating module headers for ${config.localModules.join(", ")}")
-		createGenerator(config).generateHeaders(getOutputDirectory())
+
+		def directory = getOutputDirectory()
+		directory.deleteDir()
+		directory.mkdirs()
+		createGenerator(config).generateHeaders(directory)
 	}
 }
