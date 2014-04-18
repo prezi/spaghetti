@@ -3,6 +3,7 @@ package com.prezi.spaghetti.gradle
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
+import com.prezi.spaghetti.ModuleDefinitionSource
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.InputFiles
@@ -29,26 +30,26 @@ class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	ModuleConfiguration readConfig(Collection<File> files) {
-		readConfig(files.collectEntries() { file ->
-			[ file.toString(), file.text ]
+		readConfigInternal(files.collect() { file ->
+			new ModuleDefinitionSource(file.toString(), file.text)
 		})
 	}
 
-	ModuleConfiguration readConfig(Map<String, String> localDefinitions = [:]) {
-		def dependentDefinitionContexts
+	ModuleConfiguration readConfig() {
+		readConfigInternal([])
+	}
+
+	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) {
+		def dependentDefinitions
 		if (getConfiguration()) {
-			dependentDefinitionContexts = ModuleDefinitionLookup.getAllDefinitions(getConfiguration())
+			dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getConfiguration())
 		} else {
-			dependentDefinitionContexts = []
-		}
-		def localDefinitionContexts = localDefinitions.collect { location, definition ->
-			def moduleDefCtx = ModuleConfigurationParser.parse(definition, location)
-			return moduleDefCtx
+			dependentDefinitions = []
 		}
 		def config = ModuleConfigurationParser.parse(
-				dependentDefinitionContexts,
-				localDefinitionContexts,
-				Platform.getExterns(platform),
+				dependentDefinitions,
+				localDefinitions,
+				Platform.getExterns(getPlatform()),
 				String.valueOf(project.version),
 				getSourceBaseUrl()
 		)

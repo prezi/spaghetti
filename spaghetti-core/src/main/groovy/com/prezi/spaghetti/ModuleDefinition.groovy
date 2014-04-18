@@ -14,19 +14,21 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final String version
 	final String sourceBaseUrl
 	final ModuleDefinitionContext context
+	final String definitionSource
 
 	private final Set<String> localTypeNames
 	private final Set<FQName> externs
 	private final Map<String, FQName> imports
 	private final Scope parentScope
 
-	ModuleDefinition(ModuleDefinitionContext context, String version, String sourceBaseUrl, Scope parentScope)
+	ModuleDefinition(String definitionSource, ModuleDefinitionContext context, String version, String sourceBaseUrl, Scope parentScope)
 	{
 		this.name = context.name.text
 		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
 		this.version = version
 		this.sourceBaseUrl = sourceBaseUrl
 		this.context = context
+		this.definitionSource = definitionSource
 		this.parentScope = parentScope
 
 		Set<String> localNames = []

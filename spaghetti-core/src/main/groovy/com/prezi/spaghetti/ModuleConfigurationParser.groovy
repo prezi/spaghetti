@@ -11,34 +11,38 @@ import org.antlr.v4.runtime.CommonTokenStream
  */
 class ModuleConfigurationParser {
 	public static ModuleConfiguration parse(
-			Iterable<ModuleDefinitionContext> contexts, Iterable<ModuleDefinitionContext> localContexts, Map<FQName, FQName> externs, String version, String sourceBaseUrl) {
+			Collection<ModuleDefinitionSource> dependentModuleSources,
+			Collection<ModuleDefinitionSource> localModuleSources,
+			Map<FQName, FQName> externs,
+			String version,
+			String sourceBaseUrl) {
 		def globalScope = new GlobalScope(externs)
-		def modules = contexts.collect { context ->
-			return parseModule(context, version, sourceBaseUrl, globalScope)
+		def modules = dependentModuleSources.collect { moduleSource ->
+			return parseModule(moduleSource, version, sourceBaseUrl, globalScope)
 		}
-		def localModules = localContexts.collect { context ->
-			return parseModule(context, version, sourceBaseUrl, globalScope)
+		def localModules = localModuleSources.collect { moduleSource ->
+			return parseModule(moduleSource, version, sourceBaseUrl, globalScope)
 		}
 		return new ModuleConfiguration(modules + localModules, localModules, globalScope)
 	}
 
-	private static ModuleDefinition parseModule(ModuleDefinitionContext context, String version, String sourceBaseUrl, GlobalScope globalScope)
+	private static ModuleDefinition parseModule(ModuleDefinitionSource source, String version, String sourceBaseUrl, GlobalScope globalScope)
 	{
-		def module = new ModuleDefinition(context, version, sourceBaseUrl, globalScope)
+		def module = new ModuleDefinition(source.contents, parse(source), version, sourceBaseUrl, globalScope)
 		globalScope.registerNames(module.typeNames)
 		return module
 	}
 
-	public static ModuleDefinitionContext parse(String descriptor, String location) {
-		def input = new ANTLRInputStream(descriptor)
+	public static ModuleDefinitionContext parse(ModuleDefinitionSource source) {
+		def input = new ANTLRInputStream(source.contents)
 		def lexer = new ModuleLexer(input)
 		def tokens = new CommonTokenStream(lexer)
 		def parser = new ModuleParser(tokens)
 		parser.removeErrorListeners()
-		parser.addErrorListener(new ParserErrorListener(location))
+		parser.addErrorListener(new ParserErrorListener(source.location))
 		def tree = parser.moduleDefinition()
 		if (parser.numberOfSyntaxErrors > 0) {
-			throw new IllegalArgumentException("Could not parse module definition '${location}', see errors reported above")
+			throw new IllegalArgumentException("Could not parse module definition '${source.location}', see errors reported above")
 		}
 		return tree
 	}

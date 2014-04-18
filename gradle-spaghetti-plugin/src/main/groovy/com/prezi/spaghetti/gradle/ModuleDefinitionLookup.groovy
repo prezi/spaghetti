@@ -2,6 +2,7 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.ModuleConfigurationParser
+import com.prezi.spaghetti.ModuleDefinitionSource
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.gradle.api.artifacts.Configuration
 import org.slf4j.LoggerFactory
@@ -34,9 +35,9 @@ class ModuleDefinitionLookup {
 		return (bundles - null).sort()
 	}
 
-	public static List<ModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration) {
+	public static List<ModuleDefinitionSource> getAllDefinitionSources(Configuration configuration) {
 		return getAllBundles(configuration).collect { ModuleBundle module ->
-			return ModuleConfigurationParser.parse(module.definition, "module: ${module.name}")
+			return new ModuleDefinitionSource("module: " + module.name, module.definition)
 		}
 	}
 }
