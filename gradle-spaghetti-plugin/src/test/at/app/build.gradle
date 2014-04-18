@@ -53,8 +53,8 @@ task bundleApplication(type: BundleApplication) {
 }
 
 task obfuscate(type: ObfuscateBundle) {
-	dependsOn bundleApplication
-	inputFile bundleApplication.outputFile
+	dependsOn compileJs
+	inputFile compileJs.outputFile
 }
 
 def testWebappDir = file("${buildDir}/webapp")

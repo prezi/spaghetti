@@ -87,16 +87,13 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 				// TODO Probably this should be enabled via command line
 				// Automatically obfuscate bundle
-				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
+				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary)
 				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
 				project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
 				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
 			}
 		})
-
-
 	}
-
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		def bundleTaskName = "bundle" + binary.name.capitalize()
@@ -109,13 +106,13 @@ class SpaghettiPlugin implements Plugin<Project> {
 		return bundleTask
 	}
 
-	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary, BundleModule bundleTask) {
+	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		def obfuscateTaskName = "obfuscate" + binary.name.capitalize()
 		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateBundle) {
 			description = "Obfuscates ${binary} module."
 		} as ObfuscateBundle
-		obfuscateTask.conventionMapping.inputFile = { bundleTask.getOutputFile() }
-		obfuscateTask.dependsOn bundleTask
+		obfuscateTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
+		obfuscateTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
 		return obfuscateTask
 	}
 
