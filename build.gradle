@@ -73,7 +73,7 @@ project(":gradle-spaghetti-plugin") {
 		compile "com.google.javascript:closure-compiler:v20131014"
 		compile project(path: ":spaghetti-core")
 		// Add all support projects
-		rootProject.subprojects.findAll { println "it.name"; return it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
+		rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
 			compile project(path: supportProject.path)
 		}
 	}
