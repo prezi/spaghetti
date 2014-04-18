@@ -45,7 +45,7 @@ class BundleModule extends AbstractBundleTask {
 		jsModuleFile.delete()
 		jsModuleFile << wrappedJavaScript
 
-		ModuleBundle.create(getOutputFile(), module.name, moduleDefinition.text, String.valueOf(project.version), getSourceBaseUrl(), wrappedJavaScript, sourceMapText)
+		ModuleBundle.create(getOutputFile(), module.name, moduleDefinition.text, String.valueOf(project.version), getSourceBaseUrl(), wrappedJavaScript, sourceMapText, Collections.emptySet())
 	}
 
 	void sourceMap(Object sourceMap)
