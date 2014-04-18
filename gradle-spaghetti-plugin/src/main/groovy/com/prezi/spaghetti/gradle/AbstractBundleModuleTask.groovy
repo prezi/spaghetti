@@ -78,7 +78,8 @@ class AbstractBundleModuleTask extends AbstractBundleTask {
 		workDir.mkdirs()
 		new File(workDir, "module.js") << wrappedJavaScript
 
-		createBundle(config, module, wrappedJavaScript, sourceMapText, getResourceDirs())
+		def existingResourceDirs = getResourceDirs().findAll { it.exists() }
+		createBundle(config, module, wrappedJavaScript, sourceMapText, existingResourceDirs)
 	}
 
 	protected ModuleBundle createBundle(
