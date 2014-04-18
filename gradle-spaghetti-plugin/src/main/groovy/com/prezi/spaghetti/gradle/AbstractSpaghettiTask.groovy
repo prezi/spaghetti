@@ -49,9 +49,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitions,
 				localDefinitions,
-				Platform.getExterns(getPlatform()),
-				String.valueOf(project.version),
-				getSourceBaseUrl()
+				Platform.getExterns(getPlatform())
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config

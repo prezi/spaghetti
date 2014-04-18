@@ -13,22 +13,20 @@ class ModuleConfigurationParser {
 	public static ModuleConfiguration parse(
 			Collection<ModuleDefinitionSource> dependentModuleSources,
 			Collection<ModuleDefinitionSource> localModuleSources,
-			Map<FQName, FQName> externs,
-			String version,
-			String sourceBaseUrl) {
+			Map<FQName, FQName> externs) {
 		def globalScope = new GlobalScope(externs)
 		def modules = dependentModuleSources.collect { moduleSource ->
-			return parseModule(moduleSource, version, sourceBaseUrl, globalScope)
+			return parseModule(moduleSource, globalScope)
 		}
 		def localModules = localModuleSources.collect { moduleSource ->
-			return parseModule(moduleSource, version, sourceBaseUrl, globalScope)
+			return parseModule(moduleSource, globalScope)
 		}
 		return new ModuleConfiguration(modules + localModules, localModules, globalScope)
 	}
 
-	private static ModuleDefinition parseModule(ModuleDefinitionSource source, String version, String sourceBaseUrl, GlobalScope globalScope)
+	private static ModuleDefinition parseModule(ModuleDefinitionSource source, GlobalScope globalScope)
 	{
-		def module = new ModuleDefinition(source.contents, parse(source), version, sourceBaseUrl, globalScope)
+		def module = new ModuleDefinition(source.contents, parse(source), globalScope)
 		globalScope.registerNames(module.typeNames)
 		return module
 	}

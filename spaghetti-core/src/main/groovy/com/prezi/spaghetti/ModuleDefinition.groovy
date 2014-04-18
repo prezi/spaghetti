@@ -11,8 +11,6 @@ import org.antlr.v4.runtime.misc.NotNull
 class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final String name
 	final String alias
-	final String version
-	final String sourceBaseUrl
 	final ModuleDefinitionContext context
 	final String definitionSource
 
@@ -21,12 +19,10 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	private final Map<String, FQName> imports
 	private final Scope parentScope
 
-	ModuleDefinition(String definitionSource, ModuleDefinitionContext context, String version, String sourceBaseUrl, Scope parentScope)
+	ModuleDefinition(String definitionSource, ModuleDefinitionContext context, Scope parentScope)
 	{
 		this.name = context.name.text
 		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
-		this.version = version
-		this.sourceBaseUrl = sourceBaseUrl
 		this.context = context
 		this.definitionSource = definitionSource
 		this.parentScope = parentScope
