@@ -20,6 +20,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
 	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 
+	final File zip
 	final String name
 	final String definition
 	final String bundledJavaScript
@@ -27,20 +28,28 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final String source
 	final String sourceMap
 
-	public ModuleBundle(String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
-		this.name = checkNotNull(name)
-		this.version = version ?: ""
-		this.source = source ?: ""
-		this.definition = checkNotNull(definition)
-		this.bundledJavaScript = checkNotNull(bundledJavaScript)
-		this.sourceMap = sourceMap;
+	private ModuleBundle(File zip, String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
+		this.zip = zip
+		this.name = name
+		this.version = version
+		this.source = source
+		this.definition = definition
+		this.bundledJavaScript = bundledJavaScript
+		this.sourceMap = sourceMap
 	}
 
-	public void save(File outputFile) {
+	public static ModuleBundle create(File outputFile, String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
+		checkNotNull(name, "name", [])
+		checkNotNull(version, "version", [])
+		checkNotNull(source, "source", [])
+		checkNotNull(definition, "definition", [])
+		checkNotNull(bundledJavaScript, "bundledJavaScript", [])
+
 		outputFile.delete()
 		outputFile.parentFile.mkdirs()
 		outputFile.withOutputStream { fos ->
 			def zipStream = new ZipOutputStream(fos)
+			//noinspection GroovyMissingReturnStatement
 			zipStream.withStream {
 				// Store manifest
 				zipStream.putNextEntry(new ZipEntry(MANIFEST_MF_PATH))
@@ -67,6 +76,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				}
 			}
 		}
+		return new ModuleBundle(outputFile, name, definition, version, source, bundledJavaScript, sourceMap)
 	}
 
 	public static ModuleBundle load(File inputFile) {
@@ -122,7 +132,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
-		return new ModuleBundle(name, definition, version, source, compiledJavaScript, sourceMap)
+		return new ModuleBundle(inputFile, name, definition, version, source, compiledJavaScript, sourceMap)
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {

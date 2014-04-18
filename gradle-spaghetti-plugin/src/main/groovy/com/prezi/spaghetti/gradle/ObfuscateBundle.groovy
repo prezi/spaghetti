@@ -64,8 +64,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		finalSourceMap = SourceMap.relativizePaths(finalSourceMap, new URI(project.rootDir.toString()));
 
 		// BUNDLE
-		def obfBundle = new ModuleBundle(bundle.name, bundle.definition, bundle.version, bundle.source, compressedJS.toString(), finalSourceMap);
-		obfBundle.save(getOutputFile())
+		ModuleBundle.create(getOutputFile(), bundle.name, bundle.definition, bundle.version, bundle.source, compressedJS.toString(), finalSourceMap);
 	}
 
 	@Input
