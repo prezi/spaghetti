@@ -24,7 +24,8 @@ class ObfuscateBundle extends AbstractBundleModuleTask
 
 	public ObfuscateBundle()
 	{
-		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/obfuscation/module_obf.zip") }
+		this.conventionMapping.workDir = { new File(project.buildDir, "spaghetti/obfuscation") }
+		this.conventionMapping.outputFile = { new File(getWorkDir(), "module_obf.zip") }
 		this.closureExterns = []
 	}
 
@@ -33,13 +34,9 @@ class ObfuscateBundle extends AbstractBundleModuleTask
 		def modules = config.localModules + config.dependentModules
 		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + getAdditionalSymbols()
 
-		def obfuscateDir = new File(project.buildDir, "spaghetti/obfuscation")
-		obfuscateDir.delete() || obfuscateDir.deleteDir()
-		obfuscateDir.mkdirs()
-
 		// OBFUSCATE
 		def compressedJS = new StringBuilder();
-		def closureFile = new File(obfuscateDir, "closure.js");
+		def closureFile = new File(getWorkDir(), "closure.js");
 
 		closureFile << javaScript << "\nvar __a = {}\n" + symbols.collect{
 			"/** @expose */\n__a." + it + " = {}\n"

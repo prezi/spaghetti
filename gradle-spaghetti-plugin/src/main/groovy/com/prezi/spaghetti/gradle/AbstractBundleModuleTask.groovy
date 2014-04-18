@@ -47,6 +47,11 @@ class AbstractBundleModuleTask extends AbstractBundleTask {
 		this.resourceDirs.add resourceDirectory
 	}
 
+	File workDir
+	void workDir(String workDir) {
+		this.workDir = project.file(workDir)
+	}
+
 	AbstractBundleModuleTask() {
 		this.conventionMapping.inputFile = { new File(project.buildDir, "module.js") }
 	}
@@ -68,10 +73,10 @@ class AbstractBundleModuleTask extends AbstractBundleTask {
 		// is a sourcemap present?
 		def sourceMapText = getSourceMap() ? getSourceMap().text : null;
 
-		def jsModuleFile = new File(project.buildDir, "spaghetti/bundle/module.js")
-		jsModuleFile.parentFile.mkdirs()
-		jsModuleFile.delete()
-		jsModuleFile << wrappedJavaScript
+		def workDir = getWorkDir()
+		workDir.delete() || workDir.deleteDir()
+		workDir.mkdirs()
+		new File(workDir, "module.js") << wrappedJavaScript
 
 		createBundle(config, module, wrappedJavaScript, sourceMapText, getResourceDirs())
 	}
