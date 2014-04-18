@@ -91,7 +91,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 						def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
 						log.warn("Adding resource {}", resourcePath)
 						zipStream.putNextEntry(new ZipEntry(resourcePath))
-						zipStream << resourceFile
+						zipStream << resourceFile.newInputStream()
 						resourcePaths.add resourcePath
 					}
 				}
