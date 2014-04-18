@@ -39,11 +39,16 @@ class SpaghettiPlugin implements Plugin<Project> {
 		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet)
 		def extension = project.extensions.getByType(SpaghettiExtension)
 
-		// Add source set
+		// Add source sets
 		def functionalSourceSet = projectSourceSet.maybeCreate("main")
+
 		def spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet, "spaghetti", functionalSourceSet, fileResolver)
 		spaghettiSourceSet.source.srcDir("src/main/spaghetti")
 		functionalSourceSet.add(spaghettiSourceSet)
+
+		def spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet, "spaghetti-resources", functionalSourceSet, fileResolver)
+		spaghettiResourceSet.source.srcDir("src/main/spaghetti-resources")
+		functionalSourceSet.add(spaghettiResourceSet)
 
 		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
 			@Override
@@ -55,6 +60,9 @@ class SpaghettiPlugin implements Plugin<Project> {
 				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
 				logger.debug("Configuring module definitions for ${task}")
 				task.conventionMapping.definitions = { findDefinitions(project) }
+				if (task instanceof AbstractBundleModuleTask) {
+					task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
+				}
 			}
 		})
 

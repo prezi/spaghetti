@@ -34,6 +34,7 @@ class AbstractBundleModuleTask extends AbstractBundleTask {
 
 	// @InputDirectories not yet supported (only @InputDirectory)
 	// http://issues.gradle.org/browse/GRADLE-3051
+	// This probably won't work with convention mapping
 	Set<File> resourceDirs = []
 	void setResourceDirs(Set<File> resourceDirs) {
 		resourceDirs.each {
