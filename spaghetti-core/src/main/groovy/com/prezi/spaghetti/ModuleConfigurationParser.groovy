@@ -11,20 +11,20 @@ import org.antlr.v4.runtime.CommonTokenStream
  */
 class ModuleConfigurationParser {
 	public static ModuleConfiguration parse(
-			Iterable<ModuleDefinitionContext> contexts, Iterable<ModuleDefinitionContext> localContexts, Map<FQName, FQName> externs, String version, String source) {
+			Iterable<ModuleDefinitionContext> contexts, Iterable<ModuleDefinitionContext> localContexts, Map<FQName, FQName> externs, String version, String sourceBaseUrl) {
 		def globalScope = new GlobalScope(externs)
 		def modules = contexts.collect { context ->
-			return parseModule(context, version, source, globalScope)
+			return parseModule(context, version, sourceBaseUrl, globalScope)
 		}
 		def localModules = localContexts.collect { context ->
-			return parseModule(context, version, source, globalScope)
+			return parseModule(context, version, sourceBaseUrl, globalScope)
 		}
 		return new ModuleConfiguration(modules + localModules, localModules, globalScope)
 	}
 
-	private static ModuleDefinition parseModule(ModuleDefinitionContext context, String version, String source, GlobalScope globalScope)
+	private static ModuleDefinition parseModule(ModuleDefinitionContext context, String version, String sourceBaseUrl, GlobalScope globalScope)
 	{
-		def module = new ModuleDefinition(context, version, source, globalScope)
+		def module = new ModuleDefinition(context, version, sourceBaseUrl, globalScope)
 		globalScope.registerNames(module.typeNames)
 		return module
 	}

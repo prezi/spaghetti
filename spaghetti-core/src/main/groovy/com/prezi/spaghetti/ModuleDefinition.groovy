@@ -12,7 +12,7 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final String name
 	final String alias
 	final String version
-	final String source
+	final String sourceBaseUrl
 	final ModuleDefinitionContext context
 
 	private final Set<String> localTypeNames
@@ -20,12 +20,12 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	private final Map<String, FQName> imports
 	private final Scope parentScope
 
-	ModuleDefinition(ModuleDefinitionContext context, String version, String source, Scope parentScope)
+	ModuleDefinition(ModuleDefinitionContext context, String version, String sourceBaseUrl, Scope parentScope)
 	{
 		this.name = context.name.text
 		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
 		this.version = version
-		this.source = source
+		this.sourceBaseUrl = sourceBaseUrl
 		this.context = context
 		this.parentScope = parentScope
 

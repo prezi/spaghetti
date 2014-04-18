@@ -32,25 +32,25 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final String definition
 	final String bundledJavaScript
 	final String version
-	final String source
+	final String sourceBaseUrl
 	final String sourceMap
 	final Set<String> resourcePaths
 
-	private ModuleBundle(File zip, String name, String definition, String version, String source, String bundledJavaScript, String sourceMap, Set<String> resourcePaths) {
+	private ModuleBundle(File zip, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<String> resourcePaths) {
 		this.zip = zip
 		this.name = name
 		this.version = version
-		this.source = source
+		this.sourceBaseUrl = sourceBaseUrl
 		this.definition = definition
 		this.bundledJavaScript = bundledJavaScript
 		this.sourceMap = sourceMap
 		this.resourcePaths = resourcePaths
 	}
 
-	public static ModuleBundle create(File outputFile, String name, String definition, String version, String source, String bundledJavaScript, String sourceMap, Set<File> resourceDirs) {
+	public static ModuleBundle create(File outputFile, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<File> resourceDirs) {
 		checkNotNull(name, "name", [])
 		checkNotNull(version, "version", [])
-		checkNotNull(source, "source", [])
+		checkNotNull(sourceBaseUrl, "sourceBaseUrl", [])
 		checkNotNull(definition, "definition", [])
 		checkNotNull(bundledJavaScript, "bundledJavaScript", [])
 
@@ -67,8 +67,8 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
 				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name)
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version)
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, source)
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version ?: "")
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, sourceBaseUrl ?: "")
 				manifest.write(zipStream)
 
 				// Store definition
@@ -98,7 +98,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				null
 			}
 		}
-		return new ModuleBundle(outputFile, name, definition, version, source, bundledJavaScript, sourceMap, resourcePaths.asImmutable())
+		return new ModuleBundle(outputFile, name, definition, version, sourceBaseUrl, bundledJavaScript, sourceMap, resourcePaths.asImmutable())
 	}
 
 	public static ModuleBundle load(File inputFile) {

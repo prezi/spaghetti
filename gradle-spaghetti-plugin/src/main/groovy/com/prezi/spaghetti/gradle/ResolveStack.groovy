@@ -80,7 +80,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 					resolvedLineNo : lineNo,
 					resolvedSourceName : sourceName.toString(),
 					resolvedLink : githubLink(
-							bundle.version, bundle.source,
+							bundle.version, bundle.sourceBaseUrl,
 							sourceName.toString(), lineNo
 					)
 				)
