@@ -32,6 +32,21 @@ class AbstractBundleModuleTask extends AbstractBundleTask {
 		return sourceMap
 	}
 
+	// @InputDirectories not yet supported (only @InputDirectory)
+	// http://issues.gradle.org/browse/GRADLE-3051
+	Set<File> resourceDirs = []
+	void setResourceDirs(Set<File> resourceDirs) {
+		resourceDirs.each {
+			inputs.dir it
+		}
+		this.resourceDirs = new LinkedHashSet<>(resourceDirs)
+	}
+
+	void resourceDir(File resourceDirectory) {
+		inputs.dir resourceDirectory
+		this.resourceDirs.add resourceDirectory
+	}
+
 	AbstractBundleModuleTask() {
 		this.conventionMapping.inputFile = { new File(project.buildDir, "module.js") }
 	}
@@ -58,7 +73,7 @@ class AbstractBundleModuleTask extends AbstractBundleTask {
 		jsModuleFile.delete()
 		jsModuleFile << wrappedJavaScript
 
-		createBundle(config, module, wrappedJavaScript, sourceMapText, Collections.emptySet())
+		createBundle(config, module, wrappedJavaScript, sourceMapText, getResourceDirs())
 	}
 
 	protected ModuleBundle createBundle(
