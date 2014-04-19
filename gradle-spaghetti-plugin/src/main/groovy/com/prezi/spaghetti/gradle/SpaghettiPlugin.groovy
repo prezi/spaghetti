@@ -1,9 +1,11 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.Platforms
 import groovy.io.FileType
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
@@ -33,30 +35,36 @@ class SpaghettiPlugin implements Plugin<Project> {
 		project.plugins.apply(LanguageBasePlugin)
 		project.plugins.apply(SpaghettiBasePlugin)
 
-		Platform.createPlatformsTask(project)
+		createPlatformsTask(project)
 
 		def binaryContainer = project.getExtensions().getByType(BinaryContainer)
 		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet)
 		def extension = project.extensions.getByType(SpaghettiExtension)
 
-		// Add source set
+		// Add source sets
 		def functionalSourceSet = projectSourceSet.maybeCreate("main")
+
 		def spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet, "spaghetti", functionalSourceSet, fileResolver)
 		spaghettiSourceSet.source.srcDir("src/main/spaghetti")
 		functionalSourceSet.add(spaghettiSourceSet)
 
-		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
-			@Override
-			void execute(AbstractSpaghettiTask task) {
-				logger.debug("Configuring conventions for ${task}")
-				def params = extension.params
-				task.conventionMapping.platform = { params.platform }
-				task.conventionMapping.configuration = { params.configuration }
-				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
-				logger.debug("Configuring module definitions for ${task}")
-				task.conventionMapping.definitions = { findDefinitions(project) }
-			}
-		})
+		def spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet, "spaghetti-resources", functionalSourceSet, fileResolver)
+		spaghettiResourceSet.source.srcDir("src/main/spaghetti-resources")
+		functionalSourceSet.add(spaghettiResourceSet)
+
+		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
+			task.conventionMapping.bundles = { extension.configuration }
+		}
+		project.tasks.withType(AbstractPlatformAwareSpaghettiTask).all { AbstractPlatformAwareSpaghettiTask task ->
+			task.conventionMapping.platform = { extension.platform }
+		}
+		project.tasks.withType(AbstractDefinitionAwareSpaghettiTask).all { AbstractDefinitionAwareSpaghettiTask task ->
+			task.conventionMapping.definitions = { findDefinitions(project) }
+		}
+		project.tasks.withType(AbstractBundleModuleTask).all { AbstractBundleModuleTask task ->
+			task.conventionMapping.sourceBaseUrl = { extension.sourceBaseUrl }
+			task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
+		}
 
 		// Automatically generate module headers
 		def generateTask = project.task("generateHeaders", type: GenerateHeaders) {
@@ -87,16 +95,34 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 				// TODO Probably this should be enabled via command line
 				// Automatically obfuscate bundle
-				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary, bundleTask)
+				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary)
 				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
 				project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
 				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
 			}
 		})
-
-
 	}
 
+	private static void createPlatformsTask(Project project) {
+		if (project.tasks.findByName("spaghetti-platforms")) {
+			return
+		}
+		def platformsTask = project.tasks.create("spaghetti-platforms")
+		platformsTask.group = "help"
+		platformsTask.description = "Show supported Spaghetti platforms."
+		platformsTask.doLast {
+			def factories = Platforms.generatorFactories
+			if (factories.empty) {
+				println "No platform support for Spaghetti is found"
+			} else {
+				println "Spaghetti supports the following platforms:\n"
+				def length = factories*.platform.max { a, b -> a.length() <=> b.length() }.length()
+				factories.each { factory ->
+					println "  " + factory.platform.padRight(length) + " - " + factory.description
+				}
+			}
+		}
+	}
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		def bundleTaskName = "bundle" + binary.name.capitalize()
@@ -109,26 +135,26 @@ class SpaghettiPlugin implements Plugin<Project> {
 		return bundleTask
 	}
 
-	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary, BundleModule bundleTask) {
+	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		def obfuscateTaskName = "obfuscate" + binary.name.capitalize()
 		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateBundle) {
 			description = "Obfuscates ${binary} module."
 		} as ObfuscateBundle
-		obfuscateTask.conventionMapping.inputFile = { bundleTask.getOutputFile() }
-		obfuscateTask.dependsOn bundleTask
+		obfuscateTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
+		obfuscateTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
 		return obfuscateTask
 	}
 
-	// TODO Make this into a FileCollection so it can be lazy
-	static Set<File> findDefinitions(Project project) {
+	// TODO Make this into a lazy FileCollection
+	static FileCollection findDefinitions(Project project) {
 		Set<SpaghettiSourceSet> sources = project.extensions.getByType(ProjectSourceSet).getByName("main").withType(SpaghettiSourceSet)
 		Set<File> sourceDirs = sources*.source*.srcDirs.flatten()
-		return sourceDirs.collectMany { File dir ->
+		return project.files(sourceDirs.collectMany { File dir ->
 			def definitions = []
 			if (dir.directory) {
 				dir.eachFileMatch(FileType.FILES, ~/^.+\.module$/, { definitions << it })
 			}
 			return definitions
-		}
+		})
 	}
 }

@@ -11,22 +11,20 @@ import org.antlr.v4.runtime.misc.NotNull
 class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 	final String name
 	final String alias
-	final String version
-	final String source
 	final ModuleDefinitionContext context
+	final String definitionSource
 
 	private final Set<String> localTypeNames
 	private final Set<FQName> externs
 	private final Map<String, FQName> imports
 	private final Scope parentScope
 
-	ModuleDefinition(ModuleDefinitionContext context, String version, String source, Scope parentScope)
+	ModuleDefinition(String definitionSource, ModuleDefinitionContext context, Scope parentScope)
 	{
 		this.name = context.name.text
 		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
-		this.version = version
-		this.source = source
 		this.context = context
+		this.definitionSource = definitionSource
 		this.parentScope = parentScope
 
 		Set<String> localNames = []

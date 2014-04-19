@@ -1,12 +1,13 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.ModuleConfiguration
+import com.prezi.spaghetti.ModuleDefinition
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.InputFiles
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.Optional
 
-class ObfuscateBundle extends AbstractBundleTask
+class ObfuscateBundle extends AbstractBundleModuleTask
 {
 	private static final List<String> protectedSymbols = [
 		// RequireJS
@@ -23,31 +24,26 @@ class ObfuscateBundle extends AbstractBundleTask
 
 	public ObfuscateBundle()
 	{
-		this.conventionMapping.inputFile = { new File(project.buildDir, "spaghetti/bundle/module.zip") }
-		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/obfuscation/module_obf.zip") }
+		this.conventionMapping.workDir = { new File(project.buildDir, "spaghetti/obfuscation") }
+		this.conventionMapping.outputFile = { new File(getWorkDir(), "module_obf.zip") }
 		this.closureExterns = []
 	}
 
-	@TaskAction
-	void run()
-	{
-		def config = readConfig(getDefinitions())
+	@Override
+	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleDefinition module, String javaScript, String sourceMap, Set<File> resourceDirs) {
 		def modules = config.localModules + config.dependentModules
-		def obfuscateDir = new File(project.buildDir, "obfuscate");
-		obfuscateDir.mkdirs();
 		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + getAdditionalSymbols()
-		def bundle = ModuleBundle.load(getInputFile())
 
 		// OBFUSCATE
 		def compressedJS = new StringBuilder();
-		def closureFile = new File(obfuscateDir, "closure.js");
-		closureFile.delete();
-		closureFile << bundle.bundledJavaScript << "\nvar __a = {};\n" + symbols.collect{
-			"/** @expose */\n__a." + it + " = {};\n"
+		def closureFile = new File(getWorkDir(), "closure.js");
+
+		closureFile << javaScript << "\nvar __a = {}\n" + symbols.collect{
+			"/** @expose */\n__a." + it + " = {}\n"
 		}.join("");
 
 		def sourceMapBuilder = new StringBuilder();
-		def closureRet = Closure.compile(closureFile.toString(), compressedJS, bundle.name, sourceMapBuilder, getClosureExterns())
+		def closureRet = Closure.compile(closureFile.toString(), compressedJS, module.name, sourceMapBuilder, getClosureExterns())
 		if (closureRet != 0) {
 			throw new RuntimeException("Closure returned with exit code " + closureRet)
 		}
@@ -55,8 +51,8 @@ class ObfuscateBundle extends AbstractBundleTask
 
 		// SOURCEMAP
 		def finalSourceMap;
-		if (bundle.sourceMap != null) {
-			finalSourceMap = SourceMap.compose(bundle.sourceMap, mapJStoMin, "module.map", this.nodeSourceMapRoot);
+		if (sourceMap) {
+			finalSourceMap = SourceMap.compose(sourceMap, mapJStoMin, "module.map", this.nodeSourceMapRoot)
 		} else {
 			finalSourceMap = mapJStoMin;
 		}
@@ -64,7 +60,7 @@ class ObfuscateBundle extends AbstractBundleTask
 		finalSourceMap = SourceMap.relativizePaths(finalSourceMap, new URI(project.rootDir.toString()));
 
 		// BUNDLE
-		ModuleBundle.create(getOutputFile(), bundle.name, bundle.definition, bundle.version, bundle.source, compressedJS.toString(), finalSourceMap);
+		return super.createBundle(config, module, compressedJS.toString(), finalSourceMap, resourceDirs)
 	}
 
 	@Input
@@ -78,7 +74,6 @@ class ObfuscateBundle extends AbstractBundleTask
 	{
 		return this.closureExterns;
 	}
-
 
 	@Input
 	@Optional

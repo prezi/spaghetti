@@ -1,5 +1,9 @@
 package com.prezi.spaghetti
 
+import groovy.io.FileType
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 import java.util.jar.Attributes
 import java.util.jar.Manifest
 import java.util.zip.ZipEntry
@@ -11,40 +15,53 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle implements Comparable<ModuleBundle> {
-	static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
-	static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
-	static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
-	static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
-	public static final String DEFINITION_PATH = "module.def"
-	public static final String SOURCE_MAP_PATH = "module.map"
-	public static final String COMPILED_JAVASCRIPT_PATH = "module.js"
-	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
+	private static final Logger log = LoggerFactory.getLogger(ModuleBundle)
+
+	public static enum Elements {
+		javascript,
+		definition,
+		sourcemap,
+		resources
+	}
+
+	private static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
+	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
+	private static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
+	private static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
+	private static final def DEFINITION_PATH = "module.def"
+	private static final def SOURCE_MAP_PATH = "module.map"
+	private static final def COMPILED_JAVASCRIPT_PATH = "module.js"
+	private static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
+	private static final def RESOURCES_PREFIX = "resources/"
 
 	final File zip
 	final String name
 	final String definition
 	final String bundledJavaScript
 	final String version
-	final String source
+	final String sourceBaseUrl
 	final String sourceMap
+	final Set<String> resourcePaths
 
-	private ModuleBundle(File zip, String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
+	private ModuleBundle(File zip, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<String> resourcePaths) {
 		this.zip = zip
 		this.name = name
 		this.version = version
-		this.source = source
+		this.sourceBaseUrl = sourceBaseUrl
 		this.definition = definition
 		this.bundledJavaScript = bundledJavaScript
 		this.sourceMap = sourceMap
+		this.resourcePaths = resourcePaths
 	}
 
-	public static ModuleBundle create(File outputFile, String name, String definition, String version, String source, String bundledJavaScript, String sourceMap) {
+	public static ModuleBundle create(File outputFile, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<File> resourceDirs) {
 		checkNotNull(name, "name", [])
 		checkNotNull(version, "version", [])
-		checkNotNull(source, "source", [])
+		checkNotNull(sourceBaseUrl, "sourceBaseUrl", [])
 		checkNotNull(definition, "definition", [])
 		checkNotNull(bundledJavaScript, "bundledJavaScript", [])
 
+		Set<String> resourcePaths = []
 		outputFile.delete()
 		outputFile.parentFile.mkdirs()
 		outputFile.withOutputStream { fos ->
@@ -57,8 +74,8 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
 				manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION)
 				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, name)
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version)
-				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, source)
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, version ?: "")
+				manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, sourceBaseUrl ?: "")
 				manifest.write(zipStream)
 
 				// Store definition
@@ -74,9 +91,21 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 					zipStream.putNextEntry(new ZipEntry(SOURCE_MAP_PATH));
 					zipStream << sourceMap;
 				}
+
+				// Store resources
+				resourceDirs.each { resourceDir ->
+					resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
+						def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
+						log.warn("Adding resource {}", resourcePath)
+						zipStream.putNextEntry(new ZipEntry(resourcePath))
+						zipStream << resourceFile.newInputStream()
+						resourcePaths.add resourcePath
+					}
+				}
+				null
 			}
 		}
-		return new ModuleBundle(outputFile, name, definition, version, source, bundledJavaScript, sourceMap)
+		return new ModuleBundle(outputFile, name, definition, version, sourceBaseUrl, bundledJavaScript, sourceMap, resourcePaths.asImmutable())
 	}
 
 	public static ModuleBundle load(File inputFile) {
@@ -94,6 +123,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		String compiledJavaScript = null
 		Manifest manifest = null
 		String sourceMap = null
+		Set<String> resourcePaths = []
 
 		zipFile.entries().each { ZipEntry entry ->
 			Closure<String> contents = { zipFile.getInputStream(entry).text }
@@ -109,6 +139,11 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 					break
 				case SOURCE_MAP_PATH:
 					sourceMap = contents()
+					break
+				default:
+					if (entry.name.startsWith(RESOURCES_PREFIX)) {
+						resourcePaths.add(entry.name.substring(RESOURCES_PREFIX.length()))
+					}
 					break
 			}
 		}
@@ -132,7 +167,47 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
-		return new ModuleBundle(inputFile, name, definition, version, source, compiledJavaScript, sourceMap)
+		return new ModuleBundle(inputFile, name, definition, version, source, compiledJavaScript, sourceMap, resourcePaths.asImmutable())
+	}
+
+	public void extract(File outputDirectory, EnumSet<Elements> elements = EnumSet.allOf(Elements)) {
+		ZipFile zipFile
+		try {
+			zipFile = new ZipFile(zip)
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Could not open module ZIP file: ${zip}", ex)
+		}
+
+		outputDirectory.delete() || outputDirectory.deleteDir()
+		outputDirectory.mkdirs()
+		zipFile.entries().each { ZipEntry entry ->
+			Closure<InputStream> contents = { zipFile.getInputStream(entry) }
+			switch (entry.name) {
+				case MANIFEST_MF_PATH:
+					break
+				case DEFINITION_PATH:
+					if (elements.contains(Elements.definition)) {
+						new File(outputDirectory, "${name}.def") << contents()
+					}
+					break
+				case COMPILED_JAVASCRIPT_PATH:
+					if (elements.contains(Elements.javascript)) {
+						new File(outputDirectory, "${name}.js") << contents()
+					}
+					break
+				case SOURCE_MAP_PATH:
+					if (elements.contains(Elements.sourcemap)) {
+						new File(outputDirectory, "${name}.js.map") << contents()
+					}
+					break
+				default:
+					if (elements.contains(Elements.resources) && entry.name.startsWith(RESOURCES_PREFIX)) {
+						def resourcePath = entry.name.substring(RESOURCES_PREFIX.length())
+						new File(outputDirectory, resourcePath) << contents()
+					}
+					break
+			}
+		}
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {

@@ -6,6 +6,7 @@ dependencies {
 	compile localGroovy()
 	compile "org.antlr:antlr4-runtime:4.2"
 	compile "com.google.guava:guava:15.0"
+	compile "org.slf4j:slf4j-api:1.7.7"
 	antlr "org.antlr:antlr4:4.2"
 }
 

@@ -45,8 +45,8 @@ task bundleModule(type: BundleModule) {
 }
 
 task obfuscate(type: ObfuscateBundle) {
-	dependsOn bundleModule
-	inputFile bundleModule.outputFile
+	dependsOn compileJs
+	inputFile compileJs.outputFile
 }
 
 artifacts {

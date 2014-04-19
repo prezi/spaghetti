@@ -1,9 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
-import com.prezi.spaghetti.ModuleConfigurationParser
-import com.prezi.spaghetti.grammar.ModuleParser
-import org.gradle.api.artifacts.Configuration
+import com.prezi.spaghetti.ModuleDefinitionSource
 import org.slf4j.LoggerFactory
 
 /**
@@ -12,13 +10,7 @@ import org.slf4j.LoggerFactory
 class ModuleDefinitionLookup {
 	private static final LOGGER = LoggerFactory.getLogger(ModuleDefinitionLookup)
 
-	public static List<ModuleBundle> getAllBundles(Configuration configuration) {
-		LOGGER.debug("Looking for modules in configuration ${configuration.name}")
-		return getAllBundles(configuration.files);
-	}
-
-	public static List<ModuleBundle> getAllBundles(Collection<File> files) {
-		LOGGER.debug("\tLooking at files:\n\t${files.join('\n\t')}")
+	public static List<ModuleBundle> getAllBundles(Iterable<File> files) {
 		def bundles = files.collect { File file ->
 			LOGGER.debug("Trying to load module bundle from ${file}")
 			try {
@@ -34,9 +26,9 @@ class ModuleDefinitionLookup {
 		return (bundles - null).sort()
 	}
 
-	public static List<ModuleParser.ModuleDefinitionContext> getAllDefinitions(Configuration configuration) {
+	public static List<ModuleDefinitionSource> getAllDefinitionSources(Iterable<File> configuration) {
 		return getAllBundles(configuration).collect { ModuleBundle module ->
-			return ModuleConfigurationParser.parse(module.definition, "module: ${module.name}")
+			return new ModuleDefinitionSource("module: " + module.name, module.definition)
 		}
 	}
 }

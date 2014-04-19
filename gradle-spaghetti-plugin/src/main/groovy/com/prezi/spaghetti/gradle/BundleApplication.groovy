@@ -2,12 +2,28 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 /**
  * Created by lptr on 16/11/13.
  */
-class BundleApplication extends AbstractBundleTask {
+class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
+
+	@InputFile
+	File inputFile
+
+	def inputFile(Object f) {
+		this.inputFile = project.file(f)
+	}
+
+	@OutputFile
+	File outputFile
+
+	def outputFile(Object f) {
+		this.outputFile = project.file(f)
+	}
 
 	BundleApplication()
 	{
@@ -18,11 +34,11 @@ class BundleApplication extends AbstractBundleTask {
 	@TaskAction
 	bundle() {
 		def config = readConfig()
-		def wrappedJavaScript = createGenerator(config).processApplicationJavaScript(getInputFile().text)
+		def processedJavaScript = createGenerator(config).processApplicationJavaScript(getInputFile().text)
 
 		def outputFile = getOutputFile()
 		outputFile.parentFile.mkdirs()
 		outputFile.delete()
-		outputFile << Wrapper.wrap(config, Wrapping.application, wrappedJavaScript)
+		outputFile << Wrapper.wrap(config.dependentModules*.name, Wrapping.application, processedJavaScript)
 	}
 }
