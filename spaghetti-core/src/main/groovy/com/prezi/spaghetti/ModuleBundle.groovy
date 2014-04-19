@@ -180,24 +180,24 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 		outputDirectory.delete() || outputDirectory.deleteDir()
 		outputDirectory.mkdirs()
-		zipFile.entries().each { ZipEntry entry ->
+		zipFile.entries().find each { ZipEntry entry ->
 			Closure<InputStream> contents = { zipFile.getInputStream(entry) }
 			switch (entry.name) {
 				case MANIFEST_MF_PATH:
 					break
 				case DEFINITION_PATH:
 					if (elements.contains(Elements.definition)) {
-						new File(outputDirectory, "module.def") << contents()
+						new File(outputDirectory, "${name}.def") << contents()
 					}
 					break
 				case COMPILED_JAVASCRIPT_PATH:
 					if (elements.contains(Elements.javascript)) {
-						new File(outputDirectory, "module.js") << contents()
+						new File(outputDirectory, "${name}.js") << contents()
 					}
 					break
 				case SOURCE_MAP_PATH:
 					if (elements.contains(Elements.sourcemap)) {
-						new File(outputDirectory, "module.js.map") << contents()
+						new File(outputDirectory, "${name}.js.map") << contents()
 					}
 					break
 				default:
