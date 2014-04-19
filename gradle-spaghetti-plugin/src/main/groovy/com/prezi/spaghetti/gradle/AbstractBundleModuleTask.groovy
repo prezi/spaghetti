@@ -93,7 +93,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		def config = readConfig(moduleDefinitions)
 		def module = config.getLocalModules().first()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
-		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)
+		def wrappedJavaScript = Wrapper.wrap(config.dependentModules*.name, Wrapping.module, processedJavaScript)
 
 		// is a sourcemap present?
 		def sourceMapText = getSourceMap() ? getSourceMap().text : null;

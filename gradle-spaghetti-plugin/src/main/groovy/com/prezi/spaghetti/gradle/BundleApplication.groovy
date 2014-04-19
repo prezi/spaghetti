@@ -34,11 +34,11 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 	@TaskAction
 	bundle() {
 		def config = readConfig()
-		def wrappedJavaScript = createGenerator(config).processApplicationJavaScript(getInputFile().text)
+		def processedJavaScript = createGenerator(config).processApplicationJavaScript(getInputFile().text)
 
 		def outputFile = getOutputFile()
 		outputFile.parentFile.mkdirs()
 		outputFile.delete()
-		outputFile << Wrapper.wrap(config, Wrapping.application, wrappedJavaScript)
+		outputFile << Wrapper.wrap(config.dependentModules*.name, Wrapping.application, processedJavaScript)
 	}
 }

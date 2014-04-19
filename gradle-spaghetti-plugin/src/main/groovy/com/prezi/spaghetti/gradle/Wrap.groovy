@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class Wrap extends AbstractPlatformAwareSpaghettiTask {
+class Wrap extends AbstractSpaghettiTask {
 
 	@InputFile
 	File inputFile
@@ -28,11 +28,12 @@ class Wrap extends AbstractPlatformAwareSpaghettiTask {
 
 	@TaskAction
 	wrap() {
-		def config = readConfig()
 		def outputFile = getOutputFile()
 		outputFile.parentFile.mkdirs()
 		outputFile.delete()
-		outputFile << Wrapper.wrap(config, type, getInputFile().text)
+
+		def dependentModuleNames = ModuleDefinitionLookup.getAllBundles(getBundles())*.name
+		outputFile << Wrapper.wrap(dependentModuleNames, type, getInputFile().text)
 	}
 
 	@Input
