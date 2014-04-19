@@ -52,10 +52,10 @@ class SpaghettiPlugin implements Plugin<Project> {
 		functionalSourceSet.add(spaghettiResourceSet)
 
 		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
-			logger.debug("Configuring conventions for ${task}")
-			task.conventionMapping.platform = { extension.platform }
 			task.conventionMapping.bundles = { extension.configuration }
-			logger.debug("Configuring module definitions for ${task}")
+		}
+		project.tasks.withType(AbstractPlatformAwareSpaghettiTask).all { AbstractPlatformAwareSpaghettiTask task ->
+			task.conventionMapping.platform = { extension.platform }
 		}
 		project.tasks.withType(AbstractDefinitionAwareSpaghettiTask).all { AbstractDefinitionAwareSpaghettiTask task ->
 			task.conventionMapping.definitions = { findDefinitions(project) }

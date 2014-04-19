@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class Wrap extends AbstractSpaghettiTask {
+class Wrap extends AbstractPlatformAwareSpaghettiTask {
 
 	@InputFile
 	File inputFile

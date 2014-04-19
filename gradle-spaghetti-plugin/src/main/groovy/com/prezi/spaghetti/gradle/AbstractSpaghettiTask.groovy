@@ -17,9 +17,6 @@ import org.gradle.api.tasks.Optional
  */
 class AbstractSpaghettiTask extends ConventionTask {
 
-	@Input
-	String platform
-
 	ConfigurableFileCollection bundles = project.files()
 	void bundle(Object... bundles) {
 		this.bundles.from(*bundles)
@@ -33,30 +30,5 @@ class AbstractSpaghettiTask extends ConventionTask {
 	protected SpaghettiPlugin getPlugin()
 	{
 		return project.getPlugins().getPlugin(SpaghettiPlugin)
-	}
-
-	protected Generator createGenerator(ModuleConfiguration config) {
-		return Platform.createGeneratorForPlatform(getPlatform(), config)
-	}
-
-	ModuleConfiguration readConfig(Iterable<File> files) {
-		readConfigInternal(files.collect() { file ->
-			new ModuleDefinitionSource(file.toString(), file.text)
-		})
-	}
-
-	ModuleConfiguration readConfig() {
-		readConfigInternal([])
-	}
-
-	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) {
-		def dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getBundles())
-		def config = ModuleConfigurationParser.parse(
-				dependentDefinitions,
-				localDefinitions,
-				Platform.getExterns(getPlatform())
-		)
-		logger.info("Loaded configuration: ${config}")
-		return config
 	}
 }

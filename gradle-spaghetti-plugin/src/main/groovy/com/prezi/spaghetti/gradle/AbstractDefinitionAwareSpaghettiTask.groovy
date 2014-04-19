@@ -7,7 +7,7 @@ import org.gradle.api.tasks.InputFiles
 /**
  * Created by lptr on 19/04/14.
  */
-class AbstractDefinitionAwareSpaghettiTask extends AbstractSpaghettiTask {
+class AbstractDefinitionAwareSpaghettiTask extends AbstractPlatformAwareSpaghettiTask {
 	ConfigurableFileCollection definitions = project.files()
 	public void definition(Object... definitions)
 	{

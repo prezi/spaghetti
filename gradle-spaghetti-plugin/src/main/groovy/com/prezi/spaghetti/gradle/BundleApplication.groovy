@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class BundleApplication extends AbstractSpaghettiTask {
+class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 
 	@InputFile
 	File inputFile
