@@ -4,6 +4,7 @@ import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
 import com.prezi.spaghetti.ModuleDefinitionSource
+import com.prezi.spaghetti.Platforms
 import org.gradle.api.tasks.Input
 
 /**
@@ -14,7 +15,7 @@ class AbstractPlatformAwareSpaghettiTask extends AbstractSpaghettiTask {
 	String platform
 
 	protected Generator createGenerator(ModuleConfiguration config) {
-		return Platform.createGeneratorForPlatform(getPlatform(), config)
+		return Platforms.createGeneratorForPlatform(getPlatform(), config)
 	}
 
 	ModuleConfiguration readConfig(Iterable<File> files) {
@@ -32,7 +33,7 @@ class AbstractPlatformAwareSpaghettiTask extends AbstractSpaghettiTask {
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitions,
 				localDefinitions,
-				Platform.getExterns(getPlatform())
+				Platforms.getExterns(getPlatform())
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config

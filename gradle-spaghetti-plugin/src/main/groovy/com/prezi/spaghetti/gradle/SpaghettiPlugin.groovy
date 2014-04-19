@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.Platforms
 import groovy.io.FileType
 import org.gradle.api.Action
 import org.gradle.api.Plugin
@@ -34,7 +35,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		project.plugins.apply(LanguageBasePlugin)
 		project.plugins.apply(SpaghettiBasePlugin)
 
-		Platform.createPlatformsTask(project)
+		createPlatformsTask(project)
 
 		def binaryContainer = project.getExtensions().getByType(BinaryContainer)
 		def projectSourceSet = project.getExtensions().getByType(ProjectSourceSet)
@@ -100,6 +101,27 @@ class SpaghettiPlugin implements Plugin<Project> {
 				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
 			}
 		})
+	}
+
+	private static void createPlatformsTask(Project project) {
+		if (project.tasks.findByName("spaghetti-platforms")) {
+			return
+		}
+		def platformsTask = project.tasks.create("spaghetti-platforms")
+		platformsTask.group = "help"
+		platformsTask.description = "Show supported Spaghetti platforms."
+		platformsTask.doLast {
+			def factories = Platforms.generatorFactories
+			if (factories.empty) {
+				println "No platform support for Spaghetti is found"
+			} else {
+				println "Spaghetti supports the following platforms:\n"
+				def length = factories*.platform.max { a, b -> a.length() <=> b.length() }.length()
+				factories.each { factory ->
+					println "  " + factory.platform.padRight(length) + " - " + factory.description
+				}
+			}
+		}
 	}
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
