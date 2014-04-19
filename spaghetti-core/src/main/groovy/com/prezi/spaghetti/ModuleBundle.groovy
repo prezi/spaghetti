@@ -180,7 +180,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 		outputDirectory.delete() || outputDirectory.deleteDir()
 		outputDirectory.mkdirs()
-		zipFile.entries().find each { ZipEntry entry ->
+		zipFile.entries().each { ZipEntry entry ->
 			Closure<InputStream> contents = { zipFile.getInputStream(entry) }
 			switch (entry.name) {
 				case MANIFEST_MF_PATH:
