@@ -8,6 +8,7 @@ import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -15,7 +16,19 @@ import org.gradle.api.tasks.TaskAction
  */
 class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 
-	@Delegate InputOutput inputOutput = new InputOutput(project)
+	@InputFile
+	File inputFile
+
+	def inputFile(Object f) {
+		this.inputFile = project.file(f)
+	}
+
+	@OutputFile
+	File outputFile
+
+	def outputFile(Object f) {
+		this.outputFile = project.file(f)
+	}
 
 	@Input
 	@Optional
