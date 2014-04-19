@@ -12,7 +12,10 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 19/04/14.
  */
-class AbstractBundleModuleTask extends AbstractBundleTask {
+class AbstractBundleModuleTask extends AbstractSpaghettiTask {
+
+	@Delegate InputOutput inputOutput = new InputOutput(project)
+
 	File sourceMap
 
 	void sourceMap(Object sourceMap) {

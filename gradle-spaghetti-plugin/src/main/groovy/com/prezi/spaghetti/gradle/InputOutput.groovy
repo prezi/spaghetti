@@ -1,12 +1,13 @@
 package com.prezi.spaghetti.gradle
 
+import org.gradle.api.Project
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 
 /**
  * Created by lptr on 19/11/13.
  */
-class AbstractBundleTask extends AbstractSpaghettiTask {
+class InputOutput {
 	@InputFile
 	File inputFile
 
@@ -19,5 +20,11 @@ class AbstractBundleTask extends AbstractSpaghettiTask {
 
 	def outputFile(Object f) {
 		this.outputFile = project.file(f)
+	}
+
+	private final Project project
+
+	InputOutput(Project project) {
+		this.project = project
 	}
 }

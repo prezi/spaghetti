@@ -8,7 +8,9 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class Wrap extends AbstractBundleTask {
+class Wrap extends AbstractSpaghettiTask {
+
+	@Delegate InputOutput inputOutput = new InputOutput(project)
 
 	@TaskAction
 	wrap() {

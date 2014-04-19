@@ -7,7 +7,9 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class BundleApplication extends AbstractBundleTask {
+class BundleApplication extends AbstractSpaghettiTask {
+
+	@Delegate InputOutput inputOutput = new InputOutput(project)
 
 	BundleApplication()
 	{
