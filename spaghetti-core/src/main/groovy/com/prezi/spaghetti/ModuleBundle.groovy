@@ -17,13 +17,6 @@ import static com.google.common.base.Preconditions.checkNotNull
 class ModuleBundle implements Comparable<ModuleBundle> {
 	private static final Logger log = LoggerFactory.getLogger(ModuleBundle)
 
-	public static enum Elements {
-		javascript,
-		definition,
-		sourcemap,
-		resources
-	}
-
 	private static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	private static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
@@ -170,7 +163,11 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		return new ModuleBundle(inputFile, name, definition, version, source, compiledJavaScript, sourceMap, resourcePaths.asImmutable())
 	}
 
-	public void extract(File outputDirectory, EnumSet<Elements> elements = EnumSet.allOf(Elements)) {
+	public void extract(File outputDirectory, ModuleBundleElement... elements) {
+		extract(outputDirectory, elements ? EnumSet.of(*elements) : EnumSet.allOf(ModuleBundleElement))
+	}
+
+	public void extract(File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
 		ZipFile zipFile
 		try {
 			zipFile = new ZipFile(zip)
@@ -186,22 +183,22 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				case MANIFEST_MF_PATH:
 					break
 				case DEFINITION_PATH:
-					if (elements.contains(Elements.definition)) {
+					if (elements.contains(ModuleBundleElement.definition)) {
 						new File(outputDirectory, "${name}.def") << contents()
 					}
 					break
 				case COMPILED_JAVASCRIPT_PATH:
-					if (elements.contains(Elements.javascript)) {
+					if (elements.contains(ModuleBundleElement.javascript)) {
 						new File(outputDirectory, "${name}.js") << contents()
 					}
 					break
 				case SOURCE_MAP_PATH:
-					if (elements.contains(Elements.sourcemap)) {
+					if (elements.contains(ModuleBundleElement.sourcemap)) {
 						new File(outputDirectory, "${name}.js.map") << contents()
 					}
 					break
 				default:
-					if (elements.contains(Elements.resources) && entry.name.startsWith(RESOURCES_PREFIX)) {
+					if (elements.contains(ModuleBundleElement.resources) && entry.name.startsWith(RESOURCES_PREFIX)) {
 						def resourcePath = entry.name.substring(RESOURCES_PREFIX.length())
 						new File(outputDirectory, resourcePath) << contents()
 					}

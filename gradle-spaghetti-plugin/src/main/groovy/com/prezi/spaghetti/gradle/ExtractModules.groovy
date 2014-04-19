@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
-import com.prezi.spaghetti.ModuleBundle.Elements
+import com.prezi.spaghetti.ModuleBundleElement
 import org.gradle.api.Action
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
@@ -21,19 +21,19 @@ class ExtractModules extends AbstractSpaghettiTask {
 	}
 
 	@Input
-	EnumSet<Elements> elementsToExtract
+	EnumSet<ModuleBundleElement> elementsToExtract
 
-	void extract(Elements... elements) {
+	void extract(ModuleBundleElement... elements) {
 		elementsToExtract = EnumSet.of(*elements)
 	}
 
 	void extract(String... elements) {
-		elementsToExtract = EnumSet.of(*elements.collect { Elements.valueOf(it) })
+		elementsToExtract = EnumSet.of(*elements.collect { ModuleBundleElement.valueOf(it) })
 	}
 
 	ExtractModules() {
 		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/modules") }
-		this.conventionMapping.elementsToExtract = { EnumSet.of(Elements.javascript, Elements.resources) }
+		this.conventionMapping.elementsToExtract = { EnumSet.of(ModuleBundleElement.javascript, ModuleBundleElement.resources) }
 	}
 
 	@TaskAction
