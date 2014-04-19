@@ -17,6 +17,13 @@ import static com.google.common.base.Preconditions.checkNotNull
 class ModuleBundle implements Comparable<ModuleBundle> {
 	private static final Logger log = LoggerFactory.getLogger(ModuleBundle)
 
+	public static enum Elements {
+		javascript,
+		definition,
+		sourcemap,
+		resources
+	}
+
 	private static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	private static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
@@ -161,6 +168,46 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String source = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
 		return new ModuleBundle(inputFile, name, definition, version, source, compiledJavaScript, sourceMap, resourcePaths.asImmutable())
+	}
+
+	public void extract(File outputDirectory, EnumSet<Elements> elements = EnumSet.allOf(Elements)) {
+		ZipFile zipFile
+		try {
+			zipFile = new ZipFile(zip)
+		} catch (Exception ex) {
+			throw new IllegalArgumentException("Could not open module ZIP file: ${zip}", ex)
+		}
+
+		outputDirectory.delete() || outputDirectory.deleteDir()
+		outputDirectory.mkdirs()
+		zipFile.entries().each { ZipEntry entry ->
+			Closure<InputStream> contents = { zipFile.getInputStream(entry) }
+			switch (entry.name) {
+				case MANIFEST_MF_PATH:
+					break
+				case DEFINITION_PATH:
+					if (elements.contains(Elements.definition)) {
+						new File(outputDirectory, "module.def") << contents()
+					}
+					break
+				case COMPILED_JAVASCRIPT_PATH:
+					if (elements.contains(Elements.javascript)) {
+						new File(outputDirectory, "module.js") << contents()
+					}
+					break
+				case SOURCE_MAP_PATH:
+					if (elements.contains(Elements.sourcemap)) {
+						new File(outputDirectory, "module.js.map") << contents()
+					}
+					break
+				default:
+					if (elements.contains(Elements.resources) && entry.name.startsWith(RESOURCES_PREFIX)) {
+						def resourcePath = entry.name.substring(RESOURCES_PREFIX.length())
+						new File(outputDirectory, resourcePath) << contents()
+					}
+					break
+			}
+		}
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {

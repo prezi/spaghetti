@@ -1,10 +1,19 @@
 <html>
 <head>
-	<script data-main="application" src="require.js"></script>
+	<script src="require.js"></script>
+	<script>
+		require.config({
+			paths: {
+				"prezi.graphics.text": "prezi.graphics.text/module",
+				"prezi.graphics.text.render": "prezi.graphics.text.render/module"
+			}
+		});
+		require(["application"]);
+	</script>
 </head>
-<body>
+<body style="background: url('prezi.graphics.text/spaghetti.jpg'); background-size: 100%;">
 <h1>Modularization test drive</h1>
-<canvas id="canvas" width="600" height="400" style="background: lightgoldenrodyellow;"></canvas>
+<canvas id="canvas" width="160" height="100" style="background: lightgoldenrodyellow; margin-left: 100;"></canvas>
 <p>Also watch trace on JavaScript console.</p>
 </body>
 </html>

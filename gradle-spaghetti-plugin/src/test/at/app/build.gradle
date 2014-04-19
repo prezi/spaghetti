@@ -59,32 +59,29 @@ task obfuscate(type: ObfuscateBundle) {
 
 def testWebappDir = file("${buildDir}/webapp")
 
-task unzipRequireJS << {
-	testWebappDir.mkdirs()
-	configurations.requirejs.files.each { zipFile ->
-		zipTree(zipFile).each { file ->
-			if (file.name == "require.js") {
-				def output = new File(testWebappDir, "require.js")
-				output << file.text
-			}
-		}
-	}
+task extractModules(type: ExtractModules) {
+	extract "javascript", "sourcemap", "resources"
+	outputDirectory testWebappDir
 }
 
-task packApplication(type: ExtractModules) {
+task packApplication(type: Copy) {
+	dependsOn extractModules
 	dependsOn bundleApplication
-	dependsOn unzipRequireJS
+	dependsOn configurations.requirejs
 
-	outputDirectory testWebappDir
+	destinationDir testWebappDir
+
+	from bundleApplication.outputFile
+	from "src/test/webapp"
 
 	doLast {
-		copy {
-			from bundleApplication.outputFile
-			into testWebappDir
-		}
-		copy {
-			from "src/test/webapp"
-			into testWebappDir
+		configurations.requirejs.files.each { zipFile ->
+			zipTree(zipFile).each { file ->
+				if (file.name == "require.js") {
+					def output = new File(testWebappDir, "require.js")
+					output << file.text
+				}
+			}
 		}
 	}
 }
