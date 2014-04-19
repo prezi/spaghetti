@@ -1,9 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
-import com.prezi.spaghetti.ModuleConfigurationParser
 import com.prezi.spaghetti.ModuleDefinitionSource
-import com.prezi.spaghetti.grammar.ModuleParser
 import org.gradle.api.artifacts.Configuration
 import org.slf4j.LoggerFactory
 
@@ -13,13 +11,7 @@ import org.slf4j.LoggerFactory
 class ModuleDefinitionLookup {
 	private static final LOGGER = LoggerFactory.getLogger(ModuleDefinitionLookup)
 
-	public static List<ModuleBundle> getAllBundles(Configuration configuration) {
-		LOGGER.debug("Looking for modules in configuration ${configuration.name}")
-		return getAllBundles(configuration.files);
-	}
-
-	public static List<ModuleBundle> getAllBundles(Collection<File> files) {
-		LOGGER.debug("\tLooking at files:\n\t${files.join('\n\t')}")
+	public static List<ModuleBundle> getAllBundles(Iterable<File> files) {
 		def bundles = files.collect { File file ->
 			LOGGER.debug("Trying to load module bundle from ${file}")
 			try {

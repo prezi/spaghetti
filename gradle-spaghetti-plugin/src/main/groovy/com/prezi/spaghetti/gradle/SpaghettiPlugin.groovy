@@ -50,21 +50,21 @@ class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiResourceSet.source.srcDir("src/main/spaghetti-resources")
 		functionalSourceSet.add(spaghettiResourceSet)
 
-		project.tasks.withType(AbstractSpaghettiTask).all(new Action<AbstractSpaghettiTask>() {
-			@Override
-			void execute(AbstractSpaghettiTask task) {
-				logger.debug("Configuring conventions for ${task}")
-				def params = extension.params
-				task.conventionMapping.platform = { params.platform }
-				task.conventionMapping.configuration = { params.configuration }
-				task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
-				logger.debug("Configuring module definitions for ${task}")
-				task.conventionMapping.definitions = { findDefinitions(project) }
-				if (task instanceof AbstractBundleModuleTask) {
-					task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
-				}
-			}
-		})
+		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
+			logger.debug("Configuring conventions for ${task}")
+			def params = extension.params
+			task.conventionMapping.platform = { params.platform }
+			task.conventionMapping.configuration = { params.configuration }
+			task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
+			logger.debug("Configuring module definitions for ${task}")
+			task.conventionMapping.definitions = { findDefinitions(project) }
+		}
+		project.tasks.withType(AbstractBundleModuleTask).all { AbstractBundleModuleTask task ->
+			task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
+		}
+		project.tasks.withType(ExtractModules).all { ExtractModules task ->
+			task.conventionMapping.bundles = { extension.params.configuration }
+		}
 
 		// Automatically generate module headers
 		def generateTask = project.task("generateHeaders", type: GenerateHeaders) {

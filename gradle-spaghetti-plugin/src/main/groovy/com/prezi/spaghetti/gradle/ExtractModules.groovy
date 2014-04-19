@@ -1,7 +1,10 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle.Elements
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
@@ -14,6 +17,16 @@ class ExtractModules extends AbstractSpaghettiTask {
 
 	void outputDirectory(Object directory) {
 		this.outputDirectory = project.file(directory)
+	}
+
+	ConfigurableFileCollection bundles = project.files()
+	void bundle(Object... bundles) {
+		this.bundles.from(*bundles)
+	}
+
+	@InputFiles
+	FileCollection getBundles() {
+		return project.files(this.bundles)
 	}
 
 	@Input
@@ -37,7 +50,8 @@ class ExtractModules extends AbstractSpaghettiTask {
 		def output = getOutputDirectory()
 		output.delete() || output.deleteDir()
 		output.mkdirs()
-		ModuleDefinitionLookup.getAllBundles(getConfiguration()).each { bundle ->
+		logger.warn ">>>>> Bundles ${getBundles()}"
+		ModuleDefinitionLookup.getAllBundles(getBundles()).each { bundle ->
 			bundle.extract(new File(output, bundle.name), getElementsToExtract())
 		}
 	}
