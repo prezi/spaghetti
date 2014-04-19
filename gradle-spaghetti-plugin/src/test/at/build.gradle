@@ -13,7 +13,7 @@ buildscript {
 	dependencies {
 		classpath "com.prezi.gradle:gradle-prezi-plugin:2.0-SNAPSHOT"
 		classpath "com.prezi.gradle:gradle-haxe-plugin:2.0-SNAPSHOT"
-		classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:1.4-SNAPSHOT"
+		classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:1.3-SNAPSHOT"
 	}
 }
 
@@ -24,7 +24,7 @@ configure(allprojects) {
 
 	repositories {
 		mavenLocal()
-		maven downloadRepo("repo")
+		maven preziDownloadRepo("repo")
 	}
 
 
