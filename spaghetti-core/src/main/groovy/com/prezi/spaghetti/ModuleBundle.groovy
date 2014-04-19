@@ -200,7 +200,9 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				default:
 					if (elements.contains(ModuleBundleElement.resources) && entry.name.startsWith(RESOURCES_PREFIX)) {
 						def resourcePath = entry.name.substring(RESOURCES_PREFIX.length())
-						new File(outputDirectory, resourcePath) << contents()
+						def resourceFile = new File(outputDirectory, resourcePath)
+						resourceFile.parentFile.mkdirs()
+						resourceFile << contents()
 					}
 					break
 			}
