@@ -96,7 +96,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		def wrappedJavaScript = Wrapper.wrap(config.dependentModules*.name, Wrapping.module, processedJavaScript)
 
 		// is a sourcemap present?
-		def sourceMapText = getSourceMap() ? getSourceMap().text : null;
+		def sourceMapText = getSourceMap()?.text
 
 		def workDir = getWorkDir()
 		workDir.delete() || workDir.deleteDir()
@@ -123,5 +123,4 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 				sourceMap,
 				resourceDirs)
 	}
-
 }
