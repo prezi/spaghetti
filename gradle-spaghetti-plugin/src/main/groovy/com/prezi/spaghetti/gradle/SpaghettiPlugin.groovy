@@ -142,6 +142,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		} as ObfuscateBundle
 		obfuscateTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
 		obfuscateTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
+		obfuscateTask.dependsOn binary
 		return obfuscateTask
 	}
 
