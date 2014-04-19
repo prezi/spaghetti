@@ -4,6 +4,7 @@ import groovy.io.FileType
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
@@ -52,18 +53,16 @@ class SpaghettiPlugin implements Plugin<Project> {
 
 		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
 			logger.debug("Configuring conventions for ${task}")
-			def params = extension.params
-			task.conventionMapping.platform = { params.platform }
-			task.conventionMapping.configuration = { params.configuration }
-			task.conventionMapping.obfuscatedConfiguration = { params.obfuscatedConfiguration }
+			task.conventionMapping.platform = { extension.platform }
+			task.conventionMapping.bundles = { extension.configuration }
 			logger.debug("Configuring module definitions for ${task}")
+		}
+		project.tasks.withType(AbstractDefinitionAwareSpaghettiTask).all { AbstractDefinitionAwareSpaghettiTask task ->
 			task.conventionMapping.definitions = { findDefinitions(project) }
 		}
 		project.tasks.withType(AbstractBundleModuleTask).all { AbstractBundleModuleTask task ->
+			task.conventionMapping.sourceBaseUrl = { extension.sourceBaseUrl }
 			task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
-		}
-		project.tasks.withType(ExtractModules).all { ExtractModules task ->
-			task.conventionMapping.bundles = { extension.params.configuration }
 		}
 
 		// Automatically generate module headers
@@ -124,16 +123,16 @@ class SpaghettiPlugin implements Plugin<Project> {
 		return obfuscateTask
 	}
 
-	// TODO Make this into a FileCollection so it can be lazy
-	static Set<File> findDefinitions(Project project) {
+	// TODO Make this into a lazy FileCollection
+	static FileCollection findDefinitions(Project project) {
 		Set<SpaghettiSourceSet> sources = project.extensions.getByType(ProjectSourceSet).getByName("main").withType(SpaghettiSourceSet)
 		Set<File> sourceDirs = sources*.source*.srcDirs.flatten()
-		return sourceDirs.collectMany { File dir ->
+		return project.files(sourceDirs.collectMany { File dir ->
 			def definitions = []
 			if (dir.directory) {
 				dir.eachFileMatch(FileType.FILES, ~/^.+\.module$/, { definitions << it })
 			}
 			return definitions
-		}
+		})
 	}
 }

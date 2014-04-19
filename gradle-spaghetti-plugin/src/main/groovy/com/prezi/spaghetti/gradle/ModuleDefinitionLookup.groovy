@@ -2,7 +2,6 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.ModuleDefinitionSource
-import org.gradle.api.artifacts.Configuration
 import org.slf4j.LoggerFactory
 
 /**
@@ -27,7 +26,7 @@ class ModuleDefinitionLookup {
 		return (bundles - null).sort()
 	}
 
-	public static List<ModuleDefinitionSource> getAllDefinitionSources(Configuration configuration) {
+	public static List<ModuleDefinitionSource> getAllDefinitionSources(Iterable<File> configuration) {
 		return getAllBundles(configuration).collect { ModuleBundle module ->
 			return new ModuleDefinitionSource("module: " + module.name, module.definition)
 		}

@@ -5,15 +5,30 @@ import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleConfigurationParser
 import com.prezi.spaghetti.ModuleDefinitionSource
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.ConventionTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 
 /**
  * Created by lptr on 18/11/13.
  */
 class AbstractSpaghettiTask extends ConventionTask {
-	@Delegate
-	Parameters params = new Parameters(project)
+
+	@Input
+	String platform
+
+	ConfigurableFileCollection bundles = project.files()
+	void bundle(Object... bundles) {
+		this.bundles.from(*bundles)
+	}
+
+	@InputFiles
+	FileCollection getBundles() {
+		return project.files(this.bundles)
+	}
 
 	protected SpaghettiPlugin getPlugin()
 	{
@@ -21,15 +36,10 @@ class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	protected Generator createGenerator(ModuleConfiguration config) {
-		return Platform.createGeneratorForPlatform(platform, config)
+		return Platform.createGeneratorForPlatform(getPlatform(), config)
 	}
 
-	@InputFiles
-	Configuration getConfiguration() {
-		return params.configuration
-	}
-
-	ModuleConfiguration readConfig(Collection<File> files) {
+	ModuleConfiguration readConfig(Iterable<File> files) {
 		readConfigInternal(files.collect() { file ->
 			new ModuleDefinitionSource(file.toString(), file.text)
 		})
@@ -40,12 +50,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) {
-		def dependentDefinitions
-		if (getConfiguration()) {
-			dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getConfiguration())
-		} else {
-			dependentDefinitions = []
-		}
+		def dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getBundles())
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitions,
 				localDefinitions,
@@ -53,16 +58,5 @@ class AbstractSpaghettiTask extends ConventionTask {
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config
-	}
-
-	@InputFiles
-	Set<File> definitions = []
-	public void definition(Object definitions)
-	{
-		this.definitions += project.files(definitions).collect();
-	}
-
-	public Set<File> getDefinitions() {
-		return this.definitions;
 	}
 }

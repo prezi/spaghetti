@@ -5,6 +5,7 @@ import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
@@ -12,9 +13,16 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 19/04/14.
  */
-class AbstractBundleModuleTask extends AbstractSpaghettiTask {
+class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 
 	@Delegate InputOutput inputOutput = new InputOutput(project)
+
+	@Input
+	@Optional
+	String sourceBaseUrl
+	void sourceBaseUrl(String source) {
+		this.sourceBaseUrl = source
+	}
 
 	File sourceMap
 
@@ -66,10 +74,10 @@ class AbstractBundleModuleTask extends AbstractSpaghettiTask {
 		if (moduleDefinitions.empty) {
 			throw new IllegalArgumentException("No module definition present")
 		}
-		if (moduleDefinitions.size() > 1) {
+		if (moduleDefinitions.files.size() > 1) {
 			throw new IllegalArgumentException("Too many module definitions present: ${moduleDefinitions}")
 		}
-		def config = readConfig(getDefinitions())
+		def config = readConfig(moduleDefinitions)
 		def module = config.getLocalModules().first()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
 		def wrappedJavaScript = Wrapper.wrap(config, Wrapping.module, processedJavaScript)

@@ -19,16 +19,6 @@ class ExtractModules extends AbstractSpaghettiTask {
 		this.outputDirectory = project.file(directory)
 	}
 
-	ConfigurableFileCollection bundles = project.files()
-	void bundle(Object... bundles) {
-		this.bundles.from(*bundles)
-	}
-
-	@InputFiles
-	FileCollection getBundles() {
-		return project.files(this.bundles)
-	}
-
 	@Input
 	EnumSet<Elements> elementsToExtract
 

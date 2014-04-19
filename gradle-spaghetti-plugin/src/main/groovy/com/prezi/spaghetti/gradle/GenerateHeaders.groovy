@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 12/11/13.
  */
-class GenerateHeaders extends AbstractSpaghettiTask {
+class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 
 	@OutputDirectory
 	File outputDirectory
