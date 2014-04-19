@@ -13,9 +13,9 @@ class ModuleBundleArtifact extends AbstractPublishArtifact {
 	Date date
 	File file
 
-	private InputOutput bundleTask
+	private AbstractBundleModuleTask bundleTask
 
-	public ModuleBundleArtifact(InputOutput bundleTask) {
+	public ModuleBundleArtifact(AbstractBundleModuleTask bundleTask) {
 		super(bundleTask)
 		this.bundleTask = bundleTask
 	}
