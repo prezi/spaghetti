@@ -4,6 +4,7 @@ import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
@@ -26,6 +27,14 @@ class Wrap extends AbstractSpaghettiTask {
 		this.outputFile = project.file(f)
 	}
 
+	@Input
+	@Optional
+	String modulesDirectory = ""
+
+	void modulesDirectory(String modulesDirectory) {
+		this.modulesDirectory = modulesDirectory
+	}
+
 	@TaskAction
 	wrap() {
 		def outputFile = getOutputFile()
@@ -33,7 +42,7 @@ class Wrap extends AbstractSpaghettiTask {
 		outputFile.delete()
 
 		def dependentModuleNames = ModuleDefinitionLookup.getAllBundles(getBundles())*.name
-		outputFile << Wrapper.wrap(dependentModuleNames, type, getInputFile().text)
+		outputFile << Wrapper.wrapWithConfig(dependentModuleNames, type, getModulesDirectory(), getInputFile().text)
 	}
 
 	@Input

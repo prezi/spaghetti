@@ -2,7 +2,9 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
@@ -25,6 +27,14 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 		this.outputFile = project.file(f)
 	}
 
+	@Input
+	@Optional
+	String modulesDirectory = ""
+
+	void modulesDirectory(String modulesDirectory) {
+		this.modulesDirectory = modulesDirectory
+	}
+
 	BundleApplication()
 	{
 		this.conventionMapping.inputFile = { new File(project.buildDir, "application.js") }
@@ -39,6 +49,6 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 		def outputFile = getOutputFile()
 		outputFile.parentFile.mkdirs()
 		outputFile.delete()
-		outputFile << Wrapper.wrap(config.dependentModules*.name, Wrapping.application, processedJavaScript)
+		outputFile << Wrapper.wrapWithConfig(config.dependentModules*.name, Wrapping.application, getModulesDirectory(), processedJavaScript)
 	}
 }
