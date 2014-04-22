@@ -42,7 +42,19 @@ class Wrap extends AbstractSpaghettiTask {
 		outputFile.delete()
 
 		def dependentModuleNames = ModuleDefinitionLookup.getAllBundles(getBundles())*.name
-		outputFile << Wrapper.wrapWithConfig(dependentModuleNames, type, getModulesDirectory(), getInputFile().text)
+		String wrapped
+		switch (getType()) {
+			case Wrapping.application:
+			case Wrapping.nodeModule:
+				wrapped = Wrapper.wrapWithConfig(dependentModuleNames, getType(), getModulesDirectory(), getInputFile().text)
+				break
+			case Wrapping.module:
+				wrapped = Wrapper.wrap(dependentModuleNames, getType(), getInputFile().text)
+				break
+			default:
+				throw new IllegalArgumentException("Unknown wrapping: ${getType()}")
+		}
+		outputFile << wrapped
 	}
 
 	@Input
