@@ -1,4 +1,4 @@
-#!/bin/bash -lex
+#!/bin/bash -ex
 
 # Sanitize Environment
 # TODO: Better cleanup after failures
