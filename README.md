@@ -85,7 +85,7 @@ var greeter = com.example.module.MyModule.createGreeter();
 console.log(greeter.sayHello("World"));
 ```
 
-There is a runnable example project under [in the source code of the Gradle plugin](tree/master/gradle-spaghetti-plugin/src/test/at).
+There is a runnable example project under [in the source code of the Gradle plugin](gradle-spaghetti-plugin/src/test/at).
 
 ## Build system support
 
