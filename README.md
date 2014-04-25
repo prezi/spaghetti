@@ -31,7 +31,29 @@ interface Greeter {
 Greeter createGreeter()
 ```
 
-From this definition Spaghetti can generate interfaces for its supported platforms (currently Haxe and TypeScript are available).
+From this definition Spaghetti can generate interfaces for its supported platforms (currently Haxe and TypeScript are available). Something like this:
+
+```haxe
+package com.example.module;
+
+interface MyModule {
+	/**
+	 * Creates a Greeter.
+	 */
+	function createGreeter():Greeter;
+}
+```
+
+```haxe
+package com.example.module;
+
+interface Greeter {
+	/**
+	 * Greets a guest and returns the greeting.
+	 */
+	function sayHello(guest:String):String;
+}
+```
 
 You then implement the generated interfaces, and compile your code into a JavaScript file. In Haxe you would write the following:
 
