@@ -1,142 +1,70 @@
-**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+Spaghetti
+=========
 
-- [Gradle Spaghetti Plugin](#gradle-spaghetti-plugin)
-- [Workflow to write and use a module](#workflow-to-write-and-use-a-module)
-- [Module System](#module-system)
-- [Example](#example)
-	- [Interface Language](#interface-language)
-	- [Build the module](#build-the-module)
-	- [Use your module](#use-your-module)
-- [Versioning](#versioning)
-- [Challenges](#challenges)
+Type-safe APIs in JavaScript.
 
-Gradle Spaghetti Plugin
-=======================
+## What is this?
 
-This is a proof-of-concept implementation of a Gradle plugin that helps in modularizing JS applications. This is how it's supposed to work:
+Spaghetti lets you create large-scale modular JavaScript applications with modules written in different compile-to-JS languages communicating with each other in a type-safe way.
 
-# Workflow to write and use a module
+## How does it work?
 
-![Module Workflow](http://prezi.github.io/spaghetti/images/Module Workflow.png "Module Workflow")
-
-# Module System
-
-![Module System](http://prezi.github.io/spaghetti/images/Module System.png "Module System")
-
-# Example
-
-There is an example project under [in the source code of the plugin](tree/master/gradle-spaghetti-plugin/src/test/at).
-
-## Interface Language
-
-Language defined in [ANTLR](http://antlr.org/), grammar can be reused without modification if needed in creating an Xtext editor.
+When you create a Spaghetti module, you start by defining the module's API in the Spaghetti [IDL](http://en.wikipedia.org/wiki/Interface_description_language). Something like this:
 
 ```
-/**
- * Layout module.
- */
-module prezi.graphics.text.Layout
+module com.example.module as MyModule
 
 /**
- * Describes a block of text.
+ * A tool to greet guests.
  */
-interface Text {
+interface Greeter {
+
 	/**
-	 * Inserts the given string at <code>offset</code>.
+	 * Greets a guest and returns the greeting.
 	 */
-	void insert(int offset, string text)
-	void delete(int offset, int end)
-	string getRawText()
+	string sayHello(string guest)
 }
 
-Text createText()
+/**
+ * Creates a Greeter.
+ */
+Greeter createGreeter()
 ```
 
-## Build the module
+From this definition Spaghetti can generate interfaces for its supported platforms (currently Haxe and TypeScript are available).
 
-You can generate Haxe interfaces for your module:
-
-```groovy
-task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateModuleHeaders) {
-	definition "Layout.module"
-	platform "haxe"
-	outputDirectory "${buildDir}/spaghetti-module"
-}
-```
-
-You can then implement these interfaces, and compile all your code to a JavaScript file. Now you only have to bundle your code into a Spaghetti-compatible module, and you're all set:
-
-```groovy
-task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
-	dependsOn compileHaxe
-	definition "Layout.module"
-	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/module.zip"
-}
-```
-
-## Use your module
-
-You can generate Haxe externs to use this module in your application or another module:
-
-```groovy
-task generateApplication(type: com.prezi.spaghetti.gradle.GenerateApplication) {
-	configuration configurations.modules
-	platform "haxe"
-	outputDirectory "$buildDir/haxe"
-}
-```
-
-Build your application, and then bundle it for [RequireJS](http://requirejs.org/):
-
-```groovy
-task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
-	dependsOn compileHaxe
-	configuration configurations.modules
-	platform "haxe"
-	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/app.js"
-}
-```
-
-You can also extract all modules to a directory so that they are readily available to RequireJS:
-
-```groovy
-task packApplication(type: com.prezi.spaghetti.gradle.ExtractModules) {
-	dependsOn bundleApplication
-	configuration configurations.modules
-	def testWebappDir = file("${buildDir}/webapp")
-	outputDirectory testWebappDir
-}
-```
-
-This is how you can access your module from an application or another module:
+You then implement the generated interfaces, and compile your code into a JavaScript file. In Haxe you would write the following:
 
 ```haxe
-package prezi.test.client;
+package com.example.module;
 
-import prezi.graphics.text.Layout;
+// Spaghetti looks for a class called "<ModuleName>Impl"
+class MyModuleImpl implements MyModule {
+	public function createGreeter():Greeter {
+		return new DefaultGreeter();
+	}
+}
 
-class Client {
-	public static function main() {
-		var text = Layout.createText();
-		text.insert(0, "World");
-		text.insert(0, "Hello ");
-		trace(text.getRawText());
+class DefaultGreeter implements Greeter {
+	public function sayHello(guest:String):String {
+		return 'Hello ${guest}!';
 	}
 }
 ```
 
-# Versioning
+Once you have your module compiled into a single JS file, Spaghetti will wrap it into a [RequireJs](http://requirejs.org/)-compatible module, and bundle it into a ZIP file together with the original module definition (the IDL you wrote above). It is also possible to include resources (images, CSS etc.) in a module bundle.
 
-![Versioning](http://prezi.github.io/spaghetti/images/Versioning.png "Versioning")
+When someone wants to use your module, they only need to provide Spaghetti with module definition (or the bundle ZIP that contains it). Spaghetti can then generate proxy classes that will allow caling your module in a type-safe way. To continue with the example, you could call your Haxe module from TypeScript:
 
+```typescript
+var greeter = com.example.module.MyModule.createGreeter();
+console.log(greeter.sayHello("World"));
+```
 
-# Challenges
+There is an example project under [in the source code of the plugin](tree/master/gradle-spaghetti-plugin/src/test/at).
 
-* Should we define objects as live things or just placeholders, and let services do everything?
-	* Advantage of the former is that things work like OOP, so it's simple for everybody to understand.
-	* Advantage of the latter is that things are simpler on the tooling side, and we can create APIs that work across platforms (think of Ruby calling a JS module, like with Cucumber). It also means that we can support non-OOP languages like Elm easier at the cost of clumsier clients in OOP languages.
-* How to define FRP signals? Should they be first-class citizens of the DSL, or should we add methods to services like `subscribe(signal:Signal)`?
-* How to publish constants and enums?
-* How to define dependencies on other modules?
+## Gradle support
+
+Spaghetti comes with a Gradle plugin that makes it very easy to integrate Spaghetti into your workflow.
+
+Read more about in the [plugin's readme](gradle-spaghetti-plugin/README.md).
