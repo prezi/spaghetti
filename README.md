@@ -85,10 +85,16 @@ var greeter = com.example.module.MyModule.createGreeter();
 console.log(greeter.sayHello("World"));
 ```
 
-There is an example project under [in the source code of the plugin](tree/master/gradle-spaghetti-plugin/src/test/at).
+There is a runnable example project under [in the source code of the Gradle plugin](tree/master/gradle-spaghetti-plugin/src/test/at).
 
-## Gradle support
+## Build system support
+
+### Gradle
 
 Spaghetti comes with a Gradle plugin that makes it very easy to integrate Spaghetti into your workflow.
 
 Read more about in the [plugin's readme](gradle-spaghetti-plugin/README.md).
+
+### Other systems
+
+A command-line tool and Maven support is planned, but no clear deadline is decided right now.
