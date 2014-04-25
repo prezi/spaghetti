@@ -1,7 +1,7 @@
 Spaghetti
 =========
 
-Type-safe APIs in JavaScript.
+Type-safe APIs for compile-to-JavaScript modules.
 
 ## What is this?
 
