@@ -23,7 +23,7 @@ class SpaghettiExtension {
 		this.obfuscatedConfiguration = obfuscatedConfiguration
 	}
 
-	String sourceBaseUrl = "http://github.com/prezi/${project.rootProject.name}"
+	String sourceBaseUrl
 
 	void sourceBaseUrl(String source) {
 		this.sourceBaseUrl = source
