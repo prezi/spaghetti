@@ -17,7 +17,7 @@ class SpaghettiBundler
 			case "application" :
 				"require";
 			default:
-				throw "Bundle type should be either 'module' or 'application': ${type}";
+				throw 'Bundle type should be either "module" or "application": ${type}';
 		}
 		var fileName = args.shift();
 		var modulePaths = [];
