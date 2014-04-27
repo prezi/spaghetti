@@ -1,3 +1,4 @@
+[ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().waitForProcessOutput(System.out, System.err)
 def gitVersion = [ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
 
 task version {
@@ -5,8 +6,6 @@ task version {
 		println "Version: ${gitVersion}"
 	}
 }
-
-println "Version: ${gitVersion}"
 
 def sonatype = hasProperty("sonatype")
 def signArtifacts = sonatype || hasProperty("sign")
