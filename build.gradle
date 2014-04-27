@@ -157,3 +157,12 @@ project(":gradle-spaghetti-plugin") {
 		commandLine = ["gradle", "clean", "packApplication", "-is"]
 	}
 }
+
+project(":gradle-spaghetti-haxe-plugin") {
+	dependencies {
+		compile gradleApi()
+		compile project(path: ":gradle-spaghetti-plugin")
+		compile "com.prezi.haxe:gradle-haxe-plugin:3.0"
+		compile "org.webjars:requirejs:2.1.8"
+	}
+}
