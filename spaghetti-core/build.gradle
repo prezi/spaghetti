@@ -27,9 +27,15 @@ task generateGrammar(type: JavaExec) {
 }
 
 processResources {
-	def version = project.version =~ /^(\d+(?:[\.]\d+)+)-.*/
-
-	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [ version: version[0][1] ])
+	def versionMatcher = project.version =~ /^(\d+(?:[\.]\d+)+)(?:-.*)?$/
+	def version
+	if (versionMatcher) {
+		version = versionMatcher[0][1]
+	} else {
+		logger.warn "Cannot figure out Spaghetti version from \"${version}\", setting to \"unknown\""
+		version = "unknown"
+	}
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [version: version])
 }
 
 idea.module {
