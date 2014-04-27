@@ -1,36 +1,30 @@
-buildscript {
-	repositories {
-		mavenLocal()
-		maven {
-			credentials {
-				username nexusUser
-				password nexusPassword
-			}
-			url "https://artifactory.prezi.com/plugins-snapshot"
-		}
-	}
-	dependencies {
-		classpath "com.prezi.gradle:gradle-prezi-plugin:2.0-SNAPSHOT"
+def gitVersion = [ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
+
+task version {
+	doLast {
+		println "Version: ${gitVersion}"
 	}
 }
 
 allprojects {
 	group = 'com.prezi.spaghetti'
-
+	version = gitVersion
 	apply plugin: 'idea'
 }
 
 subprojects {
 	apply plugin: 'groovy'
 	apply plugin: 'maven'
-	apply plugin: 'prezi'
 
 	sourceCompatibility = "1.6"
 	targetCompatibility = "1.6"
 
 	repositories {
 		mavenLocal()
-		maven preziDownloadRepo("repo")
+		mavenCentral()
+		maven {
+			url "http://gradle.artifactoryonline.com/gradle/libs"
+		}
 	}
 
 	dependencies {
@@ -41,13 +35,13 @@ subprojects {
 		}
 	}
 
-	if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
-		def user = project.getProperty("nexusUser")
-		def password = project.getProperty("nexusPassword")
-		uploadArchives {
+	uploadArchives {
+		repositories {
 			repositories {
-				repositories {
-					mavenDeployer {
+				mavenDeployer {
+					if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
+						def user = project.getProperty("nexusUser")
+						def password = project.getProperty("nexusPassword")
 						repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
 							authentication(userName: user, password: password)
 						}
