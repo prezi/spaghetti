@@ -1,4 +1,4 @@
-[ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().waitForProcessOutput(System.out, System.err)
+[ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().waitForProcessOutput((OutputStream) System.out, System.err)
 def gitVersion = [ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
 
 task version {
