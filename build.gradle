@@ -86,6 +86,11 @@ subprojects { subproject ->
 							def password = project.getProperty("sonatypePassword")
 							authentication(userName: user, password: password)
 						}
+						snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+							def user = project.getProperty("sonatypeUsername")
+							def password = project.getProperty("sonatypePassword")
+							authentication(userName: user, password: password)
+						}
 					} else if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
 						def user = project.getProperty("nexusUser")
 						def password = project.getProperty("nexusPassword")
