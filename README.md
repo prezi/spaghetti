@@ -3,6 +3,8 @@ Spaghetti
 
 Type-safe APIs for compile-to-JavaScript modules.
 
+[![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
+
 ## What is this?
 
 Spaghetti lets you create large-scale modular JavaScript applications with modules written in different compile-to-JS languages communicating with each other in a type-safe way.
