@@ -6,6 +6,8 @@ task version {
 	}
 }
 
+println "Version: ${gitVersion}"
+
 def sonatype = hasProperty("sonatype")
 def signArtifacts = sonatype || hasProperty("sign")
 
