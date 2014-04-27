@@ -1,0 +1,6 @@
+language: groovy
+jdk:
+  - oraclejdk7
+env:
+  global:
+    - TERM=dumb
