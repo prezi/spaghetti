@@ -12,7 +12,7 @@ allprojects {
 	apply plugin: 'idea'
 }
 
-subprojects {
+subprojects { subproject ->
 	apply plugin: 'groovy'
 	apply plugin: 'maven'
 
@@ -39,6 +39,41 @@ subprojects {
 		repositories {
 			repositories {
 				mavenDeployer {
+					pom.project {
+						url "http://github.com/prezi/spaghetti/"
+						name subproject.name
+						description subproject.description
+
+						scm {
+							url "scm:git@github.com:prezi/spaghetti.git"
+							connection "scm:git@github.com:prezi/spaghetti.git"
+							developerConnection "scm:git@github.com:prezi/spaghetti.git"
+						}
+
+						licenses {
+							license {
+								name "The Apache Software License, Version 2.0"
+								url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+								distribution "repo"
+							}
+						}
+
+						developers {
+							developer {
+								id "lptr"
+								name "Lorant Pinter"
+							}
+							developer {
+								id "exFalso"
+								name "Andras Slemmer"
+							}
+							developer {
+								id "gidapataki"
+								name "Gida Pataki"
+							}
+						}
+					}
+
 					if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
 						def user = project.getProperty("nexusUser")
 						def password = project.getProperty("nexusPassword")
