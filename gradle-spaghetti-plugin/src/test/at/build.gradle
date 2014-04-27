@@ -32,6 +32,10 @@ configure(allprojects) {
 
 configure(subprojects) {
 	apply plugin: "spaghetti"
+	
+	spaghetti {
+		sourceBaseUrl "http://github.com/prezi/spaghetti"
+	}
 
 	install {
 		repositories {

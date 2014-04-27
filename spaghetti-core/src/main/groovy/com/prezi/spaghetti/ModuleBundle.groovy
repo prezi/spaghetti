@@ -50,7 +50,6 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public static ModuleBundle create(File outputFile, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<File> resourceDirs) {
 		checkNotNull(name, "name", [])
 		checkNotNull(version, "version", [])
-		checkNotNull(sourceBaseUrl, "sourceBaseUrl", [])
 		checkNotNull(definition, "definition", [])
 		checkNotNull(bundledJavaScript, "bundledJavaScript", [])
 
