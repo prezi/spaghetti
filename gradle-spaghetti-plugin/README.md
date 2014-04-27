@@ -6,6 +6,16 @@ Spaghetti Gradle Plugin
 You can apply the Spaghetti plugin by:
 
 ```groovy
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:1.4"
+    }
+}
+
 apply plugin: "spaghetti"
 ```
 
