@@ -12,7 +12,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:1.4"
+        classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:1.4.1"
     }
 }
 
