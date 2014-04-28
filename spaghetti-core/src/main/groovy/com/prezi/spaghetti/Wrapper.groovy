@@ -55,7 +55,7 @@ class Wrapper {
 		def requires = moduleNames.collect { moduleName ->
 			""""${moduleName}": __requirejs("${moduleName}")"""
 		}
-		return """var __requirejs = require("requirejs"); ${config} var __modules = { ${requires.join(",")} }; ${contents}"""
+		return """var __requirejs = require("requirejs"); ${config} var __modules = { ${requires.join(",")} }; exports = exports || {}; ${contents}"""
 	}
 
 	private static String config(Iterable<String> moduleNames, String modulesRoot, String requireName) {
