@@ -46,7 +46,7 @@ class Wrapper {
 		moduleNames.eachWithIndex { moduleName, index ->
 			modules.push(""""${moduleName}": arguments[${index}]""")
 		}
-		return """${function}([${fileNames.join(",")}], function() { var __modules = { ${modules.join(",")} }; exports = exports || {}; ${contents}
+		return """${function}([${fileNames.join(",")}], function() { var __modules = { ${modules.join(",")} }; ${contents}
 });
 """
 	}

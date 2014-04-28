@@ -31,8 +31,12 @@ class HaxeGenerator implements Generator {
 	@Override
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
+		/* the "exports" line is needed because if this module is
+		   requirejs'd from a nodejs module 'exports' will not be
+		   visible for some reason
+		*/
 		return \
-"""var __module; ${javaScript}
+"""var __module; var exports = exports || {}; ${javaScript}
 return __module;
 """
 	}
