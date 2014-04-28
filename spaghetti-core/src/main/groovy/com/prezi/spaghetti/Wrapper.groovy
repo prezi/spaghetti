@@ -46,7 +46,7 @@ class Wrapper {
 		moduleNames.eachWithIndex { moduleName, index ->
 			modules.push(""""${moduleName}": arguments[${index}]""")
 		}
-		return """${function}([${fileNames.join(",")}], function() { var __modules = { ${modules.join(",")} }; ${contents}
+		return """${function}([${fileNames.join(",")}], function() { var __modules = { ${modules.join(",")} }; exports = exports || {}; ${contents}
 });
 """
 	}
@@ -55,7 +55,7 @@ class Wrapper {
 		def requires = moduleNames.collect { moduleName ->
 			""""${moduleName}": __requirejs("${moduleName}")"""
 		}
-		return """var __requirejs = require("requirejs"); ${config} var __modules = { ${requires.join(",")} }; exports = exports || {}; ${contents}"""
+		return """var __requirejs = require("requirejs"); ${config} var __modules = { ${requires.join(",")} }; ${contents}"""
 	}
 
 	private static String config(Iterable<String> moduleNames, String modulesRoot, String requireName) {
