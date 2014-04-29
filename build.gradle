@@ -164,11 +164,20 @@ project(":gradle-spaghetti-plugin") {
 	}
 }
 
-project(":gradle-spaghetti-haxe-plugin") {
+configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 	dependencies {
 		compile gradleApi()
 		compile project(path: ":gradle-spaghetti-plugin")
+	}
+}
+project(":gradle-spaghetti-haxe-plugin") {
+	dependencies {
 		compile "com.prezi.haxe:gradle-haxe-plugin:3.0"
 		compile "org.webjars:requirejs:2.1.8"
+	}
+}
+project(":gradle-spaghetti-typescript-plugin") {
+	dependencies {
+		compile "com.prezi.typescript:gradle-typescript-plugin:1.1"
 	}
 }

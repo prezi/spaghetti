@@ -5,3 +5,4 @@ include 'spaghetti-js-support'
 include "spaghetti-typescript-support"
 include "gradle-spaghetti-plugin"
 include "gradle-spaghetti-haxe-plugin"
+include "gradle-spaghetti-typescript-plugin"
