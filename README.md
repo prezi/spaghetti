@@ -76,7 +76,7 @@ class DefaultGreeter implements Greeter {
 
 Once you have your module compiled into a single JS file, Spaghetti will wrap it into a [RequireJs](http://requirejs.org/)-compatible module, and bundle it into a ZIP file together with the original module definition (the IDL you wrote above). It is also possible to include resources (images, CSS etc.) in a module bundle.
 
-When someone wants to use your module, they only need to provide Spaghetti with module definition (or the bundle ZIP that contains it). Spaghetti can then generate proxy classes that will allow caling your module in a type-safe way. To continue with the example, you could call your Haxe module from TypeScript:
+When someone wants to use your module, they only need to provide Spaghetti with module definition (or the bundle ZIP that contains it). Spaghetti can then generate proxy classes that will allow calling your module in a type-safe way. To continue with the example, you could call your Haxe module from TypeScript:
 
 ```typescript
 var greeter = com.example.module.MyModule.createGreeter();
