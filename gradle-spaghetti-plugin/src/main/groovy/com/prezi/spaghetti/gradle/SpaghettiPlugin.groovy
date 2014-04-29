@@ -10,6 +10,8 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
+import org.gradle.language.base.internal.BinaryInternal
+import org.gradle.language.base.internal.BinaryNamingScheme
 import org.gradle.language.base.plugins.LanguageBasePlugin
 import org.slf4j.LoggerFactory
 
@@ -125,7 +127,8 @@ class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
-		def bundleTaskName = "bundle" + binary.name.capitalize()
+		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
+		def bundleTaskName = namingScheme.getTaskName("bundle")
 		def bundleTask = project.task(bundleTaskName, type: BundleModule) {
 			description = "Bundles ${binary} module."
 		} as BundleModule
@@ -136,7 +139,8 @@ class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
-		def obfuscateTaskName = "obfuscate" + binary.name.capitalize()
+		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
+		def obfuscateTaskName = namingScheme.getTaskName("obfuscate")
 		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateBundle) {
 			description = "Obfuscates ${binary} module."
 		} as ObfuscateBundle
