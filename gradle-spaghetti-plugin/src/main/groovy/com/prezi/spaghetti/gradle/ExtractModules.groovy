@@ -42,9 +42,10 @@ class ExtractModules extends AbstractSpaghettiTask {
 		output.mkdirs()
 
 		// Remove all previously created module directories that don't belong to bundles
-		def allBundleNames = getBundles()*.name
+		def allModules = ModuleDefinitionLookup.getAllBundles(getBundles())
+		def allModuleNames = allModules*.name
 		output.eachDir { moduleDir ->
-			if (!(moduleDir.name in allBundleNames)) {
+			if (!(moduleDir.name in allModuleNames)) {
 				logger.debug "Removing ${moduleDir} because it does not belong to a module anymore"
 				moduleDir.delete() || moduleDir.deleteDir()
 			}
@@ -60,6 +61,7 @@ class ExtractModules extends AbstractSpaghettiTask {
 			}
 		})
 
+		// TODO Reuse allModules loaded above
 		ModuleDefinitionLookup.getAllBundles(changedBundles).each { ModuleBundle bundle ->
 			logger.info "Extracting bundle ${bundle.name}"
 			bundle.extract(new File(output, bundle.name), getElementsToExtract())
