@@ -63,6 +63,7 @@ class Wrapper {
 			modulesRoot += "/"
 		}
 		return requireName + ".config({" +
+				"baseUrl: \".\"," +
 				"paths: {" +
 				moduleNames.collect { moduleName ->
 					"\"${moduleName}\": \"${modulesRoot}${moduleName}/${moduleName}\""
