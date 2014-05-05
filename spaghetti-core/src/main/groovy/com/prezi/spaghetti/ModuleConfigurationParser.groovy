@@ -26,23 +26,9 @@ class ModuleConfigurationParser {
 
 	private static ModuleDefinition parseModule(ModuleDefinitionSource source, GlobalScope globalScope)
 	{
-		def module = new ModuleDefinition(source.contents, parse(source), globalScope)
+		def module = new ModuleDefinition(source.contents, ModuleDefinitionParser.parse(source), globalScope)
 		globalScope.registerNames(module.typeNames)
 		return module
-	}
-
-	public static ModuleDefinitionContext parse(ModuleDefinitionSource source) {
-		def input = new ANTLRInputStream(source.contents)
-		def lexer = new ModuleLexer(input)
-		def tokens = new CommonTokenStream(lexer)
-		def parser = new ModuleParser(tokens)
-		parser.removeErrorListeners()
-		parser.addErrorListener(new ParserErrorListener(source.location))
-		def tree = parser.moduleDefinition()
-		if (parser.numberOfSyntaxErrors > 0) {
-			throw new IllegalArgumentException("Could not parse module definition '${source.location}', see errors reported above")
-		}
-		return tree
 	}
 }
 
