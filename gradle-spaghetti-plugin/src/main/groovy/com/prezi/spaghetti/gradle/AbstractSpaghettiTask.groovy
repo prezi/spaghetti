@@ -18,8 +18,11 @@ import org.gradle.api.tasks.Optional
 class AbstractSpaghettiTask extends ConventionTask {
 
 	ConfigurableFileCollection bundles = project.files()
-	void bundle(Object... bundles) {
+	void bundles(Object... bundles) {
 		this.bundles.from(*bundles)
+	}
+	void bundle(Object... bundles) {
+		this.bundles(*bundles)
 	}
 
 	@InputFiles
