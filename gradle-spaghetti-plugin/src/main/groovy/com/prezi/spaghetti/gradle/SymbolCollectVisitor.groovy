@@ -40,4 +40,10 @@ class SymbolCollectVisitor extends ModuleBaseVisitor<Set<String>> {
 		return [ctx.name.getText()] + ctx.propertyDefinition().collect{it.property.name.getText()};
 	}
 
+	@Override
+	public Set<String> visitEnumDefinition(@NotNull ModuleParser.EnumDefinitionContext ctx) {
+
+		return ctx.enumValue().collect{it.name.getText()};
+	}
+
 }
