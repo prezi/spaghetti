@@ -99,6 +99,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 				// Automatically obfuscate bundle
 				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary)
 				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
+				obfuscatedBundleArtifact.name = "module-obfuscated"
 				project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
 				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
 			}
