@@ -159,8 +159,13 @@ project(":gradle-spaghetti-plugin") {
 	}
 
 	task run(type: Exec) {
+		// Make sure we install all dependencies
+		dependsOn install
+		configurations.runtime.allDependencies.withType(ProjectDependency).all { ProjectDependency projectDep ->
+			dependsOn projectDep.dependencyProject.getTasksByName("install", false)
+		}
 		workingDir "src/test/at"
-		commandLine = ["gradle", "clean", "packApplication", "-is"]
+		commandLine = ["gradle", "clean", "packApplication", "-is", "--no-daemon"]
 	}
 }
 
