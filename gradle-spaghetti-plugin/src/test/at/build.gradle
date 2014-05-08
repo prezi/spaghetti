@@ -12,9 +12,8 @@ buildscript {
 	}
 
 	dependencies {
-		classpath "com.prezi.haxe:gradle-haxe-plugin:3.0"
-		classpath "com.prezi.typescript:gradle-typescript-plugin:1.1.1"
-		classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:${gitVersion}"
+		classpath "com.prezi.spaghetti:gradle-spaghetti-haxe-plugin:${gitVersion}"
+		classpath "com.prezi.spaghetti:gradle-spaghetti-typescript-plugin:${gitVersion}"
 	}
 }
 
@@ -29,7 +28,7 @@ configure(allprojects) {
 				username nexusUser
 				password nexusPassword
 			}
-			url "https://artifactory.prezi.com/plugins-snapshot"
+			url "https://artifactory.prezi.com/repo"
 		}
 	}
 }

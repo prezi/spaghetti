@@ -5,7 +5,7 @@ import com.prezi.spaghetti.gradle.ObfuscateBundle
 
 evaluationDependsOn(':text-renderer')
 
-apply plugin: "haxe"
+apply plugin: "spaghetti-haxe"
 
 configurations {
 	requirejs
@@ -49,6 +49,7 @@ sources {
 
 task bundleApplication(type: BundleApplication) {
 	dependsOn compileJs
+	modulesDirectory "modules"
 	inputFile compileJs.outputFile
 }
 
@@ -61,7 +62,7 @@ def testWebappDir = file("${buildDir}/webapp")
 
 task extractModules(type: ExtractModules) {
 	extract "javascript", "sourcemap", "resources"
-	outputDirectory testWebappDir
+	outputDirectory file("$testWebappDir/modules")
 }
 
 task packApplication(type: Copy) {
