@@ -3,6 +3,7 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import groovy.text.SimpleTemplateEngine
 
 /**
  * Created by lptr on 12/11/13.
@@ -18,6 +19,7 @@ class HaxeGenerator implements Generator {
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
+			copySpaghettiClass(module, outputDirectory)
 			generateModuleInterface(module, outputDirectory)
 			generateModuleInitializer(module, outputDirectory)
 			generateInterfacesForModuleTypes(module, outputDirectory, false)
@@ -45,6 +47,14 @@ return __module;
 	String processApplicationJavaScript(String javaScript)
 	{
 		return javaScript
+	}
+
+	/**
+	 * Copies Spaghetti.hx to the generated source directory.
+	 */
+	private static void copySpaghettiClass(ModuleDefinition module, File outputDirectory) {
+		def template = new SimpleTemplateEngine().createTemplate(HaxeGenerator.class.getResource("/Spaghetti.hx"))
+		new File(outputDirectory, "Spaghetti.hx") << template.make(moduleName: module.name)
 	}
 
 	/**

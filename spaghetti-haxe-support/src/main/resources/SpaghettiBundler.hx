@@ -21,8 +21,8 @@ class SpaghettiBundler
 		}
 		var fileName = args.shift();
 		var modulePaths = [];
-		var moduleNames = [];
-		var modules = [];
+		var moduleNames = ['"require"'];
+		var modules = ['"require": arguments[0]'];
 		for (i in 0...args.length) {
 			var modulePath = args[i];
 			var moduleName:String;
@@ -34,7 +34,7 @@ class SpaghettiBundler
 			}
 			moduleNames.push('"${moduleName}"');
 			modulePaths.push('"${moduleName}": "${modulePath}"');
-			modules.push('"${moduleName}": arguments[${i}]');
+			modules.push('"${moduleName}": arguments[${i + 1}]');
 		}
 
 		var haxe = sys.io.File.getContent(fileName);

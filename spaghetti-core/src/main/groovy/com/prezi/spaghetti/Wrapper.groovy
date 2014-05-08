@@ -39,11 +39,12 @@ class Wrapper {
 	}
 
 	private static String wrapAsRequireJsModule(Collection<String> moduleNames, String function, String contents) {
-		def fileNames = moduleNames.collect { moduleName ->
+		def moduleNamesWithRequire = ["require", *moduleNames]
+		def fileNames = moduleNamesWithRequire.collect { moduleName ->
 			return "\"${moduleName}\""
 		}
 		def modules = []
-		moduleNames.eachWithIndex { moduleName, index ->
+		moduleNamesWithRequire.eachWithIndex { moduleName, index ->
 			modules.push(""""${moduleName}": arguments[${index}]""")
 		}
 		return """${function}([${fileNames.join(",")}], function() { var __modules = { ${modules.join(",")} }; ${contents}
@@ -52,7 +53,7 @@ class Wrapper {
 	}
 
 	private static String wrapAsNodeJsModule(Iterable<String> moduleNames, String config, String contents) {
-		def requires = moduleNames.collect { moduleName ->
+		def requires = ["require", *moduleNames].collect { moduleName ->
 			""""${moduleName}": __requirejs("${moduleName}")"""
 		}
 		return """var __requirejs = require("requirejs"); ${config} var __modules = { ${requires.join(",")} }; ${contents}"""

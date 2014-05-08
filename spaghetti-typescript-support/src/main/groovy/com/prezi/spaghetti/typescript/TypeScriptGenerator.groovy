@@ -3,6 +3,7 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import groovy.text.SimpleTemplateEngine
 
 /**
  * Created by lptr on 12/11/13.
@@ -18,6 +19,7 @@ class TypeScriptGenerator implements Generator {
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
+			copySpaghettiClass(module, outputDirectory)
 			generateModuleInterface(module, outputDirectory)
 		}
 		config.dependentModules.each { dependentModule ->
@@ -41,6 +43,14 @@ class TypeScriptGenerator implements Generator {
 	String processApplicationJavaScript(String javaScript)
 	{
 		return javaScript
+	}
+
+	/**
+	 * Copies Spaghetti.hx to the generated source directory.
+	 */
+	private static void copySpaghettiClass(ModuleDefinition module, File outputDirectory) {
+		def template = new SimpleTemplateEngine().createTemplate(TypeScriptGenerator.class.getResource("/Spaghetti.ts"))
+		new File(outputDirectory, "Spaghetti.ts") << template.make(moduleName: module.name)
 	}
 
 	/**
