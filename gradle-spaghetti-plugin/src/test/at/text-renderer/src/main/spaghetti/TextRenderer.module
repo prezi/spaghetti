@@ -27,3 +27,5 @@ const Values {
 	 */
 	Renderer DEFAULT_RENDERER
 }
+
+string getResource()

@@ -74,4 +74,10 @@ class ClientTest extends MatchersBase {
 		assertThat(cbConverted, is("43"));
 		assertThat(result, is(12));
 	}
+
+	@Test
+	public function testResourceUrls() {
+		assertThat(Layout.getResource(), is("../../prezi.graphics.text/sample.txt"));
+		assertThat(TextRenderer.getResource(), is("../../prezi.graphics.text.render/some-resource.txt"));
+	}
 }

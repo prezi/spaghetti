@@ -6,6 +6,9 @@ export class TextRendererImpl implements TextRenderer {
 	createRenderer(prefix:string, suffix:string):Renderer {
 		return new RendererImpl(prefix, suffix);
 	}
+	getResource():string {
+		return Spaghetti.getResourceUrl("some-resource.txt");
+	}
 }
 
 

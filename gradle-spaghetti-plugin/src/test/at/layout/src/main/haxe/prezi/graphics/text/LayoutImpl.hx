@@ -12,6 +12,11 @@ class LayoutImpl implements Layout {
 	{
 		return new TestStuffImpl<String, String>();
 	}
+
+	public function getResource():String
+	{
+		return Spaghetti.getResourceUrl("sample.txt");
+	}
 }
 
 class TestStuffImpl<Pre, Post> implements TestStuff<Pre, Post> {

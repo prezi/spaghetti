@@ -27,6 +27,9 @@ class Client {
 		// 	doAsync(callback:String->(Int->String)->Void, converter:Int->String) {
 		var result = testStuff.doAsync(callback, function(value:Int):String { return Std.string(value + 1); });
 		trace("doAync() returned: " + result);
+
+		trace("Haxe resource: " + Layout.getResource());
+		trace("TypeScript resource: " + TextRenderer.getResource());
 	}
 
 	static function callback(name:String, converter:Int->String)
