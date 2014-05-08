@@ -53,10 +53,10 @@ class Wrapper {
 	}
 
 	private static String wrapAsNodeJsModule(Iterable<String> moduleNames, String config, String contents) {
-		def requires = ["require", *moduleNames].collect { moduleName ->
+		def requires = moduleNames.collect { moduleName ->
 			""""${moduleName}": __requirejs("${moduleName}")"""
 		}
-		return """var __requirejs = require("requirejs"); ${config} var __modules = { ${requires.join(",")} }; ${contents}"""
+		return """var __requirejs = require("requirejs"); ${config} var __modules = { "require": __requirejs,${requires.join(",")} }; ${contents}"""
 	}
 
 	private static String config(Iterable<String> moduleNames, String modulesRoot, String requireName) {
