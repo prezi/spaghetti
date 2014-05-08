@@ -6,12 +6,22 @@ import com.prezi.haxe.gradle.MUnit
 import com.prezi.spaghetti.ModuleBundle
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.internal.DefaultDomainObjectSet
 import org.gradle.language.base.LanguageSourceSet
 
 /**
  * Created by lptr on 27/04/14.
  */
 class MUnitWithSpaghetti extends MUnit {
+
+	final LinkedHashSet<Object> spaghettiResources = []
+	public void spaghettiResources(Object... resources) {
+		this.spaghettiResources.addAll(resources)
+	}
+	protected DomainObjectSet<LanguageSourceSet> getSpaghettiResourceSets() {
+		def spaghettiResourceSets = spaghettiResources.collectMany { notationParser.parseNotation(it) }
+		return new DefaultDomainObjectSet<LanguageSourceSet>(LanguageSourceSet, spaghettiResourceSets)
+	}
 
 	@Override
 	protected HaxeCommandBuilder configureHaxeCommandLine(File output, File workDir, DomainObjectSet<LanguageSourceSet> sources, Set<LanguageSourceSet> testSources, Map<String, File> allResources) {
@@ -34,6 +44,14 @@ class MUnitWithSpaghetti extends MUnit {
 				}
 				return classPaths
 			}
+
+			// Copy current module's Spaghetti resources
+			logger.debug "Copying spaghetti resources: {} into {}", getSpaghettiResourceSets()*.source*.srcDirs, workDir
+			project.copy {
+				from getSpaghettiResourceSets()*.source*.srcDirs
+				into workDir
+			}
+
 			// Append module locations
 			def bundlerCommand = HaxeCommandUtils.spaghettiBundlerCommand("module", output, project.buildDir, allClassPaths, { ModuleBundle bundle ->
 				bundle.extract(new File(workDir, bundle.name))

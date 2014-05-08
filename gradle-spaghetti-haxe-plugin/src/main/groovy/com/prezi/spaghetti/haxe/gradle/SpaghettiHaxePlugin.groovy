@@ -8,6 +8,7 @@ import com.prezi.spaghetti.gradle.SpaghettiBasePlugin
 import com.prezi.spaghetti.gradle.SpaghettiExtension
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet
 import com.prezi.spaghetti.gradle.SpaghettiPlugin
+import com.prezi.spaghetti.gradle.SpaghettiResourceSet
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -81,7 +82,13 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 				// Add a compile, source and munit task
 				HaxeBasePlugin.createCompileTask(project, binary, HaxeCompileWithSpaghetti)
 				HaxeBasePlugin.createSourceTask(project, binary, Har)
-				HaxeBasePlugin.createMUnitTask(project, binary, MUnitWithSpaghetti)
+				MUnitWithSpaghetti munit = (MUnitWithSpaghetti) HaxeBasePlugin.createMUnitTask(project, binary, MUnitWithSpaghetti)
+				projectSourceSet.findByName("main").withType(SpaghettiResourceSet).all(new Action<SpaghettiResourceSet>() {
+					@Override
+					void execute(SpaghettiResourceSet spaghettiResourceSet) {
+						munit.spaghettiResources(spaghettiResourceSet)
+					}
+				})
 			}
 		})
 	}
