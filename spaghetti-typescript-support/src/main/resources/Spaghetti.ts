@@ -2,7 +2,7 @@ module Spaghetti {
     declare var __modules:Array<any>;
 
     var moduleBaseUrl:string = function() {
-        var moduleUrl = __modules["require"].toUrl("${moduleName}.js");
+        var moduleUrl = __modules["require"]["toUrl"]("${moduleName}.js");
         var lastIndex = moduleUrl.lastIndexOf("/");
         return moduleUrl.substr(0, lastIndex + 1);
     }();

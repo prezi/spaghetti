@@ -2,7 +2,7 @@ class Spaghetti {
 	static var moduleBaseUrl:String = createModuleBaseUrl();
 
 	static function createModuleBaseUrl() {
-		var moduleUrl = untyped __modules["require"].toUrl("${moduleName}.js");
+		var moduleUrl = untyped __js__('__modules["require"]["toUrl"]("${moduleName}.js")');
 		var lastIndex = moduleUrl.lastIndexOf("/");
 		return moduleUrl.substr(0, lastIndex + 1);
 	}
