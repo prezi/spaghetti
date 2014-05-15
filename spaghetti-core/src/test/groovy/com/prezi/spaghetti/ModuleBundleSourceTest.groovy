@@ -6,7 +6,6 @@ import spock.lang.Specification
 
 import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
-import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 /**
