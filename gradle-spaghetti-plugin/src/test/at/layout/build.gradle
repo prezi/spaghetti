@@ -1,6 +1,3 @@
-import com.prezi.spaghetti.gradle.BundleModule
-import com.prezi.spaghetti.gradle.ObfuscateBundle
-
 apply plugin: "spaghetti-haxe"
 
 dependencies {
@@ -39,24 +36,30 @@ sources {
 	}
 }
 
-task bundleModule(type: BundleModule) {
+task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	dependsOn compileJs
 	inputFile compileJs.outputFile
 }
 
-task obfuscate(type: ObfuscateBundle) {
+task zipModule(type: Zip) {
+	dependsOn bundleModule
+	from bundleModule.outputDirectory
+	archiveName = "module"
+}
+
+/*
+task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 	dependsOn compileJs
 	inputFile compileJs.outputFile
 }
+
+task zipModuleObfuscated(type: Zip) {
+	from obfuscateModule.outputDirectory
+	archiveName = "module-obfuscated"
+}
+*/
 
 artifacts {
-	archives(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modules(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modulesObf(obfuscate.outputFile) {
-		builtBy obfuscate
-	}
+	modules zipModule
+//	modulesObf zipModuleObfuscated
 }
