@@ -94,7 +94,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			if (resourceDir?.exists()) {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
 					def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
-					log.warn("Adding resource {}", resourcePath)
+					log.debug("Adding resource {}", resourcePath)
 					builder.addEntry resourcePath, { out -> resourceFile.withInputStream { out << it } }
 					resourcePaths.add resourcePath
 				}
