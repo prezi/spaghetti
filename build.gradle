@@ -143,6 +143,12 @@ subprojects { subproject ->
 	}
 }
 
+project(":spaghetti-core") {
+	dependencies {
+		compile "com.google.javascript:closure-compiler:v20131014"
+	}
+}
+
 configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	dependencies {
 		compile project(path: ":spaghetti-core")
@@ -152,7 +158,6 @@ configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 project(":gradle-spaghetti-plugin") {
 	dependencies {
 		compile gradleApi()
-		compile "com.google.javascript:closure-compiler:v20131014"
 		compile project(path: ":spaghetti-core")
 		// Add all support projects
 		rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
