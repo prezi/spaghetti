@@ -1,5 +1,7 @@
 package com.prezi.spaghetti
 
+import groovy.io.FileType
+
 import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -27,7 +29,7 @@ public interface ModuleBundleSource {
 				throw new IllegalArgumentException("Could not find module bundle directory: ${sourceDirectory}")
 			}
 
-			sourceDirectory.eachFile { File file ->
+			sourceDirectory.eachFile(FileType.FILES) { File file ->
 				def path = sourceDirectory.toURI().relativize(file.toURI()).toString()
 				handler.handleFile(path, { new FileInputStream(file) })
 			}
