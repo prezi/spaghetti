@@ -27,7 +27,11 @@ class ModuleObfuscator {
 
 		// OBFUSCATE
 		def compressedJS = new StringBuilder();
-		def closureFile = new File(params.workingDirectory, "closure.js");
+
+		def workDir = params.workingDirectory
+		workDir.delete() || workDir.deleteDir()
+		workDir.mkdirs()
+		def closureFile = new File(workDir, "closure.js");
 
 		closureFile << params.javaScript << "\nvar __a = {}\n" + symbols.collect {
 			"/** @expose */\n__a." + it + " = {}\n"
