@@ -11,17 +11,6 @@ import org.gradle.api.tasks.Optional
 
 class ObfuscateBundle extends AbstractBundleModuleTask
 {
-	private static final List<String> protectedSymbols = [
-		// RequireJS
-		"define",
-		// class definitions
-		"prototype",
-		// Spaghetti constants
-		"__consts",
-		// Haxe class names -- Haxe likes to put this on global objects like Math and String and Date
-		"__name__",
-	]
-
 	private final Set<File> closureExterns;
 
 	public ObfuscateBundle()
