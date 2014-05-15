@@ -12,7 +12,7 @@ interface ModuleBundleBuilder {
 	ModuleBundleSource create()
 	void close()
 
-	class Directory implements ModuleBundleBuilder {
+	static class Directory implements ModuleBundleBuilder {
 		private final File directory
 
 		Directory(File directory) {
@@ -42,7 +42,7 @@ interface ModuleBundleBuilder {
 		}
 	}
 
-	class Zip implements ModuleBundleBuilder {
+	static class Zip implements ModuleBundleBuilder {
 		File zipFile
 		ZipOutputStream zipStream
 

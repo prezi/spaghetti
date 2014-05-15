@@ -14,7 +14,7 @@ public interface ModuleBundleSource {
 		void handleFile(String path, Callable<? extends InputStream> contents)
 	}
 
-	class Directory implements ModuleBundleSource {
+	static class Directory implements ModuleBundleSource {
 		final File sourceDirectory
 
 		Directory(File sourceDirectory) {
@@ -32,9 +32,14 @@ public interface ModuleBundleSource {
 				handler.handleFile(path, { new FileInputStream(file) })
 			}
 		}
+
+		@Override
+		String toString() {
+			return sourceDirectory.toString()
+		}
 	}
 
-	class Zip implements ModuleBundleSource {
+	static class Zip implements ModuleBundleSource {
 		final File zip
 
 		Zip(File zip) {
@@ -54,6 +59,11 @@ public interface ModuleBundleSource {
 				def contents = { zipFile.getInputStream(entry) }
 				handler.handleFile(entry.name, contents)
 			}
+		}
+
+		@Override
+		String toString() {
+			return zip.toString()
 		}
 	}
 }

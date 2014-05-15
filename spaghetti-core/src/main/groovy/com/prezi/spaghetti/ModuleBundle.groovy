@@ -113,11 +113,20 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		}
 		def source
 		if (inputFile.file) {
+			log.debug "{} is a file, trying to load as ZIP", inputFile
 			source = new ModuleBundleSource.Zip(inputFile)
-		} else {
+		} else if (inputFile.directory) {
+			log.debug "{} is a directory, trying to load as exploded", inputFile
 			source = new ModuleBundleSource.Directory(inputFile)
+		} else {
+			throw new RuntimeException("Unknown module format: ${inputFile}")
 		}
 
+		return loadInternal(source)
+	}
+
+	@groovy.transform.PackageScope
+	static ModuleBundle loadInternal(ModuleBundleSource source) {
 		String definition = null
 		String compiledJavaScript = null
 		Manifest manifest = null
@@ -129,16 +138,16 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
 					case DEFINITION_PATH:
-						definition = contents()
+						definition = contents().text
 						break
 					case COMPILED_JAVASCRIPT_PATH:
-						compiledJavaScript = contents()
+						compiledJavaScript = contents().text
 						break
 					case MANIFEST_MF_PATH:
 						manifest = new Manifest(contents())
 						break
 					case SOURCE_MAP_PATH:
-						sourceMap = contents()
+						sourceMap = contents().text
 						break
 					default:
 						if (path.startsWith(RESOURCES_PREFIX)) {
@@ -149,21 +158,21 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			}
 		})
 		if (manifest == null) {
-			throw new IllegalArgumentException("Not a module, missing manifest: " + inputFile)
+			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
 		}
 		def spaghettiVersion = manifest.mainAttributes.getValue(MANIFEST_ATTR_SPAGHETTI_VERSION)
 		if (spaghettiVersion == null) {
-			throw new IllegalArgumentException("Not a module, module version missing from manifest: ${inputFile}")
+			throw new IllegalArgumentException("Not a module, module version missing from manifest: ${source}")
 		}
 		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
-			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${inputFile}")
+			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${source}")
 		}
 		String name = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME)
 		if (definition == null) {
-			throw new IllegalArgumentException("Not a module, missing definition: ${inputFile}")
+			throw new IllegalArgumentException("Not a module, missing definition: ${source}")
 		}
 		if (compiledJavaScript == null) {
-			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: ${inputFile}")
+			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: ${source}")
 		}
 
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
