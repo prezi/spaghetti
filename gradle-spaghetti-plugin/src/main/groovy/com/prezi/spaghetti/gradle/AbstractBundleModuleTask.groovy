@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.ModubleBundleParameters
 import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
@@ -113,14 +114,17 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			String javaScript,
 			String sourceMap,
 			Set<File> resourceDirs) {
-		ModuleBundle.create(
+		ModuleBundle.createZip(
 				getOutputFile(),
-				module.name,
-				module.definitionSource,
-				String.valueOf(project.version),
-				getSourceBaseUrl(),
-				javaScript,
-				sourceMap,
-				resourceDirs)
+				new ModubleBundleParameters(
+						name: module.name,
+						definition: module.definitionSource,
+						version: String.valueOf(project.version),
+						sourceBaseUrl: getSourceBaseUrl(),
+						bundledJavaScript: javaScript,
+						sourceMap: sourceMap,
+						resourceDirs: resourceDirs
+				)
+		)
 	}
 }
