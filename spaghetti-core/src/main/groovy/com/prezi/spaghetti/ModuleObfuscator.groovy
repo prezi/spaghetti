@@ -1,5 +1,7 @@
 package com.prezi.spaghetti
 
+import groovy.transform.TupleConstructor
+
 /**
  * Created by lptr on 15/05/14.
  */
@@ -58,7 +60,7 @@ class ModuleObfuscator {
 	}
 }
 
-@groovy.transform.Immutable
+@TupleConstructor
 public class ObfuscationParameters {
 	ModuleConfiguration config
 	ModuleDefinition module
