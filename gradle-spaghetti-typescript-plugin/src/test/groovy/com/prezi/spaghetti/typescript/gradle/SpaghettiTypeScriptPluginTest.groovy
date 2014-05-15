@@ -12,6 +12,17 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 		project.apply plugin: "spaghetti-typescript"
 
 		expect:
-		project.tasks*.name.sort() == ["assemble", "bundleModule", "clean", "compile", "generateHeaders", "main", "mainModule", "obfuscateModule", "spaghetti-platforms"]
+		project.tasks*.name.sort() == [
+				"assemble",
+				"bundleModule",
+				"clean",
+				"compile",
+				"generateHeaders",
+				"main",
+				"mainModule",
+				"obfuscateModule",
+				"processSpaghettiResources",
+				"spaghetti-platforms"
+		]
 	}
 }

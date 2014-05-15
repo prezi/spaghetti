@@ -54,6 +54,12 @@ class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiResourceSet.source.srcDir("src/main/spaghetti-resources")
 		functionalSourceSet.add(spaghettiResourceSet)
 
+		// TODO Use a proper Spaghetti module binary to tie this together
+		ProcessSpaghettiResources resourcesTask = project.tasks.create("processSpaghettiResources", ProcessSpaghettiResources)
+		resourcesTask.description = "Processes Spaghetti resources"
+		resourcesTask.conventionMapping.destinationDir = { project.file("${project.buildDir}/spaghetti/resources") }
+		resourcesTask.from(spaghettiResourceSet.source);
+
 		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
 			task.conventionMapping.bundles = { extension.configuration }
 		}
@@ -65,7 +71,9 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 		project.tasks.withType(AbstractBundleModuleTask).all { AbstractBundleModuleTask task ->
 			task.conventionMapping.sourceBaseUrl = { extension.sourceBaseUrl }
-			task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
+			task.conventionMapping.resourcesDirectory = { spaghettiResourceSet.source.srcDirs }
+			task.conventionMapping.resourcesDirectory = { resourcesTask.getDestinationDir() }
+			task.dependsOn resourcesTask
 		}
 
 		// Automatically generate module headers
@@ -89,13 +97,13 @@ class SpaghettiPlugin implements Plugin<Project> {
 			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
 				logger.debug("Creating bundle and obfuscation for ${binary}")
 
+				// TODO Use a proper Spaghetti module binary instead of passing the resourcesTask around
 				// Automatically create bundle module task and artifact
 				BundleModule bundleTask = createBundleTask(project, binary)
 				def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
 				project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
 				logger.debug("Added bundle task ${bundleTask} with artifact ${moduleBundleArtifact}")
 
-				// TODO Probably this should be enabled via command line
 				// Automatically obfuscate bundle
 				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary)
 				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)

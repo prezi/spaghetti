@@ -1,6 +1,7 @@
 package com.prezi.spaghetti
 
 import groovy.io.FileType
+import groovy.transform.TupleConstructor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -20,6 +21,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	private static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
 	private static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
+	private static final def MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies")
 	private static final def DEFINITION_PATH = "module.def"
 	private static final def SOURCE_MAP_PATH = "module.map"
 	private static final def COMPILED_JAVASCRIPT_PATH = "module.js"
@@ -33,9 +35,10 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	final String version
 	final String sourceBaseUrl
 	final String sourceMap
+	final Set<String> dependentModules
 	final Set<String> resourcePaths
 
-	private ModuleBundle(ModuleBundleSource source, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<String> resourcePaths) {
+	private ModuleBundle(ModuleBundleSource source, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<String> dependentModules, Set<String> resourcePaths) {
 		this.source = source
 		this.name = name
 		this.version = version
@@ -43,6 +46,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		this.definition = definition
 		this.bundledJavaScript = bundledJavaScript
 		this.sourceMap = sourceMap
+		this.dependentModules = dependentModules
 		this.resourcePaths = resourcePaths
 	}
 
@@ -71,6 +75,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, params.name)
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, params.version ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, params.sourceBaseUrl ?: "")
+			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_DEPENDENCIES, params.dependentModules.join(","))
 			builder.addEntry MANIFEST_MF_PATH, { out -> manifest.write(out) }
 
 			// Store definition
@@ -85,7 +90,8 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			}
 
 			// Store resources
-			params.resourceDirs.each { resourceDir ->
+			def resourceDir = params.resourcesDirectory
+			if (resourceDir?.exists()) {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
 					def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
 					log.warn("Adding resource {}", resourcePath)
@@ -95,7 +101,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			}
 
 			def source = builder.create()
-			return new ModuleBundle(source, params.name, params.definition, params.version, params.sourceBaseUrl, params.bundledJavaScript, params.sourceMap, resourcePaths.asImmutable())
+			return new ModuleBundle(source, params.name, params.definition, params.version, params.sourceBaseUrl, params.bundledJavaScript, params.sourceMap, params.dependentModules, resourcePaths.asImmutable())
 		} finally {
 			builder.close()
 		}
@@ -162,7 +168,8 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String sourceUrl = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
-		return new ModuleBundle(source, name, definition, version, sourceUrl, compiledJavaScript, sourceMap, resourcePaths.asImmutable())
+		Set<String> dependentModules = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES)?.tokenize(",") ?: []
+		return new ModuleBundle(source, name, definition, version, sourceUrl, compiledJavaScript, sourceMap, dependentModules, resourcePaths.asImmutable())
 	}
 
 	public void extract(File outputDirectory, ModuleBundleElement... elements) {
@@ -216,7 +223,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 }
 
-@groovy.transform.Immutable
+@TupleConstructor
 class ModubleBundleParameters {
 	String name
 	String definition
@@ -224,5 +231,6 @@ class ModubleBundleParameters {
 	String sourceBaseUrl
 	String bundledJavaScript
 	String sourceMap
-	Set<File> resourceDirs
+	Set<String> dependentModules
+	File resourcesDirectory
 }

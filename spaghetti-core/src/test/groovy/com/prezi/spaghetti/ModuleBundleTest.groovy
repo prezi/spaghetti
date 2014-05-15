@@ -24,7 +24,8 @@ class ModuleBundleTest extends Specification {
 						sourceBaseUrl: "http://git.example.com/test",
 						bundledJavaScript: "console.log('hello');",
 						sourceMap: "sourcemap",
-						resourceDirs: [])
+						dependentModules: ["com.example.alma", "com.example.bela"],
+						resourcesDirectory: null)
 		)
 
 		then:
@@ -36,12 +37,14 @@ class ModuleBundleTest extends Specification {
 		1 * builder.create()
 		1 * builder.close()
 		0 * _
-		manifest.tokenize("\r?\n") == [
+		manifest.tokenize("\r?\n").sort() == [
 				"Manifest-Version: 1.0",
-				"Module-Source: http://git.example.com/test",
 				"Spaghetti-Version: ${Version.SPAGHETTI_VERSION}",
+				"Module-Name: test",
 				"Module-Version: 3.7",
-				"Module-Name: test"]
+				"Module-Dependencies: com.example.alma,com.example.bela",
+				"Module-Source: http://git.example.com/test",
+		].sort()
 	}
 
 	private static String get(Closure cl) {

@@ -1,8 +1,5 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.ModuleDefinitionParser
-import com.prezi.spaghetti.ModuleDefinitionSource
-import com.prezi.spaghetti.SymbolCollectVisitor
 import spock.lang.Specification
 
 /**

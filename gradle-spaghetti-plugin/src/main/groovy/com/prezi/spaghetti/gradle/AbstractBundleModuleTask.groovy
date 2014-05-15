@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
@@ -39,7 +40,6 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 	}
 
 	File sourceMap
-
 	void sourceMap(Object sourceMap) {
 		this.sourceMap = project.file(sourceMap)
 	}
@@ -57,20 +57,10 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		return sourceMap
 	}
 
-	// @InputDirectories not yet supported (only @InputDirectory)
-	// http://issues.gradle.org/browse/GRADLE-3051
-	// This probably won't work with convention mapping
-	Set<File> resourceDirs = []
-	void setResourceDirs(Set<File> resourceDirs) {
-		resourceDirs.each {
-			inputs.dir it
-		}
-		this.resourceDirs = new LinkedHashSet<>(resourceDirs)
-	}
-
-	void resourceDir(File resourceDirectory) {
-		inputs.dir resourceDirectory
-		this.resourceDirs.add resourceDirectory
+	@InputDirectory
+	File resourcesDirectory
+	void resourcesDirectory(Object resourcesDir) {
+		this.resourcesDirectory = project.file(resourcesDir)
 	}
 
 	File workDir
@@ -104,8 +94,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		workDir.mkdirs()
 		new File(workDir, "module.js") << wrappedJavaScript
 
-		def existingResourceDirs = getResourceDirs().findAll { it.exists() }
-		createBundle(config, module, wrappedJavaScript, sourceMapText, existingResourceDirs)
+		createBundle(config, module, wrappedJavaScript, sourceMapText, getResourcesDirectory())
 	}
 
 	protected ModuleBundle createBundle(
@@ -113,7 +102,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			ModuleDefinition module,
 			String javaScript,
 			String sourceMap,
-			Set<File> resourceDirs) {
+			File resourceDir) {
 		ModuleBundle.createZip(
 				getOutputFile(),
 				new ModubleBundleParameters(
@@ -123,7 +112,8 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 						sourceBaseUrl: getSourceBaseUrl(),
 						bundledJavaScript: javaScript,
 						sourceMap: sourceMap,
-						resourceDirs: resourceDirs
+						dependentModules: config.dependentModules*.name,
+						resourcesDirectory: resourceDir
 				)
 		)
 	}
