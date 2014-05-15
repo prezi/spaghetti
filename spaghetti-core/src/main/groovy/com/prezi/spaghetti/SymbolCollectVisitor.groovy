@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.gradle
+package com.prezi.spaghetti
 
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser

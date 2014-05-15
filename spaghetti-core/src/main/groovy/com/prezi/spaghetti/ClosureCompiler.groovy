@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.gradle
+package com.prezi.spaghetti
 
 import com.google.javascript.jscomp.CommandLineRunner
 import com.google.javascript.jscomp.CompilationLevel
@@ -21,7 +21,7 @@ import static java.nio.charset.StandardCharsets.UTF_8
  * This way we don't rely on support for column number information
  * in browsers.
  */
-class Closure {
+class ClosureCompiler {
 
 	private static final int lineLengthThreshold = 1;
 	private static final CompilationLevel compilationLevel = CompilationLevel.ADVANCED_OPTIMIZATIONS;

@@ -3,6 +3,8 @@ package com.prezi.spaghetti.gradle
 import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.ModuleObfuscator
+import com.prezi.spaghetti.ObfuscationParameters
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
@@ -31,36 +33,17 @@ class ObfuscateBundle extends AbstractBundleModuleTask
 
 	@Override
 	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleDefinition module, String javaScript, String sourceMap, Set<File> resourceDirs) {
-		def modules = config.localModules + config.dependentModules
-		Set<String> symbols = protectedSymbols + modules.collect{new SymbolCollectVisitor().visit(it.context)}.flatten() + getAdditionalSymbols()
-
-		// OBFUSCATE
-		def compressedJS = new StringBuilder();
-		def closureFile = new File(getWorkDir(), "closure.js");
-
-		closureFile << javaScript << "\nvar __a = {}\n" + symbols.collect{
-			"/** @expose */\n__a." + it + " = {}\n"
-		}.join("");
-
-		def sourceMapBuilder = new StringBuilder();
-		def closureRet = Closure.compile(closureFile.toString(), compressedJS, module.name, sourceMapBuilder, getClosureExterns())
-		if (closureRet != 0) {
-			throw new RuntimeException("Closure returned with exit code " + closureRet)
-		}
-		def mapJStoMin = sourceMapBuilder.toString();
-
-		// SOURCEMAP
-		def finalSourceMap;
-		if (sourceMap) {
-			finalSourceMap = SourceMap.compose(sourceMap, mapJStoMin, "module.map", this.nodeSourceMapRoot)
-		} else {
-			finalSourceMap = mapJStoMin;
-		}
-
-		finalSourceMap = SourceMap.relativizePaths(finalSourceMap, new URI(project.rootDir.toString()));
-
-		// BUNDLE
-		return super.createBundle(config, module, compressedJS.toString(), finalSourceMap, resourceDirs)
+		def result = ModuleObfuscator.obfuscateModule(new ObfuscationParameters(
+				config: config,
+				module: module,
+				javaScript: javaScript,
+				sourceMap: sourceMap,
+				nodeSourceMapRoot: getNodeSourceMapRoot(),
+				closureExterns: getClosureExterns(),
+				additionalSymbols: getAdditionalSymbols(),
+				workingDirectory: getWorkDir()
+		))
+		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDirs)
 	}
 
 	@Input

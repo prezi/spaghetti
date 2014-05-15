@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.gradle;
+package com.prezi.spaghetti;
 
 import groovy.json.*;
 import com.google.debugging.sourcemap.*;

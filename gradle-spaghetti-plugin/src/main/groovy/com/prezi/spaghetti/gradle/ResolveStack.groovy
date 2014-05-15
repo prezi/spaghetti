@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.SourceMap
 import org.gradle.api.tasks.TaskAction
 
 class ResolveStack extends AbstractSpaghettiTask {
