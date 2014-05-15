@@ -11,17 +11,19 @@ import org.gradle.api.tasks.Optional
 
 class ObfuscateModule extends AbstractBundleModuleTask
 {
-	private final Set<File> closureExterns;
-
 	public ObfuscateModule()
 	{
-		this.conventionMapping.workDir = { new File(project.buildDir, "spaghetti/obfuscation") }
-		this.conventionMapping.outputFile = { new File(getWorkDir(), "module_obf.zip") }
-		this.closureExterns = []
+		this.conventionMapping.workDir = { new File(project.buildDir, "spaghetti/obfuscation/work") }
+		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/obfuscation/bundle") }
 	}
 
 	@Override
-	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleDefinition module, String javaScript, String sourceMap, Set<File> resourceDirs) {
+	protected ModuleBundle createBundle(
+			ModuleConfiguration config,
+			ModuleDefinition module,
+			String javaScript,
+			String sourceMap,
+			File resourceDir) {
 		def result = ModuleObfuscator.obfuscateModule(new ObfuscationParameters(
 				config: config,
 				module: module,
@@ -32,7 +34,12 @@ class ObfuscateModule extends AbstractBundleModuleTask
 				additionalSymbols: getAdditionalSymbols(),
 				workingDirectory: getWorkDir()
 		))
-		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDirs)
+		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDir)
+	}
+
+	File workDir
+	void workDir(String workDir) {
+		this.workDir = project.file(workDir)
 	}
 
 	@Input
@@ -41,20 +48,21 @@ class ObfuscateModule extends AbstractBundleModuleTask
 		additionalSymbols.addAll(symbols)
 	}
 
+	private final Set<Object> closureExterns = []
+	public void closureExtern(Object... extern) {
+		closureExterns.addAll(extern)
+	}
+
 	@InputFiles
-	Set<File> getClosureExterns()
-	{
-		return this.closureExterns;
+	Set<File> getClosureExterns() {
+		return project.files(this.closureExterns).files
 	}
 
 	@Input
 	@Optional
-	String nodeSourceMapRoot = null;
+	String nodeSourceMapRoot = null
 	public void nodeSourceMapRoot(String sourceMapRoot) {
 		this.nodeSourceMapRoot = sourceMapRoot
 	}
 
-	public void closureExtern(String... externName) {
-		project.files(externName).each{this.closureExterns.add(it)}
-	}
 }

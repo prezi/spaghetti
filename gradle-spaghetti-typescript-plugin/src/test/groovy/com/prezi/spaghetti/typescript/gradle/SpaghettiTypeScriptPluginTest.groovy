@@ -22,7 +22,9 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"mainModule",
 				"obfuscateModule",
 				"processSpaghettiResources",
-				"spaghetti-platforms"
+				"spaghetti-platforms",
+				"zipModule",
+				"zipModuleObfuscated",
 		]
 	}
 }

@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
@@ -100,16 +101,15 @@ class SpaghettiPlugin implements Plugin<Project> {
 				// TODO Use a proper Spaghetti module binary instead of passing the resourcesTask around
 				// Automatically create bundle module task and artifact
 				BundleModule bundleTask = createBundleTask(project, binary)
-				def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
-				project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
-				logger.debug("Added bundle task ${bundleTask} with artifact ${moduleBundleArtifact}")
+				def zipModule = createZipTask(project, binary, bundleTask, "module", "")
+				project.artifacts.add(extension.configuration.name, zipModule)
+				logger.debug("Added bundle task ${bundleTask} with zip artifact ${zipModule}")
 
 				// Automatically obfuscate bundle
 				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary)
-				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
-				obfuscatedBundleArtifact.name = "module-obfuscated"
-				project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
-				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
+				def zipObfuscated = createZipTask(project, binary, obfuscateTask, "module-obfuscated", "obfuscated")
+				project.artifacts.add(extension.obfuscatedConfiguration.name, zipObfuscated)
+				logger.debug("Added obfuscate task ${obfuscateTask} with zip artifact ${zipObfuscated}")
 			}
 		})
 	}
@@ -157,6 +157,17 @@ class SpaghettiPlugin implements Plugin<Project> {
 		obfuscateTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
 		obfuscateTask.dependsOn binary
 		return obfuscateTask
+	}
+
+	private static Zip createZipTask(Project project, SpaghettiCompatibleJavaScriptBinary binary, AbstractBundleModuleTask bundleTask, String name, String taskName) {
+		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
+		def zipTaskName = namingScheme.getTaskName("zip", taskName)
+		def zipTask = project.tasks.create(zipTaskName, Zip)
+		zipTask.description = "Zip up ${name} ${binary}."
+		zipTask.dependsOn bundleTask
+		zipTask.from { bundleTask.outputDirectory }
+		zipTask.conventionMapping.archiveName = { name }
+		return zipTask
 	}
 
 	// TODO Make this into a lazy FileCollection
