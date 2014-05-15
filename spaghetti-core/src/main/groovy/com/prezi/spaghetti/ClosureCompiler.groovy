@@ -44,7 +44,7 @@ class ClosureCompiler {
 		options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5); // ES5 relaxes some keywords
 
 		// Set default externs so that commonly used primitives are protected
-		def externs = CommandLineRunner.getDefaultExterns() +
+		List externs = CommandLineRunner.getDefaultExterns() +
 			customExterns.collect{SourceFile.fromFile(it, UTF_8)};
 
 		// COMPILE
