@@ -16,6 +16,8 @@ allprojects {
 	group = 'com.prezi.spaghetti'
 	version = gitVersion
 	apply plugin: 'idea'
+
+	tasks.withType(Upload).all { dependsOn "check" }
 }
 
 subprojects { subproject ->
