@@ -9,11 +9,11 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 
-class ObfuscateBundle extends AbstractBundleModuleTask
+class ObfuscateModule extends AbstractBundleModuleTask
 {
 	private final Set<File> closureExterns;
 
-	public ObfuscateBundle()
+	public ObfuscateModule()
 	{
 		this.conventionMapping.workDir = { new File(project.buildDir, "spaghetti/obfuscation") }
 		this.conventionMapping.outputFile = { new File(getWorkDir(), "module_obf.zip") }
