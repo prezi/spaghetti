@@ -8,6 +8,7 @@ dependencies {
 	compile "com.google.guava:guava:15.0"
 	compile "org.slf4j:slf4j-api:1.7.7"
 	antlr "org.antlr:antlr4:4.2"
+	testCompile "org.slf4j:slf4j-simple:1.7.7"
 }
 
 def generatedGrammar = file("${buildDir}/antlr-generated")
