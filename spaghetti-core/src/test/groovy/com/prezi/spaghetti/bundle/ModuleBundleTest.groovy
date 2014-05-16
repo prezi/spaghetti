@@ -96,7 +96,7 @@ class ModuleBundleTest extends Specification {
 		bundle.version == "3.7"
 		bundle.definition == "module com.example.test as Test"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
-		bundle.bundledJavaScript == "console.log('hello');"
+		bundle.javaScript == "console.log('hello');"
 		bundle.sourceMap == "sourcemap"
 		bundle.dependentModules.sort() == ["com.example.alma", "com.example.bela"]
 	}

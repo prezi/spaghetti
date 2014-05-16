@@ -31,20 +31,20 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	private final ModuleBundleSource source
 	final String name
 	final String definition
-	final String bundledJavaScript
+	final String javaScript
 	final String version
 	final String sourceBaseUrl
 	final String sourceMap
 	final Set<String> dependentModules
 	final Set<String> resourcePaths
 
-	private ModuleBundle(ModuleBundleSource source, String name, String definition, String version, String sourceBaseUrl, String bundledJavaScript, String sourceMap, Set<String> dependentModules, Set<String> resourcePaths) {
+	private ModuleBundle(ModuleBundleSource source, String name, String definition, String version, String sourceBaseUrl, String javaScript, String sourceMap, Set<String> dependentModules, Set<String> resourcePaths) {
 		this.source = source
 		this.name = name
 		this.version = version
 		this.sourceBaseUrl = sourceBaseUrl
 		this.definition = definition
-		this.bundledJavaScript = bundledJavaScript
+		this.javaScript = javaScript
 		this.sourceMap = sourceMap
 		this.dependentModules = dependentModules
 		this.resourcePaths = resourcePaths
