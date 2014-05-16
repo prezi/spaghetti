@@ -14,7 +14,9 @@ class ReservedWords {
 	public static final String MODULE = "__module"
 
 	public static final String MODULES = "__modules"
+	public static final String BASE_URL_VAR = "__baseUrl"
 
+	// TODO Must this be protected?
 	@Protected
 	public static final String CONSTANTS = "__consts"
 
