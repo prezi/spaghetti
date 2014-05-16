@@ -9,7 +9,7 @@ import java.util.zip.ZipFile
 /**
  * Created by lptr on 15/05/14.
  */
-public interface ModuleBundleSource {
+public interface BundleSource {
 	void init()
 	boolean hasFile(String path)
 	void processFile(String path, ModuleBundleFileHandler handler)
@@ -20,7 +20,7 @@ public interface ModuleBundleSource {
 		void handleFile(String path, Callable<? extends InputStream> contents)
 	}
 
-	static class Directory implements ModuleBundleSource {
+	static class Directory implements BundleSource {
 		final File sourceDirectory
 
 		Directory(File sourceDirectory) {
@@ -29,9 +29,6 @@ public interface ModuleBundleSource {
 
 		@Override
 		void init() {
-			if (!sourceDirectory.exists()) {
-				throw new IllegalArgumentException("Could not find module bundle directory: ${sourceDirectory}")
-			}
 		}
 
 		@Override
@@ -42,21 +39,25 @@ public interface ModuleBundleSource {
 		@Override
 		void processFile(String path, ModuleBundleFileHandler handler) {
 			def file = new File(sourceDirectory, path)
-			if (!file.exists()) {
-				throw new IllegalArgumentException("Could not find \"${path}\" in module bundle directory: ${sourceDirectory}")
+			if (!file.file) {
+				throw new IllegalArgumentException("Could not find file in bundle: ${file}")
 			}
 			handleFile(handler, path, file)
 		}
 
 		@Override
-		void processFiles(ModuleBundleSource.ModuleBundleFileHandler handler) {
+		void processFiles(ModuleBundleFileHandler handler) {
+			if (!sourceDirectory.exists()) {
+				throw new IllegalArgumentException("Could not find module bundle directory: ${sourceDirectory}")
+			}
+
 			sourceDirectory.eachFile(FileType.FILES) { File file ->
 				def path = sourceDirectory.toURI().relativize(file.toURI()).toString()
 				handleFile(handler, path, file)
 			}
 		}
 
-		private static void handleFile(ModuleBundleFileHandler handler, String path, File file) {
+		private static handleFile(ModuleBundleFileHandler handler, String path, File file) {
 			handler.handleFile(path, { new FileInputStream(file) })
 		}
 
@@ -66,11 +67,11 @@ public interface ModuleBundleSource {
 
 		@Override
 		String toString() {
-			return sourceDirectory.toString()
+			return "directory: " + sourceDirectory.toString()
 		}
 	}
 
-	static class Zip implements ModuleBundleSource {
+	static class Zip implements BundleSource {
 		final File zip
 		private ZipFile zipFile
 
@@ -81,8 +82,9 @@ public interface ModuleBundleSource {
 		@Override
 		void init() {
 			try {
-				zipFile = new ZipFile(zip)
+				this.zipFile = new ZipFile(zip)
 			} catch (Exception ex) {
+				// Just so that IntelliJ is happy
 				throw new IllegalArgumentException("Could not open module ZIP file: ${zip}", ex)
 			}
 		}
@@ -95,8 +97,8 @@ public interface ModuleBundleSource {
 		@Override
 		void processFile(String path, ModuleBundleFileHandler handler) {
 			def entry = zipFile.getEntry(path)
-			if (!entry) {
-				throw new IllegalArgumentException("Could not find \"${path}\" in module bundle zip: ${zip}")
+			if (entry) {
+				throw new IllegalArgumentException("Could not find file \"${path}\" in bundle: ${zip}")
 			}
 			handleEntry(handler, entry)
 		}
@@ -108,7 +110,7 @@ public interface ModuleBundleSource {
 			}
 		}
 
-		private handleEntry(ModuleBundleFileHandler handler, ZipEntry entry) {
+		private void handleEntry(ModuleBundleFileHandler handler, ZipEntry entry) {
 			handler.handleFile(entry.name, { zipFile.getInputStream(entry) })
 		}
 
@@ -119,7 +121,7 @@ public interface ModuleBundleSource {
 
 		@Override
 		String toString() {
-			return zip.toString()
+			return "zip:" + zip.toString()
 		}
 	}
 }

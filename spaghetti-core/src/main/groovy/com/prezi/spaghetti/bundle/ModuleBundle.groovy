@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
+import com.prezi.spaghetti.bundle.BundleBuilder.BundleAppender
 import groovy.io.FileType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -22,20 +23,21 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	private static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
 	private static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
 	private static final def MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies")
-	private static final def DEFINITION_PATH = "module.def"
-	private static final def SOURCE_MAP_PATH = "module.map"
-	private static final def JAVASCRIPT_PATH = "module.js"
-	private static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
-	private static final def RESOURCES_PREFIX = "resources/"
 
-	private final ModuleBundleSource source
+	protected static final def DEFINITION_PATH = "module.def"
+	protected static final def SOURCE_MAP_PATH = "module.map"
+	protected static final def JAVASCRIPT_PATH = "module.js"
+	protected static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
+	protected static final def RESOURCES_PREFIX = "resources/"
+
+	protected final BundleSource source
 	final String name
 	final String version
 	final String sourceBaseUrl
 	final Set<String> dependentModules
 	final Set<String> resourcePaths
 
-	protected ModuleBundle(ModuleBundleSource source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
+	protected ModuleBundle(BundleSource source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
 		this.source = source
 		this.name = name
 		this.version = version
@@ -57,14 +59,14 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 
 	public static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) {
-		return create(new ModuleBundleBuilder.Zip(outputFile), params)
+		return create(new BundleBuilder.Zip(outputFile), params)
 	}
 
 	public static ModuleBundle createDirectory(File outputDirectory, ModuleBundleParameters params) {
-		return create(new ModuleBundleBuilder.Directory(outputDirectory), params)
+		return create(new BundleBuilder.Directory(outputDirectory), params)
 	}
 
-	protected static ModuleBundle create(ModuleBundleBuilder builder, ModuleBundleParameters params) {
+	protected static ModuleBundle create(BundleBuilder builder, ModuleBundleParameters params) {
 		checkNotNull(params.name, "name", [])
 		checkNotNull(params.version, "version", [])
 		checkNotNull(params.definition, "definition", [])
@@ -120,10 +122,10 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		def source
 		if (inputFile.file) {
 			logger.debug "{} is a file, trying to load as ZIP", inputFile
-			source = new ModuleBundleSource.Zip(inputFile)
+			source = new BundleSource.Zip(inputFile)
 		} else if (inputFile.directory) {
 			logger.debug "{} is a directory, trying to load as exploded", inputFile
-			source = new ModuleBundleSource.Directory(inputFile)
+			source = new BundleSource.Directory(inputFile)
 		} else {
 			throw new RuntimeException("Unknown module format: ${inputFile}")
 		}
@@ -136,7 +138,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		}
 	}
 
-	protected static ModuleBundle loadInternal(ModuleBundleSource source) {
+	protected static ModuleBundle loadInternal(BundleSource source) {
 		if (!source.hasFile(MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
 		}
@@ -149,7 +151,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 		Manifest manifest = null
 		Set<String> resourcePaths = []
-		source.processFiles(new ModuleBundleSource.ModuleBundleFileHandler() {
+		source.processFiles(new BundleSource.ModuleBundleFileHandler() {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
@@ -186,7 +188,13 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public void extract(File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
 		source.init()
 		try {
-			extract(name, source, outputDirectory, elements)
+			def output = new BundleBuilder.Directory(outputDirectory)
+			output.init()
+			try {
+				extract(name, source, output, elements)
+			} finally {
+				output.close()
+			}
 		} finally {
 			source.close()
 		}
@@ -199,7 +207,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				return null
 			}
 			String text = null
-			source.processFile(path, new ModuleBundleSource.ModuleBundleFileHandler() {
+			source.processFile(path, new BundleSource.ModuleBundleFileHandler() {
 				@Override
 				void handleFile(String _, Callable<? extends InputStream> contents) {
 					text = contents().getText("utf-8")
@@ -211,10 +219,8 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		}
 	}
 
-	protected static void extract(String name, ModuleBundleSource source, File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
-		outputDirectory.delete() || outputDirectory.deleteDir()
-		outputDirectory.mkdirs()
-		source.processFiles(new ModuleBundleSource.ModuleBundleFileHandler() {
+	protected static void extract(String name, BundleSource source, BundleAppender output, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
+		source.processFiles(new BundleSource.ModuleBundleFileHandler() {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
@@ -222,17 +228,17 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 						break
 					case DEFINITION_PATH:
 						if (elements.contains(ModuleBundleElement.definition)) {
-							new File(outputDirectory, "${name}.def") << contents()
+							output.appendFile "${name}.def", write(contents)
 						}
 						break
 					case JAVASCRIPT_PATH:
 						if (elements.contains(ModuleBundleElement.javascript)) {
-							new File(outputDirectory, "${name}.js") << contents()
+							output.appendFile "${name}.js", write(contents)
 						}
 						break
 					case SOURCE_MAP_PATH:
 						if (elements.contains(ModuleBundleElement.sourcemap)) {
-							new File(outputDirectory, "${name}.js.map") << contents()
+							output.appendFile "${name}.js.map", write(contents)
 						}
 						break
 					default:
@@ -240,13 +246,15 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 							def resourcePath = path.substring(RESOURCES_PREFIX.length())
 							// Skip the resources directory itself
 							if (resourcePath) {
-								def resourceFile = new File(outputDirectory, resourcePath)
-								resourceFile.parentFile.mkdirs()
-								resourceFile << contents()
+								output.appendFile resourcePath, write(contents)
 							}
 						}
 						break
 				}
+			}
+
+			Closure write(Callable<? extends InputStream> contents) {
+				{ out -> out << contents() }
 			}
 		})
 	}

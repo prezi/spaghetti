@@ -11,13 +11,13 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by lptr on 16/05/14.
  */
-class ModuleBundleSourceTest extends Specification {
+class BundleSourceTest extends Specification {
 	@Rule
  	public TemporaryFolder tempDir = new TemporaryFolder()
 
 	def "directory has file"() {
 		File zip = makeDir()
-		def source = new ModuleBundleSource.Directory(zip)
+		def source = new BundleSource.Directory(zip)
 		source.init()
 
 		expect:
@@ -27,9 +27,9 @@ class ModuleBundleSourceTest extends Specification {
 
 	def "directory read through"() {
 		File dir = makeDir()
-		def source = new ModuleBundleSource.Directory(dir)
+		def source = new BundleSource.Directory(dir)
 		source.init()
-		def handler = Mock(ModuleBundleSource.ModuleBundleFileHandler)
+		def handler = Mock(BundleSource.ModuleBundleFileHandler)
 
 		when:
 		source.processFiles(handler)
@@ -41,9 +41,9 @@ class ModuleBundleSourceTest extends Specification {
 
 	def "directory read one"() {
 		def dir = makeDir()
-		def source = new ModuleBundleSource.Directory(dir)
+		def source = new BundleSource.Directory(dir)
 		source.init()
-		def handler = Mock(ModuleBundleSource.ModuleBundleFileHandler)
+		def handler = Mock(BundleSource.ModuleBundleFileHandler)
 
 		when:
 		source.processFile("lajos", handler)
@@ -55,7 +55,7 @@ class ModuleBundleSourceTest extends Specification {
 
 	def "zip has file"() {
 		File zip = makeZip()
-		def source = new ModuleBundleSource.Zip(zip)
+		def source = new BundleSource.Zip(zip)
 		source.init()
 
 		expect:
@@ -65,9 +65,9 @@ class ModuleBundleSourceTest extends Specification {
 
 	def "zip read through"() {
 		File zip = makeZip()
-		def source = new ModuleBundleSource.Zip(zip)
+		def source = new BundleSource.Zip(zip)
 		source.init()
-		def handler = Mock(ModuleBundleSource.ModuleBundleFileHandler)
+		def handler = Mock(BundleSource.ModuleBundleFileHandler)
 
 		when:
 		source.processFiles(handler)
@@ -79,9 +79,9 @@ class ModuleBundleSourceTest extends Specification {
 
 	def "zip read one"() {
 		def zip = makeZip()
-		def source = new ModuleBundleSource.Zip(zip)
+		def source = new BundleSource.Zip(zip)
 		source.init()
-		def handler = Mock(ModuleBundleSource.ModuleBundleFileHandler)
+		def handler = Mock(BundleSource.ModuleBundleFileHandler)
 
 		when:
 		source.processFile("lajos", handler)

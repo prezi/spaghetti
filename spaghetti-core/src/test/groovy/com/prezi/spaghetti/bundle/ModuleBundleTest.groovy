@@ -13,7 +13,7 @@ class ModuleBundleTest extends Specification {
 	static final Logger logger = LoggerFactory.getLogger(ModuleBundleTest)
 
 	def "create bundle"() {
-		def builder = Mock(ModuleBundleBuilder)
+		def builder = Mock(BundleBuilder)
 		String manifest = null
 		when:
 		ModuleBundle.create(
@@ -49,7 +49,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "load bundle without any files"() {
-		def source = Mock(ModuleBundleSource)
+		def source = Mock(BundleSource)
 
 		when:
 		ModuleBundle.loadInternal(source)
@@ -63,7 +63,7 @@ class ModuleBundleTest extends Specification {
 
 	@SuppressWarnings("GroovyAssignabilityCheck")
 	def "load bundle with all files present"() {
-		def source = Mock(ModuleBundleSource)
+		def source = Mock(BundleSource)
 
 		when:
 		def bundle = ModuleBundle.loadInternal(source)
@@ -74,7 +74,7 @@ class ModuleBundleTest extends Specification {
 		_ * source.close()
 		//noinspection GroovyAssignabilityCheck
 		1 * source.processFiles({
-			ModuleBundleSource.ModuleBundleFileHandler handler = it
+			BundleSource.ModuleBundleFileHandler handler = it
 			handler.handleFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
 					"Spaghetti-Version: 1.5",
@@ -94,7 +94,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "definition from module"() {
-		def source = Mock(ModuleBundleSource)
+		def source = Mock(BundleSource)
 		def bundle = fakeModule(source)
 		when:
 		def definition = bundle.definition
@@ -112,7 +112,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "javascript from module"() {
-		def source = Mock(ModuleBundleSource)
+		def source = Mock(BundleSource)
 		def bundle = fakeModule(source)
 		when:
 		def javaScript = bundle.javaScript
@@ -130,7 +130,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "source map from module"() {
-		def source = Mock(ModuleBundleSource)
+		def source = Mock(BundleSource)
 		def bundle = fakeModule(source)
 		when:
 		def sourceMap = bundle.sourceMap
@@ -147,7 +147,7 @@ class ModuleBundleTest extends Specification {
 		sourceMap == "sourcemap"
 	}
 
-	private static ModuleBundle fakeModule(ModuleBundleSource source) {
+	private static ModuleBundle fakeModule(BundleSource source) {
 		return new ModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
 	}
 
