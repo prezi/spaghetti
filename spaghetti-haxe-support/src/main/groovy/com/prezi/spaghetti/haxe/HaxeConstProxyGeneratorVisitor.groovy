@@ -5,6 +5,8 @@ import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.ReservedWords.CONSTANTS
+
 /**
  * Created by lptr on 16/11/13.
  */
@@ -42,6 +44,6 @@ ${constants.join("\n")}
 	{
 		def propertyName = ctx.property.name.text
 		def resolvedPropertyType = ctx.property.type.accept(this)
-		return "\tpublic static var ${propertyName} (default, null):${resolvedPropertyType} = untyped __modules[\"${module.name}\"].__consts.${constName}.${propertyName};"
+		return "\tpublic static var ${propertyName} (default, null):${resolvedPropertyType} = untyped __modules[\"${module.name}\"].${CONSTANTS}.${constName}.${propertyName};"
 	}
 }

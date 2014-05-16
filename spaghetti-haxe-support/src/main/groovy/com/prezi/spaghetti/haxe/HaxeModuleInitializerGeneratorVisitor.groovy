@@ -4,6 +4,10 @@ import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.ReservedWords.CONSTANTS
+import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
+
 /**
  * Created by lptr on 16/11/13.
  */
@@ -26,12 +30,14 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		var module:${module.alias} = new ${module.alias}Impl();
+		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl();
 		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};
-		untyped module.__consts = consts;
-		untyped __module = module;
+		untyped ${HAXE_MODULE_VAR} = {
+			${MODULE}: module,
+			${CONSTANTS}: consts
+		}
 		return true;
 	}
 #end

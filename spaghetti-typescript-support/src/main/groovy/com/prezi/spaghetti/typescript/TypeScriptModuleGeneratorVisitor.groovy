@@ -8,6 +8,9 @@ import com.prezi.spaghetti.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.ReservedWords.CONSTANTS
+import static com.prezi.spaghetti.ReservedWords.MODULE
+
 /**
  * Created by lptr on 16/11/13.
  */
@@ -47,8 +50,8 @@ declare var __modules:Array<any>;
 """
 			dependentModules.each { module ->
 				modulesContents +=
-"""export var ${module.alias}:${module.name}.${module.alias} = __modules[\"${module.name}\"];
-export var __${module.alias}:any = __modules[\"${module.name}\"];
+"""export var ${module.alias}:${module.name}.${module.alias} = __modules[\"${module.name}\"].${MODULE};
+export var __${module.alias}:any = __modules[\"${module.name}\"].${MODULE};
 """
 			}
 			modulesContents += "\n"
@@ -159,7 +162,7 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 		if (!localModule) {
 			def values = ctx.propertyDefinition().collect { propertyCtx ->
 				return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = __${module.alias}.__consts.${ctx.name.text}.${propertyCtx.property.name.text};"
+					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = __modules[\"${module.name}\"].${CONSTANTS}.${ctx.name.text}.${propertyCtx.property.name.text};"
 			}.join("\n")
 
 			def constName = ctx.name.text
@@ -213,11 +216,3 @@ private class ConstCollectorVisitor extends AbstractModuleVisitor<Void> {
 		return null
 	}
 }
-
-
-
-
-
-
-
-

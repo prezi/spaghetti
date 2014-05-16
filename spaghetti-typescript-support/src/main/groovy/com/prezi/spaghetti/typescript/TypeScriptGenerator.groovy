@@ -5,6 +5,9 @@ import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
+import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.CONSTANTS
+
 /**
  * Created by lptr on 12/11/13.
  */
@@ -30,12 +33,15 @@ class TypeScriptGenerator implements Generator {
 	@Override
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
+
 		return \
 """${javaScript}
-	var moduleImpl = new ${module.name}.${module.alias}Impl();
-	var constants = new ${module.name}.__${module.alias}Constants();
-	moduleImpl.__consts = constants;
-	return moduleImpl;
+	var module = new ${module.name}.${module.alias}Impl();
+	var consts = new ${module.name}.__${module.alias}Constants();
+	return {
+		${MODULE}: module,
+		${CONSTANTS}: consts
+	};
 """
 	}
 

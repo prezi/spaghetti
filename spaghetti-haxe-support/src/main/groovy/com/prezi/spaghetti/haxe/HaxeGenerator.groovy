@@ -5,12 +5,18 @@ import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
+import static com.prezi.spaghetti.ReservedWords.CONSTANTS
+import static com.prezi.spaghetti.ReservedWords.MODULE
+
 /**
  * Created by lptr on 12/11/13.
  */
 class HaxeGenerator implements Generator {
 
 	private final ModuleConfiguration config
+
+	// Workaround variable to trick Haxe into exposing the module
+	public static final String HAXE_MODULE_VAR = "__haxeModule"
 
 	HaxeGenerator(ModuleConfiguration config) {
 		this.config = config
@@ -33,13 +39,12 @@ class HaxeGenerator implements Generator {
 	@Override
 	String processModuleJavaScript(ModuleDefinition module, String javaScript)
 	{
-		/* the "exports" line is needed because if this module is
-		   requirejs'd from a nodejs module 'exports' will not be
-		   visible for some reason
-		*/
 		return \
-"""var __module; var exports = exports || {}; ${javaScript}
-return __module;
+"""// Haxe expects either window or exports to be present
+var exports = exports || {};
+var ${HAXE_MODULE_VAR};
+${javaScript}
+return ${HAXE_MODULE_VAR};
 """
 	}
 
@@ -80,9 +85,13 @@ return __module;
 	 */
 	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
 	{
-		def initializerName = "__" + module.alias + "Init"
+		def initializerName = getInitializerName(module)
 		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module).visitModuleDefinition(module.context)
 		HaxeUtils.createHaxeSourceFile(module, initializerName, outputDirectory, initializerContents)
+	}
+
+	private static String getInitializerName(ModuleDefinition module) {
+		return "__" + module.alias + "Init"
 	}
 
 	/**
