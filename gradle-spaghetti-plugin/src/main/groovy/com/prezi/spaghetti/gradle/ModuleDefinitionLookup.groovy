@@ -18,7 +18,8 @@ class ModuleDefinitionLookup {
 				LOGGER.info("Found module bundle ${bundle.name}")
 				return bundle
 			} catch (ex) {
-				LOGGER.debug("Not a module bundle: ${file}: ${ex.getMessage()}")
+				LOGGER.debug("Not a module bundle: ${file}: ${ex}")
+				ex.printStackTrace()
 				LOGGER.trace("Exception", ex)
 				return null
 			}
