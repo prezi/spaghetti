@@ -187,13 +187,13 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	public void extract(File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
 		source.init()
 		try {
-			extract(source, outputDirectory, elements)
+			extract(name, source, outputDirectory, elements)
 		} finally {
 			source.close()
 		}
 	}
 
-	protected static void extract(ModuleBundleSource source, File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
+	protected static void extract(String name, ModuleBundleSource source, File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
 		outputDirectory.delete() || outputDirectory.deleteDir()
 		outputDirectory.mkdirs()
 		source.processFiles(new ModuleBundleSource.ModuleBundleFileHandler() {
