@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull
  * Created by lptr on 16/11/13.
  */
 class ModuleBundle implements Comparable<ModuleBundle> {
-	private static final Logger log = LoggerFactory.getLogger(ModuleBundle)
+	private static final Logger logger = LoggerFactory.getLogger(ModuleBundle)
 
 	private static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
@@ -94,7 +94,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			if (resourceDir?.exists()) {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
 					def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
-					log.debug("Adding resource {}", resourcePath)
+					logger.debug("Adding resource {}", resourcePath)
 					builder.addEntry resourcePath, { out -> resourceFile.withInputStream { out << it } }
 					resourcePaths.add resourcePath
 				}
@@ -113,10 +113,10 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		}
 		def source
 		if (inputFile.file) {
-			log.debug "{} is a file, trying to load as ZIP", inputFile
+			logger.debug "{} is a file, trying to load as ZIP", inputFile
 			source = new ModuleBundleSource.Zip(inputFile)
 		} else if (inputFile.directory) {
-			log.debug "{} is a directory, trying to load as exploded", inputFile
+			logger.debug "{} is a directory, trying to load as exploded", inputFile
 			source = new ModuleBundleSource.Directory(inputFile)
 		} else {
 			throw new RuntimeException("Unknown module format: ${inputFile}")
@@ -125,8 +125,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		return loadInternal(source)
 	}
 
-	@groovy.transform.PackageScope
-	static ModuleBundle loadInternal(ModuleBundleSource source) {
+	protected static ModuleBundle loadInternal(ModuleBundleSource source) {
 		String definition = null
 		String compiledJavaScript = null
 		Manifest manifest = null
