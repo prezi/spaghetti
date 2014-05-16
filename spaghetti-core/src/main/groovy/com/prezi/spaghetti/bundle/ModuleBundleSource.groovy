@@ -11,6 +11,8 @@ import java.util.zip.ZipFile
  */
 public interface ModuleBundleSource {
 	void init()
+	boolean hasFile(String path)
+	void processFile(String path, ModuleBundleFileHandler handler)
 	void processFiles(ModuleBundleFileHandler handler)
 	void close()
 
@@ -33,11 +35,29 @@ public interface ModuleBundleSource {
 		}
 
 		@Override
+		boolean hasFile(String path) {
+			return new File(sourceDirectory, path).exists()
+		}
+
+		@Override
+		void processFile(String path, ModuleBundleFileHandler handler) {
+			def file = new File(sourceDirectory, path)
+			if (!file.exists()) {
+				throw new IllegalArgumentException("Could not find \"${path}\" in module bundle directory: ${sourceDirectory}")
+			}
+			handleFile(handler, path, file)
+		}
+
+		@Override
 		void processFiles(ModuleBundleSource.ModuleBundleFileHandler handler) {
 			sourceDirectory.eachFile(FileType.FILES) { File file ->
 				def path = sourceDirectory.toURI().relativize(file.toURI()).toString()
-				handler.handleFile(path, { new FileInputStream(file) })
+				handleFile(handler, path, file)
 			}
+		}
+
+		private static void handleFile(ModuleBundleFileHandler handler, String path, File file) {
+			handler.handleFile(path, { new FileInputStream(file) })
 		}
 
 		@Override
@@ -68,12 +88,28 @@ public interface ModuleBundleSource {
 		}
 
 		@Override
-		void processFiles(ModuleBundleSource.ModuleBundleFileHandler handler) {
+		boolean hasFile(String path) {
+			return zipFile.getEntry(path) != null
+		}
 
-			zipFile.entries().each { ZipEntry entry ->
-				def contents = { zipFile.getInputStream(entry) }
-				handler.handleFile(entry.name, contents)
+		@Override
+		void processFile(String path, ModuleBundleFileHandler handler) {
+			def entry = zipFile.getEntry(path)
+			if (!entry) {
+				throw new IllegalArgumentException("Could not find \"${path}\" in module bundle zip: ${zip}")
 			}
+			handleEntry(handler, entry)
+		}
+
+		@Override
+		void processFiles(ModuleBundleFileHandler handler) {
+			zipFile.entries().each { ZipEntry entry ->
+				handleEntry(handler, entry)
+			}
+		}
+
+		private handleEntry(ModuleBundleFileHandler handler, ZipEntry entry) {
+			handler.handleFile(entry.name, { zipFile.getInputStream(entry) })
 		}
 
 		@Override
