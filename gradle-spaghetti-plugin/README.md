@@ -87,17 +87,3 @@ task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	outputFile "${buildDir}/app.js"
 }
 ```
-
-### Extracting modules to be used with an application:
-
-You can also extract all modules to a directory so that they are readily available to RequireJS:
-
-```groovy
-task extractModules(type: com.prezi.spaghetti.gradle.ExtractModules) {
-	dependsOn bundleApplication
-	configuration configurations.modules
-	def testWebappDir = file("${buildDir}/webapp")
-	outputDirectory testWebappDir
-}
-```
-
