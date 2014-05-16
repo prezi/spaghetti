@@ -34,6 +34,11 @@ class Platforms {
 		}
 	}
 
+	public static Set<String> getProtectedSymbols(String platform) {
+		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
+		return generatorFactory.protectedSymbols
+	}
+
 	private static GeneratorFactory getGeneratorFactory(String platform) {
 		def generatorFactory = generatorFactories.get(platform)
 		if (generatorFactory == null) {

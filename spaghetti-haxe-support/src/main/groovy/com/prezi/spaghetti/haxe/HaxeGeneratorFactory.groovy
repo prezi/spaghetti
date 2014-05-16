@@ -33,6 +33,14 @@ public class HaxeGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
+	Set<String> getProtectedSymbols() {
+		return [
+				// Haxe likes to put this on global objects like Math and String and Date
+				"__name__"
+		]
+	}
+
+	@Override
 	Generator createGenerator(ModuleConfiguration configuration)
 	{
 		return new HaxeGenerator(configuration)

@@ -32,6 +32,11 @@ public class TypeScriptGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
+	Set<String> getProtectedSymbols() {
+		return [].asImmutable()
+	}
+
+	@Override
 	Generator createGenerator(ModuleConfiguration configuration)
 	{
 		return new TypeScriptGenerator(configuration)

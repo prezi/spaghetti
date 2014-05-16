@@ -6,22 +6,26 @@ import groovy.transform.TupleConstructor
  * Created by lptr on 15/05/14.
  */
 class ModuleObfuscator {
-	private static final List<String> protectedSymbols = collectProtectedSymbols()
-	private static List<String> collectProtectedSymbols() {
-		List<String> symbols = [
+	private static final List<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols()
+	private static Set<String> collectProtectedSymbols() {
+		Set<String> symbols = [
 		 		// RequireJS
 				"define",
 				// class definitions
-				"prototype",
-				// Haxe class names -- Haxe likes to put this on global objects like Math and String and Date
-				"__name__"
+				"prototype"
 		]
 		// Spaghetti reserved words
 		symbols.addAll(ReservedWords.PROTECTED_WORDS)
 		return symbols.asImmutable()
 	}
 
-	public static ObfuscationResult obfuscateModule(ObfuscationParameters params) {
+	private final Set<String> protectedSymbols
+
+	public ModuleObfuscator(Collection<String> protectedSymbols) {
+		this.protectedSymbols = (DEFAULT_PROTECTED_SYMBOLS + protectedSymbols).asImmutable()
+	}
+
+	public ObfuscationResult obfuscateModule(ObfuscationParameters params) {
 		def config = params.config
 		def module = params.module
 		def modules = config.localModules + config.dependentModules

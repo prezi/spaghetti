@@ -5,6 +5,7 @@ import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.ModuleObfuscator
 import com.prezi.spaghetti.ObfuscationParameters
+import com.prezi.spaghetti.Platforms
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
@@ -24,7 +25,8 @@ class ObfuscateModule extends AbstractBundleModuleTask
 			String javaScript,
 			String sourceMap,
 			File resourceDir) {
-		def result = ModuleObfuscator.obfuscateModule(new ObfuscationParameters(
+		def obfuscator = new ModuleObfuscator(Platforms.getProtectedSymbols(getPlatform()))
+		def result = obfuscator.obfuscateModule(new ObfuscationParameters(
 				config: config,
 				module: module,
 				javaScript: javaScript,
