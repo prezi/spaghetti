@@ -1,4 +1,4 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.obfuscation
 
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser

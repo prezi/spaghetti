@@ -2,7 +2,6 @@ package com.prezi.spaghetti.obfuscation
 
 import com.prezi.spaghetti.ReservedWords
 import com.prezi.spaghetti.SourceMap
-import com.prezi.spaghetti.SymbolCollectVisitor
 
 /**
  * Created by lptr on 15/05/14.
