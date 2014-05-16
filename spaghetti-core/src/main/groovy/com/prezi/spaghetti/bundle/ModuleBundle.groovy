@@ -122,7 +122,12 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			throw new RuntimeException("Unknown module format: ${inputFile}")
 		}
 
-		return loadInternal(source)
+		source.init()
+		try {
+			return loadInternal(source)
+		} finally {
+			source.close()
+		}
 	}
 
 	protected static ModuleBundle loadInternal(ModuleBundleSource source) {
