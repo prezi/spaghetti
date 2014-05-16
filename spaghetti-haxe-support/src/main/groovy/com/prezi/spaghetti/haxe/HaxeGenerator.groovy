@@ -5,6 +5,8 @@ import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
+
 /**
  * Created by lptr on 12/11/13.
  */
@@ -34,7 +36,7 @@ class HaxeGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	String processModuleJavaScript(ModuleDefinition module, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, String javaScript)
 	{
 		return \
 """// Haxe expects either window or exports to be present

@@ -4,8 +4,6 @@ import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.Wrapper
-import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -77,12 +75,8 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		def config = readConfig(moduleDefinitions)
 		def module = config.getLocalModules().first()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
-		def wrappedJavaScript = Wrapper.wrap(config.dependentModules*.name, Wrapping.module, processedJavaScript)
 
-		// is a sourcemap present?
-		def sourceMapText = getSourceMap()?.text
-
-		createBundle(config, module, wrappedJavaScript, sourceMapText, getResourcesDirectory())
+		createBundle(config, module, processedJavaScript, getSourceMap()?.text, getResourcesDirectory())
 	}
 
 	protected ModuleBundle createBundle(

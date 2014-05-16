@@ -13,6 +13,8 @@ class ReservedWords {
 	@Protected
 	public static final String MODULE = "__module"
 
+	public static final String MODULES = "__modules"
+
 	@Protected
 	public static final String CONSTANTS = "__consts"
 

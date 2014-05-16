@@ -8,8 +8,10 @@ import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.AbstractGenerator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.MODULES
 
 /**
  * Created by lptr on 16/11/13.
@@ -46,12 +48,12 @@ class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 		{
 			def modulesContents = 
 """
-declare var __modules:Array<any>;
+declare var ${CONFIG}:any;
 """
 			dependentModules.each { module ->
 				modulesContents +=
-"""export var ${module.alias}:${module.name}.${module.alias} = __modules[\"${module.name}\"].${MODULE};
-export var __${module.alias}:any = __modules[\"${module.name}\"].${MODULE};
+"""export var ${module.alias}:${module.name}.${module.alias} = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"].${MODULE};
+export var __${module.alias}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"].${MODULE};
 """
 			}
 			modulesContents += "\n"
@@ -162,7 +164,7 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 		if (!localModule) {
 			def values = ctx.propertyDefinition().collect { propertyCtx ->
 				return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = __modules[\"${module.name}\"].${CONSTANTS}.${ctx.name.text}.${propertyCtx.property.name.text};"
+					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"].${CONSTANTS}.${ctx.name.text}.${propertyCtx.property.name.text};"
 			}.join("\n")
 
 			def constName = ctx.name.text

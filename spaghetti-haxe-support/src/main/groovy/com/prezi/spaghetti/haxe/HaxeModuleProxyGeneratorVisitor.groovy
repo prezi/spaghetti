@@ -5,7 +5,9 @@ import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.AbstractGenerator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.MODULES
 
 /**
  * Created by lptr on 16/11/13.
@@ -54,7 +56,7 @@ ${super.visitModuleDefinition(ctx)}
 
 		return \
 """	@:extern public static inline function ${ctx.name.text}(${params}):${returnType} {
-		${returnType == "void"?"":"return "}untyped __modules[\"${module.name}\"].${MODULE}.${ctx.name.text}(${callParams});
+		${returnType == "void"?"":"return "}untyped ${CONFIG}[\"${MODULES}\"][\"${module.name}\"].${MODULE}.${ctx.name.text}(${callParams});
 	}
 """
 	}

@@ -31,17 +31,16 @@ class TypeScriptGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	String processModuleJavaScript(ModuleDefinition module, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, String javaScript)
 	{
-
 		return \
 """${javaScript}
-	var module = new ${module.name}.${module.alias}Impl();
-	var consts = new ${module.name}.__${module.alias}Constants();
-	return {
-		${MODULE}: module,
-		${CONSTANTS}: consts
-	};
+var module = new ${module.name}.${module.alias}Impl();
+var consts = new ${module.name}.__${module.alias}Constants();
+return {
+	${MODULE}: module,
+	${CONSTANTS}: consts
+};
 """
 	}
 
