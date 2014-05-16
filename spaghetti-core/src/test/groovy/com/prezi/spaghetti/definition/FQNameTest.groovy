@@ -1,6 +1,5 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.definition
 
-import com.prezi.spaghetti.definition.FQName
 import spock.lang.Specification
 
 /**
