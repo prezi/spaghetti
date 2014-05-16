@@ -24,30 +24,36 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	private static final def MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies")
 	private static final def DEFINITION_PATH = "module.def"
 	private static final def SOURCE_MAP_PATH = "module.map"
-	private static final def COMPILED_JAVASCRIPT_PATH = "module.js"
+	private static final def JAVASCRIPT_PATH = "module.js"
 	private static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
 	private static final def RESOURCES_PREFIX = "resources/"
 
 	private final ModuleBundleSource source
 	final String name
-	final String definition
-	final String javaScript
 	final String version
 	final String sourceBaseUrl
-	final String sourceMap
 	final Set<String> dependentModules
 	final Set<String> resourcePaths
 
-	private ModuleBundle(ModuleBundleSource source, String name, String definition, String version, String sourceBaseUrl, String javaScript, String sourceMap, Set<String> dependentModules, Set<String> resourcePaths) {
+	protected ModuleBundle(ModuleBundleSource source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
 		this.source = source
 		this.name = name
 		this.version = version
 		this.sourceBaseUrl = sourceBaseUrl
-		this.definition = definition
-		this.javaScript = javaScript
-		this.sourceMap = sourceMap
 		this.dependentModules = dependentModules
 		this.resourcePaths = resourcePaths
+	}
+
+	public String getDefinition() {
+		return getString(DEFINITION_PATH)
+	}
+
+	public String getJavaScript() {
+		return getString(JAVASCRIPT_PATH)
+	}
+
+	public String getSourceMap() {
+		return getString(SOURCE_MAP_PATH)
 	}
 
 	public static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) {
@@ -58,7 +64,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		return create(new ModuleBundleBuilder.Directory(outputDirectory), params)
 	}
 
-	@groovy.transform.PackageScope static ModuleBundle create(ModuleBundleBuilder builder, ModuleBundleParameters params) {
+	protected static ModuleBundle create(ModuleBundleBuilder builder, ModuleBundleParameters params) {
 		checkNotNull(params.name, "name", [])
 		checkNotNull(params.version, "version", [])
 		checkNotNull(params.definition, "definition", [])
@@ -82,7 +88,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			builder.addEntry DEFINITION_PATH, { out -> out << params.definition }
 
 			// Store module itself
-			builder.addEntry COMPILED_JAVASCRIPT_PATH, { out -> out << params.javaScript }
+			builder.addEntry JAVASCRIPT_PATH, { out -> out << params.javaScript }
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
@@ -101,7 +107,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			}
 
 			def source = builder.create()
-			return new ModuleBundle(source, params.name, params.definition, params.version, params.sourceBaseUrl, params.javaScript, params.sourceMap, params.dependentModules, resourcePaths.asImmutable())
+			return new ModuleBundle(source, params.name, params.version, params.sourceBaseUrl, params.dependentModules, resourcePaths.asImmutable())
 		} finally {
 			builder.close()
 		}
@@ -131,27 +137,24 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 
 	protected static ModuleBundle loadInternal(ModuleBundleSource source) {
-		String definition = null
-		String compiledJavaScript = null
-		Manifest manifest = null
-		String sourceMap = null
-		Set<String> resourcePaths = []
+		if (!source.hasFile(MANIFEST_MF_PATH)) {
+			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
+		}
+		if (!source.hasFile(DEFINITION_PATH)) {
+			throw new IllegalArgumentException("Not a module, missing definition: ${source}")
+		}
+		if (!source.hasFile(JAVASCRIPT_PATH)) {
+			throw new IllegalArgumentException("Not a module, missing JavaScript: ${source}")
+		}
 
+		Manifest manifest = null
+		Set<String> resourcePaths = []
 		source.processFiles(new ModuleBundleSource.ModuleBundleFileHandler() {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
-					case DEFINITION_PATH:
-						definition = contents().text
-						break
-					case COMPILED_JAVASCRIPT_PATH:
-						compiledJavaScript = contents().text
-						break
 					case MANIFEST_MF_PATH:
 						manifest = new Manifest(contents())
-						break
-					case SOURCE_MAP_PATH:
-						sourceMap = contents().text
 						break
 					default:
 						if (path.startsWith(RESOURCES_PREFIX)) {
@@ -161,9 +164,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				}
 			}
 		})
-		if (manifest == null) {
-			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
-		}
+
 		def spaghettiVersion = manifest.mainAttributes.getValue(MANIFEST_ATTR_SPAGHETTI_VERSION)
 		if (spaghettiVersion == null) {
 			throw new IllegalArgumentException("Not a module, module version missing from manifest: ${source}")
@@ -172,17 +173,10 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${source}")
 		}
 		String name = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME)
-		if (definition == null) {
-			throw new IllegalArgumentException("Not a module, missing definition: ${source}")
-		}
-		if (compiledJavaScript == null) {
-			throw new IllegalArgumentException("Not a module, missing compiled JavaScript: ${source}")
-		}
-
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String sourceUrl = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
 		Set<String> dependentModules = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES)?.tokenize(",") ?: []
-		return new ModuleBundle(source, name, definition, version, sourceUrl, compiledJavaScript, sourceMap, dependentModules, resourcePaths.asImmutable())
+		return new ModuleBundle(source, name, version, sourceUrl, dependentModules, resourcePaths.asImmutable())
 	}
 
 	public void extract(File outputDirectory, ModuleBundleElement... elements) {
@@ -193,6 +187,25 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		source.init()
 		try {
 			extract(name, source, outputDirectory, elements)
+		} finally {
+			source.close()
+		}
+	}
+
+	private getString(String path) {
+		source.init()
+		try {
+			if (!source.hasFile(path)) {
+				return null
+			}
+			String text = null
+			source.processFile(path, new ModuleBundleSource.ModuleBundleFileHandler() {
+				@Override
+				void handleFile(String _, Callable<? extends InputStream> contents) {
+					text = contents().getText("utf-8")
+				}
+			})
+			return text
 		} finally {
 			source.close()
 		}
@@ -212,7 +225,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 							new File(outputDirectory, "${name}.def") << contents()
 						}
 						break
-					case COMPILED_JAVASCRIPT_PATH:
+					case JAVASCRIPT_PATH:
 						if (elements.contains(ModuleBundleElement.javascript)) {
 							new File(outputDirectory, "${name}.js") << contents()
 						}
@@ -247,4 +260,3 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		return name.compareTo(o.name)
 	}
 }
-

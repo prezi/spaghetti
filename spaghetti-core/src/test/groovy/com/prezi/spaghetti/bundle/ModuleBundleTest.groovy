@@ -55,19 +55,23 @@ class ModuleBundleTest extends Specification {
 		ModuleBundle.loadInternal(source)
 
 		then:
-		1 * source.processFiles(_)
+		1 * source.hasFile("META-INF/MANIFEST.MF") >> false
 		0 * _
 		IllegalArgumentException ex = thrown()
 		ex.message.contains "Not a module, missing manifest"
 	}
 
-	def "load bundle with manifest"() {
+	@SuppressWarnings("GroovyAssignabilityCheck")
+	def "load bundle with all files present"() {
 		def source = Mock(ModuleBundleSource)
 
 		when:
 		def bundle = ModuleBundle.loadInternal(source)
 
 		then:
+		_ * source.hasFile(_) >> true
+		_ * source.init()
+		_ * source.close()
 		//noinspection GroovyAssignabilityCheck
 		1 * source.processFiles({
 			ModuleBundleSource.ModuleBundleFileHandler handler = it
@@ -80,25 +84,71 @@ class ModuleBundleTest extends Specification {
 					"Module-Source: http://git.example.com/test",
 					"" // Must have newline at end of manifest
 			))
-			handler.handleFile("module.def", content(
-					"module com.example.test as Test"
-			))
-			handler.handleFile("module.js", content(
-					"console.log('hello');"
-			))
-			handler.handleFile("module.map", content(
-					"sourcemap"
-			))
 			true
 		})
-		0 * _
 		bundle.name == "com.example.test"
 		bundle.version == "3.7"
-		bundle.definition == "module com.example.test as Test"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
-		bundle.javaScript == "console.log('hello');"
-		bundle.sourceMap == "sourcemap"
 		bundle.dependentModules.sort() == ["com.example.alma", "com.example.bela"]
+		0 * _
+	}
+
+	def "definition from module"() {
+		def source = Mock(ModuleBundleSource)
+		def bundle = fakeModule(source)
+		when:
+		def definition = bundle.definition
+
+		then:
+		1 * source.init()
+		1 * source.hasFile("module.def") >> true
+		//noinspection GroovyAssignabilityCheck
+		_ * source.processFile("module.def", { it.handleFile("module.def", content(
+				"module com.example.test as Test"
+		)); true })
+		1 * source.close()
+		0 * _
+		definition == "module com.example.test as Test"
+	}
+
+	def "javascript from module"() {
+		def source = Mock(ModuleBundleSource)
+		def bundle = fakeModule(source)
+		when:
+		def javaScript = bundle.javaScript
+
+		then:
+		1 * source.init()
+		1 * source.hasFile("module.js") >> true
+		//noinspection GroovyAssignabilityCheck
+		1 * source.processFile("module.js", { it.handleFile("module.js", content(
+				"console.log('hello');"
+		)); true })
+		1 * source.close()
+		0 * _
+		javaScript == "console.log('hello');"
+	}
+
+	def "source map from module"() {
+		def source = Mock(ModuleBundleSource)
+		def bundle = fakeModule(source)
+		when:
+		def sourceMap = bundle.sourceMap
+
+		then:
+		1 * source.init()
+		1 * source.hasFile("module.map") >> true
+		//noinspection GroovyAssignabilityCheck
+		1 * source.processFile("module.map", { it.handleFile("module.map", content(
+				"sourcemap"
+		)); true })
+		1 * source.close()
+		0 * _
+		sourceMap == "sourcemap"
+	}
+
+	private static ModuleBundle fakeModule(ModuleBundleSource source) {
+		return new ModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
 	}
 
 	private static String get(Closure cl) {
