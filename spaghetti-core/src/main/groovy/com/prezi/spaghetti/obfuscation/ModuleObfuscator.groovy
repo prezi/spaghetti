@@ -7,7 +7,7 @@ import com.prezi.spaghetti.SourceMap
  * Created by lptr on 15/05/14.
  */
 class ModuleObfuscator {
-	private static final List<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols()
+	private static final Set<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols()
 	private static Set<String> collectProtectedSymbols() {
 		Set<String> symbols = [
 		 		// RequireJS
