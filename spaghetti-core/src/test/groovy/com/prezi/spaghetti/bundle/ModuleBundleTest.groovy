@@ -31,10 +31,10 @@ class ModuleBundleTest extends Specification {
 
 		then:
 		1 * builder.init()
-		1 * builder.addEntry("META-INF/MANIFEST.MF", { manifest = get(it) })
-		1 * builder.addEntry("module.def", { get(it) == "definition" })
-		1 * builder.addEntry("module.js", { get(it) == "console.log('hello');" })
-		1 * builder.addEntry("module.map", { get(it) == "sourcemap" })
+		1 * builder.appendFile("META-INF/MANIFEST.MF", { manifest = get(it) })
+		1 * builder.appendFile("module.def", { get(it) == "definition" })
+		1 * builder.appendFile("module.js", { get(it) == "console.log('hello');" })
+		1 * builder.appendFile("module.map", { get(it) == "sourcemap" })
 		1 * builder.create()
 		1 * builder.close()
 		0 * _

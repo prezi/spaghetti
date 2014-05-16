@@ -27,7 +27,7 @@ class BundleBuilderTest extends Specification {
 		def dir = tempDir.newFolder()
 		def builder = new BundleBuilder.Directory(dir)
 		builder.init()
-		builder.addEntry("lajos", { out -> out << "Hello" })
+		builder.appendFile("lajos", { out -> out << "Hello" })
 		def source = builder.create()
 
 		expect:
@@ -52,7 +52,7 @@ class BundleBuilderTest extends Specification {
 		def zip = tempDir.newFile()
 		def builder = new BundleBuilder.Zip(zip)
 		builder.init()
-		builder.addEntry("lajos", { out -> out << "Hello" })
+		builder.appendFile("lajos", { out -> out << "Hello" })
 		def source = builder.create()
 
 		def zipFile = new ZipFile(zip)

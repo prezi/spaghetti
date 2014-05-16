@@ -84,17 +84,17 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, params.version ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, params.sourceBaseUrl ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_DEPENDENCIES, params.dependentModules.join(","))
-			builder.addEntry MANIFEST_MF_PATH, { out -> manifest.write(out) }
+			builder.appendFile MANIFEST_MF_PATH, { out -> manifest.write(out) }
 
 			// Store definition
-			builder.addEntry DEFINITION_PATH, { out -> out << params.definition }
+			builder.appendFile DEFINITION_PATH, { out -> out << params.definition }
 
 			// Store module itself
-			builder.addEntry JAVASCRIPT_PATH, { out -> out << params.javaScript }
+			builder.appendFile JAVASCRIPT_PATH, { out -> out << params.javaScript }
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
-				builder.addEntry SOURCE_MAP_PATH, { out -> out << params.sourceMap }
+				builder.appendFile SOURCE_MAP_PATH, { out -> out << params.sourceMap }
 			}
 
 			// Store resources
@@ -103,7 +103,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
 					def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
 					logger.debug("Adding resource {}", resourcePath)
-					builder.addEntry resourcePath, { out -> resourceFile.withInputStream { out << it } }
+					builder.appendFile resourcePath, { out -> resourceFile.withInputStream { out << it } }
 					resourcePaths.add resourcePath
 				}
 			}
