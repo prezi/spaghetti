@@ -1,35 +1,20 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.AbstractGeneratorFactory
 import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration
 
 /**
  * Created by lptr on 19/03/14.
  */
-class JavaScriptGeneratorFactory implements GeneratorFactory {
-	@Override
-	String getPlatform() {
-		return "js"
-	}
+class JavaScriptGeneratorFactory extends AbstractGeneratorFactory {
 
-	@Override
-	String getDescription() {
-		return "vanilla JavaScript support"
+	JavaScriptGeneratorFactory() {
+		super("js", "vanilla JavaScript support")
 	}
 
 	@Override
 	Generator createGenerator(ModuleConfiguration configuration) {
 		return new JavaScriptGenerator(configuration)
-	}
-
-	@Override
-	Map<String, String> getExternMapping() {
-		return [:]
-	}
-
-	@Override
-	Set<String> getProtectedSymbols() {
-		return [].asImmutable()
 	}
 }

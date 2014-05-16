@@ -1,17 +1,14 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.Generator
+import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
-import static com.prezi.spaghetti.ReservedWords.CONSTANTS
-import static com.prezi.spaghetti.ReservedWords.MODULE
-
 /**
  * Created by lptr on 12/11/13.
  */
-class HaxeGenerator implements Generator {
+class HaxeGenerator extends AbstractGenerator {
 
 	private final ModuleConfiguration config
 
@@ -46,12 +43,6 @@ var ${HAXE_MODULE_VAR};
 ${javaScript}
 return ${HAXE_MODULE_VAR};
 """
-	}
-
-	@Override
-	String processApplicationJavaScript(String javaScript)
-	{
-		return javaScript
 	}
 
 	/**

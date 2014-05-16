@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.Generator
+import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
@@ -11,7 +11,7 @@ import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 /**
  * Created by lptr on 12/11/13.
  */
-class TypeScriptGenerator implements Generator {
+class TypeScriptGenerator extends AbstractGenerator {
 
 	private final ModuleConfiguration config
 
@@ -43,12 +43,6 @@ class TypeScriptGenerator implements Generator {
 		${CONSTANTS}: consts
 	};
 """
-	}
-
-	@Override
-	String processApplicationJavaScript(String javaScript)
-	{
-		return javaScript
 	}
 
 	/**

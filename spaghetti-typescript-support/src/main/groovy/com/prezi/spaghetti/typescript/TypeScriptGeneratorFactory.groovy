@@ -1,39 +1,26 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.AbstractGeneratorFactory
 import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.GeneratorFactory
 import com.prezi.spaghetti.ModuleConfiguration
 
 /**
  * Created by lptr on 23/11/13.
  */
-public class TypeScriptGeneratorFactory implements GeneratorFactory {
+public class TypeScriptGeneratorFactory extends AbstractGeneratorFactory {
 
 	private static def EXTERNS = [
 	        "UnicodeString": "string"
 		].asImmutable()
 
-	@Override
-	String getPlatform()
-	{
-		return "typescript"
-	}
-
-	@Override
-	String getDescription()
-	{
-		return "generates TypeScript code"
+	TypeScriptGeneratorFactory() {
+		super("typescript", "generates TypeScript code")
 	}
 
 	@Override
 	Map<String, String> getExternMapping()
 	{
 		return EXTERNS
-	}
-
-	@Override
-	Set<String> getProtectedSymbols() {
-		return [].asImmutable()
 	}
 
 	@Override
