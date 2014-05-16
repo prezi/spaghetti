@@ -3,8 +3,8 @@ package com.prezi.spaghetti.gradle
 import com.prezi.spaghetti.ModuleBundle
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleObfuscator
-import com.prezi.spaghetti.ObfuscationParameters
+import com.prezi.spaghetti.obfuscation.ModuleObfuscator
+import com.prezi.spaghetti.obfuscation.ObfuscationParameters
 import com.prezi.spaghetti.Platforms
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles

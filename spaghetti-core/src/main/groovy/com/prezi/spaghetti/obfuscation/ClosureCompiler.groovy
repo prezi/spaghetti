@@ -1,4 +1,4 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.obfuscation
 
 import com.google.javascript.jscomp.CommandLineRunner
 import com.google.javascript.jscomp.CompilationLevel

@@ -1,6 +1,8 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.obfuscation
 
-import groovy.transform.TupleConstructor
+import com.prezi.spaghetti.ReservedWords
+import com.prezi.spaghetti.SourceMap
+import com.prezi.spaghetti.SymbolCollectVisitor
 
 /**
  * Created by lptr on 15/05/14.
@@ -72,21 +74,4 @@ class ModuleObfuscator {
 	}
 }
 
-@TupleConstructor
-public class ObfuscationParameters {
-	ModuleConfiguration config
-	ModuleDefinition module
-	String javaScript
-	String sourceMap
-	URI sourceMapRoot
-	String nodeSourceMapRoot
-	Set<File> closureExterns
-	Set<String> additionalSymbols
-	File workingDirectory
-}
 
-@groovy.transform.Immutable
-public class ObfuscationResult {
-	String javaScript
-	String sourceMap
-}
