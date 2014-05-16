@@ -61,7 +61,8 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 	@InputDirectory
 	@Optional
 	File getResourcesDirectory() {
-		return resourcesDirectoryInternal?.exists() ? resourcesDirectoryInternal : null
+		def dir = getResourcesDirectoryInternal()
+		return dir?.exists() ? dir : null
 	}
 
 	AbstractBundleModuleTask() {
