@@ -53,10 +53,15 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		return sourceMap
 	}
 
-	@InputDirectory
-	File resourcesDirectory
+	File resourcesDirectoryInternal
 	void resourcesDirectory(Object resourcesDir) {
-		this.resourcesDirectory = project.file(resourcesDir)
+		this.resourcesDirectoryInternal = project.file(resourcesDir)
+	}
+
+	@InputDirectory
+	@Optional
+	File getResourcesDirectory() {
+		return resourcesDirectoryInternal?.exists() ? resourcesDirectoryInternal : null
 	}
 
 	AbstractBundleModuleTask() {

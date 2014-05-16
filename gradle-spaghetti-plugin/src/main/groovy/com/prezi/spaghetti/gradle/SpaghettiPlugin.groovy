@@ -72,8 +72,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		}
 		project.tasks.withType(AbstractBundleModuleTask).all { AbstractBundleModuleTask task ->
 			task.conventionMapping.sourceBaseUrl = { extension.sourceBaseUrl }
-			task.conventionMapping.resourcesDirectory = { spaghettiResourceSet.source.srcDirs }
-			task.conventionMapping.resourcesDirectory = { resourcesTask.getDestinationDir() }
+			task.conventionMapping.resourcesDirectoryInternal = { resourcesTask.getDestinationDir() }
 			task.dependsOn resourcesTask
 		}
 
