@@ -62,7 +62,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		resourcesTask.from(spaghettiResourceSet.source);
 
 		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
-			task.conventionMapping.bundles = { extension.configuration }
+			task.bundles { extension.configuration }
 		}
 		project.tasks.withType(AbstractPlatformAwareSpaghettiTask).all { AbstractPlatformAwareSpaghettiTask task ->
 			task.conventionMapping.platform = { extension.platform }
