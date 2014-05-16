@@ -51,7 +51,7 @@ public interface BundleSource {
 				throw new IllegalArgumentException("Could not find module bundle directory: ${sourceDirectory}")
 			}
 
-			sourceDirectory.eachFile(FileType.FILES) { File file ->
+			sourceDirectory.eachFileRecurse(FileType.FILES) { File file ->
 				def path = sourceDirectory.toURI().relativize(file.toURI()).toString()
 				handleFile(handler, path, file)
 			}
@@ -97,7 +97,7 @@ public interface BundleSource {
 		@Override
 		void processFile(String path, ModuleBundleFileHandler handler) {
 			def entry = zipFile.getEntry(path)
-			if (entry) {
+			if (!entry) {
 				throw new IllegalArgumentException("Could not find file \"${path}\" in bundle: ${zip}")
 			}
 			handleEntry(handler, entry)
