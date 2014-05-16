@@ -1,4 +1,4 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.bundle
 
 public enum ModuleBundleElement {
 	javascript,

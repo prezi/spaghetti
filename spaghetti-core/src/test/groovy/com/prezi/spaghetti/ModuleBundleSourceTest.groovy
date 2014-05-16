@@ -1,5 +1,6 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.bundle.ModuleBundleSource
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification

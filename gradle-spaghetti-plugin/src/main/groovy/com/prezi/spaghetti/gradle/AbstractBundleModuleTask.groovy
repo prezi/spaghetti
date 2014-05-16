@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.ModubleBundleParameters
-import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleParameters
+import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.Wrapper
@@ -93,7 +93,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			File resourceDir) {
 		ModuleBundle.createDirectory(
 				getOutputDirectory(),
-				new ModubleBundleParameters(
+				new ModuleBundleParameters(
 						name: module.name,
 						definition: module.definitionSource,
 						version: String.valueOf(project.version),

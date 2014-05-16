@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.haxe.gradle
 
-import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.gradle.ModuleDefinitionLookup
 import org.gradle.api.artifacts.Configuration
 

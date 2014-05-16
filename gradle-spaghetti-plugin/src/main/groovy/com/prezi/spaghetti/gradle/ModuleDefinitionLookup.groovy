@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.ModuleDefinitionSource
 import org.slf4j.LoggerFactory
 

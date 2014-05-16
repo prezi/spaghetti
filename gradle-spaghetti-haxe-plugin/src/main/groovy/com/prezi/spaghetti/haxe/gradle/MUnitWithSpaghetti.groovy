@@ -3,7 +3,7 @@ package com.prezi.spaghetti.haxe.gradle
 import com.prezi.haxe.gradle.HaxeCommandBuilder
 import com.prezi.haxe.gradle.HaxeSourceSet
 import com.prezi.haxe.gradle.MUnit
-import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundle
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.DefaultDomainObjectSet

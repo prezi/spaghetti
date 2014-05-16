@@ -1,4 +1,4 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.bundle
 
 import groovy.io.FileType
 

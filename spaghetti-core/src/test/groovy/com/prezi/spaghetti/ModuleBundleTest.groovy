@@ -1,5 +1,9 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleBuilder
+import com.prezi.spaghetti.bundle.ModuleBundleParameters
+import com.prezi.spaghetti.bundle.ModuleBundleSource
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
@@ -17,7 +21,7 @@ class ModuleBundleTest extends Specification {
 		when:
 		ModuleBundle.create(
 				builder,
-				new ModubleBundleParameters(
+				new ModuleBundleParameters(
 						name: "test",
 						definition: "definition",
 						version: "3.7",

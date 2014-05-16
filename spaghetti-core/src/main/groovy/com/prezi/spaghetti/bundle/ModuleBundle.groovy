@@ -1,7 +1,7 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.bundle
 
+import com.prezi.spaghetti.Version
 import groovy.io.FileType
-import groovy.transform.TupleConstructor
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -50,15 +50,15 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		this.resourcePaths = resourcePaths
 	}
 
-	public static ModuleBundle createZip(File outputFile, ModubleBundleParameters params) {
+	public static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) {
 		return create(new ModuleBundleBuilder.Zip(outputFile), params)
 	}
 
-	public static ModuleBundle createDirectory(File outputDirectory, ModubleBundleParameters params) {
+	public static ModuleBundle createDirectory(File outputDirectory, ModuleBundleParameters params) {
 		return create(new ModuleBundleBuilder.Directory(outputDirectory), params)
 	}
 
-	@groovy.transform.PackageScope static ModuleBundle create(ModuleBundleBuilder builder, ModubleBundleParameters params) {
+	@groovy.transform.PackageScope static ModuleBundle create(ModuleBundleBuilder builder, ModuleBundleParameters params) {
 		checkNotNull(params.name, "name", [])
 		checkNotNull(params.version, "version", [])
 		checkNotNull(params.definition, "definition", [])
@@ -235,14 +235,3 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 }
 
-@TupleConstructor
-class ModubleBundleParameters {
-	String name
-	String definition
-	String version
-	String sourceBaseUrl
-	String bundledJavaScript
-	String sourceMap
-	Set<String> dependentModules
-	File resourcesDirectory
-}

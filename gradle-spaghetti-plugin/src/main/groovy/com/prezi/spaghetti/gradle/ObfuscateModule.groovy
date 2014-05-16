@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.ModuleConfiguration
 import com.prezi.spaghetti.ModuleDefinition
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator
