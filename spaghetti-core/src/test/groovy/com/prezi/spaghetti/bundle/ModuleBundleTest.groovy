@@ -1,9 +1,6 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.bundle
 
-import com.prezi.spaghetti.bundle.ModuleBundle
-import com.prezi.spaghetti.bundle.ModuleBundleBuilder
-import com.prezi.spaghetti.bundle.ModuleBundleParameters
-import com.prezi.spaghetti.bundle.ModuleBundleSource
+import com.prezi.spaghetti.Version
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
