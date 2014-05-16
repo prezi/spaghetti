@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.FQName
-import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.WithJavaDoc
+import com.prezi.spaghetti.definition.FQName
+import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleUtils
+import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
 import org.antlr.v4.runtime.misc.NotNull

@@ -2,8 +2,8 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.bundle.ModuleBundle
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.Wrapper
 import com.prezi.spaghetti.Wrapping
 import org.gradle.api.tasks.Input

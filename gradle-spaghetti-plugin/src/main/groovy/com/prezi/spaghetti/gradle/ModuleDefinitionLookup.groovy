@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.bundle.ModuleBundle
-import com.prezi.spaghetti.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import org.slf4j.LoggerFactory
 
 /**

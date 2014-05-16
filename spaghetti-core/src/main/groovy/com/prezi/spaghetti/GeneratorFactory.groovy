@@ -1,5 +1,7 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.definition.ModuleConfiguration
+
 /**
  * Created by lptr on 23/11/13.
  */

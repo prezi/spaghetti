@@ -1,4 +1,4 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.definition
 /**
  * Created by lptr on 23/11/13.
  */

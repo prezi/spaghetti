@@ -1,7 +1,8 @@
-package com.prezi.spaghetti;
+package com.prezi.spaghetti
 
-import groovy.json.*;
-import com.google.debugging.sourcemap.*;
+import com.google.debugging.sourcemap.SourceMapConsumerV3
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper;
 
 // A wrapper class for hacking together handling of sourcemaps
 class SourceMap {

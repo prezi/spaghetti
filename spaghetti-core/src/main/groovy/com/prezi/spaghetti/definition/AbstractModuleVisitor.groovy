@@ -1,4 +1,4 @@
-package com.prezi.spaghetti
+package com.prezi.spaghetti.definition
 
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 

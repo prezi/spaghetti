@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.Annotation
+import com.prezi.spaghetti.definition.Annotation
 import com.prezi.spaghetti.grammar.ModuleParser;
-import com.prezi.spaghetti.ModuleUtils
+import com.prezi.spaghetti.definition.ModuleUtils
 
 import groovy.json.StringEscapeUtils
 

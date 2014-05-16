@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.AbstractGenerator
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
 /**

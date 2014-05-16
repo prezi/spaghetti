@@ -1,5 +1,7 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.definition.FQName
+import com.prezi.spaghetti.definition.ModuleConfiguration
 import org.slf4j.LoggerFactory
 
 class Platforms {

@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.obfuscation
 
-import com.prezi.spaghetti.ModuleDefinitionParser
-import com.prezi.spaghetti.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.ModuleDefinitionParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import spock.lang.Specification
 
 /**

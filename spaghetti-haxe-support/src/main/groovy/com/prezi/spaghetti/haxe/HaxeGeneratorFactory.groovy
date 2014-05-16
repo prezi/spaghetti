@@ -2,7 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.AbstractGeneratorFactory
 import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleConfiguration
 
 /**
  * Created by lptr on 23/11/13.

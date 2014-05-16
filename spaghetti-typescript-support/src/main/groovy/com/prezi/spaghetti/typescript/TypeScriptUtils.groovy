@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleDefinition
 
 final class TypeScriptUtils {
 	public static File createSourceFile(ModuleDefinition module, String name, File outputDirectory, String contents) {

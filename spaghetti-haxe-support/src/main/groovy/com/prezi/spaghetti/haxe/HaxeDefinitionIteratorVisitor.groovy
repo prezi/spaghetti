@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.AbstractModuleVisitor
-import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.definition.AbstractModuleVisitor
+import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleVisitor
