@@ -27,4 +27,9 @@ class JavaScriptGeneratorFactory implements GeneratorFactory {
 	Map<String, String> getExternMapping() {
 		return [:]
 	}
+
+	@Override
+	Set<String> getProtectedSymbols() {
+		return [].asImmutable()
+	}
 }
