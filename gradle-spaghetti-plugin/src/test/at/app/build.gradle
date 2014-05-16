@@ -25,7 +25,7 @@ spaghetti {
 }
 
 haxe {
-	main "prezi.test.client.Client"
+	include "prezi.test.client"
 	targetPlatforms {
 		js
 	}
@@ -40,27 +40,25 @@ sources {
 	}
 }
 
-task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
-	dependsOn compileJs
-	modulesDirectory "modules"
+task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	inputFile compileJs.outputFile
+}
+
+task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
+	dependsOn bundleJsModule
+	bundle bundleModule.outputDirectory
+	mainModule "prezi.test.client"
 }
 
 def testWebappDir = file("${buildDir}/webapp")
 
-task extractModules(type: com.prezi.spaghetti.gradle.ExtractModules) {
-	extract "javascript", "sourcemap", "resources"
-	outputDirectory file("$testWebappDir/modules")
-}
-
 task packApplication(type: Copy) {
-	dependsOn extractModules
 	dependsOn bundleApplication
 	dependsOn configurations.requirejs
 
 	destinationDir testWebappDir
 
-	from bundleApplication.outputFile
+	from bundleApplication.outputDirectory
 	from "src/test/webapp"
 
 	doLast {

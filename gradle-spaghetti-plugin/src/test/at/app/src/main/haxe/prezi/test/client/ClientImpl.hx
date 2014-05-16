@@ -5,8 +5,10 @@ import prezi.graphics.text.Layout;
 import prezi.graphics.text.Values;
 import prezi.graphics.text.render.TextRenderer;
 
-class Client {
-	public static function main() {
+class ClientImpl implements Client {
+	public function new() {}
+
+	public function main() {
 		var text = Layout.createText();
 		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
 		style.value = "normal";
@@ -32,7 +34,7 @@ class Client {
 		trace("TypeScript resource: " + TextRenderer.getResource());
 	}
 
-	static function callback(name:String, converter:Int->String)
+	function callback(name:String, converter:Int->String)
 	{
 		trace('Name: ${name}, converting 42: ${converter(42)}');
 	}
