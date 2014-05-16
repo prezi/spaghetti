@@ -23,7 +23,7 @@ class ModuleBundleTest extends Specification {
 						definition: "definition",
 						version: "3.7",
 						sourceBaseUrl: "http://git.example.com/test",
-						bundledJavaScript: "console.log('hello');",
+						javaScript: "console.log('hello');",
 						sourceMap: "sourcemap",
 						dependentModules: ["com.example.alma", "com.example.bela"],
 						resourcesDirectory: null)

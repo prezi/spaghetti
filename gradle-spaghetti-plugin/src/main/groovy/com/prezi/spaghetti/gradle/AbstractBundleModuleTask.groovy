@@ -98,7 +98,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 						definition: module.definitionSource,
 						version: String.valueOf(project.version),
 						sourceBaseUrl: getSourceBaseUrl(),
-						bundledJavaScript: javaScript,
+						javaScript: javaScript,
 						sourceMap: sourceMap,
 						dependentModules: config.dependentModules*.name,
 						resourcesDirectory: resourceDir

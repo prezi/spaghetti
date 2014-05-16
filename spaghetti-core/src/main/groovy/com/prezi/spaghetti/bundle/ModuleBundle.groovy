@@ -62,7 +62,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 		checkNotNull(params.name, "name", [])
 		checkNotNull(params.version, "version", [])
 		checkNotNull(params.definition, "definition", [])
-		checkNotNull(params.bundledJavaScript, "bundledJavaScript", [])
+		checkNotNull(params.javaScript, "javaScript", [])
 
 		builder.init()
 		try {
@@ -82,7 +82,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			builder.addEntry DEFINITION_PATH, { out -> out << params.definition }
 
 			// Store module itself
-			builder.addEntry COMPILED_JAVASCRIPT_PATH, { out -> out << params.bundledJavaScript }
+			builder.addEntry COMPILED_JAVASCRIPT_PATH, { out -> out << params.javaScript }
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
@@ -101,7 +101,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			}
 
 			def source = builder.create()
-			return new ModuleBundle(source, params.name, params.definition, params.version, params.sourceBaseUrl, params.bundledJavaScript, params.sourceMap, params.dependentModules, resourcePaths.asImmutable())
+			return new ModuleBundle(source, params.name, params.definition, params.version, params.sourceBaseUrl, params.javaScript, params.sourceMap, params.dependentModules, resourcePaths.asImmutable())
 		} finally {
 			builder.close()
 		}

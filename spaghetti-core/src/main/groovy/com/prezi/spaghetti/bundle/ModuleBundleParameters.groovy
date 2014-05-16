@@ -11,7 +11,7 @@ class ModuleBundleParameters {
 	String definition
 	String version
 	String sourceBaseUrl
-	String bundledJavaScript
+	String javaScript
 	String sourceMap
 	Set<String> dependentModules
 	File resourcesDirectory
