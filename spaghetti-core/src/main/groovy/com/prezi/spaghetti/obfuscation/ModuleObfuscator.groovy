@@ -10,8 +10,6 @@ class ModuleObfuscator {
 	private static final Set<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols()
 	private static Set<String> collectProtectedSymbols() {
 		Set<String> symbols = [
-		 		// RequireJS
-				"define",
 				// class definitions
 				"prototype"
 		]

@@ -1,11 +1,10 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.Wrapper
-import com.prezi.spaghetti.Wrapping
+import com.prezi.spaghetti.bundle.ApplicationBundler
+import com.prezi.spaghetti.bundle.ApplicationBundlerParameters
+import com.prezi.spaghetti.bundle.Wrapper
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.InputFile
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -13,42 +12,31 @@ import org.gradle.api.tasks.TaskAction
  */
 class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 
-	@InputFile
-	File inputFile
-
-	def inputFile(Object f) {
-		this.inputFile = project.file(f)
-	}
-
-	@OutputFile
-	File outputFile
-
-	def outputFile(Object f) {
-		this.outputFile = project.file(f)
-	}
-
 	@Input
-	@Optional
-	String modulesDirectory = ""
+	String mainModule
 
-	void modulesDirectory(String modulesDirectory) {
-		this.modulesDirectory = modulesDirectory
+	def mainModule(Object mainModule) {
+		this.mainModule = mainModule?.toString()
+	}
+
+	@OutputDirectory
+	File outputDirectory
+	def outputDirectory(Object outputDirectory) {
+		this.outputDirectory = project.file(outputDirectory)
 	}
 
 	BundleApplication()
 	{
-		this.conventionMapping.inputFile = { new File(project.buildDir, "application.js") }
-		this.conventionMapping.outputFile = { new File(project.buildDir, "spaghetti/application.js") }
+		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/application") }
 	}
 
 	@TaskAction
-	bundle() {
-		def config = readConfig()
-		def processedJavaScript = createGenerator(config).processApplicationJavaScript(getInputFile().text)
-
-		def outputFile = getOutputFile()
-		outputFile.parentFile.mkdirs()
-		outputFile.delete()
-		outputFile << Wrapper.wrapWithConfig(config.dependentModules*.name, Wrapping.application, getModulesDirectory(), processedJavaScript)
+	makeBundle() {
+		def bundles = ModuleDefinitionLookup.getAllBundles(getBundles())
+		ApplicationBundler.bundleApplicationDirectory(getOutputDirectory(), new ApplicationBundlerParameters(
+				bundles: bundles,
+				mainModule: getMainModule(),
+				wrapper: Wrapper.AMD
+		))
 	}
 }

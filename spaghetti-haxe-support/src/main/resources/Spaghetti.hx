@@ -1,11 +1,5 @@
 class Spaghetti {
-	static var moduleBaseUrl:String = createModuleBaseUrl();
-
-	static function createModuleBaseUrl() {
-		var moduleUrl = untyped __js__('__config["__modules"]["require"]["toUrl"]("${moduleName}.js")');
-		var lastIndex = moduleUrl.lastIndexOf("/");
-		return moduleUrl.substr(0, lastIndex + 1);
-	}
+	static var moduleBaseUrl:String = untyped __js__('__config["__baseUrl"]');
 
 	/**
 	 * Returns a URL pointing to this module's given resource.

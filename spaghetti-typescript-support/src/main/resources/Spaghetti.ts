@@ -1,11 +1,7 @@
 module Spaghetti {
-    declare var __modules:Array<any>;
+    declare var __config:any;
 
-    var moduleBaseUrl:string = function() {
-        var moduleUrl = __modules["require"]["toUrl"]("${moduleName}.js");
-        var lastIndex = moduleUrl.lastIndexOf("/");
-        return moduleUrl.substr(0, lastIndex + 1);
-    }();
+    var moduleBaseUrl:string = __config["__baseUrl"];
 
     /**
    	 * Returns a URL pointing to this module's given resource.
