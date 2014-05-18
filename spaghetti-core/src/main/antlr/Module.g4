@@ -1,6 +1,7 @@
 grammar Module;
 
 moduleDefinition : (documentation = Doc)?
+	(isStatic = 'static')?
 	'module' (name = qualifiedName)
 	('as' (alias = Name))?
 	moduleElement*
