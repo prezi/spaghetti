@@ -2,15 +2,18 @@ module prezi.graphics.text.render {
 
 
 export class TextRendererImpl implements TextRenderer {
+	config:SpaghettiModuleConfiguration;
 	layout:prezi.graphics.text.Layout;
-	constructor(layout:prezi.graphics.text.Layout) {
+	constructor(config:SpaghettiModuleConfiguration, layout:prezi.graphics.text.Layout) {
+		this.config = config;
 		this.layout = layout;
+		console.log("Text renderer name: " + config.getName());
 	}
 	createRenderer(prefix:string, suffix:string):Renderer {
 		return new RendererImpl(this.layout, prefix, suffix);
 	}
 	getResource():string {
-		return Spaghetti.getResourceUrl("some-resource.txt");
+		return this.config.getResourceUrl("some-resource.txt");
 	}
 }
 

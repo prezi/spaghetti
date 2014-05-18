@@ -5,6 +5,8 @@ import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
+
 /**
  * Created by lptr on 12/11/13.
  */
@@ -50,11 +52,10 @@ return ${HAXE_MODULE_VAR};
 	}
 
 	/**
-	 * Copies Spaghetti.hx to the generated source directory.
+	 * Copies SpaghettiModuleConfiguration.hx to the generated source directory.
 	 */
 	private static void copySpaghettiClass(ModuleDefinition module, File outputDirectory) {
-		def template = new SimpleTemplateEngine().createTemplate(HaxeGenerator.class.getResource("/Spaghetti.hx"))
-		new File(outputDirectory, "Spaghetti.hx") << template.make(moduleName: module.name)
+		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.hx") << HaxeGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.hx")
 	}
 
 	/**

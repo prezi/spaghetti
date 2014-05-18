@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.bundle
 
 import static com.prezi.spaghetti.Generator.CONFIG
-import static com.prezi.spaghetti.ReservedWords.BASE_URL_VAR
+import static com.prezi.spaghetti.ReservedWords.BASE_URL
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
@@ -35,19 +35,28 @@ abstract class Wrapper {
 
 			def result = new StringBuilder()
 			result.append "define([${moduleNamesWithRequire.join(",")}],function(){"
-			/**/result.append "var moduleUrl=arguments[0][\"toUrl\"](\"${moduleName}.js\");"
-			/**/result.append "var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\")+1);"
-			/**/result.append "var ${CONFIG}={"
-			/**//**/result.append "\"${BASE_URL_VAR}\":baseUrl,"
-			/**//**/result.append "\"${MODULES}\":{"
-			/**//**//**/result.append modules.join(",")
-			/**//**/result.append "}"
-			/**/result.append "};"
-			/**/result.append "var ${SPAGHETTI_WRAPPER_FUNCTION}=function(){"
-			/**//**/result.append "return arguments[0](${CONFIG});"
-			/**/result.append "};"
-			/**/result.append "return "
-			/**/result.append javaScript
+			result.append /**/ "var moduleUrl=arguments[0][\"toUrl\"](\"${moduleName}.js\");"
+			result.append /**/ "var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\")+1);"
+			result.append /**/ "var ${CONFIG}={"
+			result.append /**//**/ "\"${BASE_URL}\":baseUrl,"
+			result.append /**//**/ "\"${MODULES}\":{"
+			result.append /**//**//**/ modules.join(",")
+			result.append /**//**/ "},"
+			result.append /**//**/ "getName:function(){"
+			result.append /**//**//**/ "return \"${moduleName}\";"
+			result.append /**//**/ "},"
+			result.append /**//**/ "getResourceUrl:function(resource){"
+			result.append /**//**//**/ "if(resource.substr(0,1)==\"/\"){"
+			result.append /**//**//**//**/ "resource=resource.substr(1);"
+			result.append /**//**//**/ "}"
+			result.append /**//**//**/ "return baseUrl+resource;"
+			result.append /**//**/ "}"
+			result.append /**/ "};"
+			result.append /**/ "var ${SPAGHETTI_WRAPPER_FUNCTION}=function(){"
+			result.append /**//**/ "return arguments[0](${CONFIG});"
+			result.append /**/ "};"
+			result.append /**/ "return "
+			result.append /**/ javaScript
 			result.append "});"
 			return result.toString()
 		}
@@ -57,7 +66,7 @@ abstract class Wrapper {
 			def result = new StringBuilder()
 			result.append makeConfig(modulesRoot, moduleNames)
 			result.append "require([\"${mainModule}\"],function(__mainModule){"
-			/**/result.append "__mainModule[\"${MODULE}\"][\"main\"]();"
+			result.append /**/ "__mainModule[\"${MODULE}\"][\"main\"]();"
 			result.append "});"
 			return result.toString()
 		}

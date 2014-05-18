@@ -1,7 +1,11 @@
 package prezi.graphics.text;
 
 class LayoutImpl implements Layout {
-	public function new() {
+	private var config:SpaghettiModuleConfiguration;
+
+	public function new(config:SpaghettiModuleConfiguration) {
+		this.config = config;
+		trace("Layout name: " + config.getName());
 	}
 
 	public function createText():Text {
@@ -15,7 +19,7 @@ class LayoutImpl implements Layout {
 
 	public function getResource():String
 	{
-		return Spaghetti.getResourceUrl("sample.txt");
+		return config.getResourceUrl("sample.txt");
 	}
 }
 

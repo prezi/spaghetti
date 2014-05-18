@@ -14,7 +14,9 @@ class ReservedWords {
 	public static final String MODULE = "__module"
 
 	public static final String MODULES = "__modules"
-	public static final String BASE_URL_VAR = "__baseUrl"
+	public static final String BASE_URL = "__baseUrl"
+
+	public static final String SPAGHETTI_MODULE_CONFIGURATION = "SpaghettiModuleConfiguration"
 
 	// TODO Must this be protected?
 	@Protected

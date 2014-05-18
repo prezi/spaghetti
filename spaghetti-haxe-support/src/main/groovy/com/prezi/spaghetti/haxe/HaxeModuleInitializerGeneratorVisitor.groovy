@@ -34,7 +34,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 		dynamicDependencies.eachWithIndex { ModuleDefinition dependency, int index ->
 			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
 		}
-		def dynamicReferences = (0..<dynamicInstances.size()).collect { "dependency${it}" }.join(", ")
+		def dynamicReferences = ["untyped ${CONFIG}"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
 
 		def initializerContents =
 """@:keep class ${initializerName} {
@@ -42,7 +42,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
 		${dynamicInstances.join("\n\t\t")}
-		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl(${dynamicReferences});
+		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl(${dynamicReferences.join(", ")});
 		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};
