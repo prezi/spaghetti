@@ -77,7 +77,7 @@ class ModuleBundleTest extends Specification {
 			BundleSource.ModuleBundleFileHandler handler = it
 			handler.handleFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
-					"Spaghetti-Version: 1.5",
+					"Spaghetti-Version: 2.5",
 					"Module-Name: com.example.test",
 					"Module-Version: 3.7",
 					"Module-Dependencies: com.example.alma,com.example.bela",

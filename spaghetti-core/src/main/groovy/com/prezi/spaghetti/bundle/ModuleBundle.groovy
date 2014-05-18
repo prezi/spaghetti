@@ -260,7 +260,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
-		return spaghettiVersion?.startsWith("1.")
+		return spaghettiVersion?.startsWith("2.")
 	}
 
 	@Override
