@@ -4,18 +4,22 @@ package com.prezi.spaghetti.definition
  */
 class ModuleConfiguration {
 
-	final Map<String, ModuleDefinition> modules
+	final List<ModuleDefinition> dependentModules
 	final List<ModuleDefinition> localModules
 	final Scope globalScope
 
-	public ModuleConfiguration(Collection<ModuleDefinition> modules, Collection<ModuleDefinition> localModules, Scope globalScope) {
-		this.modules = new TreeMap<String, ModuleDefinition>(modules.collectEntries { module -> [ (module.name): module ] }).asImmutable()
+	public ModuleConfiguration(Collection<ModuleDefinition> dependentModules, Collection<ModuleDefinition> localModules, Scope globalScope) {
+		this.dependentModules = dependentModules.sort().asImmutable()
 		this.localModules = localModules.sort().asImmutable()
 		this.globalScope = globalScope
 	}
 
-	public List<ModuleDefinition> getDependentModules() {
-		return modules.values().toList() - localModules
+	public List<ModuleDefinition> getDynamicDependentModules() {
+		return dependentModules.findAll { it.dynamic }
+	}
+
+	public List<ModuleDefinition> getStaticDependentModules() {
+		return dependentModules.findAll { !it.dynamic }
 	}
 
 	@Override

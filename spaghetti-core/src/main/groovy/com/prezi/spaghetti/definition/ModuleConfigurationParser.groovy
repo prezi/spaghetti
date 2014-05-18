@@ -8,13 +8,13 @@ class ModuleConfigurationParser {
 			Collection<ModuleDefinitionSource> localModuleSources,
 			Map<FQName, FQName> externs) {
 		def globalScope = new GlobalScope(externs)
-		def modules = dependentModuleSources.collect { moduleSource ->
+		def dependentModules = dependentModuleSources.collect { moduleSource ->
 			return parseModule(moduleSource, globalScope)
 		}
 		def localModules = localModuleSources.collect { moduleSource ->
 			return parseModule(moduleSource, globalScope)
 		}
-		return new ModuleConfiguration(modules + localModules, localModules, globalScope)
+		return new ModuleConfiguration(dependentModules, localModules, globalScope)
 	}
 
 	private static ModuleDefinition parseModule(ModuleDefinitionSource source, GlobalScope globalScope)
@@ -24,4 +24,3 @@ class ModuleConfigurationParser {
 		return module
 	}
 }
-
