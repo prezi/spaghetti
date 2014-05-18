@@ -4,8 +4,10 @@ import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.Generator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
 
 /**
@@ -13,9 +15,12 @@ import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
  */
 class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
-	HaxeModuleInitializerGeneratorVisitor(ModuleDefinition module)
+	private final Collection<ModuleDefinition> dynamicDependencies
+
+	HaxeModuleInitializerGeneratorVisitor(ModuleDefinition module, Collection<ModuleDefinition> dynamicDependencies)
 	{
 		super(module)
+		this.dynamicDependencies = dynamicDependencies
 	}
 
 	@Override
@@ -25,12 +30,19 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 
 		def consts = ctx.moduleElement()*.accept(this) - ""
 
+		def dynamicInstances = []
+		dynamicDependencies.eachWithIndex { ModuleDefinition dependency, int index ->
+			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
+		}
+		def dynamicReferences = (0..<dynamicInstances.size()).collect { "dependency${it}" }.join(", ")
+
 		def initializerContents =
 """@:keep class ${initializerName} {
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl();
+		${dynamicInstances.join("\n\t\t")}
+		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl(${dynamicReferences});
 		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};

@@ -1,5 +1,6 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
@@ -14,8 +15,8 @@ abstract class AbstractGenerator implements Generator {
 	}
 
 	@Override
-	final String processModuleJavaScript(ModuleDefinition module, String javaScript) {
-		def processedJavaScript = processModuleJavaScriptInternal(module, javaScript)
+	final String processModuleJavaScript(ModuleDefinition module, ModuleConfiguration config, String javaScript) {
+		def processedJavaScript = processModuleJavaScriptInternal(module, config, javaScript)
 		return \
 """${SPAGHETTI_WRAPPER_FUNCTION}(function(${CONFIG}) {
 ${processedJavaScript}
@@ -23,5 +24,5 @@ ${processedJavaScript}
 """
 	}
 
-	abstract protected String processModuleJavaScriptInternal(ModuleDefinition moduleDefinition, String javaScript)
+	abstract protected String processModuleJavaScriptInternal(ModuleDefinition moduleDefinition, ModuleConfiguration config, String javaScript)
 }

@@ -5,8 +5,6 @@ import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 import groovy.text.SimpleTemplateEngine
 
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
-
 /**
  * Created by lptr on 12/11/13.
  */
@@ -26,17 +24,21 @@ class HaxeGenerator extends AbstractGenerator {
 		config.localModules.each { module ->
 			copySpaghettiClass(module, outputDirectory)
 			generateModuleInterface(module, outputDirectory)
-			generateModuleInitializer(module, outputDirectory)
+			generateModuleInitializer(module, config.dynamicDependentModules, outputDirectory)
 			generateInterfacesForModuleTypes(module, outputDirectory, false)
 		}
 		config.dependentModules.each { dependentModule ->
 			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
-			generateModuleProxy(dependentModule, outputDirectory)
+			if (dependentModule.dynamic) {
+				generateModuleInterface(dependentModule, outputDirectory)
+			} else {
+				generateModuleProxy(dependentModule, outputDirectory)
+			}
 		}
 	}
 
 	@Override
-	protected String processModuleJavaScriptInternal(ModuleDefinition module, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript)
 	{
 		return \
 """// Haxe expects either window or exports to be present
@@ -76,10 +78,10 @@ return ${HAXE_MODULE_VAR};
 	/**
 	 * Generates initializer for module.
 	 */
-	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
+	private static void generateModuleInitializer(ModuleDefinition module, Collection<ModuleDefinition> dynamicDependencies, File outputDirectory)
 	{
 		def initializerName = getInitializerName(module)
-		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module).visitModuleDefinition(module.context)
+		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module, dynamicDependencies).visitModuleDefinition(module.context)
 		HaxeUtils.createHaxeSourceFile(module, initializerName, outputDirectory, initializerContents)
 	}
 

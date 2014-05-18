@@ -20,7 +20,7 @@ class JavaScriptGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	protected String processModuleJavaScriptInternal(ModuleDefinition module, String javaScript) {
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript) {
 		return javaScript
 	}
 }

@@ -6,18 +6,23 @@ import prezi.graphics.text.Values;
 import prezi.graphics.text.render.TextRenderer;
 
 class ClientImpl implements Client {
-	public function new() {}
+	var layout:Layout;
+	var textRenderer:TextRenderer;
+	public function new(layout:Layout, textRenderer:TextRenderer) {
+		this.layout = layout;
+		this.textRenderer = textRenderer;
+	}
 
 	public function main() {
-		var text = Layout.createText();
+		var text = layout.createText();
 		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
 		style.value = "normal";
 		text.insert(0, "World", [ style ]);
 		text.insert(0, Values.HI, []);
-		var renderer = TextRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
+		var renderer = textRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
 		trace(renderer.render(text));
 
-		var testStuff = Layout.createTestStuff();
+		var testStuff = layout.createTestStuff();
 		testStuff.registerCallback(function (message:String) {
 			trace("Received callback message: " + message);
 		});
@@ -30,8 +35,8 @@ class ClientImpl implements Client {
 		var result = testStuff.doAsync(callback, function(value:Int):String { return Std.string(value + 1); });
 		trace("doAync() returned: " + result);
 
-		trace("Haxe resource: " + Layout.getResource());
-		trace("TypeScript resource: " + TextRenderer.getResource());
+		trace("Haxe resource: " + layout.getResource());
+		trace("TypeScript resource: " + textRenderer.getResource());
 	}
 
 	function callback(name:String, converter:Int->String)

@@ -2,9 +2,12 @@ module prezi.graphics.text.render {
 
 
 export class TextRendererImpl implements TextRenderer {
-	constructor() {}
+	layout:prezi.graphics.text.Layout;
+	constructor(layout:prezi.graphics.text.Layout) {
+		this.layout = layout;
+	}
 	createRenderer(prefix:string, suffix:string):Renderer {
-		return new RendererImpl(prefix, suffix);
+		return new RendererImpl(this.layout, prefix, suffix);
 	}
 	getResource():string {
 		return Spaghetti.getResourceUrl("some-resource.txt");
@@ -18,10 +21,10 @@ export class RendererImpl implements Renderer {
 	testStuff:prezi.graphics.text.TestStuff<string, string>;
 
 
-	constructor(prefix:string, suffix:string) {
+	constructor(layout:prezi.graphics.text.Layout, prefix:string, suffix:string) {
 		this.prefix = prefix;
 		this.suffix = suffix;
-		this.testStuff = Layout.createTestStuff();
+		this.testStuff = layout.createTestStuff();
 	}
 
     render(text:prezi.graphics.text.Text):string {
@@ -38,8 +41,7 @@ export class RendererImpl implements Renderer {
 
 export var Values = {
 	MAX_LENGTH: 5, 
-	PLACEHOLDER: 'string',
-	DEFAULT_RENDERER: new RendererImpl('x','y')
+	PLACEHOLDER: 'string'
 };
 
 

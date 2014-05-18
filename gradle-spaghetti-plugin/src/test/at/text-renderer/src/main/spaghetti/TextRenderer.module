@@ -21,11 +21,6 @@ const Values {
 	 * Some placeholder
 	 */
 	string PLACEHOLDER
-
-	/**
-	 * Some object
-	 */
-	Renderer DEFAULT_RENDERER
 }
 
 string getResource()

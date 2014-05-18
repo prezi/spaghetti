@@ -80,7 +80,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		}
 		def config = readConfig(moduleDefinitions)
 		def module = config.getLocalModules().first()
-		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
+		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, config, getInputFile().text)
 
 		createBundle(config, module, processedJavaScript, getSourceMap()?.text, getResourcesDirectory())
 	}

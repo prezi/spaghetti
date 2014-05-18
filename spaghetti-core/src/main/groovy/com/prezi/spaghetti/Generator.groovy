@@ -1,5 +1,6 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 
 /**
@@ -26,7 +27,7 @@ public interface Generator {
 	 *     });
 	 * </pre>
 	 */
-	String processModuleJavaScript(ModuleDefinition module, String javaScript)
+	String processModuleJavaScript(ModuleDefinition module, ModuleConfiguration config, String javaScript)
 
 	/**
 	 * Process the JavaScript code of an application before wrapping it into a Require JS wrapper.

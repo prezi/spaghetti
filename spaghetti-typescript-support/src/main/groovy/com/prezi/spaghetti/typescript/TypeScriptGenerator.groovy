@@ -7,6 +7,7 @@ import groovy.text.SimpleTemplateEngine
 
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.CONSTANTS
+import static com.prezi.spaghetti.ReservedWords.MODULES
 
 /**
  * Created by lptr on 12/11/13.
@@ -31,11 +32,15 @@ class TypeScriptGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	protected String processModuleJavaScriptInternal(ModuleDefinition module, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript)
 	{
+		// TODO This should be made type-safe
+		def dynamicDependencies = config.dynamicDependentModules.collect { ModuleDefinition dependency ->
+			"${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"]"
+		}.join(", ")
 		return \
 """${javaScript}
-var module = new ${module.name}.${module.alias}Impl();
+var module = new ${module.name}.${module.alias}Impl(${dynamicDependencies});
 var consts = new ${module.name}.__${module.alias}Constants();
 return {
 	${MODULE}: module,
