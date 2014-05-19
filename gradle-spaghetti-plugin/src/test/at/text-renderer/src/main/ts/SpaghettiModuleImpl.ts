@@ -8,6 +8,7 @@ export class SpaghettiModuleImpl implements SpaghettiModule {
 		this.config = config;
 		this.layout = layout;
 		console.log("Text renderer name: " + config.getName());
+		console.log("Core stuff: " + Core.giveMeANumber());
 	}
 	createRenderer(prefix:string, suffix:string):Renderer {
 		return new RendererImpl(this.layout, prefix, suffix);

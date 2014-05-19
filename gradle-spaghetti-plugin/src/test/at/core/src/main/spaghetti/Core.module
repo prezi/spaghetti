@@ -1,0 +1,3 @@
+static module prezi.graphics.core as Core
+
+int giveMeANumber()

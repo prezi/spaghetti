@@ -1,6 +1,9 @@
 apply plugin: "spaghetti-haxe"
 
 dependencies {
+	modules project(path: ":core", configuration: "modules")
+	modulesObf project(path: ":core", configuration: "modulesObf");
+
 	test group: "haxelib3", name: "hamcrest", version: "1.2.1"
 	test group: "haxelib3", name: "mconsole", version: "1.6.0"
 	test group: "haxelib3", name: "mcover", version: "2.0.3"

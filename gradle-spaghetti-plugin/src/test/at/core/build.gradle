@@ -1,0 +1,17 @@
+spaghetti {
+	platform "js"
+}
+
+task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
+	inputFile "src/main/js/core.js"
+}
+
+task zipModule(type: Zip) {
+	dependsOn bundleModule
+	from bundleModule.outputDirectory
+	archiveName = "module"
+}
+
+artifacts {
+	modules zipModule
+}
