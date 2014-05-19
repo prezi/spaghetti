@@ -4,27 +4,55 @@ package com.prezi.spaghetti.definition
  */
 class ModuleConfiguration {
 
-	final List<ModuleDefinition> dependentModules
-	final List<ModuleDefinition> localModules
+	final Set<ModuleDefinition> localModules
+	final Set<ModuleDefinition> directDependentModules
+	final Set<ModuleDefinition> transitiveDependentModules
 	final Scope globalScope
 
-	public ModuleConfiguration(Collection<ModuleDefinition> dependentModules, Collection<ModuleDefinition> localModules, Scope globalScope) {
-		this.dependentModules = dependentModules.sort().asImmutable()
-		this.localModules = localModules.sort().asImmutable()
+	public ModuleConfiguration(Collection<ModuleDefinition> localModules, Collection<ModuleDefinition> directDependentModules, Collection<ModuleDefinition> transitiveDependentModules, Scope globalScope) {
+		this.localModules = new TreeSet<>(localModules).asImmutable()
+		this.directDependentModules = new TreeSet<>(directDependentModules).asImmutable()
+		this.transitiveDependentModules = new TreeSet<>(transitiveDependentModules).asImmutable()
 		this.globalScope = globalScope
 	}
 
-	public List<ModuleDefinition> getDynamicDependentModules() {
-		return dependentModules.findAll { it.dynamic }
+	public SortedSet<ModuleDefinition> getDirectDynamicDependentModules() {
+		return directDependentModules.findAll { it.dynamic }
 	}
 
-	public List<ModuleDefinition> getStaticDependentModules() {
-		return dependentModules.findAll { !it.dynamic }
+	public SortedSet<ModuleDefinition> getDirectStaticDependentModules() {
+		return directDependentModules.findAll { !it.dynamic }
+	}
+
+	public SortedSet<ModuleDefinition> getAllDynamicDependentModules() {
+		return allDependentModules.findAll { it.dynamic }
+	}
+
+	public SortedSet<ModuleDefinition> getAllStaticDependentModules() {
+		return allDependentModules.findAll { !it.dynamic }
+	}
+
+	public SortedSet<ModuleDefinition> getAllDependentModules() {
+		return new TreeSet<>(directDependentModules + transitiveDependentModules)
+	}
+
+	public List<ModuleDefinition> getAllDynamicModules() {
+		return allModules.findAll { it.dynamic }
+	}
+
+	public List<ModuleDefinition> getAllStaticModules() {
+		return allModules.findAll { !it.dynamic }
+	}
+
+	public List<ModuleDefinition> getAllModules() {
+		return (localModules + directDependentModules + transitiveDependentModules)
 	}
 
 	@Override
 	String toString() {
-		return "Dependent modules: " + dependentModules.collect { it.name }.join(", ") +
-			", Local modules: " + localModules.collect { it.name }.join(", ")
+		return \
+			"Local modules: " + localModules*.name.join(", ") +
+		 	", Direct dependent modules: " + directDependentModules*.name.join(", ") +
+		 	", Transitive dependent modules: " + transitiveDependentModules*.name.join(", ")
 	}
 }

@@ -6,6 +6,8 @@ configurations {
 }
 
 dependencies {
+	modules project(path: ":layout", configuration: "modules")
+	modulesObf project(path: ":layout", configuration: "modulesObf")
 	modules project(path: ":text-renderer", configuration: "modules")
 	modulesObf project(path: ":text-renderer", configuration: "modulesObf")
 	requirejs "org.webjars:requirejs:2.1.8"

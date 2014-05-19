@@ -5,7 +5,6 @@ import com.prezi.spaghetti.bundle.ApplicationBundlerParameters
 import com.prezi.spaghetti.bundle.Wrapper
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileCollection
-import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
@@ -49,10 +48,10 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 
 	@TaskAction
 	makeBundle() {
-		def bundles = ModuleDefinitionLookup.getAllBundles(
-				new UnionFileCollection(getDependentModules(), getApplicationModules()))
+		def bundles = ModuleBundleLookup.lookupFromConfiguration(getDependentModules())
+		def appBundles = ModuleBundleLookup.lookup(getApplicationModules())
 		ApplicationBundler.bundleApplicationDirectory(getOutputDirectory(), new ApplicationBundlerParameters(
-				bundles: bundles,
+				bundles: new TreeSet<>(bundles.allBundles + appBundles),
 				mainModule: getMainModule(),
 				wrapper: Wrapper.AMD
 		))

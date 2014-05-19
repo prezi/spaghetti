@@ -19,10 +19,10 @@ import static com.prezi.spaghetti.ReservedWords.MODULES
 class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	private final typeParams = []
-	private final List<ModuleDefinition> dependentModules
+	private final Collection<ModuleDefinition> dependentModules
 	private final boolean localModule
 
-	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, List<ModuleDefinition> dependentModules, boolean localModule)
+	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, Collection<ModuleDefinition> dependentModules, boolean localModule)
 	{
 		super(module)
 		this.dependentModules = dependentModules

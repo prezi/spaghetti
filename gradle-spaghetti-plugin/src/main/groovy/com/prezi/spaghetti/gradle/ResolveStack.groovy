@@ -134,7 +134,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 	// bundlename -> bundle
 	private Map<String, ModuleBundle> gatherBundles(String configName) {
 		def configuration = project.configurations.getByName(configName)
-		return ModuleDefinitionLookup.getAllBundles(configuration).collectEntries { bundle ->
+		return ModuleBundleLookup.lookupFromConfiguration(configuration).allBundles.collectEntries { bundle ->
 			[ bundle.name, bundle ]
 		}
 	}

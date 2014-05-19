@@ -3,7 +3,6 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
-import groovy.text.SimpleTemplateEngine
 
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
@@ -24,18 +23,19 @@ class HaxeGenerator extends AbstractGenerator {
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
-			copySpaghettiClass(module, outputDirectory)
+			copySpaghettiClass(outputDirectory)
 			generateModuleInterface(module, outputDirectory)
-			generateModuleInitializer(module, config.dynamicDependentModules, outputDirectory)
+			generateModuleInitializer(module, config.directDynamicDependentModules, outputDirectory)
 			generateInterfacesForModuleTypes(module, outputDirectory, false)
 		}
-		config.dependentModules.each { dependentModule ->
+		config.allDependentModules.each { dependentModule ->
 			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
-			if (dependentModule.dynamic) {
-				generateModuleInterface(dependentModule, outputDirectory)
-			} else {
-				generateModuleProxy(dependentModule, outputDirectory)
-			}
+		}
+		config.allDynamicDependentModules.each { dependentModule ->
+			generateModuleInterface(dependentModule, outputDirectory)
+		}
+		config.allStaticDependentModules.each { dependentModule ->
+			generateModuleProxy(dependentModule, outputDirectory)
 		}
 	}
 
@@ -54,7 +54,7 @@ return ${HAXE_MODULE_VAR};
 	/**
 	 * Copies SpaghettiModuleConfiguration.hx to the generated source directory.
 	 */
-	private static void copySpaghettiClass(ModuleDefinition module, File outputDirectory) {
+	private static void copySpaghettiClass(File outputDirectory) {
 		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.hx") << HaxeGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.hx")
 	}
 

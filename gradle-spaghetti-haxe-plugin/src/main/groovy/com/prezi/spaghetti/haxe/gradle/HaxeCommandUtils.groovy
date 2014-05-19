@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.haxe.gradle
 
 import com.prezi.spaghetti.bundle.ModuleBundle
-import com.prezi.spaghetti.gradle.ModuleDefinitionLookup
+import com.prezi.spaghetti.gradle.ModuleBundleLookup
 import org.gradle.api.artifacts.Configuration
 
 /**
@@ -20,7 +20,7 @@ class HaxeCommandUtils {
 
 		List<String> result = ["-cp", bundleFile.parentFile.absolutePath, "--run", "SpaghettiBundler", spaghettiType, output.absolutePath]
 		def bundles = configurations.collectMany(new HashSet<ModuleBundle>()) { configuration ->
-			ModuleDefinitionLookup.getAllBundles((Configuration) configuration)
+			ModuleBundleLookup.lookupFromConfiguration((Configuration) configuration).allBundles
 		}
 		result.addAll(bundles.collect { ModuleBundle bundle -> moduleNamer(bundle) }.sort { it }.unique())
 		return result

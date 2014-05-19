@@ -27,8 +27,7 @@ class ModuleObfuscator {
 	public ObfuscationResult obfuscateModule(ObfuscationParameters params) {
 		def config = params.config
 		def module = params.module
-		def modules = config.localModules + config.dependentModules
-		Set<String> symbols = protectedSymbols + modules.collect {
+		Set<String> symbols = protectedSymbols + config.allModules.collect {
 			new SymbolCollectVisitor().visit(it.context)
 		}.flatten() + (params.additionalSymbols ?: [])
 

@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.Generator
+import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleConfigurationParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
@@ -29,13 +30,22 @@ class AbstractPlatformAwareSpaghettiTask extends AbstractSpaghettiTask {
 	}
 
 	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) {
-		def dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getDependentModules())
+		def bundles = ModuleBundleLookup.lookupFromConfiguration(getDependentModules())
+		def directSources = makeModuleSources(bundles.directBundles)
+		def transitiveSources = makeModuleSources(bundles.transitiveBundles)
 		def config = ModuleConfigurationParser.parse(
-				dependentDefinitions,
 				localDefinitions,
+				directSources,
+				transitiveSources,
 				Platforms.getExterns(getPlatform())
 		)
 		logger.info("Loaded configuration: ${config}")
 		return config
+	}
+
+	private static List<ModuleDefinitionSource> makeModuleSources(Set<ModuleBundle> bundles) {
+		return bundles.collect { ModuleBundle module ->
+			return new ModuleDefinitionSource("module: " + module.name, module.definition)
+		}
 	}
 }

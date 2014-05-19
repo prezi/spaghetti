@@ -4,23 +4,23 @@ package com.prezi.spaghetti.definition
  */
 class ModuleConfigurationParser {
 	public static ModuleConfiguration parse(
-			Collection<ModuleDefinitionSource> dependentModuleSources,
 			Collection<ModuleDefinitionSource> localModuleSources,
+			Collection<ModuleDefinitionSource> dependentModuleSources,
+			Collection<ModuleDefinitionSource> transitiveModuleSources,
 			Map<FQName, FQName> externs) {
 		def globalScope = new GlobalScope(externs)
-		def dependentModules = dependentModuleSources.collect { moduleSource ->
-			return parseModule(moduleSource, globalScope)
-		}
-		def localModules = localModuleSources.collect { moduleSource ->
-			return parseModule(moduleSource, globalScope)
-		}
-		return new ModuleConfiguration(dependentModules, localModules, globalScope)
+		def localModules = parseModules(localModuleSources, globalScope)
+		def dependentModules = parseModules(dependentModuleSources, globalScope)
+		def transitiveModules = parseModules(transitiveModuleSources, globalScope)
+		return new ModuleConfiguration(localModules, dependentModules, transitiveModules, globalScope)
 	}
 
-	private static ModuleDefinition parseModule(ModuleDefinitionSource source, GlobalScope globalScope)
+	private static Collection<ModuleDefinition> parseModules(Collection<ModuleDefinitionSource> sources, GlobalScope globalScope)
 	{
-		def module = new ModuleDefinition(source.contents, ModuleDefinitionParser.parse(source), globalScope)
-		globalScope.registerNames(module.typeNames)
-		return module
+		return sources.collect { source ->
+			def module = new ModuleDefinition(source.contents, ModuleDefinitionParser.parse(source), globalScope)
+			globalScope.registerNames(module.typeNames)
+			return module
+		}
 	}
 }
