@@ -27,6 +27,10 @@ compileJs {
 	flag "-debug"
 }
 
+testJs {
+	flag "-D test"
+}
+
 sources {
 	main {
 		haxe {
