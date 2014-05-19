@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle
 
+import com.prezi.spaghetti.definition.ModuleType
 import com.prezi.spaghetti.Version
 import com.prezi.spaghetti.bundle.BundleBuilder.BundleAppender
 import groovy.io.FileType
@@ -21,6 +22,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 	private static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
 	private static final def MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version")
+	private static final def MANIFEST_ATTR_MODULE_TYPE = new Attributes.Name("Module-Type")
 	private static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
 	private static final def MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies")
 
@@ -32,14 +34,16 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 
 	protected final BundleSource source
 	final String name
+	final ModuleType type
 	final String version
 	final String sourceBaseUrl
 	final Set<String> dependentModules
 	final Set<String> resourcePaths
 
-	protected ModuleBundle(BundleSource source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
+	protected ModuleBundle(BundleSource source, String name, ModuleType type, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
 		this.source = source
 		this.name = name
+		this.type = type
 		this.version = version
 		this.sourceBaseUrl = sourceBaseUrl
 		this.dependentModules = dependentModules
@@ -81,6 +85,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			manifest.mainAttributes.put(Attributes.Name.MANIFEST_VERSION, "1.0")
 			manifest.mainAttributes.put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION)
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_NAME, params.name)
+			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_TYPE, params.type.name().toLowerCase())
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, params.version ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, params.sourceBaseUrl ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_DEPENDENCIES, params.dependentModules.join(","))
@@ -109,7 +114,7 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			}
 
 			def source = builder.create()
-			return new ModuleBundle(source, params.name, params.version, params.sourceBaseUrl, params.dependentModules, resourcePaths.asImmutable())
+			return new ModuleBundle(source, params.name, params.type, params.version, params.sourceBaseUrl, params.dependentModules, resourcePaths.asImmutable())
 		} finally {
 			builder.close()
 		}
@@ -175,10 +180,11 @@ class ModuleBundle implements Comparable<ModuleBundle> {
 			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"${spaghettiVersion}\"): ${source}")
 		}
 		String name = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_NAME)
+		ModuleType type = ModuleType.valueOf(manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_TYPE).toUpperCase())
 		String version = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_VERSION) ?: "unknown-version"
 		String sourceUrl = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_SOURCE) ?: "unknown-source"
 		Set<String> dependentModules = manifest.mainAttributes.getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES)?.tokenize(",") ?: []
-		return new ModuleBundle(source, name, version, sourceUrl, dependentModules, resourcePaths.asImmutable())
+		return new ModuleBundle(source, name, type, version, sourceUrl, dependentModules, resourcePaths.asImmutable())
 	}
 
 	public void extract(File outputDirectory, ModuleBundleElement... elements) {

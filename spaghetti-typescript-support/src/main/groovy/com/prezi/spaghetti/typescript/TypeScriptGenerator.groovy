@@ -3,6 +3,7 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleType
 
 import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
@@ -28,7 +29,7 @@ class TypeScriptGenerator extends AbstractGenerator {
 			copySpaghettiClass(outputDirectory)
 			generateModuleInterface(module, SPAGHETTI_MODULE, outputDirectory)
 		}
-		(config.directDependentModules + config.transitiveDependentModules.findAll { !it.dynamic }).each { dependentModule ->
+		(config.directDependentModules + config.transitiveDependentModules.findAll { it.type == ModuleType.STATIC }).each { dependentModule ->
 			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
 		}
 	}

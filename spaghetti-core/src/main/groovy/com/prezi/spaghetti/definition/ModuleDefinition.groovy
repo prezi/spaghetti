@@ -6,8 +6,8 @@ import com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext
  * Created by lptr on 15/11/13.
  */
 class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
-	final boolean dynamic
 	final String name
+	final ModuleType type
 	final String alias
 	final ModuleDefinitionContext context
 	final String definitionSource
@@ -19,7 +19,7 @@ class ModuleDefinition implements Scope, Comparable<ModuleDefinition> {
 
 	ModuleDefinition(String definitionSource, ModuleDefinitionContext context, Scope parentScope)
 	{
-		this.dynamic = context.isStatic == null
+		this.type = context.isStatic != null ? ModuleType.STATIC : ModuleType.DYNAMIC
 		this.name = context.name.text
 		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
 		this.context = context

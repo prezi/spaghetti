@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.definition.ModuleType
 import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.definition.ModuleConfiguration
@@ -93,12 +94,13 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			File resourceDir) {
 		// We depend on direct dynamic dependencies and all static dependencies
 		def dependentModules = config.directDependentModules*.name + config.transitiveDependentModules.findAll {
-			!it.dynamic
+			it.type == ModuleType.STATIC
 		}*.name
 		ModuleBundle.createDirectory(
 				getOutputDirectory(),
 				new ModuleBundleParameters(
 						name: module.name,
+						type: module.type,
 						definition: module.definitionSource,
 						version: String.valueOf(project.version),
 						sourceBaseUrl: getSourceBaseUrl(),

@@ -17,19 +17,19 @@ class ModuleConfiguration {
 	}
 
 	public SortedSet<ModuleDefinition> getDirectDynamicDependentModules() {
-		return directDependentModules.findAll { it.dynamic }
+		return directDependentModules.findAll { it.type == ModuleType.DYNAMIC }
 	}
 
 	public SortedSet<ModuleDefinition> getDirectStaticDependentModules() {
-		return directDependentModules.findAll { !it.dynamic }
+		return directDependentModules.findAll { it.type == ModuleType.STATIC }
 	}
 
 	public SortedSet<ModuleDefinition> getAllDynamicDependentModules() {
-		return allDependentModules.findAll { it.dynamic }
+		return allDependentModules.findAll { it.type == ModuleType.DYNAMIC }
 	}
 
 	public SortedSet<ModuleDefinition> getAllStaticDependentModules() {
-		return allDependentModules.findAll { !it.dynamic }
+		return allDependentModules.findAll { it.type == ModuleType.STATIC }
 	}
 
 	public SortedSet<ModuleDefinition> getAllDependentModules() {
@@ -37,11 +37,11 @@ class ModuleConfiguration {
 	}
 
 	public SortedSet<ModuleDefinition> getAllDynamicModules() {
-		return allModules.findAll { it.dynamic }
+		return allModules.findAll { it.type == ModuleType.DYNAMIC }
 	}
 
 	public SortedSet<ModuleDefinition> getAllStaticModules() {
-		return allModules.findAll { !it.dynamic }
+		return allModules.findAll { it.type == ModuleType.STATIC }
 	}
 
 	public SortedSet<ModuleDefinition> getAllModules() {
