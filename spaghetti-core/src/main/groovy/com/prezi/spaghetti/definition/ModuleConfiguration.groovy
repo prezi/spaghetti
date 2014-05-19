@@ -36,16 +36,16 @@ class ModuleConfiguration {
 		return new TreeSet<>(directDependentModules + transitiveDependentModules)
 	}
 
-	public List<ModuleDefinition> getAllDynamicModules() {
+	public SortedSet<ModuleDefinition> getAllDynamicModules() {
 		return allModules.findAll { it.dynamic }
 	}
 
-	public List<ModuleDefinition> getAllStaticModules() {
+	public SortedSet<ModuleDefinition> getAllStaticModules() {
 		return allModules.findAll { !it.dynamic }
 	}
 
-	public List<ModuleDefinition> getAllModules() {
-		return (localModules + directDependentModules + transitiveDependentModules)
+	public SortedSet<ModuleDefinition> getAllModules() {
+		return new TreeSet<>(localModules + directDependentModules + transitiveDependentModules)
 	}
 
 	@Override
