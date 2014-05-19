@@ -91,6 +91,10 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			String javaScript,
 			String sourceMap,
 			File resourceDir) {
+		// We depend on direct dynamic dependencies and all static dependencies
+		def dependentModules = config.directDependentModules*.name + config.transitiveDependentModules.findAll {
+			!it.dynamic
+		}*.name
 		ModuleBundle.createDirectory(
 				getOutputDirectory(),
 				new ModuleBundleParameters(
@@ -100,7 +104,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 						sourceBaseUrl: getSourceBaseUrl(),
 						javaScript: javaScript,
 						sourceMap: sourceMap,
-						dependentModules: config.directDependentModules*.name,
+						dependentModules: dependentModules,
 						resourcesDirectory: resourceDir
 				)
 		)
