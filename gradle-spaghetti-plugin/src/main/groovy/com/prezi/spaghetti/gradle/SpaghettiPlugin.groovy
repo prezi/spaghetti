@@ -61,12 +61,6 @@ class SpaghettiPlugin implements Plugin<Project> {
 		resourcesTask.conventionMapping.destinationDir = { project.file("${project.buildDir}/spaghetti/resources") }
 		resourcesTask.from(spaghettiResourceSet.source);
 
-		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
-			task.conventionMapping.dependentModules = { extension.configuration }
-		}
-		project.tasks.withType(AbstractPlatformAwareSpaghettiTask).all { AbstractPlatformAwareSpaghettiTask task ->
-			task.conventionMapping.platform = { extension.platform }
-		}
 		project.tasks.withType(AbstractDefinitionAwareSpaghettiTask).all { AbstractDefinitionAwareSpaghettiTask task ->
 			task.conventionMapping.definitions = { findDefinitions(project) }
 		}
