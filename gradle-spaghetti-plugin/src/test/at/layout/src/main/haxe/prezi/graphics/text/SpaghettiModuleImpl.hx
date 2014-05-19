@@ -1,6 +1,6 @@
 package prezi.graphics.text;
 
-class LayoutImpl implements Layout {
+class SpaghettiModuleImpl implements SpaghettiModule {
 	private var config:SpaghettiModuleConfiguration;
 
 	public function new(config:SpaghettiModuleConfiguration) {

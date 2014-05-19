@@ -5,7 +5,7 @@ import prezi.graphics.text.Layout;
 import prezi.graphics.text.Values;
 import prezi.graphics.text.render.TextRenderer;
 
-class ClientImpl implements Client {
+class SpaghettiModuleImpl implements SpaghettiModule {
 	var layout:Layout;
 	var textRenderer:TextRenderer;
 	public function new(config:SpaghettiModuleConfiguration, layout:Layout, textRenderer:TextRenderer) {

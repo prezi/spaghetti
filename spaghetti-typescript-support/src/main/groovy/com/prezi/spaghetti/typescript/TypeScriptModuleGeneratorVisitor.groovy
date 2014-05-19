@@ -18,13 +18,15 @@ import static com.prezi.spaghetti.ReservedWords.MODULES
  */
 class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
+	private final String className
 	private final typeParams = []
 	private final Collection<ModuleDefinition> dependentModules
 	private final boolean localModule
 
-	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, Collection<ModuleDefinition> dependentModules, boolean localModule)
+	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, String className, Collection<ModuleDefinition> dependentModules, boolean localModule)
 	{
 		super(module)
+		this.className = className
 		this.dependentModules = dependentModules
 		this.localModule = localModule
 	}
@@ -61,7 +63,7 @@ export var __${module.alias}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"]
 		}
 
 		result +=  ModuleUtils.formatDocumentation(ctx.documentation)
-		result += "export interface ${module.alias} {\n" + methods.join("\n") + "\n}\n" + types.join("\n")
+		result += "export interface ${className} {\n" + methods.join("\n") + "\n}\n" + types.join("\n")
 
 		if (localModule) {
 			Set<String> consts = []
