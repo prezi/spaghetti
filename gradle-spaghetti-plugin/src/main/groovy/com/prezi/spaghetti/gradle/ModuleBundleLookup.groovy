@@ -11,6 +11,11 @@ class ModuleBundleLookup {
 	private static final logger = LoggerFactory.getLogger(ModuleBundleLookup)
 
 	public static ModuleBundleLookupResult lookup(Collection<File> directDependencies, Collection<File> potentialTransitiveDependencies) {
+		if (logger.isDebugEnabled()) {
+			logger.debug "Looking up modules:"
+			logger.debug "\tDirect dependencies:\n\t\t${directDependencies.join("\n\t\t")}"
+			logger.debug "\tPotential transitive dependencies:\n\t\t${potentialTransitiveDependencies.join("\n\t\t")}"
+		}
 		Map<String, ModuleBundle> moduleLookup = [:]
 		Set<ModuleBundle> directBundles = new TreeSet<>()
 		directDependencies.each { file ->
