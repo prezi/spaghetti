@@ -29,7 +29,7 @@ class AbstractPlatformAwareSpaghettiTask extends AbstractSpaghettiTask {
 	}
 
 	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) {
-		def dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getBundles())
+		def dependentDefinitions = ModuleDefinitionLookup.getAllDefinitionSources(getDependentModules())
 		def config = ModuleConfigurationParser.parse(
 				dependentDefinitions,
 				localDefinitions,

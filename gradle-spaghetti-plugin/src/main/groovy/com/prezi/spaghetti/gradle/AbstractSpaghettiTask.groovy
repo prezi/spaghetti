@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.gradle
 
-import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.FileCollection
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.InputFiles
 
@@ -10,17 +9,10 @@ import org.gradle.api.tasks.InputFiles
  */
 class AbstractSpaghettiTask extends ConventionTask {
 
-	ConfigurableFileCollection bundles = project.files()
-	void bundles(Object... bundles) {
-		this.bundles.from(*bundles)
-	}
-	void bundle(Object... bundles) {
-		this.bundles(*bundles)
-	}
-
 	@InputFiles
-	FileCollection getBundles() {
-		return project.files(this.bundles)
+	Configuration dependentModules
+	void bundles(Configuration dependentModules) {
+		this.dependentModules = dependentModules
 	}
 
 	protected SpaghettiPlugin getPlugin()

@@ -3,7 +3,11 @@ package com.prezi.spaghetti.gradle
 import com.prezi.spaghetti.bundle.ApplicationBundler
 import com.prezi.spaghetti.bundle.ApplicationBundlerParameters
 import com.prezi.spaghetti.bundle.Wrapper
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.file.UnionFileCollection
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
@@ -11,6 +15,19 @@ import org.gradle.api.tasks.TaskAction
  * Created by lptr on 16/11/13.
  */
 class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
+
+	ConfigurableFileCollection applicationModules = project.files()
+	void applicationModules(Object... applicationModules) {
+		this.applicationModules.from(*applicationModules)
+	}
+	void applicationModule(Object... applicationModules) {
+		this.applicationModules(applicationModules)
+	}
+
+	@InputFiles
+	FileCollection getApplicationModules() {
+		return project.files(this.applicationModules)
+	}
 
 	@Input
 	String mainModule
@@ -32,7 +49,8 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 
 	@TaskAction
 	makeBundle() {
-		def bundles = ModuleDefinitionLookup.getAllBundles(getBundles())
+		def bundles = ModuleDefinitionLookup.getAllBundles(
+				new UnionFileCollection(getDependentModules(), getApplicationModules()))
 		ApplicationBundler.bundleApplicationDirectory(getOutputDirectory(), new ApplicationBundlerParameters(
 				bundles: bundles,
 				mainModule: getMainModule(),
