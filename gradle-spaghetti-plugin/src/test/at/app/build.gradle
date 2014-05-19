@@ -48,7 +48,7 @@ task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 
 task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	dependsOn bundleJsModule
-	applicationModule bundleModule.outputDirectory
+	additionalDirectDependentModule bundleModule.outputDirectory
 	mainModule "prezi.test.client"
 }
 

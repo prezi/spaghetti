@@ -1,7 +1,9 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.SourceMap
+import com.prezi.spaghetti.bundle.ModuleBundle
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.internal.tasks.options.Option
 import org.gradle.api.tasks.TaskAction
 
 class ResolveStack extends AbstractSpaghettiTask {
@@ -17,6 +19,16 @@ class ResolveStack extends AbstractSpaghettiTask {
 		int resolvedLineNo
 	}
 
+	@Option(option = "configuration", description = "The configuration to generate the report for.")
+	public void setConfiguration(String configuration) {
+		this.dependentModules = project.configurations.getByName(configuration)
+	}
+
+	@Override
+	Configuration getDependentModules() {
+		return super.getDependentModules() ?: project.configurations.getByName("modulesObf")
+	}
+
 	@TaskAction
 	void run() {
 		def stackFile;
@@ -24,11 +36,6 @@ class ResolveStack extends AbstractSpaghettiTask {
 			stackFile = project.file(project.property("file"));
 		} else {
 			throw new RuntimeException("Please give a stack trace file with -Pfile={filename here}");
-		}
-
-		def configName = "modulesObf";
-		if (project.hasProperty("config")) {
-			configName = project.property("config") as String;
 		}
 
 		def debug = false;
@@ -47,7 +54,7 @@ class ResolveStack extends AbstractSpaghettiTask {
 			throw new RuntimeException("Could not extract enough info from stack trace. Is it malformed?");
 		}
 
-		def bundleMap = gatherBundles(configName);
+		def bundleMap = gatherBundles()
 
 		List<Resolution> resolvedLinks = stackTrace.lines.collect{
 			if (it == null) {
@@ -130,11 +137,9 @@ class ResolveStack extends AbstractSpaghettiTask {
 		}
 	}
 
-
 	// bundlename -> bundle
-	private Map<String, ModuleBundle> gatherBundles(String configName) {
-		def configuration = project.configurations.getByName(configName)
-		return ModuleBundleLookup.lookupFromConfiguration(configuration).allBundles.collectEntries { bundle ->
+	private Map<String, ModuleBundle> gatherBundles() {
+		return lookupBundles().allBundles.collectEntries { bundle ->
 			[ bundle.name, bundle ]
 		}
 	}

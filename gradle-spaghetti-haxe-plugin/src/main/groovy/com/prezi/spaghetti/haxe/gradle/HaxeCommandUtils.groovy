@@ -19,8 +19,10 @@ class HaxeCommandUtils {
 		bundleFile << HaxeCommandUtils.class.classLoader.getResourceAsStream("SpaghettiBundler.hx").text
 
 		List<String> result = ["-cp", bundleFile.parentFile.absolutePath, "--run", "SpaghettiBundler", spaghettiType, output.absolutePath]
-		def bundles = configurations.collectMany(new HashSet<ModuleBundle>()) { configuration ->
-			ModuleBundleLookup.lookupFromConfiguration((Configuration) configuration).allBundles
+		def bundles = configurations.collectMany(new HashSet<ModuleBundle>()) { Configuration configuration ->
+			ModuleBundleLookup.lookup(
+					configuration.resolvedConfiguration.firstLevelModuleDependencies*.moduleArtifacts*.file.flatten(),
+					configuration.files).allBundles
 		}
 		result.addAll(bundles.collect { ModuleBundle bundle -> moduleNamer(bundle) }.sort { it }.unique())
 		return result
