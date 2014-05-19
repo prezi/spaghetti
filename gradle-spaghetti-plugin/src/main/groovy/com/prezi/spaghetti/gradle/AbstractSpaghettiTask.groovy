@@ -2,7 +2,6 @@ package com.prezi.spaghetti.gradle
 
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.InputFiles
 
@@ -17,30 +16,30 @@ class AbstractSpaghettiTask extends ConventionTask {
 		this.dependentModules = dependentModules
 	}
 
-	ConfigurableFileCollection additionalDirectDependentModules = project.files()
+	ConfigurableFileCollection additionalDirectDependentModulesInternal = project.files()
 	void additionalDirectDependentModules(Object... additionalDirectDependentModules) {
-		this.additionalDirectDependentModules.from(*additionalDirectDependentModules)
+		this.getAdditionalDirectDependentModulesInternal().from(*additionalDirectDependentModules)
 	}
 	void additionalDirectDependentModule(Object... additionalDirectDependentModules) {
 		this.additionalDirectDependentModules(additionalDirectDependentModules)
 	}
 
 	@InputFiles
-	FileCollection getAdditionalDirectDependentModules() {
-		return project.files(this.additionalDirectDependentModules)
+	ConfigurableFileCollection getAdditionalDirectDependentModules() {
+		return project.files(this.getAdditionalDirectDependentModulesInternal())
 	}
 
-	ConfigurableFileCollection additionalTransitiveDependentModules = project.files()
+	ConfigurableFileCollection additionalTransitiveDependentModulesInternal = project.files()
 	void additionalTransitiveDependentModules(Object... additionalTransitiveDependentModules) {
-		this.additionalTransitiveDependentModules.from(*additionalTransitiveDependentModules)
+		this.getAdditionalTransitiveDependentModulesInternal().from(*additionalTransitiveDependentModules)
 	}
 	void additionalTransitiveDependentModule(Object... additionalTransitiveDependentModules) {
 		this.additionalTransitiveDependentModules(additionalTransitiveDependentModules)
 	}
 
 	@InputFiles
-	FileCollection getAdditionalTransitiveDependentModules() {
-		return project.files(this.additionalTransitiveDependentModules)
+	ConfigurableFileCollection getAdditionalTransitiveDependentModules() {
+		return project.files(this.getAdditionalTransitiveDependentModulesInternal())
 	}
 
 	protected SpaghettiPlugin getPlugin()
