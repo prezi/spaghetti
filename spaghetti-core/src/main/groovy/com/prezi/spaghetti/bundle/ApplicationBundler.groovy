@@ -26,12 +26,7 @@ class ApplicationBundler {
 			params.bundles.each { ModuleBundle bundle ->
 				// Extract resources
 				def moduleAppender = modulesAppender.subAppender(bundle.name)
-				bundle.source.init()
-				try {
-					ModuleBundle.extract(bundle.name, bundle.source, moduleAppender, EnumSet.of(ModuleBundleElement.resources, ModuleBundleElement.sourcemap))
-				} finally {
-					bundle.source.close()
-				}
+				bundle.extract(moduleAppender, EnumSet.of(ModuleBundleElement.resources, ModuleBundleElement.sourcemap))
 
 				// Add JavaScript
 				def wrappedJavaScript = params.wrapper.wrap(bundle.name, bundle.dependentModules, bundle.javaScript)

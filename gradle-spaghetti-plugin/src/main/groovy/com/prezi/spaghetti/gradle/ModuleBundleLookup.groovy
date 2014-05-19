@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import groovy.transform.TupleConstructor
 import org.slf4j.LoggerFactory
 
@@ -41,10 +42,11 @@ class ModuleBundleLookup {
 	private static ModuleBundle tryLoadBundle(File file) {
 		logger.debug("Trying to load module bundle from ${file}")
 		try {
-			def bundle = ModuleBundle.load(file)
+			def bundle = ModuleBundleFactory.load(file)
 			logger.info "Found module bundle {}", bundle.name
 			return bundle
 		} catch (ex) {
+			// TODO Re-throw FileNotFoundExcepiton (or even IOException)
 			logger.debug "Not a module bundle: {}: {}", file, ex
 			logger.trace "Exception", ex
 			return null

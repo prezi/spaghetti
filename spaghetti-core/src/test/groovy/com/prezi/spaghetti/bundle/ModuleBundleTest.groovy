@@ -17,7 +17,7 @@ class ModuleBundleTest extends Specification {
 		def builder = Mock(BundleBuilder)
 		String manifest = null
 		when:
-		ModuleBundle.create(
+		DefaultModuleBundle.create(
 				builder,
 				new ModuleBundleParameters(
 						name: "test",
@@ -55,7 +55,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(BundleSource)
 
 		when:
-		ModuleBundle.loadInternal(source)
+		DefaultModuleBundle.loadInternal(source)
 
 		then:
 		1 * source.hasFile("META-INF/MANIFEST.MF") >> false
@@ -69,7 +69,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(BundleSource)
 
 		when:
-		def bundle = ModuleBundle.loadInternal(source)
+		def bundle = DefaultModuleBundle.loadInternal(source)
 
 		then:
 		_ * source.hasFile(_) >> true
@@ -153,7 +153,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(BundleSource source) {
-		return new ModuleBundle(source, "test", ModuleType.DYNAMIC, "3.7", null, [].toSet(), [].toSet())
+		return new DefaultModuleBundle(source, "test", ModuleType.DYNAMIC, "3.7", null, [].toSet(), [].toSet())
 	}
 
 	private static String get(Closure cl) {

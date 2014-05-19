@@ -4,6 +4,7 @@ import com.prezi.haxe.gradle.HaxeCommandBuilder
 import com.prezi.haxe.gradle.HaxeSourceSet
 import com.prezi.haxe.gradle.MUnit
 import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.internal.DefaultDomainObjectSet
@@ -54,7 +55,7 @@ class MUnitWithSpaghetti extends MUnit {
 
 			// Append module locations
 			def bundlerCommand = HaxeCommandUtils.spaghettiBundlerCommand("module", output, project.buildDir, allClassPaths, { ModuleBundle bundle ->
-				bundle.extract(new File(workDir, bundle.name))
+				ModuleBundleFactory.extract(bundle, new File(workDir, bundle.name))
 				return bundle.name + "/" + bundle.name
 			})
 			builder.append("-cmd", "haxe ${bundlerCommand.join(" ")}", )
