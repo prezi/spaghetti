@@ -23,7 +23,7 @@ class HaxeCommandUtils {
 			ModuleBundleLookup.lookup(
 					configuration.resolvedConfiguration.firstLevelModuleDependencies*.moduleArtifacts*.file.flatten(),
 					configuration.files).allBundles
-		}
+		}.flatten()
 		result.addAll(bundles.collect { ModuleBundle bundle -> moduleNamer(bundle) }.sort { it }.unique())
 		return result
 	}
