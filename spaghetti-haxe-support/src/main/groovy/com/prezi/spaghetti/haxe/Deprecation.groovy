@@ -1,9 +1,8 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.definition.Annotation
-import com.prezi.spaghetti.grammar.ModuleParser;
 import com.prezi.spaghetti.definition.ModuleUtils
-
+import com.prezi.spaghetti.grammar.ModuleParser
 import groovy.json.StringEscapeUtils
 
 public enum Type {

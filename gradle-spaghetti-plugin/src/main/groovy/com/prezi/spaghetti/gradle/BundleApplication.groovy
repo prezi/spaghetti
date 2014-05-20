@@ -4,7 +4,6 @@ import com.prezi.spaghetti.bundle.ApplicationBundler
 import com.prezi.spaghetti.bundle.ApplicationBundlerParameters
 import com.prezi.spaghetti.bundle.Wrapper
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 

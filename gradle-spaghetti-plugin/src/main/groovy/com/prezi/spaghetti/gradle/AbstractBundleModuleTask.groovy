@@ -1,11 +1,11 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.bundle.ModuleBundleFactory
-import com.prezi.spaghetti.definition.ModuleType
-import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleFactory
+import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleType
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
