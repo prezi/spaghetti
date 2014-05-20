@@ -3,6 +3,7 @@ package com.prezi.spaghetti.haxe.gradle
 import com.prezi.haxe.gradle.Har
 import com.prezi.haxe.gradle.HaxeBasePlugin
 import com.prezi.haxe.gradle.HaxeBinary
+import com.prezi.haxe.gradle.HaxeBinaryBase
 import com.prezi.haxe.gradle.HaxeCompile
 import com.prezi.haxe.gradle.HaxeExtension
 import com.prezi.haxe.gradle.HaxeTestBinary
@@ -65,9 +66,9 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 			@Override
 			void execute(SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
 				logger.debug("Adding ${spaghettiGeneratedSourceSet} to binaries in ${project.path}")
-				binaryContainer.withType(HaxeBinary).all(new Action<HaxeBinary>() {
+				binaryContainer.withType(HaxeBinaryBase).all(new Action<HaxeBinaryBase>() {
 					@Override
-					void execute(HaxeBinary compiledBinary) {
+					void execute(HaxeBinaryBase compiledBinary) {
 						compiledBinary.source.add spaghettiGeneratedSourceSet
 						SpaghettiHaxePlugin.logger.debug("Added ${spaghettiGeneratedSourceSet} to ${compiledBinary} in ${project.path}")
 					}

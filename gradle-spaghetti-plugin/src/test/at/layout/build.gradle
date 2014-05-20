@@ -30,15 +30,6 @@ compileJs {
 	flag "-debug"
 }
 
-sources {
-	main {
-		haxe {
-			source.srcDir generateHeaders.outputDirectory
-			builtBy generateHeaders
-		}
-	}
-}
-
 /*
 task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 	dependsOn compileJs

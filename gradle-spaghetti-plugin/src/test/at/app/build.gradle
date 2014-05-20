@@ -33,15 +33,6 @@ haxe {
 	}
 }
 
-sources {
-	main {
-		haxe {
-			source.srcDir generateHeaders.outputDirectory
-			builtBy generateHeaders
-		}
-	}
-}
-
 task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	dependsOn bundleJsModule
 	additionalDirectDependentModule bundleJsModule.outputDirectory
