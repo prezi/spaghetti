@@ -94,13 +94,13 @@ class SpaghettiPlugin implements Plugin<Project> {
 				// TODO Use a proper Spaghetti module binary instead of passing the resourcesTask around
 				// Automatically create bundle module task and artifact
 				BundleModule bundleTask = createBundleTask(project, binary)
-				def zipModule = createZipTask(project, binary, bundleTask, "module", "")
+				def zipModule = createZipTask(project, binary, bundleTask, binary.name, "")
 				project.artifacts.add(extension.configuration.name, zipModule)
 				logger.debug("Added bundle task ${bundleTask} with zip artifact ${zipModule}")
 
 				// Automatically obfuscate bundle
 				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary)
-				def zipObfuscated = createZipTask(project, binary, obfuscateTask, "module-obfuscated", "obfuscated")
+				def zipObfuscated = createZipTask(project, binary, obfuscateTask, binary.name + "-obfuscated", "obfuscated")
 				project.artifacts.add(extension.obfuscatedConfiguration.name, zipObfuscated)
 				logger.debug("Added obfuscate task ${obfuscateTask} with zip artifact ${zipObfuscated}")
 			}
@@ -161,7 +161,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		zipTask.description = "Zip up ${name} ${binary}."
 		zipTask.dependsOn bundleTask
 		zipTask.from { bundleTask.outputDirectory }
-		zipTask.conventionMapping.archiveName = { name }
+		zipTask.conventionMapping.baseName = { name }
 		return zipTask
 	}
 
