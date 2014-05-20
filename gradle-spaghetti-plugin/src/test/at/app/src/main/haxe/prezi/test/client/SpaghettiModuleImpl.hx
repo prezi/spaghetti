@@ -6,8 +6,8 @@ import prezi.graphics.text.Values;
 import prezi.graphics.text.render.TextRenderer;
 
 class SpaghettiModuleImpl implements SpaghettiModule {
-	var layout:Layout;
-	var textRenderer:TextRenderer;
+	public var layout(default, null):Layout;
+	public var textRenderer(default, null):TextRenderer;
 	public function new(config:SpaghettiModuleConfiguration, layout:Layout, textRenderer:TextRenderer) {
 		this.layout = layout;
 		this.textRenderer = textRenderer;

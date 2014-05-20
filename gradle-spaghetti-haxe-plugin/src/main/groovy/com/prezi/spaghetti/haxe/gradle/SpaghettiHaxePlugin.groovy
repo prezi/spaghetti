@@ -7,7 +7,6 @@ import com.prezi.haxe.gradle.HaxeBinaryBase
 import com.prezi.haxe.gradle.HaxeCompile
 import com.prezi.haxe.gradle.HaxeExtension
 import com.prezi.haxe.gradle.HaxeTestBinary
-import com.prezi.haxe.gradle.HaxeTestCompile
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import com.prezi.spaghetti.gradle.BundleApplication
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin
@@ -94,7 +93,7 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 		binaryContainer.withType(HaxeTestBinary).all(new Action<HaxeTestBinary>() {
 			@Override
 			void execute(HaxeTestBinary testBinary) {
-				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompile)
+				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompileWithSpaghetti)
 
 				// Create Spaghetti compatible test binary
 				def jsTestBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, testBinary, true)
