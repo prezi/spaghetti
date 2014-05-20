@@ -23,6 +23,7 @@ class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 				config: Generator.CONFIG,
 				haxeModule: HaxeGenerator.HAXE_MODULE_VAR,
 				module: ReservedWords.MODULE,
+				modules: ReservedWords.MODULES,
 		)
 
 		return builder

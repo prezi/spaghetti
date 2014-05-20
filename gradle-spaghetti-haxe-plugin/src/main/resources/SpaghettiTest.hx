@@ -3,7 +3,11 @@ class SpaghettiTest {
 		return untyped ${config};
 	}
 
-	public static function getModule():Dynamic {
-		return untyped ${haxeModule}["${module}"];
+	public static function getModule(name:String = null):Dynamic {
+		if (name == null) {
+			return untyped ${haxeModule}["${module}"];
+		} else {
+			return untyped ${config}["${modules}"][name]["${module}"];
+		}
 	}
 }
