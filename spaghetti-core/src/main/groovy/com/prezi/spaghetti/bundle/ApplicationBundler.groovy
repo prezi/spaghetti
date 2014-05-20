@@ -4,9 +4,6 @@ package com.prezi.spaghetti.bundle
  * Created by lptr on 16/05/14.
  */
 class ApplicationBundler {
-	private static final String MODULES_DIRECTORY = "modules"
-	private static final String APPLICATION_NAME = "application.js"
-
 	public static void bundleApplicationDirectory(File outputDirectory, ApplicationBundlerParameters params) {
 		bundleApplication(new BundleBuilder.Directory(outputDirectory), params)
 	}
@@ -22,7 +19,7 @@ class ApplicationBundler {
 				throw new IllegalArgumentException("Main bundle \"${params.mainModule}\" not found among bundles: ${params.bundles*.name.join(", ")}")
 			}
 
-			def modulesAppender = builder.subAppender(MODULES_DIRECTORY)
+			def modulesAppender = builder.subAppender(params.modulesDirectory)
 			params.bundles.each { ModuleBundle bundle ->
 				// Extract resources
 				def moduleAppender = modulesAppender.subAppender(bundle.name)
@@ -33,7 +30,8 @@ class ApplicationBundler {
 				moduleAppender.appendFile(bundle.name + ".js", { out -> out << wrappedJavaScript })
 			}
 			// Add application
-			builder.appendFile APPLICATION_NAME, { out -> out << params.wrapper.makeApplication(MODULES_DIRECTORY, params.bundles*.name, params.mainModule) }
+			builder.appendFile params.applicationName, { out ->
+				out << params.wrapper.makeApplication(params.baseUrl, params.modulesDirectory, params.bundles*.name, params.mainModule, params.execute) }
 		} finally {
 			builder.close()
 		}

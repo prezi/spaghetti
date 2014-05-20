@@ -12,7 +12,7 @@ class AbstractSpaghettiTask extends ConventionTask {
 
 	@InputFiles
 	Configuration dependentModules
-	void bundles(Configuration dependentModules) {
+	void dependentModules(Configuration dependentModules) {
 		this.dependentModules = dependentModules
 	}
 

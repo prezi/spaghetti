@@ -41,12 +41,12 @@ class WrapperTest extends Specification {
 	}
 
 	def "amd application"() {
-		def result = Wrapper.AMD.makeApplication("mods", ["com.example.alma", "com.example.bela", "com.example.test"], "com.example.test")
+		def result = Wrapper.AMD.makeApplication("lajos", "mods", ["com.example.alma", "com.example.bela", "com.example.test"], "com.example.test", true)
 
 		expect:
 		result == [
 				'require["config"]({',
-					'"baseUrl":".",',
+					'"baseUrl":"lajos",',
 					'"paths":{',
 						'"com.example.alma": "mods/com.example.alma/com.example.alma",',
 						'"com.example.bela": "mods/com.example.bela/com.example.bela",',

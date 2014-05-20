@@ -30,10 +30,6 @@ compileJs {
 	flag "-debug"
 }
 
-testJs {
-	flag "-D test"
-}
-
 sources {
 	main {
 		haxe {
@@ -41,17 +37,6 @@ sources {
 			builtBy generateHeaders
 		}
 	}
-}
-
-task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
-	dependsOn compileJs
-	inputFile compileJs.outputFile
-}
-
-task zipModule(type: Zip) {
-	dependsOn bundleModule
-	from bundleModule.outputDirectory
-	archiveName = "module"
 }
 
 /*
@@ -67,6 +52,6 @@ task zipModuleObfuscated(type: Zip) {
 */
 
 artifacts {
-	modules zipModule
+	modules zipJsModule
 //	modulesObf zipModuleObfuscated
 }

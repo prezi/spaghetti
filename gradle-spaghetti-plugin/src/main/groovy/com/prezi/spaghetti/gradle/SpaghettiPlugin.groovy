@@ -131,24 +131,26 @@ class SpaghettiPlugin implements Plugin<Project> {
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
 		def bundleTaskName = namingScheme.getTaskName("bundle")
-		def bundleTask = project.task(bundleTaskName, type: BundleModule) {
-			description = "Bundles ${binary} module."
-		} as BundleModule
+		def bundleTask = project.tasks.create(bundleTaskName, BundleModule)
+		bundleTask.description = "Bundles ${binary} module."
 		bundleTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
 		bundleTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
+		bundleTask.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/bundle/${binary.name}") }
 		bundleTask.dependsOn binary
+		binary.bundleTask = bundleTask
 		return bundleTask
 	}
 
 	private static ObfuscateModule createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
 		def obfuscateTaskName = namingScheme.getTaskName("obfuscate")
-		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateModule) {
-			description = "Obfuscates ${binary} module."
-		} as ObfuscateModule
+		def obfuscateTask = project.tasks.create(obfuscateTaskName, ObfuscateModule)
+		obfuscateTask.description = "Obfuscates ${binary} module."
 		obfuscateTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
 		obfuscateTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
+		obfuscateTask.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/obfuscation/${binary.name}") }
 		obfuscateTask.dependsOn binary
+		binary.obfuscateTask = obfuscateTask
 		return obfuscateTask
 	}
 

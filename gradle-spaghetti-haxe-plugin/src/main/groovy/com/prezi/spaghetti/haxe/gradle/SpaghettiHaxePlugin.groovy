@@ -1,20 +1,25 @@
 package com.prezi.spaghetti.haxe.gradle
 
-import com.prezi.haxe.gradle.HaxeExtension
 import com.prezi.haxe.gradle.Har
 import com.prezi.haxe.gradle.HaxeBasePlugin
 import com.prezi.haxe.gradle.HaxeBinary
+import com.prezi.haxe.gradle.HaxeCompile
+import com.prezi.haxe.gradle.HaxeExtension
+import com.prezi.haxe.gradle.HaxeTestBinary
+import com.prezi.haxe.gradle.HaxeTestCompile
+import com.prezi.spaghetti.bundle.ModuleBundleFactory
+import com.prezi.spaghetti.gradle.BundleApplication
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin
 import com.prezi.spaghetti.gradle.SpaghettiExtension
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet
 import com.prezi.spaghetti.gradle.SpaghettiPlugin
-import com.prezi.spaghetti.gradle.SpaghettiResourceSet
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
+import org.gradle.language.base.internal.BinaryInternal
 import org.slf4j.LoggerFactory
 
 import javax.inject.Inject
@@ -74,21 +79,50 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 		binaryContainer.withType(HaxeBinary).all(new Action<HaxeBinary>() {
 			@Override
 			void execute(HaxeBinary binary) {
+				// Add a compile, source and munit task
+				HaxeBasePlugin.createCompileTask(project, binary, HaxeCompile)
+				HaxeBasePlugin.createSourceTask(project, binary, Har)
+
 				// Create Spaghetti compatible binary
 				def jsBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, binary)
 				jsBinary.builtBy(binary.getBuildDependencies())
 				binaryContainer.add(jsBinary)
+			}
+		})
 
-				// Add a compile, source and munit task
-				HaxeBasePlugin.createCompileTask(project, binary, HaxeCompileWithSpaghetti)
-				HaxeBasePlugin.createSourceTask(project, binary, Har)
-				MUnitWithSpaghetti munit = (MUnitWithSpaghetti) HaxeBasePlugin.createMUnitTask(project, binary, MUnitWithSpaghetti)
-				projectSourceSet.findByName("main").withType(SpaghettiResourceSet).all(new Action<SpaghettiResourceSet>() {
-					@Override
-					void execute(SpaghettiResourceSet spaghettiResourceSet) {
-						munit.spaghettiResources(spaghettiResourceSet)
-					}
-				})
+		binaryContainer.withType(HaxeTestBinary).all(new Action<HaxeTestBinary>() {
+			@Override
+			void execute(HaxeTestBinary testBinary) {
+				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompile)
+
+				// Create Spaghetti compatible test binary
+				def jsTestBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, testBinary)
+				jsTestBinary.builtBy { testBinary.compileTask }
+				binaryContainer.add(jsTestBinary)
+
+				def appTask = createTestApplication(jsTestBinary)
+
+				def munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, MUnitWithSpaghetti)
+				munitTask.conventionMapping.testApplication = { appTask.getOutputDirectory() }
+				munitTask.conventionMapping.testApplicationName = { jsTestBinary.name + '_test.js' }
+				munitTask.dependsOn appTask
+			}
+
+			private BundleApplication createTestApplication(HaxeCompiledSpaghettiCompatibleJavaScriptBinary testBinary) {
+				def namingScheme = ((BinaryInternal) testBinary).namingScheme
+				def bundleTaskName = namingScheme.getTaskName("application")
+
+				def appBundleTask = project.tasks.create(bundleTaskName, BundleApplication)
+				appBundleTask.description = "Creates a testable applicaiton of ${testBinary}"
+				appBundleTask.group = "test"
+				appBundleTask.conventionMapping.outputDirectory = { project.file("${project.buildDir}/spaghetti/tests/" + testBinary.name) }
+				appBundleTask.conventionMapping.additionalDirectDependentModulesInternal = { project.files(testBinary.bundleTask.getOutputDirectory()) }
+				appBundleTask.conventionMapping.mainModule = { ModuleBundleFactory.load(testBinary.bundleTask.getOutputDirectory()).name }
+				appBundleTask.conventionMapping.applicationName = { testBinary.name + '_test.js' }
+				appBundleTask.conventionMapping.baseUrl = { '.' }
+				appBundleTask.conventionMapping.execute = { false }
+				appBundleTask.dependsOn testBinary.bundleTask
+				return appBundleTask
 			}
 		})
 	}

@@ -16,14 +16,8 @@ import static com.google.common.base.Preconditions.checkNotNull
 /**
  * Created by lptr on 16/11/13.
  */
-class DefaultModuleBundle implements ModuleBundle {
+class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle)
-
-	protected static final def DEFINITION_PATH = "module.def"
-	protected static final def SOURCE_MAP_PATH = "module.map"
-	protected static final def JAVASCRIPT_PATH = "module.js"
-	protected static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
-	protected static final def RESOURCES_PREFIX = "resources/"
 
 	private static final def MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version")
 	private static final def MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name")
@@ -33,21 +27,10 @@ class DefaultModuleBundle implements ModuleBundle {
 	private static final def MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies")
 
 	protected final BundleSource source
-	final String name
-	final ModuleType type
-	final String version
-	final String sourceBaseUrl
-	final Set<String> dependentModules
-	final Set<String> resourcePaths
 
 	protected DefaultModuleBundle(BundleSource source, String name, ModuleType type, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
+		super(name, type, version, sourceBaseUrl, dependentModules, resourcePaths)
 		this.source = source
-		this.name = name
-		this.type = type
-		this.version = version
-		this.sourceBaseUrl = sourceBaseUrl
-		this.dependentModules = dependentModules
-		this.resourcePaths = resourcePaths
 	}
 
 	@Override
@@ -84,24 +67,24 @@ class DefaultModuleBundle implements ModuleBundle {
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, params.version ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, params.sourceBaseUrl ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_DEPENDENCIES, params.dependentModules.join(","))
-			builder.appendFile MANIFEST_MF_PATH, { out -> manifest.write(out) }
+			builder.appendFile(ModuleBundle.MANIFEST_MF_PATH, { out -> manifest.write(out) })
 
 			// Store definition
-			builder.appendFile DEFINITION_PATH, { out -> out << params.definition }
+			builder.appendFile ModuleBundle.DEFINITION_PATH, { out -> out << params.definition }
 
 			// Store module itself
-			builder.appendFile JAVASCRIPT_PATH, { out -> out << params.javaScript }
+			builder.appendFile ModuleBundle.JAVASCRIPT_PATH, { out -> out << params.javaScript }
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
-				builder.appendFile SOURCE_MAP_PATH, { out -> out << params.sourceMap }
+				builder.appendFile ModuleBundle.SOURCE_MAP_PATH, { out -> out << params.sourceMap }
 			}
 
 			// Store resources
 			def resourceDir = params.resourcesDirectory
 			if (resourceDir?.exists()) {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
-					def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
+					def resourcePath = ModuleBundle.RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
 					logger.debug("Adding resource {}", resourcePath)
 					builder.appendFile resourcePath, { out -> resourceFile.withInputStream { out << it } }
 					resourcePaths.add resourcePath
@@ -116,13 +99,13 @@ class DefaultModuleBundle implements ModuleBundle {
 	}
 
 	protected static DefaultModuleBundle loadInternal(BundleSource source) {
-		if (!source.hasFile(MANIFEST_MF_PATH)) {
+		if (!source.hasFile(ModuleBundle.MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
 		}
-		if (!source.hasFile(DEFINITION_PATH)) {
+		if (!source.hasFile(ModuleBundle.DEFINITION_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing definition: ${source}")
 		}
-		if (!source.hasFile(JAVASCRIPT_PATH)) {
+		if (!source.hasFile(ModuleBundle.JAVASCRIPT_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing JavaScript: ${source}")
 		}
 
@@ -132,12 +115,12 @@ class DefaultModuleBundle implements ModuleBundle {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
-					case MANIFEST_MF_PATH:
+					case ModuleBundle.MANIFEST_MF_PATH:
 						manifest = new Manifest(contents())
 						break
 					default:
-						if (path.startsWith(RESOURCES_PREFIX)) {
-							resourcePaths.add(path.substring(RESOURCES_PREFIX.length()))
+						if (path.startsWith(ModuleBundle.RESOURCES_PREFIX)) {
+							resourcePaths.add(path.substring(ModuleBundle.RESOURCES_PREFIX.length()))
 						}
 						break
 				}
@@ -193,26 +176,26 @@ class DefaultModuleBundle implements ModuleBundle {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
-					case MANIFEST_MF_PATH:
+					case ModuleBundle.MANIFEST_MF_PATH:
 						break
-					case DEFINITION_PATH:
+					case ModuleBundle.DEFINITION_PATH:
 						if (elements.contains(ModuleBundleElement.definition)) {
 							output.appendFile "${name}.def", write(contents)
 						}
 						break
-					case JAVASCRIPT_PATH:
+					case ModuleBundle.JAVASCRIPT_PATH:
 						if (elements.contains(ModuleBundleElement.javascript)) {
 							output.appendFile "${name}.js", write(contents)
 						}
 						break
-					case SOURCE_MAP_PATH:
+					case ModuleBundle.SOURCE_MAP_PATH:
 						if (elements.contains(ModuleBundleElement.sourcemap)) {
 							output.appendFile "${name}.js.map", write(contents)
 						}
 						break
 					default:
-						if (elements.contains(ModuleBundleElement.resources) && path.startsWith(RESOURCES_PREFIX)) {
-							def resourcePath = path.substring(RESOURCES_PREFIX.length())
+						if (elements.contains(ModuleBundleElement.resources) && path.startsWith(ModuleBundle.RESOURCES_PREFIX)) {
+							def resourcePath = path.substring(ModuleBundle.RESOURCES_PREFIX.length())
 							// Skip the resources directory itself
 							if (resourcePath) {
 								output.appendFile resourcePath, write(contents)
@@ -230,10 +213,5 @@ class DefaultModuleBundle implements ModuleBundle {
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
 		return spaghettiVersion?.startsWith("2.")
-	}
-
-	@Override
-	int compareTo(ModuleBundle o) {
-		return name.compareTo(o.name)
 	}
 }

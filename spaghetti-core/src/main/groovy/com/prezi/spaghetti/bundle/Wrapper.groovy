@@ -11,18 +11,7 @@ import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
  */
 abstract class Wrapper {
 	abstract String wrap(String moduleName, Collection<String> dependencies, String javaScript)
-	abstract String makeApplication(String modulesRoot, Collection<String> moduleNames, String mainModule)
-
-	public static final NOP = new Wrapper() {
-		@Override
-		String wrap(String moduleName, Collection<String> dependencies, String javaScript) {
-			return javaScript
-		}
-
-		@Override
-		String makeApplication(String modulesRoot, Collection<String> moduleNames, String mainModule) {
-		}
-	}
+	abstract String makeApplication(String baseUrl, String modulesRoot, Collection<String> moduleNames, String mainModule, boolean execute)
 
 	public static final AMD = new Wrapper() {
 		@Override
@@ -62,16 +51,18 @@ abstract class Wrapper {
 		}
 
 		@Override
-		String makeApplication(String modulesRoot, Collection<String> moduleNames, String mainModule) {
+		String makeApplication(String baseUrl, String modulesRoot, Collection<String> moduleNames, String mainModule, boolean execute) {
 			def result = new StringBuilder()
-			result.append makeConfig(modulesRoot, moduleNames)
+			result.append makeConfig(baseUrl, modulesRoot, moduleNames)
 			result.append "require([\"${mainModule}\"],function(__mainModule){"
-			result.append /**/ "__mainModule[\"${MODULE}\"][\"main\"]();"
+			if (execute) {
+				result.append /**/ "__mainModule[\"${MODULE}\"][\"main\"]();"
+			}
 			result.append "});"
 			return result.toString()
 		}
 
-		private String makeConfig(String modulesRoot, Collection<String> moduleNames) {
+		private String makeConfig(String baseUrl, String modulesRoot, Collection<String> moduleNames) {
 			if (modulesRoot && !modulesRoot.endsWith("/")) {
 				modulesRoot += "/"
 			}
@@ -80,7 +71,7 @@ abstract class Wrapper {
 			}
 			return \
 			 	"require[\"config\"]({" +
-					"\"baseUrl\":\".\"," +
+					"\"baseUrl\":\"${baseUrl}\"," +
 					"\"paths\":{" +
 						paths.join(",") +
 					"}" +

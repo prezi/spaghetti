@@ -97,6 +97,9 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		def dependentModules = config.directDependentModules*.name + config.transitiveDependentModules.findAll {
 			it.type == ModuleType.STATIC
 		}*.name
+
+		def outputDir = getOutputDirectory()
+		logger.info "Creating bundle in ${outputDir}"
 		ModuleBundleFactory.createDirectory(
 				getOutputDirectory(),
 				new ModuleBundleParameters(
