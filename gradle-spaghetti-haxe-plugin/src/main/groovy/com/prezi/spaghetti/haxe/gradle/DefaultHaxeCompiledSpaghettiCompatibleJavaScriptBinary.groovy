@@ -11,8 +11,8 @@ class DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary
 		implements HaxeCompiledSpaghettiCompatibleJavaScriptBinary {
 	private final HaxeBinaryBase original
 
-	public DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary(HaxeBinaryBase original) {
-		super(original.name)
+	public DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary(HaxeBinaryBase original, boolean testing) {
+		super(original.name, testing)
 		this.original = original
 	}
 

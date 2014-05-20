@@ -85,7 +85,7 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 				HaxeBasePlugin.createSourceTask(project, binary, Har)
 
 				// Create Spaghetti compatible binary
-				def jsBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, binary)
+				def jsBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, binary, false)
 				jsBinary.builtBy(binary.getBuildDependencies())
 				binaryContainer.add(jsBinary)
 			}
@@ -97,7 +97,7 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompile)
 
 				// Create Spaghetti compatible test binary
-				def jsTestBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, testBinary)
+				def jsTestBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary, testBinary, true)
 				jsTestBinary.builtBy { testBinary.compileTask }
 				binaryContainer.add(jsTestBinary)
 

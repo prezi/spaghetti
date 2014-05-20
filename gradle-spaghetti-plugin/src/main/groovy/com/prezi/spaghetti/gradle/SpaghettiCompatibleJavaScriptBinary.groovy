@@ -12,4 +12,5 @@ interface SpaghettiCompatibleJavaScriptBinary extends Binary {
 	void setBundleTask(BundleModule bundleTask)
 	ObfuscateModule getObfuscateTask()
 	void setObfuscateTask(ObfuscateModule obfuscateModule)
+	boolean isUsedForTesting()
 }

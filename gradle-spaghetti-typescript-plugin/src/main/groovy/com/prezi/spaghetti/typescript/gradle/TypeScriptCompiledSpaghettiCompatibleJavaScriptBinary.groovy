@@ -11,7 +11,7 @@ class TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary
 	private final TypeScriptBinary original
 
 	public TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary(TypeScriptBinary original) {
-		super(original.name)
+		super(original.name, false)
 		this.original = original
 	}
 

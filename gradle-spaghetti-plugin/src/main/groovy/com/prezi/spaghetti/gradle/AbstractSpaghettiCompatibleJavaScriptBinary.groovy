@@ -12,9 +12,11 @@ abstract class AbstractSpaghettiCompatibleJavaScriptBinary extends AbstractBuild
 	private final BinaryNamingScheme namingScheme
 	BundleModule bundleTask
 	ObfuscateModule obfuscateTask
+	boolean usedForTesting
 
-	AbstractSpaghettiCompatibleJavaScriptBinary(String name) {
+	AbstractSpaghettiCompatibleJavaScriptBinary(String name, boolean testing) {
 		this.namingScheme = new SpaghettiCompatibleBinaryNamingScheme(name)
+		this.usedForTesting = testing
 	}
 
 	@Override
