@@ -2,7 +2,7 @@ package prezi.graphics.text;
 
 import prezi.graphics.core.Core;
 
-class SpaghettiModuleImpl implements SpaghettiModule {
+class LayoutImpl implements Layout {
 	private var config:SpaghettiModuleConfiguration;
 
 	public function new(config:SpaghettiModuleConfiguration) {

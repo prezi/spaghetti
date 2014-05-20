@@ -10,12 +10,9 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final String className
-
-	HaxeModuleInterfaceGeneratorVisitor(ModuleDefinition module, String className)
+	HaxeModuleInterfaceGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
-		this.className = className
 	}
 
 	@WithJavaDoc
@@ -23,7 +20,7 @@ class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVis
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
 	{
 		return \
-"""interface ${className} {
+"""interface ${module.alias} {
 ${super.visitModuleDefinition(ctx)}
 }
 """

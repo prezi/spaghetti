@@ -4,7 +4,6 @@ import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
 /**
@@ -25,7 +24,7 @@ class HaxeGenerator extends AbstractGenerator {
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateModuleInterface(module, SPAGHETTI_MODULE, outputDirectory)
+			generateModuleInterface(module, outputDirectory)
 			generateModuleInitializer(module, config.directDynamicDependentModules, outputDirectory)
 			generateInterfacesForModuleTypes(module, outputDirectory, false)
 		}
@@ -33,7 +32,7 @@ class HaxeGenerator extends AbstractGenerator {
 			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
 		}
 		config.allDynamicDependentModules.each { dependentModule ->
-			generateModuleInterface(dependentModule, dependentModule.alias, outputDirectory)
+			generateModuleInterface(dependentModule, outputDirectory)
 		}
 		config.allStaticDependentModules.each { dependentModule ->
 			generateModuleProxy(dependentModule, outputDirectory)
@@ -62,10 +61,10 @@ return ${HAXE_MODULE_VAR};
 	/**
 	 * Generates main interface for module.
 	 */
-	private static void generateModuleInterface(ModuleDefinition module, String className, File outputDirectory)
+	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new HaxeModuleInterfaceGeneratorVisitor(module, className).processModule()
-		HaxeUtils.createHaxeSourceFile(module, className, outputDirectory, contents)
+		def contents = new HaxeModuleInterfaceGeneratorVisitor(module).processModule()
+		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
 	}
 
 	/**

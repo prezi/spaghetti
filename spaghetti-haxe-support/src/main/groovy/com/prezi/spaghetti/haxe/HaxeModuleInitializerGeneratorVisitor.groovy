@@ -8,8 +8,6 @@ import static com.prezi.spaghetti.Generator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_IMPL
 import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
 
 /**
@@ -44,7 +42,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
 		${dynamicInstances.join("\n\t\t")}
-		var module:${module.name}.${SPAGHETTI_MODULE} = new ${module.name}.${SPAGHETTI_MODULE_IMPL}(${dynamicReferences.join(", ")});
+		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl(${dynamicReferences.join(", ")});
 		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};
