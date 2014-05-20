@@ -42,13 +42,9 @@ sources {
 	}
 }
 
-task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
-	inputFile compileJs.outputFile
-}
-
 task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	dependsOn bundleJsModule
-	additionalDirectDependentModule bundleModule.outputDirectory
+	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
 }
 
