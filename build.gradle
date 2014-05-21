@@ -152,6 +152,7 @@ project(":spaghetti-core") {
 configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	dependencies {
 		compile project(path: ":spaghetti-core")
+		testCompile project(path: ":spaghetti-core", configuration: "testCompile")
 	}
 }
 

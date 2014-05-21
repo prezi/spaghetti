@@ -63,7 +63,16 @@ compileJava {
 	dependsOn generateGrammar
 }
 
+task testJar(type: Jar) {
+	from sourceSets.test.output
+	classifier = "tests"
+}
+
 task run(type: Exec) {
 	workingDir "src/test/at"
 	commandLine = ["gradle", "clean", "packApplication", "-is"]
+}
+
+artifacts {
+	testCompile(testJar)
 }
