@@ -1,6 +1,6 @@
 grammar Module;
 
-moduleDefinition : (documentation = Doc)?
+moduleDefinition : (documentation = Doc)? annotations?
 	(isStatic = 'static')?
 	'module' (name = qualifiedName)
 	('as' (alias = Name))?
