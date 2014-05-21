@@ -16,17 +16,21 @@ class AnnotationValueExtractor extends ModuleBaseVisitor<Object> {
 
 	@Override
 	Object visitAnnotationBooleanParameter(@NotNull @NotNull ModuleParser.AnnotationBooleanParameterContext ctx) {
-		return ctx.boolValue.text == "true"
+		return Primitives.parseBoolean(ctx.boolValue)
 	}
 
 	@Override
-	Object visitAnnotationNumberParameter(@NotNull @NotNull ModuleParser.AnnotationNumberParameterContext ctx) {
-		return Double.parseDouble(ctx.numberValue.text)
+	Object visitAnnotationIntParameter(@NotNull ModuleParser.AnnotationIntParameterContext ctx) {
+		return Primitives.parseInt(ctx.intValue)
+	}
+
+	@Override
+	Object visitAnnotationFloatParameter(@NotNull @NotNull ModuleParser.AnnotationFloatParameterContext ctx) {
+		return Primitives.parseDouble(ctx.floatValue)
 	}
 
 	@Override
 	Object visitAnnotationStringParameter(@NotNull @NotNull ModuleParser.AnnotationStringParameterContext ctx) {
-		def unescaped = StringEscapeUtils.unescapeJava(ctx.stringValue.text);
-		return unescaped[1..unescaped.size() - 2] // strip surrounding quotes
+		return Primitives.parseString(ctx.stringValue)
 	}
 }
