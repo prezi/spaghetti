@@ -46,7 +46,7 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 
 	@:from public static function fromValue(value:Int) {
 		if (value < 0 || value >= _values.length) {
-			throw untyped Error("Invlaid value for ${enumName}: " + value);
+			throw untyped Error("Invalid value for ${enumName}: " + value);
 		}
 		var result = _values[value];
 		return result;
