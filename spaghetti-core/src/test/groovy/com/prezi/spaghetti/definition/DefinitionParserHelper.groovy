@@ -15,6 +15,6 @@ class DefinitionParserHelper extends Specification {
 		def scope = Mock(Scope)
 		scope.resolveName(_) >> { name -> throw new IllegalStateException("global scope accessed: " + name) }
 		scope.resolveExtern(_) >> { name -> name }
-		return new ModuleDefinition("test", context, scope)
+		return new DefaultModuleDefinition("test", context, scope)
 	}
 }

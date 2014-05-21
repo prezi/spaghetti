@@ -18,7 +18,7 @@ class ModuleConfigurationParser {
 	private static Collection<ModuleDefinition> parseModules(Collection<ModuleDefinitionSource> sources, GlobalScope globalScope)
 	{
 		return sources.collect { source ->
-			def module = new ModuleDefinition(source.contents, ModuleDefinitionParser.parse(source), globalScope)
+			def module = new DefaultModuleDefinition(source.contents, ModuleDefinitionParser.parse(source), globalScope)
 			globalScope.registerNames(module.typeNames)
 			return module
 		}
