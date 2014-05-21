@@ -9,17 +9,11 @@ import spock.lang.Unroll
 class AnnotationTest extends Specification {
 	@Unroll
 	def "FromContext: #annotationDecl"() {
-		def definition = new DefinitionParserHelper().parse( \
-"""module com.example.test
-
-${annotationDecl}
-interface MyInterface {}
-""")
-
-		def annotations = definition.context.moduleElement(0).typeDefinition().interfaceDefinition().annotations()
-		def annotation = Annotation.fromContext(annotations.annotation(0))
+		def parser = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", annotationDecl))
+		def annotation = Annotation.fromContext(parser.annotation())
 
 		expect:
+		parser.numberOfSyntaxErrors == 0
 		annotation.name == name
 		annotation.hasDefaultParameter() == defaultParam != null
 		if (defaultParam) {
