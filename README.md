@@ -60,8 +60,8 @@ You then implement the generated interfaces, and compile your code into a JavaSc
 ```haxe
 package com.example.module;
 
-// Spaghetti looks for a class called "<ModuleName>Impl"
-class MyModuleImpl implements MyModule {
+// Spaghetti looks for a class called "<ModuleName>" that implements the interface called "I<ModuleName>"
+class MyModule implements IMyModule {
 	public function createGreeter():Greeter {
 		return new DefaultGreeter();
 	}

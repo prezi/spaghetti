@@ -24,7 +24,7 @@ class HaxeGenerator extends AbstractGenerator {
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateModuleInterface(module, outputDirectory)
+			generateModuleInterface(module, "I${module.alias}", outputDirectory)
 			generateModuleInitializer(module, config.directDynamicDependentModules, outputDirectory)
 			generateInterfacesForModuleTypes(module, outputDirectory, false)
 		}
@@ -32,7 +32,7 @@ class HaxeGenerator extends AbstractGenerator {
 			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
 		}
 		config.allDynamicDependentModules.each { dependentModule ->
-			generateModuleInterface(dependentModule, outputDirectory)
+			generateModuleInterface(dependentModule, dependentModule.alias, outputDirectory)
 		}
 		config.allStaticDependentModules.each { dependentModule ->
 			generateModuleProxy(dependentModule, outputDirectory)
@@ -61,10 +61,10 @@ return ${HAXE_MODULE_VAR};
 	/**
 	 * Generates main interface for module.
 	 */
-	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
+	private static void generateModuleInterface(ModuleDefinition module, String className, File outputDirectory)
 	{
-		def contents = new HaxeModuleInterfaceGeneratorVisitor(module).processModule()
-		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
+		def contents = new HaxeModuleInterfaceGeneratorVisitor(module, className).processModule()
+		HaxeUtils.createHaxeSourceFile(module, className, outputDirectory, contents)
 	}
 
 	/**

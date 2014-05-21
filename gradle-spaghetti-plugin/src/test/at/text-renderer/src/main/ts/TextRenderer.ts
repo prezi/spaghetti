@@ -1,7 +1,7 @@
 module prezi.graphics.text.render {
 
 
-export class TextRendererImpl implements TextRenderer {
+export class TextRenderer implements ITextRenderer {
 	config:SpaghettiModuleConfiguration;
 	layout:prezi.graphics.text.Layout;
 	constructor(config:SpaghettiModuleConfiguration, layout:prezi.graphics.text.Layout) {

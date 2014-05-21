@@ -42,7 +42,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
 		${dynamicInstances.join("\n\t\t")}
-		var module:${module.name}.${module.alias} = new ${module.name}.${module.alias}Impl(${dynamicReferences.join(", ")});
+		var module:${module.name}.I${module.alias} = new ${module.name}.${module.alias}(${dynamicReferences.join(", ")});
 		var consts = {
 			${consts.join(",\n\t\t\t")}
 		};
