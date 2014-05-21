@@ -108,18 +108,13 @@ const Values {
 	/**
 	 * To say hello.
 	 */
-	int HELLO
+	int HELLO = 12
 
 	/**
 	 * To say Hi.
 	 */
 	@deprecated
-	string HI
-
-	/**
-	 * Some object
-	 */
-	CharacterStyle defaultStyle
+	string HI = "Hello"
 }
 
 Text createText()

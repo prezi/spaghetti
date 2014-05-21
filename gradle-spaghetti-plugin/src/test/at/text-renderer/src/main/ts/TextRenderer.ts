@@ -43,10 +43,4 @@ export class RendererImpl implements Renderer {
 
 }
 
-export var Values = {
-	MAX_LENGTH: 5, 
-	PLACEHOLDER: 'string'
-};
-
-
 }

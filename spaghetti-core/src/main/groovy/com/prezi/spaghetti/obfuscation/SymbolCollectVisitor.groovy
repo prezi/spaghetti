@@ -37,7 +37,7 @@ class SymbolCollectVisitor extends ModuleBaseVisitor<Set<String>> {
 	@Override
 	public Set<String> visitConstDefinition(@NotNull ModuleParser.ConstDefinitionContext ctx) {
 
-		return [ctx.name.getText()] + ctx.propertyDefinition().collect{it.property.name.getText()};
+		return [ctx.name.getText()] + ctx.constEntry()*.constEntryDecl().name.text
 	}
 
 	@Override

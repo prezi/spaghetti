@@ -51,8 +51,19 @@ structDefinition : (documentation = Doc)? annotations?
 
 constDefinition : (documentation = Doc)? annotations?
 	'const' ( name = Name ) '{'
-		propertyDefinition*
+		constEntry*
 	'}'
+	;
+
+constEntry : (documentation = Doc)? annotations?
+	constEntryDecl
+	;
+
+constEntryDecl
+	: boolType? ( name = Name ) '=' ( boolValue = Boolean )
+	| intType? ( name = Name ) '=' ( intValue = Integer )
+	| floatType? ( name = Name ) '=' ( floatValue = Float )
+	| stringType? ( name = Name ) '=' ( stringValue = String )
 	;
 
 enumDefinition : (documentation = Doc)? annotations?

@@ -3,9 +3,7 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.ModuleType
 
-import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
@@ -42,10 +40,8 @@ class TypeScriptGenerator extends AbstractGenerator {
 		return \
 """${javaScript}
 var module = new ${module.name}.${module.alias}(${constructorParameters.join(", ")});
-var consts = new ${module.name}.__${module.alias}Constants();
 return {
-	${MODULE}: module,
-	${CONSTANTS}: consts
+	${MODULE}: module
 };
 """
 	}

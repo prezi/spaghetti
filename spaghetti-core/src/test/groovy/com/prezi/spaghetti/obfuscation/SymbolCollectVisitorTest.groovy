@@ -51,8 +51,8 @@ struct Struct {
 	def "constants are found"() {
 		def result = visit """module prezi.test.tibor as Tibor
 const Constants {
-	int alpha
-	int beta
+	int alpha = 1
+	beta = 5.0
 }
 """
 		expect:

@@ -1,15 +1,14 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.definition.AbstractModuleVisitor
 import com.prezi.spaghetti.definition.FQName
 import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.definition.ModuleUtils
 import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
+import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
 
 import static com.prezi.spaghetti.Generator.CONFIG
-import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 
@@ -64,31 +63,6 @@ export var __${module.alias}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"]
 
 		result +=  ModuleUtils.formatDocumentation(ctx.documentation)
 		result += "export interface ${className} {\n" + methods.join("\n") + "\n}\n" + types.join("\n")
-
-		if (localModule) {
-			Set<String> consts = []
-			def constContents = ""
-			(new ConstCollectorVisitor(module, consts)).processModule();
-			
-			def ctor = consts.collect { name -> 
-				return "\t\tthis.${name} = ${module.name}.${name};"
-			}.join("\n")
-
-			def members = consts.collect { name -> 
-				return "\t${name}:__${name};"
-			}.join("\n")
-
-			constContents += 
-"""
-export class __${module.alias}Constants {
-	constructor() {
-${ctor}
-	}
-${members}
-}
-"""
-			result += constContents
-		}
 
 		return result + "\n"
 	}
@@ -163,26 +137,38 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 	@Override
 	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
 	{
-		if (!localModule) {
-			def values = ctx.propertyDefinition().collect { propertyCtx ->
-				return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-					"\tstatic ${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)} = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"].${CONSTANTS}.${ctx.name.text}.${propertyCtx.property.name.text};"
-			}.join("\n")
+		def values = visitChildren(ctx)
+		def constName = ctx.name.text
+		def result = "export class ${constName} {\n" + values + "\n}\n"
+		return result
+	}
 
-			def constName = ctx.name.text
-			def result = "export class ${constName} {\n" + values + "\n}\n"
-			return result
+	@Override
+	@WithJavaDoc
+	String visitConstEntry(@NotNull ModuleParser.ConstEntryContext ctx) {
+		return super.visitConstEntry(ctx)
+	}
+
+	@Override
+	String visitConstEntryDecl(@NotNull ModuleParser.ConstEntryDeclContext ctx) {
+		String type
+		Token value
+		if (ctx.boolValue) {
+			type = "boolean"
+			value = ctx.boolValue
+		} else if (ctx.intValue) {
+			type = "number"
+			value = ctx.intValue
+		} else if (ctx.floatValue) {
+			type = "number"
+			value = ctx.floatValue
+		} else if (ctx.stringValue) {
+			type = "string"
+			value = ctx.stringValue
+		} else {
+			throw new IllegalArgumentException("Unknown constant type: " + ctx.dump())
 		}
-		else {
-			def values = ctx.propertyDefinition().collect { propertyCtx -> 
-				return ModuleUtils.formatDocumentation(ctx.documentation, "\t") +
-					"\t${propertyCtx.property.name.text}: ${propertyCtx.property.type.accept(this)};"
-			}.join("\n")
-			
-			def constName = ctx.name.text
-			def result = "export interface __${constName} {\n" + values + "\n}\n"
-			return result
-		}
+		return "\tstatic ${ctx.name.text}: ${type} = ${value.text};\n"
 	}
 
 	@Override
@@ -201,22 +187,5 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 			return localTypeName
 		}
 		return super.resolveName(localTypeName)
-	}
-}
-
-
-private class ConstCollectorVisitor extends AbstractModuleVisitor<Void> {
-	private final Set<String> names
-
-	ConstCollectorVisitor(ModuleDefinition module, Set<String> names) {
-		super(module)
-		this.names = names
-	}
-
-	@Override
-	Void visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
-	{
-		names.add(ctx.name.text);
-		return null
 	}
 }

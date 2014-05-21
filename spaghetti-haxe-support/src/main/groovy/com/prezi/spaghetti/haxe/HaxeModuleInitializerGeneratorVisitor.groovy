@@ -5,7 +5,6 @@ import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
 import static com.prezi.spaghetti.Generator.CONFIG
-import static com.prezi.spaghetti.ReservedWords.CONSTANTS
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
@@ -28,8 +27,6 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	{
 		def initializerName = "__" + module.alias + "Init"
 
-		def consts = ctx.moduleElement()*.accept(this) - ""
-
 		def dynamicInstances = []
 		dynamicDependencies.eachWithIndex { ModuleDefinition dependency, int index ->
 			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
@@ -43,12 +40,8 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	static function delayedInit():Bool {
 		${dynamicInstances.join("\n\t\t")}
 		var module:${module.name}.I${module.alias} = new ${module.name}.${module.alias}(${dynamicReferences.join(", ")});
-		var consts = {
-			${consts.join(",\n\t\t\t")}
-		};
 		untyped ${HAXE_MODULE_VAR} = {
-			${MODULE}: module,
-			${CONSTANTS}: consts
+			${MODULE}: module
 		}
 		return true;
 	}
