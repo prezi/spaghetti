@@ -20,12 +20,11 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	String visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
 	{
 		def result = Deprecation.annotationFromCxt(Type.StructName, ctx.name.text, ctx.annotations())
+		def properties = visitChildren(ctx)
 
 		result += \
 """typedef ${ctx.name.text} = {
-${ctx.propertyDefinition().collect {
-	it.accept(this)
-}.join("")}
+${properties}
 }
 """
 		return result
@@ -38,7 +37,10 @@ ${ctx.propertyDefinition().collect {
 		def annotations = ctx.annotations()
 		def mutable = ModuleUtils.extractAnnotations(annotations).containsKey("mutable")
 		def modifiers = mutable ? "" : " (default, never)"
-		def result = Deprecation.annotationFromCxt(Type.StructField, ctx.property.name.text, annotations) + "\n"
+		def result = Deprecation.annotationFromCxt(Type.StructField, ctx.property.name.text, annotations)
+		if (result) {
+			result = "\t" + result
+		}
 
 		result += \
 """	var ${ctx.property.name.text}${modifiers}:${ctx.property.type.accept(this)};
