@@ -18,14 +18,14 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		super(module)
 	}
 
-	@Override
+	@WithDeprecation
 	@WithJavaDoc
+	@Override
 	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
 	{
 		this.constName = ctx.name.text
 		def constants = visitChildren(ctx)
-		def result = Deprecation.annotationFromCxt(Type.ConstantName, this.constName, ctx.annotations())
-		result += \
+		def result = \
 """@:final class ${constName} {
 ${constants}
 }
@@ -34,14 +34,11 @@ ${constants}
 		return result
 	}
 
-	@Override
+	@WithDeprecation
 	@WithJavaDoc
+	@Override
 	String visitConstEntry(@NotNull ModuleParser.ConstEntryContext ctx) {
-		def result = Deprecation.annotationFromCxt(Type.ConstantName, this.constName, ctx.annotations())
-		if (result) {
-			result = "\t" + result
-		}
-		return result + super.visitConstEntry(ctx)
+		return super.visitConstEntry(ctx)
 	}
 
 	@Override

@@ -18,6 +18,7 @@ struct MyStruct {
 	/**
 	 * This is field b.
 	 */
+	@deprecated("struct")
 	string b
 }
 """)
@@ -34,6 +35,7 @@ typedef MyStruct = {
 	/**
 	 * This is field b.
 	 */
+	@:deprecated("struct")
 	var b (default, never):String;
 
 }

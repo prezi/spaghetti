@@ -10,6 +10,10 @@ class HaxeConstGeneratorVisitorTest extends Specification {
 	def "generate"() {
 		def module = new DefinitionParserHelper().parse("""module com.example.test
 
+/**
+ * My dear constants.
+ */
+@deprecated
 const MyConstants {
 	int alma = 1
 	/**
@@ -24,13 +28,18 @@ const MyConstants {
 		def visitor = new HaxeConstGeneratorVisitor(module)
 
 		expect:
-		visitor.processModule() == """@:final class MyConstants {
+		visitor.processModule() == """
+/**
+ * My dear constants.
+ */
+@:deprecated
+@:final class MyConstants {
 	public static var alma(default, never):Int = 1;
 
 	/**
 	 * Bela is -123.
 	 */
-	@:deprecated("Deprecated constant \\"MyConstants\\": lajos")
+	@:deprecated("lajos")
 	public static var bela(default, never):Int = -123;
 	public static var geza(default, never):Float = -1.23;
 	public static var tibor(default, never):String = "tibor";

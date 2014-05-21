@@ -26,6 +26,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 		return declaration + " {"
 	}
 
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
@@ -43,9 +44,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			return superTypeCtx.accept(this)
 		}
 
-		def result = Deprecation.annotationFromCxt(Type.Interface, typeName, ctx.annotations())
-
-		result += \
+		def result = \
 """${defineType(typeName, superTypes)}
 ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 }

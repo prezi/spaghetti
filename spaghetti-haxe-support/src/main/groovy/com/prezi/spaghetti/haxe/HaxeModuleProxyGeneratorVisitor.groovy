@@ -19,6 +19,7 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor
 		super(module)
 	}
 
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
@@ -37,6 +38,7 @@ ${super.visitModuleDefinition(ctx)}
 		return ""
 	}
 
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)

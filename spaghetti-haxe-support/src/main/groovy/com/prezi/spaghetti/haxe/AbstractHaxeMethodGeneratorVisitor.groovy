@@ -20,6 +20,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		super(module)
 	}
 
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
@@ -34,9 +35,8 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		def typeParamsResult = typeParams?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
 		def name = ctx.name.text
-		def result = Deprecation.annotationFromCxt(Type.Function, name, ctx.annotations())
 
-		result += \
+		def result = \
 """	function ${name}${typeParamsResult}(${paramsResult}):${returnType};
 """
 		methodTypeParams.clear()

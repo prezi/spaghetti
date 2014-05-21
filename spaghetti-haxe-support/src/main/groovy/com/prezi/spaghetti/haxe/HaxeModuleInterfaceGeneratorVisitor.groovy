@@ -18,6 +18,7 @@ class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVis
 		this.className = className
 	}
 
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)

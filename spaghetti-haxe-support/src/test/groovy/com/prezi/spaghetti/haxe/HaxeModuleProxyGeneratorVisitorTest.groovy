@@ -13,6 +13,7 @@ class HaxeModuleProxyGeneratorVisitorTest extends Specification {
 /**
  * Initializes module.
  */
+@deprecated("use doSomething() instead")
 void initModule(int a, int b)
 string doSomething()
 """)
@@ -24,6 +25,7 @@ string doSomething()
 	/**
 	 * Initializes module.
 	 */
+	@:deprecated("use doSomething() instead")
 	@:extern public static inline function initModule(a:Int, b:Int):Void {
 		return untyped __config["__modules"]["com.example.test"].__module.initModule(a, b);
 	}

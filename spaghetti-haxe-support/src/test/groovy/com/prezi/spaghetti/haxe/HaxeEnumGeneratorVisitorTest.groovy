@@ -15,6 +15,7 @@ enum MyEnum {
 	 * Alma.
 	 */
 	ALMA
+	@deprecated
 	BELA
 	GEZA
 }
@@ -28,6 +29,7 @@ enum MyEnum {
 	 * Alma.
 	 */
 	public static var ALMA = new MyEnum(0);
+	@:deprecated
 	public static var BELA = new MyEnum(1);
 	public static var GEZA = new MyEnum(2);
 

@@ -1,37 +1,48 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.ModuleUtils
 import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
+
 /**
  * Created by lptr on 16/11/13.
  */
 class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 
+	private class HaxeEnumValueGeneratorVisitor extends ModuleBaseVisitor<String> {
+		private final String enumName
+		private final int valueIndex
+
+		HaxeEnumValueGeneratorVisitor(String enumName, int valueIndex) {
+			this.enumName = enumName
+			this.valueIndex = valueIndex
+		}
+
+		@WithDeprecation
+		@WithJavaDoc
+		@Override
+		String visitEnumValue(@NotNull ModuleParser.EnumValueContext ctx) {
+"""	public static var ${ctx.name.text} = new ${enumName}(${valueIndex});
+"""
+		}
+	}
+
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
 	{
 		def enumName = ctx.name.text
-		def result = Deprecation.annotationFromCxt(Type.EnumName, enumName, ctx.annotations())
 
-		result += \
-"""abstract ${enumName}(Int) {
-"""
-
+		def values = []
 		ctx.values.eachWithIndex { valueCtx, index ->
-			result += Deprecation.annotationFromCxt(Type.EnumField, valueCtx.name.text, valueCtx.annotations())
-
-			result += ModuleUtils.formatDocumentation(valueCtx.documentation, "\t")
-			result +=
-"""	public static var ${valueCtx.name.text} = new ${enumName}(${index});
-"""
+			values.add valueCtx.accept(new HaxeEnumValueGeneratorVisitor(enumName, index))
 		}
 
-		result +=
-"""
+		return \
+"""abstract ${enumName}(Int) {
+${values.join("")}
 	static var _values:Array<${enumName}> = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
 	static var _names:Array<String> =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
 	static var _namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
@@ -69,6 +80,5 @@ class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
 	}
 }
 """
-		return result
 	}
 }

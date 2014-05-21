@@ -5,49 +5,40 @@ import com.prezi.spaghetti.definition.ModuleUtils
 import com.prezi.spaghetti.grammar.ModuleParser
 import groovy.json.StringEscapeUtils
 
-public enum Type {
-	Interface,
-	Function,
-	EnumName,
-	EnumField,
-	ConstantName,
-	ConstantField,
-	StructName,
-	StructField
-}
-
 
 public class Deprecation {
 
-	public static String annotationFromCxt(Type type, String name, ModuleParser.AnnotationsContext ctx) {
+	public static String formatDeprecationWithAutoPrefix(ModuleParser.AnnotationsContext ctx, String text)
+	{
+		def m = text =~ /^([ \t]*).*/
+		return formatDeprecation(ctx, m[0][1]) + text
+	}
+
+	public static String formatDeprecation(ModuleParser.AnnotationsContext ctx, String prefix) {
+		def deprecation = annotationFromCxt(ctx)
+		if (deprecation) {
+			deprecation = prefix + deprecation
+		}
+		return deprecation
+	}
+
+	public static String annotationFromCxt(ModuleParser.AnnotationsContext ctx) {
 		def deprecatedAnn = ModuleUtils.extractAnnotations(ctx)["deprecated"]
 		if (deprecatedAnn != null) {
-			return annotation(type, name, deprecatedAnn) + "\n"
+			return annotation(deprecatedAnn) + "\n"
 		} else {
 			return "";
 		}
 	}
 
-	public static String annotation(Type type, String name, Annotation ann) {
-		def typeName;
-		switch (type) {
-		case Type.Function: typeName = "function"; break
-		case Type.EnumName: typeName = "enum"; break
-		case Type.EnumField: typeName = "enum field"; break
-		case Type.ConstantName: typeName = "constant"; break
-		case Type.ConstantField: typeName = "constant field"; break
-		case Type.StructName: typeName = "struct"; break
-		case Type.StructField: typeName = "struct field"; break
-		case Type.Interface: typeName = "interface"; break
-		}
-
+	public static String annotation(Annotation ann) {
 		def deprecationMessage;
-		if (ann.hasParameter("default")) {
-			deprecationMessage = "Deprecated ${typeName} \\\"${name}\\\": " + StringEscapeUtils.escapeJava(String.valueOf(ann.getParameter("default")))
+		if (ann.hasDefaultParameter()) {
+			deprecationMessage = "(\"" + StringEscapeUtils.escapeJava(String.valueOf(ann.getDefaultParameter())) + "\")"
 		} else {
-			deprecationMessage = "Deprecated ${typeName} \\\"${name}\\\""
+			deprecationMessage = ""
 		}
 
-		return "@:deprecated(\"${deprecationMessage}\")"
+		return "@:deprecated${deprecationMessage}"
 	}
 }
