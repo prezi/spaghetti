@@ -12,7 +12,7 @@ class ClientTest extends MatchersBase {
 
 	@Test
 	public function testCreateObject() {
-		var text = SpaghettiTest.getModule().layout.createText();
+		var text = SpaghettiTest.getModule("prezi.graphics.text").createText();
 		assertThat(text, is(not(null)));
 	}
 
