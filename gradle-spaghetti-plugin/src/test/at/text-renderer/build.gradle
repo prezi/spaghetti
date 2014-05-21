@@ -1,4 +1,6 @@
 dependencies {
+	modules project(path: ":core", configuration: "modules")
+	modulesObf project(path: ":core", configuration: "modulesObf");
 	modules project(path: ":layout", configuration: "modules")
 	modulesObf project(path: ":layout", configuration: "modulesObf");
 }

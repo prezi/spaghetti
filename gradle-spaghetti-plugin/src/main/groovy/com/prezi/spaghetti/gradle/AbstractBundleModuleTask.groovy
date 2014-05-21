@@ -5,7 +5,6 @@ import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.ModuleType
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -93,11 +92,6 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			String javaScript,
 			String sourceMap,
 			File resourceDir) {
-		// We depend on direct dynamic dependencies and all static dependencies
-		def dependentModules = config.directDependentModules*.name + config.transitiveDependentModules.findAll {
-			it.type == ModuleType.STATIC
-		}*.name
-
 		def outputDir = getOutputDirectory()
 		logger.info "Creating bundle in ${outputDir}"
 		ModuleBundleFactory.createDirectory(
@@ -110,7 +104,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 						sourceBaseUrl: getSourceBaseUrl(),
 						javaScript: javaScript,
 						sourceMap: sourceMap,
-						dependentModules: dependentModules,
+						dependentModules: config.directDependentModules*.name,
 						resourcesDirectory: resourceDir
 				)
 		)

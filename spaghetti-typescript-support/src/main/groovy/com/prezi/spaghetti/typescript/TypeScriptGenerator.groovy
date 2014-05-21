@@ -27,7 +27,7 @@ class TypeScriptGenerator extends AbstractGenerator {
 			copySpaghettiClass(outputDirectory)
 			generateModuleInterface(module, "I${module.alias}", outputDirectory)
 		}
-		(config.directDependentModules + config.transitiveDependentModules.findAll { it.type == ModuleType.STATIC }).each { dependentModule ->
+		config.directDependentModules.each { dependentModule ->
 			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
 		}
 	}
