@@ -17,7 +17,7 @@ interface MyInterface<X> {
 	void doSomething()
 
 	string[] doSomethingElse(int a, int b)
-	<T, U> T[] hello(X x, U y);
+	<T, U> T[] hello(X x, U y)
 }
 """)
 		def visitor = new HaxeInterfaceGeneratorVisitor(module)
