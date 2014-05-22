@@ -9,11 +9,11 @@ import spock.lang.Unroll
 class AnnotationTest extends Specification {
 	@Unroll
 	def "FromContext: #annotationDecl"() {
-		def parser = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", annotationDecl))
-		def annotation = Annotation.fromContext(parser.annotation())
+		def parserContext = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", annotationDecl))
+		def annotation = Annotation.fromContext(parserContext.parser.annotation())
 
 		expect:
-		parser.numberOfSyntaxErrors == 0
+		!parserContext.listener.inError
 		annotation.name == name
 		annotation.hasDefaultParameter() == defaultParam != null
 		if (defaultParam) {

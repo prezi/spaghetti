@@ -7,6 +7,20 @@ import spock.lang.Unroll
  * Created by lptr on 21/05/14.
  */
 class ModuleDefinitionTest extends Specification {
+
+	def "parse illegal"() {
+		def parserContext = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", """module com.example.test
+struct MyStruct {
+	int a;
+	int b
+}
+"""))
+		parserContext.parser.moduleDefinition()
+
+		expect:
+		parserContext.listener.inError
+	}
+
 	@Unroll
 	def "parse #data"() {
 		def definition = new DefinitionParserHelper().parse(data)

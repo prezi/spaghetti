@@ -9,11 +9,11 @@ import spock.lang.Unroll
 class ConstantsTest extends Specification {
 	@Unroll
 	def "Parse entry decl: #constantEntryDecl"() {
-		def parser = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", constantEntryDecl))
-		def entry = parser.constEntryDecl()
+		def parserContext = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", constantEntryDecl))
+		def entry = parserContext.parser.constEntryDecl()
 
 		expect:
-		parser.numberOfSyntaxErrors == 0
+		!parserContext.listener.inError
 
 		println entry.dump()
 

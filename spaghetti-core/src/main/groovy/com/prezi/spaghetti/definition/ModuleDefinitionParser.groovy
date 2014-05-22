@@ -10,21 +10,30 @@ import org.antlr.v4.runtime.CommonTokenStream
  */
 class ModuleDefinitionParser {
 	public static ModuleParser.ModuleDefinitionContext parse(ModuleDefinitionSource source) {
-		ModuleParser parser = createParser(source)
-		def tree = parser.moduleDefinition()
-		if (parser.numberOfSyntaxErrors > 0) {
+		def parserContext = createParser(source)
+		def tree = parserContext.parser.moduleDefinition()
+		if (parserContext.listener.inError) {
 			throw new IllegalArgumentException("Could not parse module definition '${source.location}', see errors reported above")
 		}
 		return tree
 	}
 
-	protected static ModuleParser createParser(ModuleDefinitionSource source) {
+	protected static ModuleParserContext createParser(ModuleDefinitionSource source) {
 		def input = new ANTLRInputStream(source.contents)
+
+		def errorListener = new ParserErrorListener(source.location)
 		def lexer = new ModuleLexer(input)
+		lexer.removeErrorListeners()
+		lexer.addErrorListener(errorListener)
 		def tokens = new CommonTokenStream(lexer)
+
 		def parser = new ModuleParser(tokens)
 		parser.removeErrorListeners()
-		parser.addErrorListener(new ParserErrorListener(source.location))
-		return parser
+		parser.addErrorListener(errorListener)
+		return new ModuleParserContext(
+			parser: parser,
+			lexer: lexer,
+			listener: errorListener
+		)
 	}
 }
