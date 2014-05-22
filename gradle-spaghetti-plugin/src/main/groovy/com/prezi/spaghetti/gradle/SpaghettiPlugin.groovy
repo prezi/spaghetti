@@ -95,14 +95,20 @@ class SpaghettiPlugin implements Plugin<Project> {
 				// Automatically create bundle module task and artifact
 				BundleModule bundleTask = createBundleTask(project, binary)
 				def zipModule = createZipTask(project, binary, bundleTask, binary.name, "")
-				project.artifacts.add(extension.configuration.name, zipModule)
-				logger.debug("Added bundle task ${bundleTask} with zip artifact ${zipModule}")
+				logger.debug("Added bundle task ${bundleTask} with zip task ${zipModule}")
+				if (!binary.usedForTesting) {
+					project.artifacts.add(extension.configuration.name, zipModule)
+					logger.debug("Added bundle artifact for ${binary}")
+				}
 
 				// Automatically obfuscate bundle
 				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary)
 				def zipObfuscated = createZipTask(project, binary, obfuscateTask, binary.name + "-obfuscated", "obfuscated")
-				project.artifacts.add(extension.obfuscatedConfiguration.name, zipObfuscated)
 				logger.debug("Added obfuscate task ${obfuscateTask} with zip artifact ${zipObfuscated}")
+				if (!binary.usedForTesting) {
+					project.artifacts.add(extension.obfuscatedConfiguration.name, zipObfuscated)
+					logger.debug("Added obfuscated bundle artifact for ${binary}")
+				}
 			}
 		})
 	}
