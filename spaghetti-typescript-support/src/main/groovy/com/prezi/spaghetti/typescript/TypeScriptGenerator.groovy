@@ -13,6 +13,8 @@ import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
  */
 class TypeScriptGenerator extends AbstractGenerator {
 
+	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
+
 	private final ModuleConfiguration config
 
 	TypeScriptGenerator(ModuleConfiguration config) {
@@ -38,7 +40,7 @@ class TypeScriptGenerator extends AbstractGenerator {
 	{
 		return \
 """${javaScript}
-return ${module.name}.__createModule(${CONFIG});
+return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 """
 	}
 
@@ -65,7 +67,7 @@ return ${module.name}.__createModule(${CONFIG});
 		}
 		def dynamicReferences = ["${CONFIG}"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
 
-		contents += """export function __createModule(config:any):any {
+		contents += """export function ${CREATE_MODULE_FUNCTION}(config:any):any {
 	${dynamicInstances.join("\n\t")}
 	var module:${moduleClassName} = new ${module.alias}(${dynamicReferences.join(", ")});
 	return {
