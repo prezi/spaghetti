@@ -11,10 +11,7 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
-	private String constName
-
-	protected HaxeConstGeneratorVisitor(ModuleDefinition module)
-	{
+	protected HaxeConstGeneratorVisitor(ModuleDefinition module) {
 		super(module)
 	}
 
@@ -23,14 +20,12 @@ class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	@Override
 	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
 	{
-		this.constName = ctx.name.text
 		def constants = visitChildren(ctx)
 		def result = \
-"""@:final class ${constName} {
+"""@:final class ${ctx.name.text} {
 ${constants}
 }
 """
-		this.constName = null
 		return result
 	}
 
