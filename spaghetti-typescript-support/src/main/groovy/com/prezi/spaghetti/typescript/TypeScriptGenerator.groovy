@@ -63,9 +63,9 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 		def dynamicInstances = []
 
 		directDynamicDependentModules.eachWithIndex { ModuleDefinition dependency, int index ->
-			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
+			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = config[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
 		}
-		def dynamicReferences = ["${CONFIG}"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
+		def dynamicReferences = ["config"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
 
 		contents += """export function ${CREATE_MODULE_FUNCTION}(config:any):any {
 	${dynamicInstances.join("\n\t")}
