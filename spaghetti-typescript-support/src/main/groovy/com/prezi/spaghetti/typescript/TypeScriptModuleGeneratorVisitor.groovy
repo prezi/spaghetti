@@ -1,12 +1,8 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.definition.FQName
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.ModuleUtils
-import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
-import org.antlr.v4.runtime.Token
 import org.antlr.v4.runtime.misc.NotNull
 
 import static com.prezi.spaghetti.Generator.CONFIG

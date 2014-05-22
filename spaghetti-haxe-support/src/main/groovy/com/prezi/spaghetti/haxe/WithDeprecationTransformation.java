@@ -16,7 +16,6 @@ import org.codehaus.groovy.syntax.SyntaxException;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /*

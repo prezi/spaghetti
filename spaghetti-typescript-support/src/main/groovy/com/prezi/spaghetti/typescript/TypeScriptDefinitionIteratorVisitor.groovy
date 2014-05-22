@@ -3,10 +3,7 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.definition.AbstractModuleVisitor
 import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.grammar.ModuleVisitor
-import org.antlr.v4.runtime.RuleContext
 import org.antlr.v4.runtime.misc.NotNull
-import org.antlr.v4.runtime.tree.ParseTreeVisitor
 
 /**
  * Created by lptr on 20/11/13.

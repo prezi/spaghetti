@@ -2,7 +2,6 @@ package com.prezi.spaghetti.definition
 
 import com.prezi.spaghetti.grammar.ModuleBaseVisitor
 import com.prezi.spaghetti.grammar.ModuleParser
-import groovy.json.StringEscapeUtils
 import org.antlr.v4.runtime.misc.NotNull
 
 /**
