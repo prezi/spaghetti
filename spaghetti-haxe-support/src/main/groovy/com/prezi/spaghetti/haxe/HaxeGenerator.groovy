@@ -31,10 +31,10 @@ class HaxeGenerator extends AbstractGenerator {
 		config.allDependentModules.each { dependentModule ->
 			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
 		}
-		config.allDynamicDependentModules.each { dependentModule ->
+		config.directDynamicDependentModules.each { dependentModule ->
 			generateModuleInterface(dependentModule, dependentModule.alias, outputDirectory)
 		}
-		config.allStaticDependentModules.each { dependentModule ->
+		config.directStaticDependentModules.each { dependentModule ->
 			generateModuleProxy(dependentModule, outputDirectory)
 		}
 	}

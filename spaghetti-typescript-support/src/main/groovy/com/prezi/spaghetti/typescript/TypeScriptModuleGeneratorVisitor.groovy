@@ -17,17 +17,17 @@ import static com.prezi.spaghetti.ReservedWords.MODULES
  */
 class TypeScriptModuleGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
-	private final String className
+	private final String moduleClassName
 	private final typeParams = []
 	private final Collection<ModuleDefinition> dependentModules
-	private final boolean localModule
+	private final boolean generateModuleInterface
 
-	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, String className, Collection<ModuleDefinition> dependentModules, boolean localModule)
+	TypeScriptModuleGeneratorVisitor(ModuleDefinition module, String moduleClassName, Collection<ModuleDefinition> dependentModules, boolean generateModuleInterface)
 	{
 		super(module)
-		this.className = className
+		this.moduleClassName = moduleClassName
 		this.dependentModules = dependentModules
-		this.localModule = localModule
+		this.generateModuleInterface = generateModuleInterface
 	}
 
 	@Override
@@ -61,10 +61,13 @@ export var __${module.alias}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"]
 			result += modulesContents + "\n"
 		}
 
-		result +=  ModuleUtils.formatDocumentation(ctx.documentation)
-		result += "export interface ${className} {\n" + methods.join("\n") + "\n}\n" + types.join("\n")
+		if (generateModuleInterface) {
+			result += ModuleUtils.formatDocumentation(ctx.documentation)
+			result += "export interface ${moduleClassName} {\n" + methods.join("\n") + "\n}\n\n"
+		}
+		result += types.join("\n")
 
-		return result + "\n"
+		return result
 	}
 
 	private static String defineType(String typeName, List<String> superTypes) {
@@ -95,7 +98,7 @@ export var __${module.alias}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"]
 
 		def result = \
 """${defineType(typeName, superTypes)}
-${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
+${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("\n")}
 }
 """
 		typeParams.clear()
@@ -112,10 +115,8 @@ ${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
 			val += "\t${valueCtx.name.text} = ${index}"
 			valueLines += val
 		}
-		def values = valueLines.join(",\n\t")
-
 		def enumName = ctx.name.text
-		def result = "export enum ${enumName} {" + values + "\n}\n"
+		def result = "export enum ${enumName} {\n" + valueLines.join(",\n") + "\n}\n"
 		return result
 	}
 

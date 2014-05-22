@@ -23,10 +23,13 @@ class TypeScriptGenerator extends AbstractGenerator {
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateModuleInterface(module, "I${module.alias}", outputDirectory)
+			generateModuleInterface(module, outputDirectory)
 		}
 		config.directDependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
+			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory, true)
+		}
+		config.transitiveDependentModules.each { dependentModule ->
+			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory, false)
 		}
 	}
 
@@ -56,15 +59,16 @@ return {
 	/**
 	 * Generates main interface for module.
 	 */
-	private void generateModuleInterface(ModuleDefinition module, String className, File outputDirectory)
+	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new TypeScriptModuleGeneratorVisitor(module, className, config.allDependentModules, true).processModule()
-		TypeScriptUtils.createSourceFile(module, className, outputDirectory, contents)
+		def moduleClassName = "I${module.alias}"
+		def contents = new TypeScriptModuleGeneratorVisitor(module, moduleClassName, config.allDependentModules, true).processModule()
+		TypeScriptUtils.createSourceFile(module, moduleClassName, outputDirectory, contents)
 	}
 
-	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
+	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory, boolean generateModuleInterface)
 	{
-		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module, module.alias, config.allDependentModules, false).processModule()
-		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, moduleFileContents)
+		def contents = new TypeScriptModuleGeneratorVisitor(module, module.alias, config.allDependentModules, generateModuleInterface).processModule()
+		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 }
