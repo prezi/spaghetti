@@ -62,13 +62,13 @@ return {
 	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
 		def moduleClassName = "I${module.alias}"
-		def contents = new TypeScriptModuleGeneratorVisitor(module, moduleClassName, config.allDependentModules, true).processModule()
+		def contents = new TypeScriptModuleGeneratorVisitor(config, module, moduleClassName, true).processModule()
 		TypeScriptUtils.createSourceFile(module, moduleClassName, outputDirectory, contents)
 	}
 
 	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory, boolean generateModuleInterface)
 	{
-		def contents = new TypeScriptModuleGeneratorVisitor(module, module.alias, config.allDependentModules, generateModuleInterface).processModule()
+		def contents = new TypeScriptModuleGeneratorVisitor(config, module, module.alias, generateModuleInterface).processModule()
 		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 }
