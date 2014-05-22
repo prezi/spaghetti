@@ -11,19 +11,9 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final interfaceTypeParams = []
-
 	HaxeInterfaceGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
-	}
-
-	private static String defineType(String typeName, List<String> superTypes) {
-		def declaration = "interface ${typeName}"
-		superTypes.each { superType ->
-			declaration += " extends ${superType}"
-		}
-		return declaration + " {"
 	}
 
 	@WithDeprecation
@@ -31,43 +21,64 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 	@Override
 	String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
-		def typeName = ctx.name.text
-		def typeParamsCtx = ctx.typeParameters()
-		if (typeParamsCtx != null) {
-			typeName += typeParamsCtx.accept(this)
-			typeParamsCtx.parameters.each { param ->
-				interfaceTypeParams.add(FQName.fromString(param.name.text))
+		def interfaceTypeParams = ctx.typeParameters()?.parameters?.collect { param ->
+			FQName.fromString(param.name.text)
+		} ?: []
+		return new HaxeInterfaceGeneratorVisitorInternal(module, interfaceTypeParams).visit(ctx)
+	}
+
+	private class HaxeInterfaceGeneratorVisitorInternal extends AbstractHaxeMethodGeneratorVisitor {
+
+		private final List<FQName> interfaceTypeParams
+
+		protected HaxeInterfaceGeneratorVisitorInternal(ModuleDefinition module, List<FQName> interfaceTypeParams) {
+			super(module)
+			this.interfaceTypeParams = interfaceTypeParams
+		}
+
+		@Override
+		String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
+		{
+			def typeName = ctx.name.text
+			def typeParamsCtx = ctx.typeParameters()
+			if (typeParamsCtx != null) {
+				typeName += typeParamsCtx.accept(this)
 			}
-		}
 
-		def superTypes = ctx.superInterfaceDefinition().collect { superTypeCtx ->
-			return superTypeCtx.accept(this)
-		}
+			def superTypes = ctx.superInterfaceDefinition()*.accept(this)
+			def methodDefinitions = ctx.methodDefinition()*.accept(this)
 
-		def result = \
+			return \
 """${defineType(typeName, superTypes)}
-${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
+${methodDefinitions.join("")}
 }
 """
-		interfaceTypeParams.clear()
-		return result
-	}
-
-	@Override
-	String visitSuperInterfaceDefinition(@NotNull @NotNull ModuleParser.SuperInterfaceDefinitionContext ctx)
-	{
-		def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
-		superType += ctx.typeArguments()?.accept(this) ?: ""
-		return superType
-	}
-
-	@Override
-	protected FQName resolveName(FQName localTypeName)
-	{
-		if (interfaceTypeParams.contains(localTypeName))
-		{
-			return localTypeName
 		}
-		return super.resolveName(localTypeName)
+
+		private static String defineType(String typeName, List<String> superTypes) {
+			def declaration = "interface ${typeName}"
+			superTypes.each { superType ->
+				declaration += " extends ${superType}"
+			}
+			return declaration + " {"
+		}
+
+		@Override
+		String visitSuperInterfaceDefinition(@NotNull @NotNull ModuleParser.SuperInterfaceDefinitionContext ctx)
+		{
+			def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
+			superType += ctx.typeArguments()?.accept(this) ?: ""
+			return superType
+		}
+
+		@Override
+		protected FQName resolveName(FQName localTypeName)
+		{
+			if (interfaceTypeParams.contains(localTypeName))
+			{
+				return localTypeName
+			}
+			return super.resolveName(localTypeName)
+		}
 	}
 }
