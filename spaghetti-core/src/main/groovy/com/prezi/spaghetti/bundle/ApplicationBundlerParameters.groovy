@@ -11,6 +11,7 @@ class ApplicationBundlerParameters {
 	public static final String DEFAULT_MODULES_DIRECTORY = "modules"
 	public static final String DEFAULT_APPLICATION_NAME = "application.js"
 	public static final boolean DEFAULT_EXECUTE = true
+	public static final ApplicationType DEFAULT_APPLICATION_TYPE = ApplicationType.COMMON_JS
 
 	Set<ModuleBundle> bundles
 	String modulesDirectory = DEFAULT_MODULES_DIRECTORY
@@ -18,5 +19,5 @@ class ApplicationBundlerParameters {
 	String applicationName = DEFAULT_APPLICATION_NAME
 	String mainModule
 	boolean execute = DEFAULT_EXECUTE
-	Wrapper wrapper
+	ApplicationType type = DEFAULT_APPLICATION_TYPE
 }

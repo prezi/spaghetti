@@ -5,10 +5,10 @@ import spock.lang.Specification
 /**
  * Created by lptr on 16/05/14.
  */
-class WrapperTest extends Specification {
-	def "amd module"() {
+class AmdWrapperTest extends Specification {
+	def "AMD module"() {
 		def originalScript = "__spaghetti(function(__config){});"
-		def result = Wrapper.AMD.wrap("com.example.test", ["com.example.alma", "com.example.bela"], originalScript)
+		def result = new AmdWrapper().wrap("com.example.test", ["com.example.alma", "com.example.bela"], originalScript)
 
 		expect:
 		result == [
@@ -40,8 +40,13 @@ class WrapperTest extends Specification {
 		].join("")
 	}
 
-	def "amd application"() {
-		def result = Wrapper.AMD.makeApplication("lajos", "mods", ["com.example.alma", "com.example.bela", "com.example.test"], "com.example.test", true)
+	def "AMD application"() {
+		def dependencyTree = [
+				"com.example.test": ["com.example.alma", "com.example.bela"].toSet(),
+				"com.example.alma": ["com.example.bela"].toSet(),
+				"com.example.bela": [].toSet()
+		]
+		def result = new AmdWrapper().makeApplication("lajos", "mods", dependencyTree, "com.example.test", true)
 
 		expect:
 		result == [

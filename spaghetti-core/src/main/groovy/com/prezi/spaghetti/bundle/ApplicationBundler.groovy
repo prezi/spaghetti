@@ -20,18 +20,27 @@ class ApplicationBundler {
 			}
 
 			def modulesAppender = builder.subAppender(params.modulesDirectory)
+
+			def appType = params.type
+			def wrapper = appType.wrapper
 			params.bundles.each { ModuleBundle bundle ->
 				// Extract resources
-				def moduleAppender = modulesAppender.subAppender(bundle.name)
+				def moduleDirectory = appType.moduleDirectoryNamer.name(bundle)
+				def moduleAppender = modulesAppender.subAppender(moduleDirectory)
 				bundle.extract(moduleAppender, EnumSet.of(ModuleBundleElement.resources, ModuleBundleElement.sourcemap))
 
 				// Add JavaScript
-				def wrappedJavaScript = params.wrapper.wrap(bundle.name, bundle.dependentModules, bundle.javaScript)
-				moduleAppender.appendFile(bundle.name + ".js", { out -> out << wrappedJavaScript })
+				def wrappedJavaScript = wrapper.wrap(bundle.name, bundle.dependentModules, bundle.javaScript)
+				def moduleFile = appType.moduleFileNamer.name(bundle)
+				moduleAppender.appendFile(moduleFile + ".js", { out -> out << wrappedJavaScript })
 			}
+
 			// Add application
+			def dependencyTree = params.bundles.collectEntries { bundle ->
+				[ bundle.name, bundle.dependentModules ]
+			}
 			builder.appendFile params.applicationName, { out ->
-				out << params.wrapper.makeApplication(params.baseUrl, params.modulesDirectory, params.bundles*.name, params.mainModule, params.execute) }
+				out << wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute) }
 		} finally {
 			builder.close()
 		}

@@ -37,6 +37,16 @@ task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	dependsOn bundleJsModule
 	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
+	outputDirectory "${buildDir}/applications/web"
+	type "requirejs"
+}
+
+task bundleNodeApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
+	dependsOn bundleJsModule
+	additionalDirectDependentModule bundleJsModule.outputDirectory
+	mainModule "prezi.test.client"
+	outputDirectory "${buildDir}/applications/node"
+	type "node"
 }
 
 def testWebappDir = file("${buildDir}/webapp")
