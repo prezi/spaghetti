@@ -14,18 +14,26 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 
 	@Input
 	String mainModule
+	void mainModule(String mainModule) {
+		this.mainModule = mainModule
+	}
 
 	@Input
 	String baseUrl = ApplicationBundlerParameters.DEFAULT_BASE_URL
+	void baseUrl(String baseUrl) {
+		this.baseUrl = baseUrl
+	}
 
 	@Input
 	String applicationName = ApplicationBundlerParameters.DEFAULT_APPLICATION_NAME
+	void applicationName(String applicationName) {
+		this.applicationName = applicationName
+	}
 
 	@Input
 	boolean execute = ApplicationBundlerParameters.DEFAULT_EXECUTE
-
-	def mainModule(Object mainModule) {
-		this.mainModule = mainModule?.toString()
+	void execute(boolean execute) {
+		this.execute = execute
 	}
 
 	@OutputDirectory
