@@ -11,8 +11,7 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	HaxeInterfaceGeneratorVisitor(ModuleDefinition module)
-	{
+	HaxeInterfaceGeneratorVisitor(ModuleDefinition module) {
 		super(module)
 	}
 
@@ -29,11 +28,11 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	private class HaxeInterfaceGeneratorVisitorInternal extends AbstractHaxeMethodGeneratorVisitor {
 
-		private final List<FQName> interfaceTypeParams
+		private final Set<FQName> interfaceTypeParams
 
 		protected HaxeInterfaceGeneratorVisitorInternal(ModuleDefinition module, List<FQName> interfaceTypeParams) {
 			super(module)
-			this.interfaceTypeParams = interfaceTypeParams
+			this.interfaceTypeParams = new LinkedHashSet<>(interfaceTypeParams)
 		}
 
 		@Override
