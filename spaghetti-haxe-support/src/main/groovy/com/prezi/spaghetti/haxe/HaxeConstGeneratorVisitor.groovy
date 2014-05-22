@@ -55,6 +55,6 @@ ${constants}
 		} else {
 			throw new IllegalArgumentException("Unknown constant type: " + ctx.dump())
 		}
-		return "\tpublic static var ${ctx.name.text}(default, never):${type} = ${value.text};\n"
+		return "\tpublic static inline var ${ctx.name.text}:${type} = ${value.text};\n"
 	}
 }

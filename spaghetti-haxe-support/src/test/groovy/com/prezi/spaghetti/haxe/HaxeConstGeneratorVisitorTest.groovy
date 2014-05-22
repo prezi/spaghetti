@@ -34,15 +34,15 @@ const MyConstants {
  */
 @:deprecated
 @:final class MyConstants {
-	public static var alma(default, never):Int = 1;
+	public static inline var alma:Int = 1;
 
 	/**
 	 * Bela is -123.
 	 */
 	@:deprecated("lajos")
-	public static var bela(default, never):Int = -123;
-	public static var geza(default, never):Float = -1.23;
-	public static var tibor(default, never):String = "tibor";
+	public static inline var bela:Int = -123;
+	public static inline var geza:Float = -1.23;
+	public static inline var tibor:String = "tibor";
 
 }
 """
