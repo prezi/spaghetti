@@ -36,16 +36,9 @@ class TypeScriptGenerator extends AbstractGenerator {
 	@Override
 	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript)
 	{
-		// TODO This should be made type-safe
-		def constructorParameters = [ CONFIG ] + config.directDynamicDependentModules.collect { ModuleDefinition dependency ->
-			"${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"]"
-		}
 		return \
 """${javaScript}
-var module = new ${module.name}.${module.alias}(${constructorParameters.join(", ")});
-return {
-	${MODULE}: module
-};
+return ${module.name}.__createModule(${CONFIG});
 """
 	}
 
@@ -63,6 +56,24 @@ return {
 	{
 		def moduleClassName = "I${module.alias}"
 		def contents = new TypeScriptModuleGeneratorVisitor(config, module, moduleClassName, true).processModule()
+
+		def directDynamicDependentModules = config.directDynamicDependentModules
+		def dynamicInstances = []
+
+		directDynamicDependentModules.eachWithIndex { ModuleDefinition dependency, int index ->
+			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
+		}
+		def dynamicReferences = ["${CONFIG}"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
+
+		contents += """export function __createModule(config:any):any {
+	${dynamicInstances.join("\n\t")}
+	var module:${moduleClassName} = new ${module.alias}(${dynamicReferences.join(", ")});
+	return {
+		${MODULE}: module
+	}
+}
+"""
+
 		TypeScriptUtils.createSourceFile(module, moduleClassName, outputDirectory, contents)
 	}
 
