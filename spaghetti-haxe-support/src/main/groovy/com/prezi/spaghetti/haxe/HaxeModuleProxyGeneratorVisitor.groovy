@@ -26,7 +26,7 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor
 	{
 		return \
 """@:final class ${module.alias} {
-${super.visitModuleDefinition(ctx)}
+${visitChildren(ctx)}
 }
 """
 	}
