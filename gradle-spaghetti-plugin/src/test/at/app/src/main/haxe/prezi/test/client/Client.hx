@@ -29,8 +29,10 @@ class Client implements IClient {
 		});
 		trace("TestStuff.doSomething(): " + testStuff.doSomething("pre", "text", "pos"));
 
-		var canvas = untyped __js__("document.getElementById('canvas')");
-		testStuff.drawSomething(canvas);
+		if (untyped __js__("typeof(document)") != "undefined") {
+			var canvas = untyped __js__("document.getElementById('canvas')");
+			testStuff.drawSomething(canvas);
+		}
 
 		// 	doAsync(callback:String->(Int->String)->Void, converter:Int->String) {
 		var result = testStuff.doAsync(callback, function(value:Int):String { return Std.string(value + 1); });
