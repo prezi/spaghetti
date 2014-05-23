@@ -1,5 +1,6 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
 
+import com.prezi.spaghetti.packaging.AmdWrapper
 import spock.lang.Specification
 
 /**

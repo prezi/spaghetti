@@ -8,7 +8,7 @@ import com.prezi.haxe.gradle.HaxeCompile
 import com.prezi.haxe.gradle.HaxeExtension
 import com.prezi.haxe.gradle.HaxeTestBinary
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
-import com.prezi.spaghetti.gradle.BundleApplication
+import com.prezi.spaghetti.gradle.PackageApplication
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin
 import com.prezi.spaghetti.gradle.SpaghettiExtension
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet
@@ -109,11 +109,11 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 				munitTask.dependsOn appTask
 			}
 
-			private BundleApplication createTestApplication(HaxeCompiledSpaghettiCompatibleJavaScriptBinary testBinary) {
+			private PackageApplication createTestApplication(HaxeCompiledSpaghettiCompatibleJavaScriptBinary testBinary) {
 				def namingScheme = ((BinaryInternal) testBinary).namingScheme
 				def bundleTaskName = namingScheme.getTaskName("application")
 
-				def appBundleTask = project.tasks.create(bundleTaskName, BundleApplication)
+				def appBundleTask = project.tasks.create(bundleTaskName, PackageApplication)
 				appBundleTask.description = "Creates a testable applicaiton of ${testBinary}"
 				appBundleTask.group = "test"
 				appBundleTask.conventionMapping.outputDirectory = { project.file("${project.buildDir}/spaghetti/tests/" + testBinary.name) }

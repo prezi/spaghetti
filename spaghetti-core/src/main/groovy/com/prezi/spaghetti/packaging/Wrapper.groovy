@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
 
 /**
  * Created by lptr on 16/05/14.

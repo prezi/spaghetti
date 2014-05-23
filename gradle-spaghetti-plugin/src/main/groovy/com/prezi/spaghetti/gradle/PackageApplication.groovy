@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.bundle.ApplicationBundler
-import com.prezi.spaghetti.bundle.ApplicationBundlerParameters
-import com.prezi.spaghetti.bundle.ApplicationType
+import com.prezi.spaghetti.packaging.ApplicationPackager
+import com.prezi.spaghetti.packaging.ApplicationPackageParameters
+import com.prezi.spaghetti.packaging.ApplicationType
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -10,7 +10,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
+class PackageApplication extends AbstractPlatformAwareSpaghettiTask {
 
 	@Input
 	String mainModule
@@ -19,25 +19,25 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 	}
 
 	@Input
-	String baseUrl = ApplicationBundlerParameters.DEFAULT_BASE_URL
+	String baseUrl = ApplicationPackageParameters.DEFAULT_BASE_URL
 	void baseUrl(String baseUrl) {
 		this.baseUrl = baseUrl
 	}
 
 	@Input
-	String applicationName = ApplicationBundlerParameters.DEFAULT_APPLICATION_NAME
+	String applicationName = ApplicationPackageParameters.DEFAULT_APPLICATION_NAME
 	void applicationName(String applicationName) {
 		this.applicationName = applicationName
 	}
 
 	@Input
-	String modulesDirectory = ApplicationBundlerParameters.DEFAULT_MODULES_DIRECTORY
+	String modulesDirectory = ApplicationPackageParameters.DEFAULT_MODULES_DIRECTORY
 	void modulesDirectory(String directory) {
 		this.modulesDirectory = directory
 	}
 
 	@Input
-	ApplicationType type = ApplicationBundlerParameters.DEFAULT_APPLICATION_TYPE
+	ApplicationType type = ApplicationPackageParameters.DEFAULT_APPLICATION_TYPE
 	void type(String type) {
 		switch (type.toUpperCase()) {
 			case "AMD":
@@ -55,7 +55,7 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 	}
 
 	@Input
-	boolean execute = ApplicationBundlerParameters.DEFAULT_EXECUTE
+	boolean execute = ApplicationPackageParameters.DEFAULT_EXECUTE
 	void execute(boolean execute) {
 		this.execute = execute
 	}
@@ -66,7 +66,7 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 		this.outputDirectory = project.file(outputDirectory)
 	}
 
-	BundleApplication()
+	PackageApplication()
 	{
 		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/application") }
 	}
@@ -75,7 +75,7 @@ class BundleApplication extends AbstractPlatformAwareSpaghettiTask {
 	makeBundle() {
 		def bundles = lookupBundles()
 		logger.info "Creating application in {}", getOutputDirectory()
-		ApplicationBundler.bundleApplicationDirectory(getOutputDirectory(), new ApplicationBundlerParameters(
+		ApplicationPackager.bundleApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles: bundles.allBundles,
 				baseUrl: getBaseUrl(),
 				applicationName: getApplicationName(),

@@ -1,4 +1,6 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
+
+import com.prezi.spaghetti.bundle.ModuleBundle
 
 /**
  * Gives a name to a module bundle directory or file.

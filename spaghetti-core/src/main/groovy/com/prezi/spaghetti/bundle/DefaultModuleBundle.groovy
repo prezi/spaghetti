@@ -1,8 +1,10 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
-import com.prezi.spaghetti.bundle.BundleBuilder.BundleAppender
+import com.prezi.spaghetti.structure.StructuredWriter.StructuredAppender
 import com.prezi.spaghetti.definition.ModuleType
+import com.prezi.spaghetti.structure.StructuredReader
+import com.prezi.spaghetti.structure.StructuredWriter
 import groovy.io.FileType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,9 +28,9 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final def MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source")
 	private static final def MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies")
 
-	protected final BundleSource source
+	protected final StructuredReader source
 
-	protected DefaultModuleBundle(BundleSource source, String name, ModuleType type, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
+	protected DefaultModuleBundle(StructuredReader source, String name, ModuleType type, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
 		super(name, type, version, sourceBaseUrl, dependentModules, resourcePaths)
 		this.source = source
 	}
@@ -48,7 +50,7 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 		return getString(SOURCE_MAP_PATH)
 	}
 
-	protected static DefaultModuleBundle create(BundleBuilder builder, ModuleBundleParameters params) {
+	protected static DefaultModuleBundle create(StructuredWriter builder, ModuleBundleParameters params) {
 		checkNotNull(params.name, "name", [])
 		checkNotNull(params.version, "version", [])
 		checkNotNull(params.definition, "definition", [])
@@ -98,7 +100,7 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 	}
 
-	protected static DefaultModuleBundle loadInternal(BundleSource source) {
+	protected static DefaultModuleBundle loadInternal(StructuredReader source) {
 		if (!source.hasFile(ModuleBundle.MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
 		}
@@ -111,7 +113,7 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 
 		Manifest manifest = null
 		Set<String> resourcePaths = []
-		source.processFiles(new BundleSource.ModuleBundleFileHandler() {
+		source.processFiles(new StructuredReader.FileHandler() {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
@@ -149,7 +151,7 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 				return null
 			}
 			String text = null
-			source.processFile(path, new BundleSource.ModuleBundleFileHandler() {
+			source.processFile(path, new StructuredReader.FileHandler() {
 				@Override
 				void handleFile(String _, Callable<? extends InputStream> contents) {
 					text = contents().getText("utf-8")
@@ -162,7 +164,7 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 	}
 
 	@Override
-	void extract(BundleAppender output, EnumSet<ModuleBundleElement> elements) {
+	void extract(StructuredAppender output, EnumSet<ModuleBundleElement> elements) {
 		source.init()
 		try {
 			extract(name, source, output, elements)
@@ -171,8 +173,8 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 	}
 
-	protected static void extract(String name, BundleSource source, BundleAppender output, EnumSet<ModuleBundleElement> elements) {
-		source.processFiles(new BundleSource.ModuleBundleFileHandler() {
+	protected static void extract(String name, StructuredReader source, StructuredAppender output, EnumSet<ModuleBundleElement> elements) {
+		source.processFiles(new StructuredReader.FileHandler() {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {

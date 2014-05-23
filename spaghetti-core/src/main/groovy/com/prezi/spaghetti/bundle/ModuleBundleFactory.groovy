@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.bundle
 
+import com.prezi.spaghetti.structure.StructuredWriter
+import com.prezi.spaghetti.structure.StructuredReader
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -10,11 +12,11 @@ class ModuleBundleFactory {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleFactory)
 
 	static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) {
-		return DefaultModuleBundle.create(new BundleBuilder.Zip(outputFile), params)
+		return DefaultModuleBundle.create(new StructuredWriter.Zip(outputFile), params)
 	}
 
 	static ModuleBundle createDirectory(File outputDirectory, ModuleBundleParameters params) {
-		return DefaultModuleBundle.create(new BundleBuilder.Directory(outputDirectory), params)
+		return DefaultModuleBundle.create(new StructuredWriter.Directory(outputDirectory), params)
 	}
 
 	static ModuleBundle load(File inputFile) {
@@ -24,10 +26,10 @@ class ModuleBundleFactory {
 		def source
 		if (inputFile.file) {
 			logger.debug "{} is a file, trying to load as ZIP", inputFile
-			source = new BundleSource.Zip(inputFile)
+			source = new StructuredReader.Zip(inputFile)
 		} else if (inputFile.directory) {
 			logger.debug "{} is a directory, trying to load as exploded", inputFile
-			source = new BundleSource.Directory(inputFile)
+			source = new StructuredReader.Directory(inputFile)
 		} else {
 			throw new RuntimeException("Unknown module format: ${inputFile}")
 		}
@@ -45,7 +47,7 @@ class ModuleBundleFactory {
 	}
 
 	static void extract(ModuleBundle bundle, File outputDirectory, EnumSet<ModuleBundleElement> elements = EnumSet.allOf(ModuleBundleElement)) {
-		def output = new BundleBuilder.Directory(outputDirectory)
+		def output = new StructuredWriter.Directory(outputDirectory)
 		output.init()
 		try {
 			bundle.extract(output, elements)

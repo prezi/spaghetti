@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
 
 import static com.prezi.spaghetti.Generator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.BASE_URL

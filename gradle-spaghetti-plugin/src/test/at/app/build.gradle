@@ -33,7 +33,7 @@ haxe {
 	}
 }
 
-task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
+task packageApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
 	dependsOn bundleJsModule
 	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
@@ -41,7 +41,7 @@ task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	type "requirejs"
 }
 
-task bundleNodeApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
+task packageNodeApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
 	dependsOn bundleJsModule
 	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
@@ -51,13 +51,13 @@ task bundleNodeApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 
 def testWebappDir = file("${buildDir}/webapp")
 
-task packApplication(type: Copy) {
-	dependsOn bundleApplication
+task packageWebApp(type: Copy) {
+	dependsOn packageApplication
 	dependsOn configurations.requirejs
 
 	destinationDir testWebappDir
 
-	from bundleApplication.outputDirectory
+	from packageApplication.outputDirectory
 	from "src/test/webapp"
 
 	doLast {

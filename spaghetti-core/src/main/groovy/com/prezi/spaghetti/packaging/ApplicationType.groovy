@@ -1,6 +1,8 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
 
-import static com.prezi.spaghetti.bundle.ModuleBundleNamer.BUNDLE_NAME_NAMER
+import com.prezi.spaghetti.bundle.ModuleBundle
+
+import static ModuleBundleNamer.BUNDLE_NAME_NAMER
 
 /**
  * Created by lptr on 23/05/14.

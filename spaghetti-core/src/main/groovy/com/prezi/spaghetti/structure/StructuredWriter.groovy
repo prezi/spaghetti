@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.structure
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -6,23 +6,23 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by lptr on 15/05/14.
  */
-abstract interface BundleBuilder extends BundleAppender {
+abstract interface StructuredWriter extends StructuredAppender {
 	void init()
-	BundleSource create()
+	StructuredReader create()
 	void close()
 
-	static interface BundleAppender {
+	static interface StructuredAppender {
 		void appendFile(String path, Closure writeContents)
-		BundleAppender subAppender(String path)
+		StructuredAppender subAppender(String path)
 	}
 
-	abstract private static class AbstractBundleAppender implements BundleAppender {
-		final BundleAppender subAppender(String path) {
+	abstract private static class AbstractStructuredAppender implements StructuredAppender {
+		final StructuredAppender subAppender(String path) {
 			return new SubBuilder(this, path)
 		}
 	}
 
-	final private static class Directory extends AbstractBundleAppender implements BundleBuilder {
+	final private static class Directory extends AbstractStructuredAppender implements StructuredWriter {
 		private final File directory
 
 		Directory(File directory) {
@@ -43,8 +43,8 @@ abstract interface BundleBuilder extends BundleAppender {
 		}
 
 		@Override
-		BundleSource create() {
-			return new BundleSource.Directory(directory)
+		StructuredReader create() {
+			return new StructuredReader.Directory(directory)
 		}
 
 		@Override
@@ -57,7 +57,7 @@ abstract interface BundleBuilder extends BundleAppender {
 		}
 	}
 
-	final private static class Zip extends AbstractBundleAppender implements BundleBuilder {
+	final private static class Zip extends AbstractStructuredAppender implements StructuredWriter {
 		File zipFile
 		ZipOutputStream zipStream
 
@@ -79,9 +79,9 @@ abstract interface BundleBuilder extends BundleAppender {
 		}
 
 		@Override
-		BundleSource create() {
+		StructuredReader create() {
 			close()
-			return new BundleSource.Zip(zipFile)
+			return new StructuredReader.Zip(zipFile)
 		}
 
 		@Override
@@ -98,11 +98,11 @@ abstract interface BundleBuilder extends BundleAppender {
 		}
 	}
 
-	final private static class SubBuilder extends AbstractBundleAppender {
-		private final BundleAppender parent
+	final private static class SubBuilder extends AbstractStructuredAppender {
+		private final StructuredAppender parent
 		private final String subPath
 
-		SubBuilder(BundleAppender parent, String subPath) {
+		SubBuilder(StructuredAppender parent, String subPath) {
 			this.parent = parent
 			this.subPath = subPath
 		}

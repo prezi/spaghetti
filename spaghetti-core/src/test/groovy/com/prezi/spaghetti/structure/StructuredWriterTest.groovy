@@ -1,5 +1,7 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.structure
 
+import com.prezi.spaghetti.structure.StructuredWriter
+import com.prezi.spaghetti.structure.StructuredReader
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
@@ -9,14 +11,14 @@ import java.util.zip.ZipFile
 /**
  * Created by lptr on 16/05/14.
  */
-class BundleBuilderTest extends Specification {
+class StructuredWriterTest extends Specification {
 	@Rule
  	public TemporaryFolder tempDir = new TemporaryFolder()
 
 	def "directory created even if there was a file in its place"() {
 		def dir = tempDir.newFolder()
 		dir.createNewFile()
-		def builder = new BundleBuilder.Directory(dir)
+		def builder = new StructuredWriter.Directory(dir)
 		builder.init()
 
 		expect:
@@ -25,7 +27,7 @@ class BundleBuilderTest extends Specification {
 
 	def "directory"() {
 		def dir = tempDir.newFolder()
-		def builder = new BundleBuilder.Directory(dir)
+		def builder = new StructuredWriter.Directory(dir)
 		builder.init()
 		builder.appendFile("lajos", { out -> out << "Hello" })
 		def source = builder.create()
@@ -34,14 +36,14 @@ class BundleBuilderTest extends Specification {
 		def lajos = new File(dir, "lajos")
 		lajos.file
 		lajos.text == "Hello"
-		source instanceof BundleSource.Directory
-		((BundleSource.Directory) source).sourceDirectory == dir
+		source instanceof StructuredReader.Directory
+		((StructuredReader.Directory) source).sourceDirectory == dir
 	}
 
 	def "zip is created even if there was a directory in its place"() {
 		def zip = tempDir.newFile()
 		zip.mkdirs()
-		def builder = new BundleBuilder.Zip(zip)
+		def builder = new StructuredWriter.Zip(zip)
 		builder.init()
 
 		expect:
@@ -50,7 +52,7 @@ class BundleBuilderTest extends Specification {
 
 	def "zip"() {
 		def zip = tempDir.newFile()
-		def builder = new BundleBuilder.Zip(zip)
+		def builder = new StructuredWriter.Zip(zip)
 		builder.init()
 		builder.appendFile("lajos", { out -> out << "Hello" })
 		def source = builder.create()
@@ -59,7 +61,7 @@ class BundleBuilderTest extends Specification {
 
 		expect:
 		zipFile.getInputStream(zipFile.getEntry("lajos")).text == "Hello"
-		source instanceof BundleSource.Zip
-		((BundleSource.Zip) source).zip == zip
+		source instanceof StructuredReader.Zip
+		((StructuredReader.Zip) source).zip == zip
 	}
 }

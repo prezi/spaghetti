@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

@@ -2,6 +2,8 @@ package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
 import com.prezi.spaghetti.definition.ModuleType
+import com.prezi.spaghetti.structure.StructuredReader
+import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
@@ -14,7 +16,7 @@ class ModuleBundleTest extends Specification {
 	static final Logger logger = LoggerFactory.getLogger(ModuleBundleTest)
 
 	def "create bundle"() {
-		def builder = Mock(BundleBuilder)
+		def builder = Mock(StructuredWriter)
 		String manifest = null
 		when:
 		DefaultModuleBundle.create(
@@ -52,7 +54,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "load bundle without any files"() {
-		def source = Mock(BundleSource)
+		def source = Mock(StructuredReader)
 
 		when:
 		DefaultModuleBundle.loadInternal(source)
@@ -66,7 +68,7 @@ class ModuleBundleTest extends Specification {
 
 	@SuppressWarnings("GroovyAssignabilityCheck")
 	def "load bundle with all files present"() {
-		def source = Mock(BundleSource)
+		def source = Mock(StructuredReader)
 
 		when:
 		def bundle = DefaultModuleBundle.loadInternal(source)
@@ -77,7 +79,7 @@ class ModuleBundleTest extends Specification {
 		_ * source.close()
 		//noinspection GroovyAssignabilityCheck
 		1 * source.processFiles({
-			BundleSource.ModuleBundleFileHandler handler = it
+			StructuredReader.FileHandler handler = it
 			handler.handleFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
 					"Spaghetti-Version: 2.5",
@@ -99,7 +101,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "definition from module"() {
-		def source = Mock(BundleSource)
+		def source = Mock(StructuredReader)
 		def bundle = fakeModule(source)
 		when:
 		def definition = bundle.definition
@@ -117,7 +119,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "javascript from module"() {
-		def source = Mock(BundleSource)
+		def source = Mock(StructuredReader)
 		def bundle = fakeModule(source)
 		when:
 		def javaScript = bundle.javaScript
@@ -135,7 +137,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "source map from module"() {
-		def source = Mock(BundleSource)
+		def source = Mock(StructuredReader)
 		def bundle = fakeModule(source)
 		when:
 		def sourceMap = bundle.sourceMap
@@ -152,7 +154,7 @@ class ModuleBundleTest extends Specification {
 		sourceMap == "sourcemap"
 	}
 
-	private static ModuleBundle fakeModule(BundleSource source) {
+	private static ModuleBundle fakeModule(StructuredReader source) {
 		return new DefaultModuleBundle(source, "test", ModuleType.DYNAMIC, "3.7", null, [].toSet(), [].toSet())
 	}
 

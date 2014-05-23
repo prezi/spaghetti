@@ -1,18 +1,22 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
+
+import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleElement
+import com.prezi.spaghetti.structure.StructuredWriter
 
 /**
  * Created by lptr on 16/05/14.
  */
-class ApplicationBundler {
-	public static void bundleApplicationDirectory(File outputDirectory, ApplicationBundlerParameters params) {
-		bundleApplication(new BundleBuilder.Directory(outputDirectory), params)
+class ApplicationPackager {
+	public static void bundleApplicationDirectory(File outputDirectory, ApplicationPackageParameters params) {
+		bundleApplication(new StructuredWriter.Directory(outputDirectory), params)
 	}
 
-	public static void bundleApplicationZip(File outputFile, ApplicationBundlerParameters params) {
-		bundleApplication(new BundleBuilder.Zip(outputFile), params)
+	public static void bundleApplicationZip(File outputFile, ApplicationPackageParameters params) {
+		bundleApplication(new StructuredWriter.Zip(outputFile), params)
 	}
 
-	protected static void bundleApplication(BundleBuilder builder, ApplicationBundlerParameters params) {
+	protected static void bundleApplication(StructuredWriter builder, ApplicationPackageParameters params) {
 		builder.init()
 		try {
 			if (!params.bundles*.name.contains(params.mainModule)) {

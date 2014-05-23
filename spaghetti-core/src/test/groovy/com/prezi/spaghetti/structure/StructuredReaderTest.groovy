@@ -1,5 +1,6 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.structure
 
+import com.prezi.spaghetti.structure.StructuredReader
 import spock.lang.Specification
 
 import java.util.concurrent.Callable
@@ -9,7 +10,7 @@ import java.util.zip.ZipOutputStream
 /**
  * Created by lptr on 16/05/14.
  */
-class BundleSourceTest extends Specification {
+class StructuredReaderTest extends Specification {
 	private static final File tempDir = {
 		def dir = File.createTempFile("bundle-source", ".test")
 		dir.delete()
@@ -30,7 +31,7 @@ class BundleSourceTest extends Specification {
 	}
 
 	def "read through"() {
-		def handler = Mock(BundleSource.ModuleBundleFileHandler)
+		def handler = Mock(StructuredReader.FileHandler)
 
 		when:
 		source.processFiles(handler)
@@ -47,7 +48,7 @@ class BundleSourceTest extends Specification {
 	}
 
 	def "read one"() {
-		def handler = Mock(BundleSource.ModuleBundleFileHandler)
+		def handler = Mock(StructuredReader.FileHandler)
 
 		when:
 		source.processFile("lajos", handler)
@@ -62,19 +63,19 @@ class BundleSourceTest extends Specification {
 		makeDir() | _
 	}
 
-	private static BundleSource makeDir() {
+	private static StructuredReader makeDir() {
 		def dir = File.createTempFile("bundle", ".dir", tempDir)
 		dir.delete()
 		dir.mkdirs()
 		new File(dir, "lajos") << "Hello"
 		new File(dir, "bela").mkdirs()
 		new File(dir, "bela/bela") << "Hi"
-		def source = new BundleSource.Directory(dir)
+		def source = new StructuredReader.Directory(dir)
 		source.init()
 		return source
 	}
 
-	private static BundleSource makeZip() {
+	private static StructuredReader makeZip() {
 		def zip = File.createTempFile("bundle", ".zip", tempDir)
 		def zipStream = new ZipOutputStream(new FileOutputStream(zip))
 		zipStream.putNextEntry(new ZipEntry("lajos"))
@@ -82,7 +83,7 @@ class BundleSourceTest extends Specification {
 		zipStream.putNextEntry(new ZipEntry("bela/bela"))
 		zipStream << "Hi"
 		zipStream.close()
-		def source = new BundleSource.Zip(zip)
+		def source = new StructuredReader.Zip(zip)
 		source.init()
 		return source
 	}

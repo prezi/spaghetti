@@ -1,5 +1,6 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.packaging
 
+import com.prezi.spaghetti.packaging.CommonJsWrapper
 import spock.lang.Specification
 
 /**

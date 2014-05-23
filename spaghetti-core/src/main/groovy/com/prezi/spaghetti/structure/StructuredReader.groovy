@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.structure
 
 import groovy.io.FileType
 
@@ -9,18 +9,18 @@ import java.util.zip.ZipFile
 /**
  * Created by lptr on 15/05/14.
  */
-public interface BundleSource {
+public interface StructuredReader {
 	void init()
 	boolean hasFile(String path)
-	void processFile(String path, ModuleBundleFileHandler handler)
-	void processFiles(ModuleBundleFileHandler handler)
+	void processFile(String path, FileHandler handler)
+	void processFiles(FileHandler handler)
 	void close()
 
-	interface ModuleBundleFileHandler {
+	interface FileHandler {
 		void handleFile(String path, Callable<? extends InputStream> contents)
 	}
 
-	static class Directory implements BundleSource {
+	static class Directory implements StructuredReader {
 		final File sourceDirectory
 
 		Directory(File sourceDirectory) {
@@ -37,7 +37,7 @@ public interface BundleSource {
 		}
 
 		@Override
-		void processFile(String path, ModuleBundleFileHandler handler) {
+		void processFile(String path, FileHandler handler) {
 			def file = new File(sourceDirectory, path)
 			if (!file.file) {
 				throw new IllegalArgumentException("Could not find file in bundle: ${file}")
@@ -46,7 +46,7 @@ public interface BundleSource {
 		}
 
 		@Override
-		void processFiles(ModuleBundleFileHandler handler) {
+		void processFiles(FileHandler handler) {
 			if (!sourceDirectory.exists()) {
 				throw new IllegalArgumentException("Could not find module bundle directory: ${sourceDirectory}")
 			}
@@ -57,7 +57,7 @@ public interface BundleSource {
 			}
 		}
 
-		private static handleFile(ModuleBundleFileHandler handler, String path, File file) {
+		private static handleFile(FileHandler handler, String path, File file) {
 			handler.handleFile(path, { new FileInputStream(file) })
 		}
 
@@ -71,7 +71,7 @@ public interface BundleSource {
 		}
 	}
 
-	static class Zip implements BundleSource {
+	static class Zip implements StructuredReader {
 		final File zip
 		private ZipFile zipFile
 
@@ -95,7 +95,7 @@ public interface BundleSource {
 		}
 
 		@Override
-		void processFile(String path, ModuleBundleFileHandler handler) {
+		void processFile(String path, FileHandler handler) {
 			def entry = zipFile.getEntry(path)
 			if (!entry) {
 				throw new IllegalArgumentException("Could not find file \"${path}\" in bundle: ${zip}")
@@ -104,13 +104,13 @@ public interface BundleSource {
 		}
 
 		@Override
-		void processFiles(ModuleBundleFileHandler handler) {
+		void processFiles(FileHandler handler) {
 			zipFile.entries().each { ZipEntry entry ->
 				handleEntry(handler, entry)
 			}
 		}
 
-		private void handleEntry(ModuleBundleFileHandler handler, ZipEntry entry) {
+		private void handleEntry(FileHandler handler, ZipEntry entry) {
 			handler.handleFile(entry.name, { zipFile.getInputStream(entry) })
 		}
 
