@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.bundle
 
-import com.prezi.spaghetti.structure.StructuredWriter
 import com.prezi.spaghetti.definition.ModuleType
+import com.prezi.spaghetti.structure.StructuredWriter
 
 /**
  * Created by lptr on 16/11/13.

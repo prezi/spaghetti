@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
-import com.prezi.spaghetti.structure.StructuredWriter.StructuredAppender
 import com.prezi.spaghetti.definition.ModuleType
 import com.prezi.spaghetti.structure.StructuredReader
 import com.prezi.spaghetti.structure.StructuredWriter
+import com.prezi.spaghetti.structure.StructuredWriter.StructuredAppender
 import groovy.io.FileType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

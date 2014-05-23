@@ -1,7 +1,5 @@
 package com.prezi.spaghetti.structure
 
-import com.prezi.spaghetti.structure.StructuredWriter
-import com.prezi.spaghetti.structure.StructuredReader
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification

@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.structure
 
-import com.prezi.spaghetti.structure.StructuredReader
 import spock.lang.Specification
 
 import java.util.concurrent.Callable

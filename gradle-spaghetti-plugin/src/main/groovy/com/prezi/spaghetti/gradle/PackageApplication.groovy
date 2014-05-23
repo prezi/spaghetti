@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.packaging.ApplicationPackager
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
+import com.prezi.spaghetti.packaging.ApplicationPackager
 import com.prezi.spaghetti.packaging.ApplicationType
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory

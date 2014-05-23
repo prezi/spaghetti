@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.bundle
 
-import com.prezi.spaghetti.structure.StructuredWriter
 import com.prezi.spaghetti.structure.StructuredReader
+import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
