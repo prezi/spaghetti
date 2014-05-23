@@ -13,6 +13,7 @@ import com.prezi.spaghetti.gradle.SpaghettiBasePlugin
 import com.prezi.spaghetti.gradle.SpaghettiExtension
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet
 import com.prezi.spaghetti.gradle.SpaghettiPlugin
+import com.prezi.spaghetti.packaging.ApplicationType
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -119,6 +120,7 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 				appBundleTask.conventionMapping.additionalDirectDependentModulesInternal = { project.files(testBinary.bundleTask.getOutputDirectory()) }
 				appBundleTask.conventionMapping.mainModule = { ModuleBundleFactory.load(testBinary.bundleTask.getOutputDirectory()).name }
 				appBundleTask.conventionMapping.applicationName = { testBinary.name + '_test.js' }
+				appBundleTask.conventionMapping.type = { ApplicationType.AMD }
 				appBundleTask.conventionMapping.baseUrl = { '.' }
 				appBundleTask.conventionMapping.execute = { false }
 				appBundleTask.dependsOn testBinary.bundleTask
