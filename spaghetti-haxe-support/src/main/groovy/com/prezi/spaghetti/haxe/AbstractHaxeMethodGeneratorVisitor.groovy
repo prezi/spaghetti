@@ -2,10 +2,8 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.definition.FQName
 import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.ModuleUtils
 import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
 import org.antlr.v4.runtime.misc.NotNull
 
 /**
@@ -30,7 +28,6 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 			methodTypeParams.add(FQName.fromString(param.name.text))
 		}
 		def returnType = ctx.returnTypeChain().accept(this)
-		returnType = wrapNullable(ctx.annotations(), returnType)
 
 		def typeParamsResult = typeParams?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
@@ -54,16 +51,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 	@Override
 	String visitTypeNamePair(@NotNull @NotNull ModuleParser.TypeNamePairContext ctx)
 	{
-		def result = ctx.name.text + ":"
-		def type = ctx.type.accept(this)
-		result += wrapNullable(ctx.annotations(), type)
-		return result
-	}
-
-	protected static String wrapNullable(AnnotationsContext annotationsContext, String type) {
-		def annotations = ModuleUtils.extractAnnotations(annotationsContext)
-		boolean nullable = annotations.containsKey("nullable")
-		return nullable ? "Null<${type}>" : type
+		return ctx.name.text + ":" + ctx.type.accept(this)
 	}
 
 	@Override

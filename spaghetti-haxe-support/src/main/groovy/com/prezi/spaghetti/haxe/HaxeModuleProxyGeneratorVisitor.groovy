@@ -44,7 +44,6 @@ ${visitChildren(ctx)}
 	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = ctx.returnTypeChain().accept(this)
-		returnType = wrapNullable(ctx.annotations(), returnType)
 
 		def params
 		def callParams
