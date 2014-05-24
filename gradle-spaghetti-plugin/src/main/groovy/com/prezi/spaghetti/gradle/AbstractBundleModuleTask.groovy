@@ -80,7 +80,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			throw new IllegalArgumentException("Too many module definitions present: ${moduleDefinitions}")
 		}
 		def config = readConfig(moduleDefinitions)
-		def module = config.getLocalModules().first()
+		def module = config.getLocalModules().iterator().next()
 		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, config, getInputFile().text)
 
 		createBundle(config, module, processedJavaScript, getSourceMap()?.text, getResourcesDirectory())
