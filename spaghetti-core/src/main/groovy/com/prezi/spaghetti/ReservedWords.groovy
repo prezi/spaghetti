@@ -20,10 +20,6 @@ class ReservedWords {
 
 	public static final String SPAGHETTI_MODULE_CONFIGURATION = "SpaghettiModuleConfiguration"
 
-	// TODO Must this be protected?
-	@Protected
-	public static final String CONSTANTS = "__consts"
-
 	@Protected
 	public static final String SPAGHETTI_WRAPPER_FUNCTION = "__spaghetti"
 
