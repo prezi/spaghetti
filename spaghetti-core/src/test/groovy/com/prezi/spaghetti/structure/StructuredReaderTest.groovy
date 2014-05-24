@@ -79,6 +79,7 @@ class StructuredReaderTest extends Specification {
 		def zipStream = new ZipOutputStream(new FileOutputStream(zip))
 		zipStream.putNextEntry(new ZipEntry("lajos"))
 		zipStream << "Hello"
+		zipStream.putNextEntry(new ZipEntry("bela/"))
 		zipStream.putNextEntry(new ZipEntry("bela/bela"))
 		zipStream << "Hi"
 		zipStream.close()
