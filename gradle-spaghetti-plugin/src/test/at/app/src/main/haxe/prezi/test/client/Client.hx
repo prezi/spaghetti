@@ -9,10 +9,10 @@ import prezi.graphics.text.render.TextRenderer;
 class Client implements IClient {
 	public var layout(default, null):Layout;
 	public var textRenderer(default, null):TextRenderer;
-	public function new(config:SpaghettiModuleConfiguration, core:Core, layout:Layout, textRenderer:TextRenderer) {
+	public function new(core:Core, layout:Layout, textRenderer:TextRenderer) {
 		this.layout = layout;
 		this.textRenderer = textRenderer;
-		trace("App name: " + config.getName());
+		trace("App name: " + SpaghettiConfiguration.getName());
 	}
 
 	public function main() {

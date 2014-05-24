@@ -1,8 +1,4 @@
 class SpaghettiTest {
-	public static function getConfig():SpaghettiModuleConfiguration {
-		return untyped ${config};
-	}
-
 	public static function getModule(name:String = null):Dynamic {
 		if (name == null) {
 			return untyped __js__('${haxeModule}["${module}"]');

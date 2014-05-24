@@ -19,13 +19,13 @@ class ReservedWords {
 	@Protected
 	public static final String SPAGHETTI_WRAPPER_FUNCTION = "__spaghetti"
 
-	public static final String CONFIG = "__config"
+	public static final String CONFIG = "SpaghettiConfiguration"
 
 	public static final String MODULES = "__modules"
 
 	public static final String BASE_URL = "__baseUrl"
 
-	public static final String SPAGHETTI_MODULE_CONFIGURATION = "SpaghettiModuleConfiguration"
+	public static final String SPAGHETTI_MODULE_CONFIGURATION = "SpaghettiConfiguration"
 
 	// Words to be protected against obfuscation
 	public static final SortedSet<String> PROTECTED_WORDS = new TreeSet<>(ReservedWords.declaredFields.findAll {

@@ -23,8 +23,8 @@ static int doStatic(int a, int b)
 		expect:
 		visitor.processModule() == """export class Test {
 
-	private static __instance:any = __config["__modules"]["com.example.test"]["__instance"];
-	private static __static:any = __config["__modules"]["com.example.test"]["__static"];
+	private static __instance:any = SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"];
+	private static __static:any = SpaghettiConfiguration["__modules"]["com.example.test"]["__static"];
 
 	/**
 	 * Initializes module.

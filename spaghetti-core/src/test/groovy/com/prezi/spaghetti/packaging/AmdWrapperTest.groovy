@@ -7,7 +7,7 @@ import spock.lang.Specification
  */
 class AmdWrapperTest extends Specification {
 	def "AMD module"() {
-		def originalScript = "__spaghetti(function(__config){});"
+		def originalScript = "__spaghetti(function(SpaghettiConfiguration){});"
 		def result = new AmdWrapper().wrap("com.example.test", ["com.example.alma", "com.example.bela"], originalScript)
 
 		expect:
@@ -15,7 +15,7 @@ class AmdWrapperTest extends Specification {
 		        'define(["require","com.example.alma","com.example.bela"],function(){',
 					'var moduleUrl=arguments[0]["toUrl"]("com.example.test.js");',
 					'var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf("/")+1);',
-					'var __config={',
+					'var SpaghettiConfiguration={',
 						'"__baseUrl":baseUrl,',
 						'"__modules":{',
 							'"require":arguments[0],',
@@ -33,7 +33,7 @@ class AmdWrapperTest extends Specification {
 						'}',
 					'};',
 					'var __spaghetti=function(){',
-						'return arguments[0](__config);',
+						'return arguments[0](SpaghettiConfiguration);',
 					'};',
 					'return ', originalScript,
 				'});'

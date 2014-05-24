@@ -17,10 +17,10 @@ static int doStatic(int x)
 		def visitor = new TypeScriptModuleInitializerGeneratorVisitor(module, [mockModule1, mockModule2])
 
 		expect:
-		visitor.processModule() == """export function __createSpaghettiModule(config:any):any {
-	var dependency0:com.example.alma.Alma = config["__modules"]["com.example.alma"]["__instance"];
-	var dependency1:com.example.bela.Bela = config["__modules"]["com.example.bela"]["__instance"];
-	var module:com.example.test.ITest = new com.example.test.Test(config, dependency0, dependency1);
+		visitor.processModule() == """export function __createSpaghettiModule():any {
+	var dependency0:com.example.alma.Alma = SpaghettiConfiguration["__modules"]["com.example.alma"]["__instance"];
+	var dependency1:com.example.bela.Bela = SpaghettiConfiguration["__modules"]["com.example.bela"]["__instance"];
+	var module:com.example.test.ITest = new com.example.test.Test(dependency0, dependency1);
 	var statics = new com.example.test.__TestStatic();
 	return {
 		__instance: module,

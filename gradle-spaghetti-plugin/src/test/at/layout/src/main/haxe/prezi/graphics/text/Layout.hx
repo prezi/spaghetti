@@ -3,11 +3,8 @@ package prezi.graphics.text;
 import prezi.graphics.core.Core;
 
 class Layout implements ILayout {
-	private var config:SpaghettiModuleConfiguration;
-
-	public function new(config:SpaghettiModuleConfiguration, core:Core) {
-		this.config = config;
-		trace("Layout name: " + config.getName());
+	public function new(core:Core) {
+		trace("Layout name: " + SpaghettiConfiguration.getName());
 		trace("Static call: " + Core.giveMeANumber());
 	}
 
@@ -22,7 +19,7 @@ class Layout implements ILayout {
 
 	public function getResource():String
 	{
-		return config.getResourceUrl("sample.txt");
+		return SpaghettiConfiguration.getResourceUrl("sample.txt");
 	}
 }
 

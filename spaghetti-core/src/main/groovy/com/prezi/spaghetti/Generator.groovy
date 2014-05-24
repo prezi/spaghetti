@@ -15,9 +15,9 @@ public interface Generator {
 	 * Needs to provide a function call to <code>spaghetti()</code> that returns a module object.
 	 *
 	 * <pre>
-	 *     spaghetti(function(__config) {
-	 *         var modules = __config.__modules;
-	 *         var baseUrl = __config.__baseUrl;
+	 *     spaghetti(function(SpaghettiConfiguration) {
+	 *         var modules = SpaghettiConfiguration.__modules;
+	 *         var baseUrl = SpaghettiConfiguration.__baseUrl;
 	 *         // Do stuff
 	 *         return {
 	 *             __instance: { ... }, // the module object instance

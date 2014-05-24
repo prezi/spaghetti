@@ -23,8 +23,8 @@ static int doStatic(int a, int b)
 		expect:
 		visitor.processModule() == """@:final class Test {
 
-	static var __instance:Dynamic = untyped __config["__modules"]["com.example.test"]["__instance"];
-	static var __static:Dynamic = untyped __config["__modules"]["com.example.test"]["__static"];
+	static var __instance:Dynamic = untyped SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"];
+	static var __static:Dynamic = untyped SpaghettiConfiguration["__modules"]["com.example.test"]["__static"];
 
 	/**
 	 * Initializes module.

@@ -7,13 +7,13 @@ import spock.lang.Specification
  */
 class CommonJsWrapperTest extends Specification {
 	def "CommonJS module"() {
-		def originalScript = "__spaghetti(function(__config){});"
+		def originalScript = "__spaghetti(function(SpaghettiConfiguration){});"
 		def result = new CommonJsWrapper().wrap("com.example.test", ["com.example.alma", "com.example.bela"], originalScript)
 
 		expect:
 		result == [
 		        'module.exports=function(){',
-					'var __config={',
+					'var SpaghettiConfiguration={',
 						'"__baseUrl":__dirname,',
 						'"__modules":{',
 							'"com.example.alma":arguments[0],',
@@ -30,7 +30,7 @@ class CommonJsWrapperTest extends Specification {
 						'}',
 					'};',
 					'var __spaghetti=function(){',
-						'return arguments[0](__config);',
+						'return arguments[0](SpaghettiConfiguration);',
 					'};',
 					'return ', originalScript,
 				'};'

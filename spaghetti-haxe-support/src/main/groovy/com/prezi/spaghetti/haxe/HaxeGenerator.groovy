@@ -54,7 +54,7 @@ return ${HAXE_MODULE_VAR};
 	}
 
 	/**
-	 * Copies SpaghettiModuleConfiguration.hx to the generated source directory.
+	 * Copies SpaghettiConfiguration.hx to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
 		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.hx") << HaxeGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.hx")

@@ -5,6 +5,7 @@ import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 import org.antlr.v4.runtime.misc.NotNull
 
+import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC
@@ -28,11 +29,11 @@ class TypeScriptModuleInitializerGeneratorVisitor extends AbstractTypeScriptGene
 		def instances = []
 
 		dependencies.eachWithIndex { ModuleDefinition dependency, int index ->
-			instances.add "var dependency${index}:${dependency.name}.${dependency.alias} = config[\"${MODULES}\"][\"${dependency.name}\"][\"${INSTANCE}\"];"
+			instances.add "var dependency${index}:${dependency.name}.${dependency.alias} = ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${INSTANCE}\"];"
 		}
-		def references = ["config"] + (0..<instances.size()).collect { "dependency${it}" }
+		def references = (0..<instances.size()).collect { "dependency${it}" }
 		return \
-"""export function ${CREATE_MODULE_FUNCTION}(config:any):any {
+"""export function ${CREATE_MODULE_FUNCTION}():any {
 	${instances.join("\n\t")}
 	var module:${module.name}.I${module.alias} = new ${module.name}.${module.alias}(${references.join(", ")});
 	var statics = new ${module.name}.__${module.alias}Static();
