@@ -106,7 +106,9 @@ public interface StructuredReader {
 		@Override
 		void processFiles(FileHandler handler) {
 			zipFile.entries().each { ZipEntry entry ->
-				handleEntry(handler, entry)
+				if (!entry.directory) {
+					handleEntry(handler, entry)
+				}
 			}
 		}
 
