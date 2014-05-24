@@ -7,7 +7,7 @@ import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 import com.prezi.spaghetti.haxe.WithDeprecation
 import org.antlr.v4.runtime.misc.NotNull
 
-import static com.prezi.spaghetti.Generator.CONFIG
+import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC

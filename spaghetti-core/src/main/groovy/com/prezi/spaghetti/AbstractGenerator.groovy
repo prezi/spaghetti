@@ -3,6 +3,7 @@ package com.prezi.spaghetti
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
 
+import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 
 /**

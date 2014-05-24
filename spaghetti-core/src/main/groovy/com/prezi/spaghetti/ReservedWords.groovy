@@ -12,16 +12,20 @@ import java.lang.annotation.Target
 class ReservedWords {
 	@Protected
 	public static final String INSTANCE = "__instance"
+
 	@Protected
 	public static final String STATIC = "__static"
 
+	@Protected
+	public static final String SPAGHETTI_WRAPPER_FUNCTION = "__spaghetti"
+
+	public static final String CONFIG = "__config"
+
 	public static final String MODULES = "__modules"
+
 	public static final String BASE_URL = "__baseUrl"
 
 	public static final String SPAGHETTI_MODULE_CONFIGURATION = "SpaghettiModuleConfiguration"
-
-	@Protected
-	public static final String SPAGHETTI_WRAPPER_FUNCTION = "__spaghetti"
 
 	// Words to be protected against obfuscation
 	public static final SortedSet<String> PROTECTED_WORDS = new TreeSet<>(ReservedWords.declaredFields.findAll {

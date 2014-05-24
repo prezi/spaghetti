@@ -3,7 +3,7 @@ package com.prezi.spaghetti.packaging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import static com.prezi.spaghetti.Generator.CONFIG
+import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.BASE_URL
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES

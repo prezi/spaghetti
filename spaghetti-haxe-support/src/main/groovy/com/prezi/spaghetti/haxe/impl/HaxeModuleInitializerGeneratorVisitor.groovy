@@ -5,7 +5,7 @@ import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
 import org.antlr.v4.runtime.misc.NotNull
 
-import static com.prezi.spaghetti.Generator.CONFIG
+import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC

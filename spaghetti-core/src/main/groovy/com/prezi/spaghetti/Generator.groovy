@@ -7,7 +7,6 @@ import com.prezi.spaghetti.definition.ModuleDefinition
  * Created by lptr on 12/11/13.
  */
 public interface Generator {
-	public static final String CONFIG = "__config"
 
 	abstract void generateHeaders(File outputDirectory)
 

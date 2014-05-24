@@ -8,6 +8,7 @@ import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorV
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInterfaceGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleStaticProxyGeneratorVisitor
 
+import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
 /**
