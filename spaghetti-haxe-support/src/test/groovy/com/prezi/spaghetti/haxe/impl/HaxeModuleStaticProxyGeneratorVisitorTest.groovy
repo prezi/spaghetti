@@ -31,10 +31,10 @@ static void doSomethingVoid(int x)
 		expect:
 		visitor.processModule() == """@:final class __TestStatic {
 	public function new() {}
-	@:extern public inline function doSomethingStatic(x:Int):Int {
+	public function doSomethingStatic(x:Int):Int {
 		return com.example.test.Test.doSomethingStatic(x);
 	}
-	@:extern public inline function doSomethingVoid(x:Int):Void {
+	public function doSomethingVoid(x:Int):Void {
 		com.example.test.Test.doSomethingVoid(x);
 	}
 

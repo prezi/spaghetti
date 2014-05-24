@@ -50,7 +50,7 @@ ${super.visitModuleDefinition(ctx)}
 		}
 
 		return \
-"""	@:extern public inline function ${ctx.name.text}(${params}):${returnType} {
+"""	public function ${ctx.name.text}(${params}):${returnType} {
 		${returnType == "Void"?"":"return "}${module.name}.${module.alias}.${ctx.name.text}(${callParams});
 	}
 """
