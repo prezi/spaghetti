@@ -196,7 +196,13 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 							def resourcePath = path.substring(ModuleBundle.RESOURCES_PREFIX.length())
 							// Skip the resources directory itself
 							if (resourcePath) {
-								output.appendFile resourcePath, write(contents)
+								def dirs = resourcePath.tokenize("/")
+								def fileName = dirs.pop()
+								def dirOutput = output
+								dirs.each { dir ->
+									dirOutput = dirOutput.subAppender(dir)
+								}
+								dirOutput.appendFile fileName, write(contents)
 							}
 						}
 						break
