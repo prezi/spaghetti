@@ -22,7 +22,7 @@ class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 		new File(getTestsDirectory(), "SpaghettiTest.hx") << template.make(
 				config: Generator.CONFIG,
 				haxeModule: HaxeGenerator.HAXE_MODULE_VAR,
-				module: ReservedWords.MODULE,
+				module: ReservedWords.INSTANCE,
 				modules: ReservedWords.MODULES,
 		)
 

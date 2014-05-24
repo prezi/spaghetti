@@ -9,7 +9,7 @@ class ReservedWordsTest extends Specification {
 	def "protected words"() {
 		expect:
 		ReservedWords.PROTECTED_WORDS.asList() == [
-		        "__module", "__spaghetti", "__consts"
+		        "__instance", "__static", "__spaghetti", "__consts"
 		].sort()
 	}
 }

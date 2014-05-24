@@ -28,12 +28,11 @@ struct MyStruct {
 		expect:
 		definition.name == name
 		definition.alias == alias
-		definition.type == type
 
 		where:
-		data                              | name               | alias  | type
-		"static module com.example.test"  | "com.example.test" | "Test" | ModuleType.STATIC
-		"module com.example.test as Test" | "com.example.test" | "Test" | ModuleType.DYNAMIC
+		data                              | name               | alias
+		"module com.example.test"         | "com.example.test" | "Test"
+		"module com.example.test as Test" | "com.example.test" | "Test"
 	}
 
 	def "parse types"() {

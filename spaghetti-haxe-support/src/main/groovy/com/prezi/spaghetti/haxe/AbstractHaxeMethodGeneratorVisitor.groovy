@@ -2,7 +2,6 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.definition.FQName
 import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -18,8 +17,6 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		super(module)
 	}
 
-	@WithDeprecation
-	@WithJavaDoc
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{

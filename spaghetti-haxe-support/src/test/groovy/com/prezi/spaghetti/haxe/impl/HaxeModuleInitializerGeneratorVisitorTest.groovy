@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.haxe.impl
 
 import com.prezi.spaghetti.definition.DefinitionParserHelper
 import com.prezi.spaghetti.definition.ModuleDefinition
@@ -11,7 +11,9 @@ class HaxeModuleInitializerGeneratorVisitorTest extends Specification {
 	def "generate"() {
 		def mockModule1 = createMockModule("com.example.alma")
 		def mockModule2 = createMockModule("com.example.bela")
-		def module = new DefinitionParserHelper().parse("module com.example.test")
+		def module = new DefinitionParserHelper().parse("""module com.example.test
+static int doStatic(int x)
+""")
 		def visitor = new HaxeModuleInitializerGeneratorVisitor(module, [mockModule1, mockModule2])
 
 		expect:
@@ -19,11 +21,13 @@ class HaxeModuleInitializerGeneratorVisitorTest extends Specification {
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		var dependency0:com.example.alma.null = untyped __config["__modules"]["com.example.alma"]["__module"];
-		var dependency1:com.example.bela.null = untyped __config["__modules"]["com.example.bela"]["__module"];
+		var dependency0:com.example.alma.Alma = untyped __config["__modules"]["com.example.alma"]["__instance"];
+		var dependency1:com.example.bela.Bela = untyped __config["__modules"]["com.example.bela"]["__instance"];
 		var module:com.example.test.ITest = new com.example.test.Test(untyped __config, dependency0, dependency1);
+		var statics = new com.example.test.__TestStatic();
 		untyped __haxeModule = {
-			__module: module
+			__instance: module,
+			__static: statics
 		}
 		return true;
 	}
@@ -35,6 +39,7 @@ class HaxeModuleInitializerGeneratorVisitorTest extends Specification {
 	private ModuleDefinition createMockModule(String name) {
 		def module = Mock(ModuleDefinition)
 		module.name >> name
+		module.alias >> name.substring(name.lastIndexOf('.') + 1).capitalize()
 		return module
 	}
 }

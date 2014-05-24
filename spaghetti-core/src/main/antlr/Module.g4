@@ -1,7 +1,6 @@
 grammar Module;
 
 moduleDefinition : (documentation = Doc)? annotations?
-	(isStatic = 'static')?
 	'module' (name = qualifiedName)
 	('as' (alias = Name))?
 	moduleElement*
@@ -10,7 +9,7 @@ moduleDefinition : (documentation = Doc)? annotations?
 moduleElement	: importDeclaration
 				| typeDefinition
 				| externTypeDefinition
-				| methodDefinition
+				| moduleMethodDefinition
 	;
 
 importDeclaration : 'import' (name = qualifiedName) ('as' (alias = Name))?
@@ -26,7 +25,7 @@ interfaceDefinition : (documentation = Doc)? annotations?
 	'interface' (name = Name) typeParameters?
 	( 'extends' superInterfaceDefinition (',' superInterfaceDefinition )* )?
 	'{'
-		methodDefinition*
+		interfaceMethodDefinition*
 	'}'
 	;
 
@@ -76,7 +75,16 @@ enumValue : (documentation = Doc)? annotations?
  	(name = Name)
 	;
 
-methodDefinition : (documentation = Doc)? annotations?
+moduleMethodDefinition : (documentation = Doc)? annotations?
+	(isStatic = 'static')?
+	methodDefinition
+	;
+
+interfaceMethodDefinition : (documentation = Doc)? annotations?
+	methodDefinition
+	;
+
+methodDefinition :
 	typeParameters?
 	returnTypeChain
 	(name = Name)

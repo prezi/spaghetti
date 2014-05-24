@@ -1,5 +1,6 @@
 package prezi.test.client;
 
+import prezi.graphics.core.Core;
 import prezi.graphics.text.CharacterStyleType;
 import prezi.graphics.text.Layout;
 import prezi.graphics.text.Values;
@@ -8,7 +9,7 @@ import prezi.graphics.text.render.TextRenderer;
 class Client implements IClient {
 	public var layout(default, null):Layout;
 	public var textRenderer(default, null):TextRenderer;
-	public function new(config:SpaghettiModuleConfiguration, layout:Layout, textRenderer:TextRenderer) {
+	public function new(config:SpaghettiModuleConfiguration, core:Core, layout:Layout, textRenderer:TextRenderer) {
 		this.layout = layout;
 		this.textRenderer = textRenderer;
 		trace("App name: " + config.getName());

@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.typescript
+package com.prezi.spaghetti.typescript.impl
 
 import com.prezi.spaghetti.definition.DefinitionParserHelper
 import spock.lang.Specification
@@ -18,13 +18,15 @@ interface MyInterface<T> {}
 void doSomething()
 
 string[] doSomethingElse(int a, int b)
+// This will not be generated, because it's static
+static void doSomethingStatic(int x)
 <T, U> T[] hello(T t, U y)
 <T> MyInterface<T> returnT(T t)
 """)
-		def visitor = new TypeScriptModuleInterfaceGeneratorVisitor(module, "IInterface")
+		def visitor = new TypeScriptModuleInterfaceGeneratorVisitor(module)
 
 		expect:
-		visitor.processModule() == """export interface IInterface {
+		visitor.processModule() == """export interface ITest {
 
 	/**
 	 * Does something.

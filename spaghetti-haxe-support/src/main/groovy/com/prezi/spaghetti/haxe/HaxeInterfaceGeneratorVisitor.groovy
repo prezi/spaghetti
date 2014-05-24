@@ -45,7 +45,7 @@ class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 			}
 
 			def superTypes = ctx.superInterfaceDefinition()*.accept(this)
-			def methodDefinitions = ctx.methodDefinition()*.accept(this)
+			def methodDefinitions = ctx.interfaceMethodDefinition()*.accept(this)
 
 			return \
 """${defineType(typeName, superTypes)}
@@ -68,6 +68,13 @@ ${methodDefinitions.join("")}
 			def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
 			superType += ctx.typeArguments()?.accept(this) ?: ""
 			return superType
+		}
+
+		@WithDeprecation
+		@WithJavaDoc
+		@Override
+		String visitInterfaceMethodDefinition(@NotNull ModuleParser.InterfaceMethodDefinitionContext ctx) {
+			return super.visitInterfaceMethodDefinition(ctx)
 		}
 
 		@Override

@@ -3,9 +3,11 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInterfaceGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleStaticProxyGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.MODULE
-import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
 /**
@@ -25,13 +27,13 @@ class TypeScriptGenerator extends AbstractGenerator {
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateModuleInterface(module, outputDirectory)
+			generateLocalModule(module, outputDirectory)
 		}
 		config.directDependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory, true)
+			generateDependentModule(dependentModule, outputDirectory, true)
 		}
 		config.transitiveDependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory, false)
+			generateDependentModule(dependentModule, outputDirectory, false)
 		}
 	}
 
@@ -52,36 +54,24 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 	}
 
 	/**
-	 * Generates main interface for module.
+	 * Generates local module.
 	 */
-	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
+	private void generateLocalModule(ModuleDefinition module, File outputDirectory)
 	{
-		def moduleClassName = "I${module.alias}"
-		def contents = new TypeScriptModuleGeneratorVisitor(config, module, moduleClassName, true).processModule()
+		def contents = "declare var ${CONFIG}:any;\n"
+		contents += new TypeScriptModuleInterfaceGeneratorVisitor(module).processModule()
+		contents += new TypeScriptDefinitionIteratorVisitor(module).processModule()
+		contents += new TypeScriptModuleStaticProxyGeneratorVisitor(module).processModule()
+		contents += new TypeScriptModuleInitializerGeneratorVisitor(module, config.directDependentModules).processModule()
+		TypeScriptUtils.createSourceFile(module, "I${module.alias}", outputDirectory, contents)
+	}
 
-		def directDynamicDependentModules = config.directDynamicDependentModules
-		def dynamicInstances = []
-
-		directDynamicDependentModules.eachWithIndex { ModuleDefinition dependency, int index ->
-			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = config[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
+	private static void generateDependentModule(ModuleDefinition module, File outputDirectory, boolean directDependency) {
+		def contents = "declare var ${CONFIG}:any;\n"
+		if (directDependency) {
+			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).processModule()
 		}
-		def dynamicReferences = ["config"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
-
-		contents += """export function ${CREATE_MODULE_FUNCTION}(config:any):any {
-	${dynamicInstances.join("\n\t")}
-	var module:${moduleClassName} = new ${module.alias}(${dynamicReferences.join(", ")});
-	return {
-		${MODULE}: module
-	}
-}
-"""
-
-		TypeScriptUtils.createSourceFile(module, moduleClassName, outputDirectory, contents)
-	}
-
-	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory, boolean generateModuleInterface)
-	{
-		def contents = new TypeScriptModuleGeneratorVisitor(config, module, module.alias, generateModuleInterface).processModule()
+		contents += new TypeScriptDefinitionIteratorVisitor(module).processModule()
 		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 }

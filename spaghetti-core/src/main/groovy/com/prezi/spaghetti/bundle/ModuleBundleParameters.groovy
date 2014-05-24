@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.bundle
 
-import com.prezi.spaghetti.definition.ModuleType
 import groovy.transform.TupleConstructor
 
 /**
@@ -9,7 +8,6 @@ import groovy.transform.TupleConstructor
 @TupleConstructor
 class ModuleBundleParameters {
 	String name
-	ModuleType type
 	String definition
 	String version
 	String sourceBaseUrl

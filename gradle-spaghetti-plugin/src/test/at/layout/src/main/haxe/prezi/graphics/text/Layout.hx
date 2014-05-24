@@ -5,7 +5,7 @@ import prezi.graphics.core.Core;
 class Layout implements ILayout {
 	private var config:SpaghettiModuleConfiguration;
 
-	public function new(config:SpaghettiModuleConfiguration) {
+	public function new(config:SpaghettiModuleConfiguration, core:Core) {
 		this.config = config;
 		trace("Layout name: " + config.getName());
 		trace("Static call: " + Core.giveMeANumber());

@@ -59,7 +59,7 @@ class AmdWrapperTest extends Specification {
 					'}',
 				'});',
 		        'require(["com.example.test"],function(__mainModule){',
-					'__mainModule["__module"]["main"]();',
+					'__mainModule["__instance"]["main"]();',
 				'});'
 		].join("")
 	}

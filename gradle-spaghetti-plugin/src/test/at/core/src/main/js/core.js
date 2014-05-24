@@ -1,5 +1,7 @@
 return {
-	__module: {
+	__instance: {
+	},
+	__static: {
 		giveMeANumber: function() {
 			return 42;
 		}

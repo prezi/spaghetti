@@ -98,7 +98,6 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 				getOutputDirectory(),
 				new ModuleBundleParameters(
 						name: module.name,
-						type: module.type,
 						definition: module.definitionSource,
 						version: String.valueOf(project.version),
 						sourceBaseUrl: getSourceBaseUrl(),

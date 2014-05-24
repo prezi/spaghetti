@@ -7,7 +7,6 @@ import com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext
  */
 class DefaultModuleDefinition implements ModuleDefinition {
 	final String name
-	final ModuleType type
 	final String alias
 	final ModuleDefinitionContext context
 	final String definitionSource
@@ -19,7 +18,6 @@ class DefaultModuleDefinition implements ModuleDefinition {
 
 	DefaultModuleDefinition(String definitionSource, ModuleDefinitionContext context, Scope parentScope)
 	{
-		this.type = context.isStatic != null ? ModuleType.STATIC : ModuleType.DYNAMIC
 		this.name = context.name.text
 		this.alias = context.alias ? context.alias.text : context.name.text.split(/\./).last().capitalize()
 		this.context = context

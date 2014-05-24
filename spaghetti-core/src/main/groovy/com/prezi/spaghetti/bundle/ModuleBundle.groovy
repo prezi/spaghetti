@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.bundle
 
-import com.prezi.spaghetti.definition.ModuleType
 import com.prezi.spaghetti.structure.StructuredWriter
 
 /**
@@ -14,7 +13,6 @@ interface ModuleBundle extends Comparable<ModuleBundle> {
 	static final def RESOURCES_PREFIX = "resources/"
 
 	String getName()
-	ModuleType getType()
 	String getVersion()
 	String getSourceBaseUrl()
 	Set<String> getDependentModules()

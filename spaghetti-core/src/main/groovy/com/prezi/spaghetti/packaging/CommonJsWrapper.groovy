@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 
 import static com.prezi.spaghetti.Generator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.BASE_URL
-import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 
@@ -83,7 +83,7 @@ protected class CommonJsWrapper implements Wrapper {
 			}
 		}
 		if (execute) {
-			result.append "modules[${getIndex(moduleIndexes, mainModule)}][\"${MODULE}\"][\"main\"]();"
+			result.append "modules[${getIndex(moduleIndexes, mainModule)}][\"${INSTANCE}\"][\"main\"]();"
 		}
 		return result.toString()
 	}

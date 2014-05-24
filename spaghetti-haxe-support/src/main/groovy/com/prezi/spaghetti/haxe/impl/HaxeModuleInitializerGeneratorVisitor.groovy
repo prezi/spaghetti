@@ -1,12 +1,14 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.haxe.impl
 
 import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
 import org.antlr.v4.runtime.misc.NotNull
 
 import static com.prezi.spaghetti.Generator.CONFIG
-import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
+import static com.prezi.spaghetti.ReservedWords.STATIC
 import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
 
 /**
@@ -14,12 +16,12 @@ import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
  */
 class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
-	private final Collection<ModuleDefinition> dynamicDependencies
+	private final Collection<ModuleDefinition> dependencies
 
-	HaxeModuleInitializerGeneratorVisitor(ModuleDefinition module, Collection<ModuleDefinition> dynamicDependencies)
+	HaxeModuleInitializerGeneratorVisitor(ModuleDefinition module, Collection<ModuleDefinition> dependencies)
 	{
 		super(module)
-		this.dynamicDependencies = dynamicDependencies
+		this.dependencies = dependencies
 	}
 
 	@Override
@@ -27,21 +29,23 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	{
 		def initializerName = "__" + module.alias + "Init"
 
-		def dynamicInstances = []
-		dynamicDependencies.eachWithIndex { ModuleDefinition dependency, int index ->
-			dynamicInstances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${MODULE}\"];"
+		def instances = []
+		dependencies.eachWithIndex { ModuleDefinition dependency, int index ->
+			instances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${INSTANCE}\"];"
 		}
-		def dynamicReferences = ["untyped ${CONFIG}"] + (0..<dynamicInstances.size()).collect { "dependency${it}" }
+		def references = ["untyped ${CONFIG}"] + (0..<instances.size()).collect { "dependency${it}" }
 
 		def initializerContents =
 """@:keep class ${initializerName} {
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		${dynamicInstances.join("\n\t\t")}
-		var module:${module.name}.I${module.alias} = new ${module.name}.${module.alias}(${dynamicReferences.join(", ")});
+		${instances.join("\n\t\t")}
+		var module:${module.name}.I${module.alias} = new ${module.name}.${module.alias}(${references.join(", ")});
+		var statics = new ${module.name}.__${module.alias}Static();
 		untyped ${HAXE_MODULE_VAR} = {
-			${MODULE}: module
+			${INSTANCE}: module,
+			${STATIC}: statics
 		}
 		return true;
 	}

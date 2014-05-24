@@ -11,7 +11,9 @@ import java.lang.annotation.Target
  */
 class ReservedWords {
 	@Protected
-	public static final String MODULE = "__module"
+	public static final String INSTANCE = "__instance"
+	@Protected
+	public static final String STATIC = "__static"
 
 	public static final String MODULES = "__modules"
 	public static final String BASE_URL = "__baseUrl"

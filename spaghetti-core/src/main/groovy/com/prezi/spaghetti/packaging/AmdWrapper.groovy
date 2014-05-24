@@ -2,7 +2,7 @@ package com.prezi.spaghetti.packaging
 
 import static com.prezi.spaghetti.Generator.CONFIG
 import static com.prezi.spaghetti.ReservedWords.BASE_URL
-import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 
@@ -52,7 +52,7 @@ protected class AmdWrapper implements Wrapper {
 		result.append makeConfig(baseUrl, modulesRoot, dependencyTree.keySet().sort())
 		result.append "require([\"${mainModule}\"],function(__mainModule){"
 		if (execute) {
-			result.append /**/ "__mainModule[\"${MODULE}\"][\"main\"]();"
+			result.append /**/ "__mainModule[\"${INSTANCE}\"][\"main\"]();"
 		}
 		result.append "});"
 		return result.toString()

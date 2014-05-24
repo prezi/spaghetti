@@ -1,20 +1,23 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.haxe.access
 
 import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
+import com.prezi.spaghetti.haxe.WithDeprecation
 import org.antlr.v4.runtime.misc.NotNull
 
 import static com.prezi.spaghetti.Generator.CONFIG
-import static com.prezi.spaghetti.ReservedWords.MODULE
+import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
+import static com.prezi.spaghetti.ReservedWords.STATIC
 
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
+class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	HaxeModuleProxyGeneratorVisitor(ModuleDefinition module)
+	HaxeModuleAccessorGeneratorVisitor(ModuleDefinition module)
 	{
 		super(module)
 	}
@@ -26,6 +29,9 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor
 	{
 		return \
 """@:final class ${module.alias} {
+
+	static var ${INSTANCE}:Dynamic = untyped ${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${INSTANCE}\"];
+	static var ${STATIC}:Dynamic = untyped ${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${STATIC}\"];
 ${visitChildren(ctx)}
 }
 """
@@ -41,6 +47,11 @@ ${visitChildren(ctx)}
 	@WithDeprecation
 	@WithJavaDoc
 	@Override
+	String visitModuleMethodDefinition(@NotNull ModuleParser.ModuleMethodDefinitionContext ctx) {
+		return super.visitModuleMethodDefinition(ctx)
+	}
+
+	@Override
 	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = ctx.returnTypeChain().accept(this)
@@ -55,9 +66,12 @@ ${visitChildren(ctx)}
 			callParams = ""
 		}
 
+		def isStatic = ((ModuleParser.ModuleMethodDefinitionContext) ctx.parent).isStatic
+		def delegate = isStatic ? STATIC : INSTANCE
+
 		return \
-"""	@:extern public static inline function ${ctx.name.text}(${params}):${returnType} {
-		${returnType == "void"?"":"return "}untyped ${CONFIG}[\"${MODULES}\"][\"${module.name}\"].${MODULE}.${ctx.name.text}(${callParams});
+"""	@:extern public ${isStatic ? "static " : ""}inline function ${ctx.name.text}(${params}):${returnType} {
+		${returnType == "Void"?"":"return "}${delegate}.${ctx.name.text}(${callParams});
 	}
 """
 	}

@@ -21,8 +21,8 @@ public interface Generator {
 	 *         var baseUrl = __config.__baseUrl;
 	 *         // Do stuff
 	 *         return {
-	 *             __module: ..., // the module object
-	 *             __constants: ... // constants
+	 *             __instance: { ... }, // the module object instance
+	 *             __static: { ... } // exposed static methods
 	 *         }
 	 *     });
 	 * </pre>

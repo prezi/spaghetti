@@ -4,11 +4,11 @@ module prezi.graphics.text.render {
 export class TextRenderer implements ITextRenderer {
 	config:SpaghettiModuleConfiguration;
 	layout:prezi.graphics.text.Layout;
-	constructor(config:SpaghettiModuleConfiguration, layout:prezi.graphics.text.Layout) {
+	constructor(config:SpaghettiModuleConfiguration, core:prezi.graphics.core.Core, layout:prezi.graphics.text.Layout) {
 		this.config = config;
 		this.layout = layout;
 		console.log("Text renderer name: " + config.getName());
-		console.log("Core stuff: " + Core.giveMeANumber());
+		console.log("Core stuff: " + prezi.graphics.core.Core.giveMeANumber());
 	}
 	createRenderer(prefix:string, suffix:string):Renderer {
 		return new RendererImpl(this.layout, prefix, suffix);

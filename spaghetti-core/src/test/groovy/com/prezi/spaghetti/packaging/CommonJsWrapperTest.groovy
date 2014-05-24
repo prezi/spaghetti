@@ -51,7 +51,7 @@ class CommonJsWrapperTest extends Specification {
 				'modules.push(require("lajos/mods/com.example.bela")());',
 				'modules.push(require("lajos/mods/com.example.alma")(modules[0]));',
 				'modules.push(require("lajos/mods/com.example.test")(modules[1],modules[0]));',
-				'modules[2]["__module"]["main"]();'
+				'modules[2]["__instance"]["main"]();'
 		].join("")
 	}
 

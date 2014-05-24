@@ -7,7 +7,6 @@ import com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext
  */
 interface ModuleDefinition extends Scope, Comparable<ModuleDefinition> {
 	String getName()
-	ModuleType getType()
 	String getAlias()
 	ModuleDefinitionContext getContext()
 	String getDefinitionSource()

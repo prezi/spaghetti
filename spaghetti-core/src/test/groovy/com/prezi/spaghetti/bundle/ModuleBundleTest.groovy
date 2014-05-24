@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
-import com.prezi.spaghetti.definition.ModuleType
 import com.prezi.spaghetti.structure.StructuredReader
 import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
@@ -23,7 +22,6 @@ class ModuleBundleTest extends Specification {
 				builder,
 				new ModuleBundleParameters(
 						name: "test",
-						type: ModuleType.DYNAMIC,
 						definition: "definition",
 						version: "3.7",
 						sourceBaseUrl: "http://git.example.com/test",
@@ -46,7 +44,6 @@ class ModuleBundleTest extends Specification {
 				"Manifest-Version: 1.0",
 				"Spaghetti-Version: ${Version.SPAGHETTI_VERSION}",
 				"Module-Name: test",
-				"Module-Type: dynamic",
 				"Module-Version: 3.7",
 				"Module-Dependencies: com.example.alma,com.example.bela",
 				"Module-Source: http://git.example.com/test",
@@ -84,7 +81,6 @@ class ModuleBundleTest extends Specification {
 					"Manifest-Version: 1.0",
 					"Spaghetti-Version: 2.5",
 					"Module-Name: com.example.test",
-					"Module-Type: static",
 					"Module-Version: 3.7",
 					"Module-Dependencies: com.example.alma,com.example.bela",
 					"Module-Source: http://git.example.com/test",
@@ -93,7 +89,6 @@ class ModuleBundleTest extends Specification {
 			true
 		})
 		bundle.name == "com.example.test"
-		bundle.type == ModuleType.STATIC
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
 		bundle.dependentModules.sort() == ["com.example.alma", "com.example.bela"]
@@ -155,7 +150,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredReader source) {
-		return new DefaultModuleBundle(source, "test", ModuleType.DYNAMIC, "3.7", null, [].toSet(), [].toSet())
+		return new DefaultModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
 	}
 
 	private static String get(Closure cl) {
