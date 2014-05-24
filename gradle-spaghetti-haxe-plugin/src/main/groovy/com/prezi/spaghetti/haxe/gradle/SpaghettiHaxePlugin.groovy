@@ -111,7 +111,7 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 
 			private PackageApplication createTestApplication(HaxeCompiledSpaghettiCompatibleJavaScriptBinary testBinary) {
 				def namingScheme = ((BinaryInternal) testBinary).namingScheme
-				def bundleTaskName = namingScheme.getTaskName("application")
+				def bundleTaskName = namingScheme.getTaskName("package")
 
 				def appBundleTask = project.tasks.create(bundleTaskName, PackageApplication)
 				appBundleTask.description = "Creates a testable applicaiton of ${testBinary}"
