@@ -5,7 +5,9 @@ import com.prezi.spaghetti.gradle.SpaghettiExtension
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet
 import com.prezi.spaghetti.gradle.SpaghettiPlugin
 import com.prezi.typescript.gradle.TypeScriptBinary
+import com.prezi.typescript.gradle.TypeScriptBinaryBase
 import com.prezi.typescript.gradle.TypeScriptPlugin
+import com.prezi.typescript.gradle.TypeScriptTestBinary
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -49,9 +51,9 @@ class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			@Override
 			void execute(SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
 				logger.debug("Adding ${spaghettiGeneratedSourceSet} to binaries in ${project.path}")
-				binaryContainer.withType(TypeScriptBinary).all(new Action<TypeScriptBinary>() {
+				binaryContainer.withType(TypeScriptBinaryBase).all(new Action<TypeScriptBinaryBase>() {
 					@Override
-					void execute(TypeScriptBinary compiledBinary) {
+					void execute(TypeScriptBinaryBase compiledBinary) {
 						compiledBinary.source.add spaghettiGeneratedSourceSet
 						SpaghettiTypeScriptPlugin.logger.debug("Added ${spaghettiGeneratedSourceSet} to ${compiledBinary} in ${project.path}")
 					}
@@ -64,10 +66,22 @@ class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			@Override
 			void execute(TypeScriptBinary binary) {
 				// Create Spaghetti compatible binary
-				def jsBinary = instantiator.newInstance(TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary, binary)
-				jsBinary.builtBy(binary.getBuildDependencies())
+				def jsBinary = instantiator.newInstance(TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary, binary, false)
+				jsBinary.builtBy binary
 				binaryContainer.add(jsBinary)
 				SpaghettiTypeScriptPlugin.logger.debug("Added ${jsBinary} in ${project.path}")
+			}
+		})
+
+		// For every TypeScript test binary...
+		binaryContainer.withType(TypeScriptTestBinary).all(new Action<TypeScriptTestBinary>() {
+			@Override
+			void execute(TypeScriptTestBinary testBinary) {
+				// Create Spaghetti compatible test binary
+				def jsTestBinary = instantiator.newInstance(TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary, testBinary, true)
+				jsTestBinary.builtBy testBinary
+				binaryContainer.add(jsTestBinary)
+				SpaghettiTypeScriptPlugin.logger.debug("Added ${jsTestBinary} in ${project.path}")
 			}
 		})
 	}
