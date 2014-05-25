@@ -8,22 +8,22 @@ import com.prezi.spaghetti.structure.StructuredWriter
  * Created by lptr on 16/05/14.
  */
 class ApplicationPackager {
-	public static void bundleApplicationDirectory(File outputDirectory, ApplicationPackageParameters params) {
-		bundleApplication(new StructuredWriter.Directory(outputDirectory), params)
+	public static void packageApplicationDirectory(File outputDirectory, ApplicationPackageParameters params) {
+		packageApplication(new StructuredWriter.Directory(outputDirectory), params)
 	}
 
-	public static void bundleApplicationZip(File outputFile, ApplicationPackageParameters params) {
-		bundleApplication(new StructuredWriter.Zip(outputFile), params)
+	public static void packageApplicationZip(File outputFile, ApplicationPackageParameters params) {
+		packageApplication(new StructuredWriter.Zip(outputFile), params)
 	}
 
-	protected static void bundleApplication(StructuredWriter builder, ApplicationPackageParameters params) {
-		builder.init()
+	protected static void packageApplication(StructuredWriter writer, ApplicationPackageParameters params) {
+		writer.init()
 		try {
 			if (!params.bundles*.name.contains(params.mainModule)) {
 				throw new IllegalArgumentException("Main bundle \"${params.mainModule}\" not found among bundles: ${params.bundles*.name.join(", ")}")
 			}
 
-			def modulesAppender = builder.subAppender(params.modulesDirectory)
+			def modulesAppender = writer.subAppender(params.modulesDirectory)
 
 			def appType = params.type
 			def wrapper = appType.wrapper
@@ -43,10 +43,10 @@ class ApplicationPackager {
 			def dependencyTree = params.bundles.collectEntries { bundle ->
 				[ bundle.name, bundle.dependentModules ]
 			}
-			builder.appendFile params.applicationName, { out ->
+			writer.appendFile params.applicationName, { out ->
 				out << wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute) }
 		} finally {
-			builder.close()
+			writer.close()
 		}
 	}
 }

@@ -75,7 +75,7 @@ class PackageApplication extends AbstractPlatformAwareSpaghettiTask {
 	makeBundle() {
 		def bundles = lookupBundles()
 		logger.info "Creating application in {}", getOutputDirectory()
-		ApplicationPackager.bundleApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
+		ApplicationPackager.packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles: bundles.allBundles,
 				baseUrl: getBaseUrl(),
 				applicationName: getApplicationName(),
