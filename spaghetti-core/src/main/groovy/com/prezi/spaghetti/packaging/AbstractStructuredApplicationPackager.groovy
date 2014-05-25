@@ -35,7 +35,9 @@ abstract class AbstractStructuredApplicationPackager extends AbstractApplication
 			[ bundle.name, bundle.dependentModules ]
 		}
 		writer.appendFile params.applicationName, { out ->
+			params.prefixes.each { out << it }
 			out << wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute)
+			params.suffixes.each { out << it }
 		}
 	}
 

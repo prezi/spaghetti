@@ -30,6 +30,7 @@ class SingleFileApplicationPackager extends AbstractApplicationPackager {
 			[ bundle.name, bundle.dependentModules ]
 		}
 		writer.appendFile(params.applicationName, { out ->
+			params.prefixes.each { out << it }
 			out << "var modules = [];\n"
 			DependencyTreeResolver.resolveDependencies(dependencyTree, new DependencyTreeResolver.DependencyProcessor<String, String>() {
 				@Override
@@ -41,6 +42,7 @@ class SingleFileApplicationPackager extends AbstractApplicationPackager {
 				}
 			})
 			out << wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute)
+			params.suffixes.each { out << it }
 		})
 	}
 }

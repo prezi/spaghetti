@@ -19,4 +19,6 @@ class ApplicationPackageParameters {
 	String applicationName = DEFAULT_APPLICATION_NAME
 	String mainModule
 	boolean execute = DEFAULT_EXECUTE
+	Collection<String> prefixes = []
+	Collection<String> suffixes = []
 }

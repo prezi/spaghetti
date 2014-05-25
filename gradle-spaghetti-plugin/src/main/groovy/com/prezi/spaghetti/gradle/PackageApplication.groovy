@@ -2,7 +2,9 @@ package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
 import com.prezi.spaghetti.packaging.ApplicationType
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
@@ -35,6 +37,24 @@ class PackageApplication extends AbstractSpaghettiTask {
 	String modulesDirectory = ApplicationPackageParameters.DEFAULT_MODULES_DIRECTORY
 	void modulesDirectory(String directory) {
 		this.modulesDirectory = directory
+	}
+
+	@InputFiles
+	ConfigurableFileCollection prefixes = project.files()
+	void prefixes(Object... prefixes) {
+		this.getPrefixes().from(*prefixes)
+	}
+	void prefix(Object... prefixes) {
+		this.prefixes(prefixes)
+	}
+
+	@InputFiles
+	ConfigurableFileCollection suffixes = project.files()
+	void suffixes(Object... suffixes) {
+		this.getSuffixes().from(*suffixes)
+	}
+	void suffix(Object... suffixes) {
+		this.suffixes(suffixes)
 	}
 
 	@Input
@@ -92,7 +112,9 @@ class PackageApplication extends AbstractSpaghettiTask {
 				applicationName: getApplicationName(),
 				modulesDirectory: getModulesDirectory(),
 				mainModule: getMainModule(),
-				execute: getExecute()
+				execute: getExecute(),
+				prefixes: getPrefixes().files*.text,
+				suffixes: getSuffixes().files*.text
 		))
 	}
 }

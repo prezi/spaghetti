@@ -40,6 +40,8 @@ task packageApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
 	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
 	outputDirectory "${buildDir}/applications/web"
+	prefix "src/main/spaghetti/prefix.js"
+	suffix "src/main/spaghetti/suffix.js"
 	type "requirejs"
 }
 
@@ -48,6 +50,8 @@ task packageNodeApplication(type: com.prezi.spaghetti.gradle.PackageApplication)
 	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
 	outputDirectory "${buildDir}/applications/node"
+	prefix "src/main/spaghetti/prefix.js"
+	suffix "src/main/spaghetti/suffix.js"
 	type "node"
 }
 
@@ -56,6 +60,8 @@ task packageSingleFileApplication(type: com.prezi.spaghetti.gradle.PackageApplic
 	additionalDirectDependentModule bundleJsModule.outputDirectory
 	mainModule "prezi.test.client"
 	outputDirectory "${buildDir}/applications/single"
+	prefix "src/main/spaghetti/prefix.js"
+	suffix "src/main/spaghetti/suffix.js"
 	type "single"
 }
 
