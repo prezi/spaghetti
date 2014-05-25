@@ -18,7 +18,7 @@ protected class CommonJsWrapper implements Wrapper {
 	@Override
 	String wrap(String moduleName, Collection<String> dependencies, String javaScript) {
 		def modules = []
-		dependencies.eachWithIndex { dependency, index ->
+		dependencies.sort().eachWithIndex { dependency, index ->
 			modules.add "\"${dependency}\":arguments[${index}]"
 		}
 
