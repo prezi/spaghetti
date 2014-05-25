@@ -5,16 +5,16 @@ import spock.lang.Specification
 /**
  * Created by lptr on 16/05/14.
  */
-class CommonJsWrapperTest extends Specification {
-	def "CommonJS module"() {
+class SingleFileWrapperTest extends Specification {
+	def "Single file module"() {
 		def originalScript = "__spaghetti(function(SpaghettiConfiguration){});"
-		def result = new CommonJsWrapper().wrap("com.example.test", ["com.example.alma", "com.example.bela"], originalScript)
+		def result = new SingleFileWrapper().wrap("com.example.test", ["com.example.alma", "com.example.bela"], originalScript)
 
 		expect:
 		result == [
-		        'module.exports=function(){',
+		        'function(){',
 					'var SpaghettiConfiguration={',
-						'"__baseUrl":__dirname,',
+						'"__baseUrl":__dirname+"/com.example.test",',
 						'"__modules":{',
 							'"com.example.alma":arguments[0],',
 							'"com.example.bela":arguments[1]',
@@ -26,32 +26,28 @@ class CommonJsWrapperTest extends Specification {
 							'if(resource.substr(0,1)!="/"){',
 								'resource="/"+resource;',
 							'}',
-							'return __dirname+resource;',
+							'return __dirname+"/com.example.test"+resource;',
 						'}',
 					'};',
 					'var __spaghetti=function(){',
 						'return arguments[0](SpaghettiConfiguration);',
 					'};',
 					'return ', originalScript,
-				'};'
+				'}'
 		].join("")
 	}
 
-	def "CommonJS application"() {
+	def "Single file application"() {
 		def dependencyTree = [
 				"com.example.test": ["com.example.alma", "com.example.bela"].toSet(),
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new CommonJsWrapper().makeApplication("lajos", "mods", dependencyTree, "com.example.test", true)
+		def result = new SingleFileWrapper().makeApplication("lajos", "mods", dependencyTree, "com.example.test", true)
 
 		expect:
 		result == [
-				'var modules=[];',
-				'modules.push(require("lajos/mods/com.example.bela")());',
-				'modules.push(require("lajos/mods/com.example.alma")(modules[0]));',
-				'modules.push(require("lajos/mods/com.example.test")(modules[1],modules[0]));',
-				'modules[2]["__instance"]["main"]();'
+				'modules["com.example.test"]["__instance"]["main"]();'
 		].join("")
 	}
 }

@@ -7,9 +7,9 @@ import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 
 /**
- * Created by lptr on 22/05/14.
+ * Created by lptr on 25/05/14.
  */
-protected class CommonJsWrapper implements Wrapper {
+class SingleFileWrapper implements Wrapper {
 	@Override
 	String wrap(String moduleName, Collection<String> dependencies, String javaScript) {
 		def modules = []
@@ -18,9 +18,9 @@ protected class CommonJsWrapper implements Wrapper {
 		}
 
 		def result = new StringBuilder()
-		result.append "module.exports=function(){"
+		result.append "function(){"
 		result.append /**/ "var ${CONFIG}={"
-		result.append /**//**/ "\"${BASE_URL}\":__dirname,"
+		result.append /**//**/ "\"${BASE_URL}\":__dirname+\"/${moduleName}\","
 		result.append /**//**/ "\"${MODULES}\":{"
 		result.append /**//**//**/ modules.join(",")
 		result.append /**//**/ "},"
@@ -31,7 +31,7 @@ protected class CommonJsWrapper implements Wrapper {
 		result.append /**//**//**/ "if(resource.substr(0,1)!=\"/\"){"
 		result.append /**//**//**//**/ "resource=\"/\"+resource;"
 		result.append /**//**//**/ "}"
-		result.append /**//**//**/ "return __dirname+resource;"
+		result.append /**//**//**/ "return __dirname+\"/${moduleName}\"+resource;"
 		result.append /**//**/ "}"
 		result.append /**/ "};"
 		result.append /**/ "var ${SPAGHETTI_WRAPPER_FUNCTION}=function(){"
@@ -39,35 +39,16 @@ protected class CommonJsWrapper implements Wrapper {
 		result.append /**/ "};"
 		result.append /**/ "return "
 		result.append /**/ javaScript
-		result.append "};"
+		result.append "}"
 		return result.toString()
 	}
 
 	@Override
 	String makeApplication(String baseUrl, String modulesRoot, Map<String, Set<String>> dependencyTree, String mainModule, boolean execute) {
-		// Keep track of modules we need to load and their dependencies
 		def result = new StringBuilder()
-		result.append "var modules=[];"
-		int moduleIndex = 0;
-
-		def moduleIndexes = DependencyTreeResolver.resolveDependencies(dependencyTree, new DependencyTreeResolver.DependencyProcessor<String, Integer>() {
-			@Override
-			Integer processDependency(String name, Collection<Integer> dependencies) {
-				def dependencyInstances = dependencies.collect { "modules[$it]" }
-				result.append("modules.push(require(\"${baseUrl}/${modulesRoot}/${name}\")(${dependencyInstances.join(",")}));")
-				return moduleIndex++
-			}
-		})
 		if (execute) {
-			result.append "modules[${getIndex(moduleIndexes, mainModule)}][\"${INSTANCE}\"][\"main\"]();"
+			result.append "modules[\"${mainModule}\"][\"${INSTANCE}\"][\"main\"]();"
 		}
 		return result.toString()
-	}
-
-	private static int getIndex(Map<String, Integer> moduleIndexes, String module) {
-		if (!moduleIndexes.containsKey(module)) {
-			throw new IllegalStateException("Module not loaded: ${module}")
-		}
-		return moduleIndexes.get(module)
 	}
 }

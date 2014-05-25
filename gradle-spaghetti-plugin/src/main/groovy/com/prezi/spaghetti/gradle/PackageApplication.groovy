@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
-import com.prezi.spaghetti.packaging.ApplicationPackager
 import com.prezi.spaghetti.packaging.ApplicationType
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
@@ -10,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 /**
  * Created by lptr on 16/11/13.
  */
-class PackageApplication extends AbstractPlatformAwareSpaghettiTask {
+class PackageApplication extends AbstractSpaghettiTask {
 
 	@Input
 	String mainModule
@@ -37,7 +36,7 @@ class PackageApplication extends AbstractPlatformAwareSpaghettiTask {
 	}
 
 	@Input
-	ApplicationType type = ApplicationPackageParameters.DEFAULT_APPLICATION_TYPE
+	ApplicationType type = ApplicationType.COMMON_JS
 	void type(String type) {
 		switch (type.toUpperCase()) {
 			case "AMD":
@@ -48,6 +47,10 @@ class PackageApplication extends AbstractPlatformAwareSpaghettiTask {
 			case "NODE":
 			case "NODEJS":
 				this.type = ApplicationType.COMMON_JS
+				break
+			case "SINGLE":
+			case "SINGLEFILE":
+				this.type = ApplicationType.SINGLE_FILE
 				break
 			default:
 				throw new IllegalArgumentException("Unknown application type: ${type}")
@@ -74,15 +77,14 @@ class PackageApplication extends AbstractPlatformAwareSpaghettiTask {
 	@TaskAction
 	makeBundle() {
 		def bundles = lookupBundles()
-		logger.info "Creating application in {}", getOutputDirectory()
-		ApplicationPackager.packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
+		logger.info "Creating {} application in {}", getType().description, getOutputDirectory()
+		getType().packager.packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles: bundles.allBundles,
 				baseUrl: getBaseUrl(),
 				applicationName: getApplicationName(),
 				modulesDirectory: getModulesDirectory(),
 				mainModule: getMainModule(),
-				execute: getExecute(),
-				type: getType()
+				execute: getExecute()
 		))
 	}
 }

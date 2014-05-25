@@ -51,6 +51,14 @@ task packageNodeApplication(type: com.prezi.spaghetti.gradle.PackageApplication)
 	type "node"
 }
 
+task packageSingleFileApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
+	dependsOn bundleJsModule
+	additionalDirectDependentModule bundleJsModule.outputDirectory
+	mainModule "prezi.test.client"
+	outputDirectory "${buildDir}/applications/single"
+	type "single"
+}
+
 def testWebappDir = file("${buildDir}/webapp")
 
 task packageWebApp(type: Copy) {
