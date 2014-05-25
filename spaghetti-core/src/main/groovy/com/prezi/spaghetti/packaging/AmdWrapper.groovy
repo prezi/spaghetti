@@ -50,11 +50,13 @@ protected class AmdWrapper implements Wrapper {
 	String makeApplication(String baseUrl, String modulesRoot, Map<String, Set<String>> dependencyTree, String mainModule, boolean execute) {
 		def result = new StringBuilder()
 		result.append makeConfig(baseUrl, modulesRoot, dependencyTree.keySet().sort())
-		result.append "require([\"${mainModule}\"],function(__mainModule){"
-		if (execute) {
-			result.append /**/ "__mainModule[\"${INSTANCE}\"][\"main\"]();"
+		if (mainModule) {
+			result.append "require([\"${mainModule}\"],function(__mainModule){"
+			if (execute) {
+				result.append "__mainModule[\"${INSTANCE}\"][\"main\"]();"
+			}
+			result.append "});"
 		}
-		result.append "});"
 		return result.toString()
 	}
 

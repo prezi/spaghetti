@@ -58,7 +58,7 @@ protected class CommonJsWrapper implements Wrapper {
 				return moduleIndex++
 			}
 		})
-		if (execute) {
+		if (mainModule && execute) {
 			result.append "modules[${getIndex(moduleIndexes, mainModule)}][\"${INSTANCE}\"][\"main\"]();"
 		}
 		return result.toString()

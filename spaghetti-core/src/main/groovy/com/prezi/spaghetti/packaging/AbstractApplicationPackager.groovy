@@ -17,7 +17,10 @@ abstract class AbstractApplicationPackager implements ApplicationPackager {
 	}
 
 	protected void packageApplication(StructuredWriter writer, ApplicationPackageParameters params) {
-		if (!params.bundles*.name.contains(params.mainModule)) {
+		if (params.execute && !params.mainModule) {
+			throw new IllegalArgumentException("Main bundle not set, but execute is")
+		}
+		if (params.mainModule && !params.bundles*.name.contains(params.mainModule)) {
 			throw new IllegalArgumentException("Main bundle \"${params.mainModule}\" not found among bundles: ${params.bundles*.name.join(", ")}")
 		}
 

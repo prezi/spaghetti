@@ -3,6 +3,7 @@ package com.prezi.spaghetti.gradle
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
 import com.prezi.spaghetti.packaging.ApplicationType
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
@@ -12,6 +13,7 @@ import org.gradle.api.tasks.TaskAction
 class PackageApplication extends AbstractSpaghettiTask {
 
 	@Input
+	@Optional
 	String mainModule
 	void mainModule(String mainModule) {
 		this.mainModule = mainModule
@@ -58,9 +60,12 @@ class PackageApplication extends AbstractSpaghettiTask {
 	}
 
 	@Input
-	boolean execute = ApplicationPackageParameters.DEFAULT_EXECUTE
+	Boolean execute = null
 	void execute(boolean execute) {
 		this.execute = execute
+	}
+	Boolean getExecute() {
+		return execute != null ? execute : mainModule != null
 	}
 
 	@OutputDirectory
@@ -72,6 +77,9 @@ class PackageApplication extends AbstractSpaghettiTask {
 	PackageApplication()
 	{
 		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/application") }
+		if (execute && !mainModule) {
+			throw new IllegalArgumentException("You need to set mainModule as well when execute is true")
+		}
 	}
 
 	@TaskAction
