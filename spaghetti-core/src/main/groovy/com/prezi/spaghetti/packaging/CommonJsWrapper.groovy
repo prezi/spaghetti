@@ -59,7 +59,7 @@ protected class CommonJsWrapper implements Wrapper {
 			}
 		})
 		if (mainModule && execute) {
-			result.append "modules[${getIndex(moduleIndexes, mainModule)}][\"${INSTANCE}\"][\"main\"]();"
+			result.append "modules[${getIndex(moduleIndexes, mainModule)}][\"${INSTANCE}\"][\"main\"]();\n"
 		}
 		return result.toString()
 	}

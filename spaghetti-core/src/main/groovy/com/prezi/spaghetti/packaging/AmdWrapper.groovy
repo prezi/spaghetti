@@ -55,7 +55,7 @@ protected class AmdWrapper implements Wrapper {
 			if (execute) {
 				result.append "__mainModule[\"${INSTANCE}\"][\"main\"]();"
 			}
-			result.append "});"
+			result.append "});\n"
 		}
 		return result.toString()
 	}
