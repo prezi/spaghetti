@@ -30,6 +30,14 @@ compileJs {
 	flag "-debug"
 }
 
+sources {
+	main {
+		"spaghetti-resources" {
+			source.srcDir "src/main/some-more-spaghetti-resources"
+		}
+	}
+}
+
 /*
 task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 	dependsOn compileJs
