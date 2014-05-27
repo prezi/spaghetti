@@ -21,6 +21,11 @@ task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	inputFile compileTsc.dest
 }
 
+task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
+	dependsOn compileTsc
+	inputFile compileTsc.dest
+}
+
 task zipModule(type: Zip) {
 	dependsOn bundleModule
 	from bundleModule.outputDirectory
