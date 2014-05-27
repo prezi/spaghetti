@@ -1,14 +1,22 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.ModuleDefinition
-import groovy.text.SimpleTemplateEngine
+import com.prezi.spaghetti.AbstractGenerator
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInterfaceGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleStaticProxyGeneratorVisitor
+
+import static com.prezi.spaghetti.ReservedWords.CONFIG
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
 /**
  * Created by lptr on 12/11/13.
  */
-class TypeScriptGenerator implements Generator {
+class TypeScriptGenerator extends AbstractGenerator {
+
+	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
 
 	private final ModuleConfiguration config
 
@@ -19,52 +27,52 @@ class TypeScriptGenerator implements Generator {
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
-			copySpaghettiClass(module, outputDirectory)
-			generateModuleInterface(module, outputDirectory)
+			copySpaghettiClass(outputDirectory)
+			generateLocalModule(module, outputDirectory)
 		}
-		config.dependentModules.each { dependentModule ->
-			generateStructuralTypesForModuleInterfaces(dependentModule, outputDirectory)
+		config.directDependentModules.each { dependentModule ->
+			generateDependentModule(dependentModule, outputDirectory, true)
+		}
+		config.transitiveDependentModules.each { dependentModule ->
+			generateDependentModule(dependentModule, outputDirectory, false)
 		}
 	}
 
 	@Override
-	String processModuleJavaScript(ModuleDefinition module, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript)
 	{
 		return \
 """${javaScript}
-	var moduleImpl = new ${module.name}.${module.alias}Impl();
-	var constants = new ${module.name}.__${module.alias}Constants();
-	moduleImpl.__consts = constants;
-	return moduleImpl;
+return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 """
-	}
-
-	@Override
-	String processApplicationJavaScript(String javaScript)
-	{
-		return javaScript
 	}
 
 	/**
 	 * Copies Spaghetti.hx to the generated source directory.
 	 */
-	private static void copySpaghettiClass(ModuleDefinition module, File outputDirectory) {
-		def template = new SimpleTemplateEngine().createTemplate(TypeScriptGenerator.class.getResource("/Spaghetti.ts"))
-		new File(outputDirectory, "Spaghetti.ts") << template.make(moduleName: module.name)
+	private static void copySpaghettiClass(File outputDirectory) {
+		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.ts") << TypeScriptGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.ts")
 	}
 
 	/**
-	 * Generates main interface for module.
+	 * Generates local module.
 	 */
-	private void generateModuleInterface(ModuleDefinition module, File outputDirectory)
+	private void generateLocalModule(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules, true).processModule()
-		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
+		def contents = "declare var ${CONFIG}:any;\n"
+		contents += new TypeScriptModuleInterfaceGeneratorVisitor(module).processModule()
+		contents += new TypeScriptDefinitionIteratorVisitor(module).processModule()
+		contents += new TypeScriptModuleStaticProxyGeneratorVisitor(module).processModule()
+		contents += new TypeScriptModuleInitializerGeneratorVisitor(module, config.directDependentModules).processModule()
+		TypeScriptUtils.createSourceFile(module, "I${module.alias}", outputDirectory, contents)
 	}
 
-	private void generateStructuralTypesForModuleInterfaces(ModuleDefinition module, File outputDirectory)
-	{
-		def moduleFileContents = new TypeScriptModuleGeneratorVisitor(module, config.dependentModules, false).processModule()
-		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, moduleFileContents)
+	private static void generateDependentModule(ModuleDefinition module, File outputDirectory, boolean directDependency) {
+		def contents = "declare var ${CONFIG}:any;\n"
+		if (directDependency) {
+			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).processModule()
+		}
+		contents += new TypeScriptDefinitionIteratorVisitor(module).processModule()
+		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 }

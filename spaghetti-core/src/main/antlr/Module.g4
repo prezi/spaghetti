@@ -1,6 +1,6 @@
 grammar Module;
 
-moduleDefinition : (documentation = Doc)?
+moduleDefinition : (documentation = Doc)? annotations?
 	'module' (name = qualifiedName)
 	('as' (alias = Name))?
 	moduleElement*
@@ -9,7 +9,7 @@ moduleDefinition : (documentation = Doc)?
 moduleElement	: importDeclaration
 				| typeDefinition
 				| externTypeDefinition
-				| methodDefinition
+				| moduleMethodDefinition
 	;
 
 importDeclaration : 'import' (name = qualifiedName) ('as' (alias = Name))?
@@ -25,7 +25,7 @@ interfaceDefinition : (documentation = Doc)? annotations?
 	'interface' (name = Name) typeParameters?
 	( 'extends' superInterfaceDefinition (',' superInterfaceDefinition )* )?
 	'{'
-		methodDefinition*
+		interfaceMethodDefinition*
 	'}'
 	;
 
@@ -50,8 +50,19 @@ structDefinition : (documentation = Doc)? annotations?
 
 constDefinition : (documentation = Doc)? annotations?
 	'const' ( name = Name ) '{'
-		propertyDefinition*
+		constEntry*
 	'}'
+	;
+
+constEntry : (documentation = Doc)? annotations?
+	constEntryDecl
+	;
+
+constEntryDecl
+	: boolType? ( name = Name ) '=' ( boolValue = Boolean )
+	| intType? ( name = Name ) '=' ( intValue = Integer )
+	| floatType? ( name = Name ) '=' ( floatValue = Float )
+	| stringType? ( name = Name ) '=' ( stringValue = String )
 	;
 
 enumDefinition : (documentation = Doc)? annotations?
@@ -64,7 +75,16 @@ enumValue : (documentation = Doc)? annotations?
  	(name = Name)
 	;
 
-methodDefinition : (documentation = Doc)? annotations?
+moduleMethodDefinition : (documentation = Doc)? annotations?
+	(isStatic = 'static')?
+	methodDefinition
+	;
+
+interfaceMethodDefinition : (documentation = Doc)? annotations?
+	methodDefinition
+	;
+
+methodDefinition :
 	typeParameters?
 	returnTypeChain
 	(name = Name)
@@ -89,8 +109,9 @@ annotationParameter : ( name = Name ) '=' annotationValue
 	;
 
 annotationValue	: ( nullValue = Null )		# annotationNullParameter
-				| ( boolValue = Bool )		# annotationBooleanParameter
-				| ( numberValue = Number )	# annotationNumberParameter
+				| ( boolValue = Boolean )	# annotationBooleanParameter
+				| ( intValue = Integer )	# annotationIntParameter
+				| ( floatValue = Float )	# annotationFloatParameter
  				| ( stringValue = String )	# annotationStringParameter
 	;
 
@@ -123,14 +144,29 @@ valueType	: primitiveType ArrayQualifier*
 			| moduleType ArrayQualifier*
 	;
 
-voidType : 'void'
+primitiveType	: boolType
+				| intType
+				| floatType
+				| stringType
+				| anyType
 	;
 
-primitiveType	: 'bool'
-				| 'int'
-				| 'float'
-				| 'string'
-				| 'any'
+boolType : 'bool'
+	;
+
+intType : 'int'
+	;
+
+floatType : 'float'
+	;
+
+stringType : 'string'
+	;
+
+anyType : 'any'
+	;
+
+voidType : 'void'
 	;
 
 moduleType : ( name = qualifiedName ) ( arguments = typeArguments )?
@@ -143,8 +179,9 @@ qualifiedName : ( parts += Name ) ( '.' parts += Name )*
 	;
 
 Null				: 'null';
-Bool				: ( 'true' | 'false' );
-Number				: [0-9]+ ( '.' [0-9]+ )?;
+Boolean				: ( 'true' | 'false' );
+Integer				: SIGN? INTEGER_NUMBER;
+Float				: SIGN? NON_INTEGER_NUMBER;
 String				: '"' STRING_GUTS '"';
 Doc					: '/**' .*? '*/' '\r'* '\n'?;
 Name				: [_a-zA-Z][_a-zA-Z0-9]*;
@@ -157,3 +194,47 @@ WhiteSpace			: [ \t\r\n]+ -> skip;
 
 fragment STRING_GUTS : (ESC | ~('\\' | '"'))*;
 fragment ESC :  '\\' ('\\' | '"');
+
+fragment INTEGER_NUMBER
+	:	'0'
+// Let's not support octal for now
+//	|	'0' ('0'..'7')+
+	|	'1'..'9' DIGIT*
+	|	HEX_PREFIX HEX_DIGIT+
+	;
+
+fragment NON_INTEGER_NUMBER
+	:	DIGIT+ '.' DIGIT* EXPONENT?
+	|	'.' DIGIT+ EXPONENT?
+	|	DIGIT+ EXPONENT
+	|	DIGIT+
+// Let's not support hex floats
+//	|
+//		HEX_PREFIX (HEX_DIGIT )*
+//		(	()
+//		|	('.' (HEX_DIGIT )* )
+//		)
+//		( 'p' | 'P' )
+//		SIGN?
+//		DIGIT+
+		;
+
+fragment EXPONENT
+	:	( 'e' | 'E' ) SIGN? DIGIT+
+	;
+
+fragment SIGN
+	:	( '+' | '-' )
+	;
+
+fragment DIGIT
+	: ( '0' .. '9' )
+	;
+
+fragment HEX_PREFIX
+	:	'0x' | '0X'
+	;
+
+fragment HEX_DIGIT
+	:	( '0'..'9' | 'a'..'f' | 'A'..'F' )
+	;

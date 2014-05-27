@@ -15,17 +15,12 @@ const Values {
 	/**
 	 * Some length
 	 */
-	int MAX_LENGTH
+	int MAX_LENGTH = 5
 
 	/**
 	 * Some placeholder
 	 */
-	string PLACEHOLDER
-
-	/**
-	 * Some object
-	 */
-	Renderer DEFAULT_RENDERER
+	string PLACEHOLDER = "string"
 }
 
 string getResource()

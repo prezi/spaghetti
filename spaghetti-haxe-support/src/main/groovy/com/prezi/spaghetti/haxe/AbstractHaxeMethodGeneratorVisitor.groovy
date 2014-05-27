@@ -1,11 +1,8 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.FQName
-import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.WithJavaDoc
+import com.prezi.spaghetti.definition.FQName
+import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.grammar.ModuleParser.AnnotationsContext
 import org.antlr.v4.runtime.misc.NotNull
 
 /**
@@ -20,27 +17,28 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		super(module)
 	}
 
-	@WithJavaDoc
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
+	final String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def typeParams = ctx.typeParameters()
 		typeParams?.parameters?.each { param ->
 			methodTypeParams.add(FQName.fromString(param.name.text))
 		}
-		def returnType = ctx.returnTypeChain().accept(this)
-		returnType = wrapNullable(ctx.annotations(), returnType)
-
-		def typeParamsResult = typeParams?.accept(this) ?: ""
-		def paramsResult = ctx.parameters?.accept(this) ?: ""
-		def name = ctx.name.text
-		def result = Deprecation.annotationFromCxt(Type.Function, name, ctx.annotations())
-
-		result += \
-"""	function ${name}${typeParamsResult}(${paramsResult}):${returnType};
-"""
+		def result = visitMethodDefinitionInternal(ctx)
 		methodTypeParams.clear()
 		return result
+	}
+
+	protected String visitMethodDefinitionInternal(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx) {
+		def returnType = ctx.returnTypeChain().accept(this)
+
+		def typeParamsResult = ctx.typeParameters()?.accept(this) ?: ""
+		def paramsResult = ctx.parameters?.accept(this) ?: ""
+		def name = ctx.name.text
+
+		return \
+"""	function ${name}${typeParamsResult}(${paramsResult}):${returnType};
+"""
 	}
 
 	@Override
@@ -54,16 +52,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 	@Override
 	String visitTypeNamePair(@NotNull @NotNull ModuleParser.TypeNamePairContext ctx)
 	{
-		def result = ctx.name.text + ":"
-		def type = ctx.type.accept(this)
-		result += wrapNullable(ctx.annotations(), type)
-		return result
-	}
-
-	protected static String wrapNullable(AnnotationsContext annotationsContext, String type) {
-		def annotations = ModuleUtils.extractAnnotations(annotationsContext)
-		boolean nullable = annotations.containsKey("nullable")
-		return nullable ? "Null<${type}>" : type
+		return ctx.name.text + ":" + ctx.type.accept(this)
 	}
 
 	@Override

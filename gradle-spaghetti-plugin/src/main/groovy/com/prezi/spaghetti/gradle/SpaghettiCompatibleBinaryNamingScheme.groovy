@@ -66,4 +66,10 @@ class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
 	public String getOutputDirectoryBase() {
 		return parentName
 	}
+
+	// Omitting @Override to stay compatible with Gradle 1.11
+	@SuppressWarnings("GrMethodMayBeStatic")
+	List<String> getVariantDimensions() {
+		return []
+	}
 }

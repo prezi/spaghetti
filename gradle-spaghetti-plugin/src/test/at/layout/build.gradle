@@ -1,9 +1,9 @@
-import com.prezi.spaghetti.gradle.BundleModule
-import com.prezi.spaghetti.gradle.ObfuscateBundle
-
 apply plugin: "spaghetti-haxe"
 
 dependencies {
+	modules project(path: ":core", configuration: "modules")
+	modulesObf project(path: ":core", configuration: "modulesObf");
+
 	test group: "haxelib3", name: "hamcrest", version: "1.2.1"
 	test group: "haxelib3", name: "mconsole", version: "1.6.0"
 	test group: "haxelib3", name: "mcover", version: "2.0.3"
@@ -32,31 +32,25 @@ compileJs {
 
 sources {
 	main {
-		haxe {
-			source.srcDir generateHeaders.outputDirectory
-			builtBy generateHeaders
+		"spaghetti-resources" {
+			source.srcDir "src/main/some-more-spaghetti-resources"
 		}
 	}
 }
 
-task bundleModule(type: BundleModule) {
+/*
+task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 	dependsOn compileJs
 	inputFile compileJs.outputFile
 }
 
-task obfuscate(type: ObfuscateBundle) {
-	dependsOn compileJs
-	inputFile compileJs.outputFile
+task zipModuleObfuscated(type: Zip) {
+	from obfuscateModule.outputDirectory
+	archiveName = "module-obfuscated"
 }
+*/
 
 artifacts {
-	archives(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modules(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modulesObf(obfuscate.outputFile) {
-		builtBy obfuscate
-	}
+	modules zipJsModule
+//	modulesObf zipModuleObfuscated
 }

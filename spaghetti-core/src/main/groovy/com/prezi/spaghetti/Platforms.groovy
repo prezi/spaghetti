@@ -1,5 +1,7 @@
 package com.prezi.spaghetti
 
+import com.prezi.spaghetti.definition.FQName
+import com.prezi.spaghetti.definition.ModuleConfiguration
 import org.slf4j.LoggerFactory
 
 class Platforms {
@@ -32,6 +34,11 @@ class Platforms {
 		return generatorFactory.getExternMapping().collectEntries([:]) { extern, impl ->
 			return [FQName.fromString(extern), FQName.fromString(impl)]
 		}
+	}
+
+	public static Set<String> getProtectedSymbols(String platform) {
+		GeneratorFactory generatorFactory = getGeneratorFactory(platform)
+		return generatorFactory.protectedSymbols
 	}
 
 	private static GeneratorFactory getGeneratorFactory(String platform) {

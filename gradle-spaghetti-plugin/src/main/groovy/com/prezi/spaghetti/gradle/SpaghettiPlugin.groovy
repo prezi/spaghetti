@@ -7,6 +7,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.file.FileResolver
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
@@ -54,18 +55,19 @@ class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiResourceSet.source.srcDir("src/main/spaghetti-resources")
 		functionalSourceSet.add(spaghettiResourceSet)
 
-		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
-			task.conventionMapping.bundles = { extension.configuration }
-		}
-		project.tasks.withType(AbstractPlatformAwareSpaghettiTask).all { AbstractPlatformAwareSpaghettiTask task ->
-			task.conventionMapping.platform = { extension.platform }
-		}
+		// TODO Use a proper Spaghetti module binary to tie this together
+		ProcessSpaghettiResources resourcesTask = project.tasks.create("processSpaghettiResources", ProcessSpaghettiResources)
+		resourcesTask.description = "Processes Spaghetti resources"
+		resourcesTask.conventionMapping.destinationDir = { project.file("${project.buildDir}/spaghetti/resources") }
+		resourcesTask.from(spaghettiResourceSet.source);
+
 		project.tasks.withType(AbstractDefinitionAwareSpaghettiTask).all { AbstractDefinitionAwareSpaghettiTask task ->
 			task.conventionMapping.definitions = { findDefinitions(project) }
 		}
 		project.tasks.withType(AbstractBundleModuleTask).all { AbstractBundleModuleTask task ->
 			task.conventionMapping.sourceBaseUrl = { extension.sourceBaseUrl }
-			task.conventionMapping.resourceDirs = { spaghettiResourceSet.source.srcDirs }
+			task.conventionMapping.resourcesDirectoryInternal = { resourcesTask.getDestinationDir() }
+			task.dependsOn resourcesTask
 		}
 
 		// Automatically generate module headers
@@ -89,19 +91,24 @@ class SpaghettiPlugin implements Plugin<Project> {
 			void execute(SpaghettiCompatibleJavaScriptBinary binary) {
 				logger.debug("Creating bundle and obfuscation for ${binary}")
 
+				// TODO Use a proper Spaghetti module binary instead of passing the resourcesTask around
 				// Automatically create bundle module task and artifact
 				BundleModule bundleTask = createBundleTask(project, binary)
-				def moduleBundleArtifact = new ModuleBundleArtifact(bundleTask)
-				project.artifacts.add(extension.configuration.name, moduleBundleArtifact)
-				logger.debug("Added bundle task ${bundleTask} with artifact ${moduleBundleArtifact}")
+				def zipModule = createZipTask(project, binary, bundleTask, binary.name, "")
+				logger.debug("Added bundle task ${bundleTask} with zip task ${zipModule}")
+				if (!binary.usedForTesting) {
+					project.artifacts.add(extension.configuration.name, zipModule)
+					logger.debug("Added bundle artifact for ${binary}")
+				}
 
-				// TODO Probably this should be enabled via command line
 				// Automatically obfuscate bundle
-				ObfuscateBundle obfuscateTask = createObfuscateTask(project, binary)
-				def obfuscatedBundleArtifact = new ModuleBundleArtifact(obfuscateTask)
-				obfuscatedBundleArtifact.name = "module-obfuscated"
-				project.artifacts.add(extension.obfuscatedConfiguration.name, obfuscatedBundleArtifact)
-				logger.debug("Added obfuscate task ${obfuscateTask} with artifact ${obfuscatedBundleArtifact}")
+				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary)
+				def zipObfuscated = createZipTask(project, binary, obfuscateTask, binary.name + "-obfuscated", "obfuscated")
+				logger.debug("Added obfuscate task ${obfuscateTask} with zip artifact ${zipObfuscated}")
+				if (!binary.usedForTesting) {
+					project.artifacts.add(extension.obfuscatedConfiguration.name, zipObfuscated)
+					logger.debug("Added obfuscated bundle artifact for ${binary}")
+				}
 			}
 		})
 	}
@@ -130,25 +137,38 @@ class SpaghettiPlugin implements Plugin<Project> {
 	private static BundleModule createBundleTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
 		def bundleTaskName = namingScheme.getTaskName("bundle")
-		def bundleTask = project.task(bundleTaskName, type: BundleModule) {
-			description = "Bundles ${binary} module."
-		} as BundleModule
+		def bundleTask = project.tasks.create(bundleTaskName, BundleModule)
+		bundleTask.description = "Bundles ${binary} module."
 		bundleTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
 		bundleTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
+		bundleTask.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/bundle/${binary.name}") }
 		bundleTask.dependsOn binary
+		binary.bundleTask = bundleTask
 		return bundleTask
 	}
 
-	private static ObfuscateBundle createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
+	private static ObfuscateModule createObfuscateTask(Project project, SpaghettiCompatibleJavaScriptBinary binary) {
 		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
 		def obfuscateTaskName = namingScheme.getTaskName("obfuscate")
-		def obfuscateTask = project.task(obfuscateTaskName, type: ObfuscateBundle) {
-			description = "Obfuscates ${binary} module."
-		} as ObfuscateBundle
+		def obfuscateTask = project.tasks.create(obfuscateTaskName, ObfuscateModule)
+		obfuscateTask.description = "Obfuscates ${binary} module."
 		obfuscateTask.conventionMapping.inputFile = { binary.getJavaScriptFile() }
 		obfuscateTask.conventionMapping.sourceMap = { binary.getSourceMapFile() }
+		obfuscateTask.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/obfuscation/${binary.name}") }
 		obfuscateTask.dependsOn binary
+		binary.obfuscateTask = obfuscateTask
 		return obfuscateTask
+	}
+
+	private static Zip createZipTask(Project project, SpaghettiCompatibleJavaScriptBinary binary, AbstractBundleModuleTask bundleTask, String name, String taskName) {
+		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).namingScheme
+		def zipTaskName = namingScheme.getTaskName("zip", taskName)
+		def zipTask = project.tasks.create(zipTaskName, Zip)
+		zipTask.description = "Zip up ${name} ${binary}."
+		zipTask.dependsOn bundleTask
+		zipTask.from { bundleTask.outputDirectory }
+		zipTask.conventionMapping.baseName = { name }
+		return zipTask
 	}
 
 	// TODO Make this into a lazy FileCollection

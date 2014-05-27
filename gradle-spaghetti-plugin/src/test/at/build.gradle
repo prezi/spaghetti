@@ -5,6 +5,7 @@ buildscript {
 	} else {
 		gitVersion = [ "git", "describe", "--match", "[0-9]*", "--abbrev=0"].execute().text.trim() + "-SNAPSHOT"
 	}
+	println "Using version ${gitVersion}"
 
 	repositories {
 		mavenCentral()

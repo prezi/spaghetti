@@ -12,7 +12,7 @@ class ClientTest extends MatchersBase {
 
 	@Test
 	public function testCreateObject() {
-		var text = Layout.createText();
+		var text = SpaghettiTest.getModule("prezi.graphics.text").createText();
 		assertThat(text, is(not(null)));
 	}
 
@@ -27,7 +27,7 @@ class ClientTest extends MatchersBase {
 
 	@Test
 	public function testModifyObject() {
-		var text = Layout.createText();
+		var text = SpaghettiTest.getModule().layout.createText();
 		var style = { type: CharacterStyleType.FONT_WEIGHT, value: "normal" };
 		text.insert(0, "World", [ style ]);
 		text.insert(0, " ", []);
@@ -37,15 +37,15 @@ class ClientTest extends MatchersBase {
 
 	@Test
 	public function testTypeScript() {
-		var text = Layout.createText();
+		var text = SpaghettiTest.getModule().layout.createText();
 		text.insert(0, "Hello World", []);
-		var renderer = TextRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
+		var renderer = SpaghettiTest.getModule().textRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
 		assertThat(renderer.render(text), is("Text rendered with TextRenderer module: [Hello World] (12)"));
 	}
 
 	@Test
 	public function testSyncCallback() {
-		var testStuff = Layout.createTestStuff();
+		var testStuff = SpaghettiTest.getModule().layout.createTestStuff();
 		var callbackMessage = null;
 		testStuff.registerCallback(function (message:String) {
 			callbackMessage = message;
@@ -55,13 +55,13 @@ class ClientTest extends MatchersBase {
 
 	@Test
 	public function testDoSomething() {
-		var testStuff = Layout.createTestStuff();
+		var testStuff = SpaghettiTest.getModule().layout.createTestStuff();
 		assertThat(testStuff.doSomething("pre", "text", "pos"), is("pre-text-pos"));
 	}
 
 	@Test
 	public function testAsync() {
-		var testStuff = Layout.createTestStuff();
+		var testStuff = SpaghettiTest.getModule().layout.createTestStuff();
 		// 	doAsync(callback:String->(Int->String)->Void, converter:Int->String) {
 		var cbName:String = null;
 		var cbConverted:String = null;
@@ -77,7 +77,7 @@ class ClientTest extends MatchersBase {
 
 	@Test
 	public function testResourceUrls() {
-		assertThat(Layout.getResource(), is("../../prezi.graphics.text/sample.txt"));
-		assertThat(TextRenderer.getResource(), is("../../prezi.graphics.text.render/some-resource.txt"));
+		assertThat(SpaghettiTest.getModule().layout.getResource(), is("./modules/prezi.graphics.text/sample.txt"));
+		assertThat(SpaghettiTest.getModule().textRenderer.getResource(), is("./modules/prezi.graphics.text.render/some-resource.txt"));
 	}
 }

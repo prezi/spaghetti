@@ -1,9 +1,8 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.AbstractModuleVisitor
-import com.prezi.spaghetti.FQName
-import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.WithJavaDoc
+import com.prezi.spaghetti.definition.AbstractModuleVisitor
+import com.prezi.spaghetti.definition.FQName
+import com.prezi.spaghetti.definition.ModuleDefinition
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -26,21 +25,23 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 		super(module)
 	}
 
-	@WithJavaDoc
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
+	final String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
-		def typeParams = ctx.typeParameters()
-		typeParams?.parameters?.each { param ->
+		ctx.typeParameters()?.parameters?.each { param ->
 			methodTypeParams.add(FQName.fromString(param.name.text))
 		}
-		def returnType = ctx.returnTypeChain().accept(this)
-
-		def typeParamsResult = typeParams?.accept(this) ?: ""
-		def paramsResult = ctx.parameters?.accept(this) ?: ""
-		def result = "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};"
+		def result = visitMethodDefinitionInternal(ctx)
 		methodTypeParams.clear()
 		return result
+	}
+
+	protected String visitMethodDefinitionInternal(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx) {
+		def returnType = ctx.returnTypeChain().accept(this)
+
+		def typeParamsResult = ctx.typeParameters()?.accept(this) ?: ""
+		def paramsResult = ctx.parameters?.accept(this) ?: ""
+		return "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};\n"
 	}
 
 	@Override

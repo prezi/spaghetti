@@ -1,13 +1,13 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.AbstractGenerator
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinition
 
 /**
  * Created by lptr on 19/03/14.
  */
-class JavaScriptGenerator implements Generator {
+class JavaScriptGenerator extends AbstractGenerator {
 
 	private final ModuleConfiguration config
 
@@ -20,12 +20,7 @@ class JavaScriptGenerator implements Generator {
 	}
 
 	@Override
-	String processModuleJavaScript(ModuleDefinition module, String javaScript) {
-		return javaScript
-	}
-
-	@Override
-	String processApplicationJavaScript(String javaScript) {
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript) {
 		return javaScript
 	}
 }

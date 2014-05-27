@@ -1,16 +1,24 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.ModuleDefinition
-import groovy.text.SimpleTemplateEngine
+import com.prezi.spaghetti.AbstractGenerator
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
+import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
+import com.prezi.spaghetti.haxe.impl.HaxeModuleInterfaceGeneratorVisitor
+import com.prezi.spaghetti.haxe.impl.HaxeModuleStaticProxyGeneratorVisitor
+
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
 /**
  * Created by lptr on 12/11/13.
  */
-class HaxeGenerator implements Generator {
+class HaxeGenerator extends AbstractGenerator {
 
 	private final ModuleConfiguration config
+
+	// Workaround variable to trick Haxe into exposing the module
+	public static final String HAXE_MODULE_VAR = "__haxeModule"
 
 	HaxeGenerator(ModuleConfiguration config) {
 		this.config = config
@@ -19,42 +27,37 @@ class HaxeGenerator implements Generator {
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
-			copySpaghettiClass(module, outputDirectory)
+			copySpaghettiClass(outputDirectory)
 			generateModuleInterface(module, outputDirectory)
-			generateModuleInitializer(module, outputDirectory)
-			generateInterfacesForModuleTypes(module, outputDirectory, false)
+			generateModuleInitializer(module, config.directDependentModules, outputDirectory)
+			generateModuleStaticProxy(module, outputDirectory)
+			generateModuleTypes(module, outputDirectory, false)
 		}
-		config.dependentModules.each { dependentModule ->
-			generateInterfacesForModuleTypes(dependentModule, outputDirectory, true)
-			generateModuleProxy(dependentModule, outputDirectory)
+		config.allDependentModules.each { dependentModule ->
+			generateModuleTypes(dependentModule, outputDirectory, true)
+		}
+		config.directDependentModules.each { dependentModule ->
+			generateModuleAccessor(dependentModule, outputDirectory)
 		}
 	}
 
 	@Override
-	String processModuleJavaScript(ModuleDefinition module, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript)
 	{
-		/* the "exports" line is needed because if this module is
-		   requirejs'd from a nodejs module 'exports' will not be
-		   visible for some reason
-		*/
 		return \
-"""var __module; var exports = exports || {}; ${javaScript}
-return __module;
+"""// Haxe expects either window or exports to be present
+var exports = exports || {};
+var ${HAXE_MODULE_VAR};
+${javaScript}
+return ${HAXE_MODULE_VAR};
 """
 	}
 
-	@Override
-	String processApplicationJavaScript(String javaScript)
-	{
-		return javaScript
-	}
-
 	/**
-	 * Copies Spaghetti.hx to the generated source directory.
+	 * Copies SpaghettiConfiguration.hx to the generated source directory.
 	 */
-	private static void copySpaghettiClass(ModuleDefinition module, File outputDirectory) {
-		def template = new SimpleTemplateEngine().createTemplate(HaxeGenerator.class.getResource("/Spaghetti.hx"))
-		new File(outputDirectory, "Spaghetti.hx") << template.make(moduleName: module.name)
+	private static void copySpaghettiClass(File outputDirectory) {
+		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.hx") << HaxeGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.hx")
 	}
 
 	/**
@@ -63,32 +66,41 @@ return __module;
 	private static void generateModuleInterface(ModuleDefinition module, File outputDirectory)
 	{
 		def contents = new HaxeModuleInterfaceGeneratorVisitor(module).processModule()
-		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(module, "I${module.alias}", outputDirectory, contents)
 	}
 
 	/**
-	 * Generates proxy for module.
+	 * Generates static proxy.
 	 */
-	private static void generateModuleProxy(ModuleDefinition module, File outputDirectory)
+	private static void generateModuleStaticProxy(ModuleDefinition module, File outputDirectory)
 	{
-		def contents = new HaxeModuleProxyGeneratorVisitor(module).processModule()
-		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
+		def contents = new HaxeModuleStaticProxyGeneratorVisitor(module).processModule()
+		HaxeUtils.createHaxeSourceFile(module, "__${module.alias}Static", outputDirectory, contents)
 	}
 
 	/**
 	 * Generates initializer for module.
 	 */
-	private static void generateModuleInitializer(ModuleDefinition module, File outputDirectory)
+	private static void generateModuleInitializer(ModuleDefinition module, Collection<ModuleDefinition> dependencies, File outputDirectory)
 	{
 		def initializerName = "__" + module.alias + "Init"
-		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module).visitModuleDefinition(module.context)
+		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(module, dependencies).visitModuleDefinition(module.context)
 		HaxeUtils.createHaxeSourceFile(module, initializerName, outputDirectory, initializerContents)
 	}
 
 	/**
-	 * Generates interfaces the module should implement.
+	 * Generates accessor class for module.
 	 */
-	private static void generateInterfacesForModuleTypes(ModuleDefinition module, File outputDirectory, boolean dependentModule)
+	private static void generateModuleAccessor(ModuleDefinition module, File outputDirectory)
+	{
+		def contents = new HaxeModuleAccessorGeneratorVisitor(module).processModule()
+		HaxeUtils.createHaxeSourceFile(module, module.alias, outputDirectory, contents)
+	}
+
+	/**
+	 * Generates interfaces, enums, structs and constants defined in the module.
+	 */
+	private static void generateModuleTypes(ModuleDefinition module, File outputDirectory, boolean dependentModule)
 	{
 		new HaxeDefinitionIteratorVisitor(module, outputDirectory, dependentModule, {
 			new HaxeInterfaceGeneratorVisitor(module)

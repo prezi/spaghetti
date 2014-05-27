@@ -1,14 +1,15 @@
 package com.prezi.spaghetti.gradle
 
-import com.prezi.spaghetti.ModuleBundle
-import com.prezi.spaghetti.ModuleConfiguration
-import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.Wrapper
-import com.prezi.spaghetti.Wrapping
+import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleFactory
+import com.prezi.spaghetti.bundle.ModuleBundleParameters
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinition
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -18,16 +19,14 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 
 	@InputFile
 	File inputFile
-
-	def inputFile(Object f) {
-		this.inputFile = project.file(f)
+	def inputFile(Object inputFile) {
+		this.inputFile = project.file(inputFile)
 	}
 
-	@OutputFile
-	File outputFile
-
-	def outputFile(Object f) {
-		this.outputFile = project.file(f)
+	@OutputDirectory
+	File outputDirectory
+	def outputDirectory(Object outputDirectory) {
+		this.outputDirectory = project.file(outputDirectory)
 	}
 
 	@Input
@@ -38,7 +37,6 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 	}
 
 	File sourceMap
-
 	void sourceMap(Object sourceMap) {
 		this.sourceMap = project.file(sourceMap)
 	}
@@ -48,7 +46,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 	File getSourceMap() {
 		if (!sourceMap) {
 			// This should probably be done with convention mapping
-			def defSourceMap = new File(getInputFile().toString() + ".map")
+			def defSourceMap = new File(getInputFile().parentFile, getInputFile().name + ".map")
 			if (defSourceMap.exists()) {
 				sourceMap = defSourceMap
 			}
@@ -56,25 +54,16 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		return sourceMap
 	}
 
-	// @InputDirectories not yet supported (only @InputDirectory)
-	// http://issues.gradle.org/browse/GRADLE-3051
-	// This probably won't work with convention mapping
-	Set<File> resourceDirs = []
-	void setResourceDirs(Set<File> resourceDirs) {
-		resourceDirs.each {
-			inputs.dir it
-		}
-		this.resourceDirs = new LinkedHashSet<>(resourceDirs)
+	File resourcesDirectoryInternal
+	void resourcesDirectory(Object resourcesDir) {
+		this.resourcesDirectoryInternal = project.file(resourcesDir)
 	}
 
-	void resourceDir(File resourceDirectory) {
-		inputs.dir resourceDirectory
-		this.resourceDirs.add resourceDirectory
-	}
-
-	File workDir
-	void workDir(String workDir) {
-		this.workDir = project.file(workDir)
+	@InputDirectory
+	@Optional
+	File getResourcesDirectory() {
+		def dir = getResourcesDirectoryInternal()
+		return dir?.exists() ? dir : null
 	}
 
 	AbstractBundleModuleTask() {
@@ -91,20 +80,10 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			throw new IllegalArgumentException("Too many module definitions present: ${moduleDefinitions}")
 		}
 		def config = readConfig(moduleDefinitions)
-		def module = config.getLocalModules().first()
-		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
-		def wrappedJavaScript = Wrapper.wrap(config.dependentModules*.name, Wrapping.module, processedJavaScript)
+		def module = config.getLocalModules().iterator().next()
+		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, config, getInputFile().text)
 
-		// is a sourcemap present?
-		def sourceMapText = getSourceMap()?.text
-
-		def workDir = getWorkDir()
-		workDir.delete() || workDir.deleteDir()
-		workDir.mkdirs()
-		new File(workDir, "module.js") << wrappedJavaScript
-
-		def existingResourceDirs = getResourceDirs().findAll { it.exists() }
-		createBundle(config, module, wrappedJavaScript, sourceMapText, existingResourceDirs)
+		createBundle(config, module, processedJavaScript, getSourceMap()?.text, getResourcesDirectory())
 	}
 
 	protected ModuleBundle createBundle(
@@ -112,15 +91,21 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 			ModuleDefinition module,
 			String javaScript,
 			String sourceMap,
-			Set<File> resourceDirs) {
-		ModuleBundle.create(
-				getOutputFile(),
-				module.name,
-				module.definitionSource,
-				String.valueOf(project.version),
-				getSourceBaseUrl(),
-				javaScript,
-				sourceMap,
-				resourceDirs)
+			File resourceDir) {
+		def outputDir = getOutputDirectory()
+		logger.info "Creating bundle in ${outputDir}"
+		ModuleBundleFactory.createDirectory(
+				getOutputDirectory(),
+				new ModuleBundleParameters(
+						name: module.name,
+						definition: module.definitionSource,
+						version: String.valueOf(project.version),
+						sourceBaseUrl: getSourceBaseUrl(),
+						javaScript: javaScript,
+						sourceMap: sourceMap,
+						dependentModules: config.directDependentModules*.name,
+						resourcesDirectory: resourceDir
+				)
+		)
 	}
 }

@@ -1,9 +1,6 @@
-import com.prezi.spaghetti.gradle.BundleModule
-import com.prezi.spaghetti.gradle.ObfuscateBundle
-
-evaluationDependsOn(':layout')
-
 dependencies {
+	modules project(path: ":core", configuration: "modules")
+	modulesObf project(path: ":core", configuration: "modulesObf");
 	modules project(path: ":layout", configuration: "modules")
 	modulesObf project(path: ":layout", configuration: "modulesObf");
 }
@@ -19,26 +16,31 @@ task compileTsc(type: TypeScriptTask) {
 	dest = file("${buildDir}/module.js");
 }
 
-task bundleModule(type: BundleModule) {
+task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	dependsOn compileTsc
 	inputFile compileTsc.dest
 }
 
-task obfuscate(type: ObfuscateBundle) {
+task zipModule(type: Zip) {
+	dependsOn bundleModule
+	from bundleModule.outputDirectory
+	archiveName = "module"
+}
+
+/*
+task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 	dependsOn compileTsc
 	inputFile compileTsc.dest
 }
 
+task zipModuleObfuscated(type: Zip) {
+	from obfuscateModule.outputDirectory
+	archiveName = "module-obfuscated"
+}
+*/
 artifacts {
-	archives(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modules(bundleModule.outputFile) {
-		builtBy bundleModule
-	}
-	modulesObf(obfuscate.outputFile) {
-		builtBy obfuscate
-	}
+	modules zipModule
+//	modulesObf zipModuleObfuscated
 }
 
 class TypeScriptTask extends SourceTask {

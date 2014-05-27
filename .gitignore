@@ -9,7 +9,9 @@ temp
 *.iml
 *.ipr
 *.iws
-out
+out/
+gen/
+classes/
 
 .gradle/
 build/

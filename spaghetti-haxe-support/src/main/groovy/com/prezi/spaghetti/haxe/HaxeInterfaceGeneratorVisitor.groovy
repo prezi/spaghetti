@@ -1,9 +1,8 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.FQName
-import com.prezi.spaghetti.ModuleUtils
-import com.prezi.spaghetti.ModuleDefinition
-import com.prezi.spaghetti.WithJavaDoc
+import com.prezi.spaghetti.definition.FQName
+import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.definition.WithJavaDoc
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.misc.NotNull
 
@@ -12,64 +11,80 @@ import org.antlr.v4.runtime.misc.NotNull
  */
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
-	private final interfaceTypeParams = []
-
-	HaxeInterfaceGeneratorVisitor(ModuleDefinition module)
-	{
+	HaxeInterfaceGeneratorVisitor(ModuleDefinition module) {
 		super(module)
 	}
 
-	private static String defineType(String typeName, List<String> superTypes) {
-		def declaration = "interface ${typeName}"
-		superTypes.each { superType ->
-			declaration += " extends ${superType}"
-		}
-		return declaration + " {"
-	}
-
+	@WithDeprecation
 	@WithJavaDoc
 	@Override
 	String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
 	{
-		def typeName = ctx.name.text
-		def typeParamsCtx = ctx.typeParameters()
-		if (typeParamsCtx != null) {
-			typeName += typeParamsCtx.accept(this)
-			typeParamsCtx.parameters.each { param ->
-				interfaceTypeParams.add(FQName.fromString(param.name.text))
+		def interfaceTypeParams = ctx.typeParameters()?.parameters?.collect { param ->
+			FQName.fromString(param.name.text)
+		} ?: []
+		return new HaxeInterfaceGeneratorVisitorInternal(module, interfaceTypeParams).visit(ctx)
+	}
+
+	private class HaxeInterfaceGeneratorVisitorInternal extends AbstractHaxeMethodGeneratorVisitor {
+
+		private final Set<FQName> interfaceTypeParams
+
+		protected HaxeInterfaceGeneratorVisitorInternal(ModuleDefinition module, List<FQName> interfaceTypeParams) {
+			super(module)
+			this.interfaceTypeParams = new LinkedHashSet<>(interfaceTypeParams)
+		}
+
+		@Override
+		String visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
+		{
+			def typeName = ctx.name.text
+			def typeParamsCtx = ctx.typeParameters()
+			if (typeParamsCtx != null) {
+				typeName += typeParamsCtx.accept(this)
 			}
-		}
 
-		def superTypes = ctx.superInterfaceDefinition().collect { superTypeCtx ->
-			return superTypeCtx.accept(this)
-		}
+			def superTypes = ctx.superInterfaceDefinition()*.accept(this)
+			def methodDefinitions = ctx.interfaceMethodDefinition()*.accept(this)
 
-		def result = Deprecation.annotationFromCxt(Type.Interface, typeName, ctx.annotations())
-
-		result += \
+			return \
 """${defineType(typeName, superTypes)}
-${ctx.methodDefinition().collect { elem -> elem.accept(this) }.join("")}
+${methodDefinitions.join("")}
 }
 """
-		interfaceTypeParams.clear()
-		return result
-	}
-
-	@Override
-	String visitSuperInterfaceDefinition(@NotNull @NotNull ModuleParser.SuperInterfaceDefinitionContext ctx)
-	{
-		def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
-		superType += ctx.typeArguments()?.accept(this) ?: ""
-		return superType
-	}
-
-	@Override
-	protected FQName resolveName(FQName localTypeName)
-	{
-		if (interfaceTypeParams.contains(localTypeName))
-		{
-			return localTypeName
 		}
-		return super.resolveName(localTypeName)
+
+		private static String defineType(String typeName, List<String> superTypes) {
+			def declaration = "interface ${typeName}"
+			superTypes.each { superType ->
+				declaration += " extends ${superType}"
+			}
+			return declaration + " {"
+		}
+
+		@Override
+		String visitSuperInterfaceDefinition(@NotNull @NotNull ModuleParser.SuperInterfaceDefinitionContext ctx)
+		{
+			def superType = resolveName(FQName.fromContext(ctx.qualifiedName())).fullyQualifiedName
+			superType += ctx.typeArguments()?.accept(this) ?: ""
+			return superType
+		}
+
+		@WithDeprecation
+		@WithJavaDoc
+		@Override
+		String visitInterfaceMethodDefinition(@NotNull ModuleParser.InterfaceMethodDefinitionContext ctx) {
+			return super.visitInterfaceMethodDefinition(ctx)
+		}
+
+		@Override
+		protected FQName resolveName(FQName localTypeName)
+		{
+			if (interfaceTypeParams.contains(localTypeName))
+			{
+				return localTypeName
+			}
+			return super.resolveName(localTypeName)
+		}
 	}
 }

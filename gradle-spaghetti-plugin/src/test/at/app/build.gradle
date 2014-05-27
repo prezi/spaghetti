@@ -1,10 +1,3 @@
-import com.prezi.spaghetti.gradle.BundleApplication
-import com.prezi.spaghetti.gradle.ExtractModules
-import com.prezi.spaghetti.gradle.GenerateHeaders
-import com.prezi.spaghetti.gradle.ObfuscateBundle
-
-evaluationDependsOn(':text-renderer')
-
 apply plugin: "spaghetti-haxe"
 
 configurations {
@@ -13,6 +6,10 @@ configurations {
 }
 
 dependencies {
+	modules project(path: ":core", configuration: "modules")
+	modulesObf project(path: ":core", configuration: "modulesObf")
+	modules project(path: ":layout", configuration: "modules")
+	modulesObf project(path: ":layout", configuration: "modulesObf")
 	modules project(path: ":text-renderer", configuration: "modules")
 	modulesObf project(path: ":text-renderer", configuration: "modulesObf")
 	requirejs "org.webjars:requirejs:2.1.8"
@@ -32,47 +29,51 @@ spaghetti {
 }
 
 haxe {
-	main "prezi.test.client.Client"
+	include "prezi.test.client"
 	targetPlatforms {
 		js
 	}
 }
 
-sources {
-	main {
-		haxe {
-			source.srcDir generateHeaders.outputDirectory
-			builtBy generateHeaders
-		}
-	}
+task packageApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
+	dependsOn bundleJsModule
+	additionalDirectDependentModule bundleJsModule.outputDirectory
+	mainModule "prezi.test.client"
+	outputDirectory "${buildDir}/applications/web"
+	prefix "src/main/spaghetti/prefix.js"
+	suffix "src/main/spaghetti/suffix.js"
+	type "requirejs"
 }
 
-task bundleApplication(type: BundleApplication) {
-	dependsOn compileJs
-	modulesDirectory "modules"
-	inputFile compileJs.outputFile
+task packageNodeApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
+	dependsOn bundleJsModule
+	additionalDirectDependentModule bundleJsModule.outputDirectory
+	mainModule "prezi.test.client"
+	outputDirectory "${buildDir}/applications/node"
+	prefix "src/main/spaghetti/prefix.js"
+	suffix "src/main/spaghetti/suffix.js"
+	type "node"
 }
 
-task obfuscate(type: ObfuscateBundle) {
-	dependsOn compileJs
-	inputFile compileJs.outputFile
+task packageSingleFileApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
+	dependsOn bundleJsModule
+	additionalDirectDependentModule bundleJsModule.outputDirectory
+	mainModule "prezi.test.client"
+	outputDirectory "${buildDir}/applications/single"
+	prefix "src/main/spaghetti/prefix.js"
+	suffix "src/main/spaghetti/suffix.js"
+	type "single"
 }
 
 def testWebappDir = file("${buildDir}/webapp")
 
-task extractModules(type: ExtractModules) {
-	extract "javascript", "sourcemap", "resources"
-	outputDirectory file("$testWebappDir/modules")
-}
-
-task packApplication(type: Copy) {
-	dependsOn extractModules
-	dependsOn bundleApplication
+task packageWebApp(type: Copy) {
+	dependsOn packageApplication
 	dependsOn configurations.requirejs
 
 	destinationDir testWebappDir
 
-	from bundleApplication.outputFile
+	from packageApplication.outputDirectory
 	from "src/test/webapp"
 
 	doLast {

@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ModuleDefinition
+import com.prezi.spaghetti.definition.ModuleDefinition
 
 /**
  * Created by lptr on 19/11/13.

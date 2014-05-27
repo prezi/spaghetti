@@ -22,6 +22,13 @@ class SpaghettiBasePlugin implements Plugin<Project> {
 			defaultObfuscatedConfiguration = project.configurations.create(OBFUSCATED_CONFIGURATION_NAME);
 		}
 
-		project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration, defaultObfuscatedConfiguration
+		def extension = project.extensions.create "spaghetti", SpaghettiExtension, project, defaultConfiguration, defaultObfuscatedConfiguration
+
+		project.tasks.withType(AbstractSpaghettiTask).all { AbstractSpaghettiTask task ->
+			task.conventionMapping.dependentModules = { extension.configuration }
+		}
+		project.tasks.withType(AbstractPlatformAwareSpaghettiTask).all { AbstractPlatformAwareSpaghettiTask task ->
+			task.conventionMapping.platform = { extension.platform }
+		}
 	}
 }

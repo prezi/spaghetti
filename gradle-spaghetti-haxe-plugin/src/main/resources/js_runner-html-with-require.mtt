@@ -17,12 +17,6 @@
     <div id="haxe:trace" ></div>
     <div id="munit" class="munit" >
     </div>
-    <script src="../../require.js"></script>
-    <script>
-        require.config({
-            baseUrl: "../.."
-        });
-        require(["::runnerName::"]);
-    </script>
+    <script src="require.js" data-main="::runnerName::"></script>
   </body>
 </html>

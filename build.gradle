@@ -16,6 +16,8 @@ allprojects {
 	group = 'com.prezi.spaghetti'
 	version = gitVersion
 	apply plugin: 'idea'
+
+	tasks.withType(Upload).all { dependsOn "check" }
 }
 
 subprojects { subproject ->
@@ -141,16 +143,22 @@ subprojects { subproject ->
 	}
 }
 
+project(":spaghetti-core") {
+	dependencies {
+		compile "com.google.javascript:closure-compiler:v20131014"
+	}
+}
+
 configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	dependencies {
 		compile project(path: ":spaghetti-core")
+		testCompile project(path: ":spaghetti-core", configuration: "testCompile")
 	}
 }
 
 project(":gradle-spaghetti-plugin") {
 	dependencies {
 		compile gradleApi()
-		compile "com.google.javascript:closure-compiler:v20131014"
 		compile project(path: ":spaghetti-core")
 		// Add all support projects
 		rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
@@ -177,12 +185,12 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 }
 project(":gradle-spaghetti-haxe-plugin") {
 	dependencies {
-		compile "com.prezi.haxe:gradle-haxe-plugin:3.0"
+		compile "com.prezi.haxe:gradle-haxe-plugin:3.1"
 		compile "org.webjars:requirejs:2.1.8"
 	}
 }
 project(":gradle-spaghetti-typescript-plugin") {
 	dependencies {
-		compile "com.prezi.typescript:gradle-typescript-plugin:1.1.1"
+		compile "com.prezi.typescript:gradle-typescript-plugin:1.1.2"
 	}
 }
