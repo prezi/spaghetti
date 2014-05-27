@@ -5,6 +5,8 @@ import com.google.javascript.jscomp.CompilationLevel
 import com.google.javascript.jscomp.Compiler
 import com.google.javascript.jscomp.CompilerOptions
 import com.google.javascript.jscomp.SourceFile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import static java.nio.charset.StandardCharsets.UTF_8
 
@@ -22,6 +24,7 @@ import static java.nio.charset.StandardCharsets.UTF_8
  * in browsers.
  */
 class ClosureCompiler {
+	private static Logger logger = LoggerFactory.getLogger(ClosureCompiler)
 
 	private static final int lineLengthThreshold = 1;
 	private static final CompilationLevel compilationLevel = CompilationLevel.ADVANCED_OPTIMIZATIONS;
@@ -48,6 +51,7 @@ class ClosureCompiler {
 			customExterns.collect{SourceFile.fromFile(it, UTF_8)};
 
 		// COMPILE
+		logger.info("Closure compile with externs: {}", externs)
 		def res = compiler.compile(externs, [js], options);
 		def retCode = Math.min(res.errors.length, 0x7f);
 		if (retCode != 0) {
