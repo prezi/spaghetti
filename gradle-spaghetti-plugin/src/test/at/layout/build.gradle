@@ -38,19 +38,11 @@ sources {
 	}
 }
 
-/*
-task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
-	dependsOn compileJs
-	inputFile compileJs.outputFile
+task packageJsModule(type: com.prezi.spaghetti.gradle.PackageModule) {
+	bundle bundleJsModule
+	type "node"
 }
-
-task zipModuleObfuscated(type: Zip) {
-	from obfuscateModule.outputDirectory
-	archiveName = "module-obfuscated"
-}
-*/
 
 artifacts {
 	modules zipJsModule
-//	modulesObf zipModuleObfuscated
 }

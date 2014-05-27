@@ -94,6 +94,10 @@ class PackageApplication extends AbstractSpaghettiTask {
 		this.outputDirectory = project.file(outputDirectory)
 	}
 
+	File getApplicationFile() {
+		return new File(getOutputDirectory(), getApplicationName())
+	}
+
 	PackageApplication()
 	{
 		this.conventionMapping.outputDirectory = { new File(project.buildDir, "spaghetti/application") }

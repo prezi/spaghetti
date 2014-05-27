@@ -9,7 +9,7 @@ import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 /**
  * Created by lptr on 22/05/14.
  */
-protected class AmdWrapper implements Wrapper {
+class AmdWrapper implements Wrapper {
 	@Override
 	String wrap(String moduleName, Collection<String> dependencies, String javaScript) {
 		def moduleNamesWithRequire = (["require"] + dependencies.sort()).collect { "\"${it}\"" }

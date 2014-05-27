@@ -41,5 +41,5 @@ abstract class AbstractStructuredApplicationPackager extends AbstractApplication
 		}
 	}
 
-	abstract String getModuleFileName(ModuleBundle bundle)
+	abstract protected String getModuleFileName(ModuleBundle bundle)
 }

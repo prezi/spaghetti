@@ -11,7 +11,7 @@ class AmdApplicationPackager extends AbstractStructuredApplicationPackager {
 	}
 
 	@Override
-	String getModuleFileName(ModuleBundle bundle) {
+	protected String getModuleFileName(ModuleBundle bundle) {
 		return bundle.name + ".js"
 	}
 }

@@ -9,7 +9,7 @@ import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 /**
  * Created by lptr on 22/05/14.
  */
-protected class CommonJsWrapper implements Wrapper {
+class CommonJsWrapper implements Wrapper {
 	@Override
 	String wrap(String moduleName, Collection<String> dependencies, String javaScript) {
 		def modules = []
