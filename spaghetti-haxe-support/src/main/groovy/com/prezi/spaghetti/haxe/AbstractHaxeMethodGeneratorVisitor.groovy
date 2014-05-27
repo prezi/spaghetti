@@ -18,7 +18,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 	}
 
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
+	final String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def typeParams = ctx.typeParameters()
 		typeParams?.parameters?.each { param ->

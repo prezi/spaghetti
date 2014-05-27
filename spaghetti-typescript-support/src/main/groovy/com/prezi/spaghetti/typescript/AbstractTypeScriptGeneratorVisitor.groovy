@@ -26,7 +26,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	}
 
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
+	final String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		ctx.typeParameters()?.parameters?.each { param ->
 			methodTypeParams.add(FQName.fromString(param.name.text))
