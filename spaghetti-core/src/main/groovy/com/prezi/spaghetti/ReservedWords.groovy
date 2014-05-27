@@ -21,6 +21,12 @@ class ReservedWords {
 
 	public static final String CONFIG = "SpaghettiConfiguration"
 
+	@Protected
+	public static final String GET_RESOURCE_URL_FUNCTION = "getResourceUrl"
+
+	@Protected
+	public static final String GET_NAME_FUNCTION = "getName"
+
 	public static final String MODULES = "__modules"
 
 	public static final String BASE_URL = "__baseUrl"

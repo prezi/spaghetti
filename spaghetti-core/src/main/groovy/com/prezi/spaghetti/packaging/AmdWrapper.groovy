@@ -2,6 +2,8 @@ package com.prezi.spaghetti.packaging
 
 import static com.prezi.spaghetti.ReservedWords.BASE_URL
 import static com.prezi.spaghetti.ReservedWords.CONFIG
+import static com.prezi.spaghetti.ReservedWords.GET_NAME_FUNCTION
+import static com.prezi.spaghetti.ReservedWords.GET_RESOURCE_URL_FUNCTION
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
@@ -27,10 +29,10 @@ class AmdWrapper implements Wrapper {
 		result.append /**//**/ "\"${MODULES}\":{"
 		result.append /**//**//**/ modules.join(",")
 		result.append /**//**/ "},"
-		result.append /**//**/ "getName:function(){"
+		result.append /**//**/ "${GET_NAME_FUNCTION}:function(){"
 		result.append /**//**//**/ "return \"${moduleName}\";"
 		result.append /**//**/ "},"
-		result.append /**//**/ "getResourceUrl:function(resource){"
+		result.append /**//**/ "${GET_RESOURCE_URL_FUNCTION}:function(resource){"
 		result.append /**//**//**/ "if(resource.substr(0,1)==\"/\"){"
 		result.append /**//**//**//**/ "resource=resource.substr(1);"
 		result.append /**//**//**/ "}"
