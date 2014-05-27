@@ -21,8 +21,8 @@ static int doStatic(int x)
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		var dependency0:com.example.alma.Alma = untyped SpaghettiConfiguration["__modules"]["com.example.alma"]["__instance"];
-		var dependency1:com.example.bela.Bela = untyped SpaghettiConfiguration["__modules"]["com.example.bela"]["__instance"];
+		var dependency0:com.example.alma.Alma = untyped __js__('SpaghettiConfiguration["__modules"]["com.example.alma"]["__instance"]');
+		var dependency1:com.example.bela.Bela = untyped __js__('SpaghettiConfiguration["__modules"]["com.example.bela"]["__instance"]');
 		var module:com.example.test.ITest = new com.example.test.Test(dependency0, dependency1);
 		var statics = new com.example.test.__TestStatic();
 		untyped __haxeModule = {

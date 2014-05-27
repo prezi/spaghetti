@@ -26,8 +26,8 @@ static <T> MyInterface<T> returnT(T t)
 		expect:
 		visitor.processModule() == """@:final class Test {
 
-	static var __instance:Dynamic = untyped SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"];
-	static var __static:Dynamic = untyped SpaghettiConfiguration["__modules"]["com.example.test"]["__static"];
+	static var __instance:Dynamic = untyped __js__('SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"]');
+	static var __static:Dynamic = untyped __js__('SpaghettiConfiguration["__modules"]["com.example.test"]["__static"]');
 
 	/**
 	 * Initializes module.

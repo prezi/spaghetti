@@ -31,7 +31,7 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 
 		def instances = []
 		dependencies.eachWithIndex { ModuleDefinition dependency, int index ->
-			instances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped ${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${INSTANCE}\"];"
+			instances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${INSTANCE}\"]');"
 		}
 		def references = (0..<instances.size()).collect { "dependency${it}" }
 

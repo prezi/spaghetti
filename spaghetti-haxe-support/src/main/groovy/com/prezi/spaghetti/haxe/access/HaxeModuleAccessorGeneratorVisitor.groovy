@@ -30,8 +30,8 @@ class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeMethodGeneratorVisi
 		return \
 """@:final class ${module.alias} {
 
-	static var ${INSTANCE}:Dynamic = untyped ${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${INSTANCE}\"];
-	static var ${STATIC}:Dynamic = untyped ${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${STATIC}\"];
+	static var ${INSTANCE}:Dynamic = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${INSTANCE}\"]');
+	static var ${STATIC}:Dynamic = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${STATIC}\"]');
 ${visitChildren(ctx)}
 }
 """
