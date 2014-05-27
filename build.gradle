@@ -194,3 +194,7 @@ project(":gradle-spaghetti-typescript-plugin") {
 		compile "com.prezi.typescript:gradle-typescript-plugin:1.1.2"
 	}
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.12'
+}
