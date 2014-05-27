@@ -18,7 +18,7 @@ class ModuleDefinitionParser {
 		return tree
 	}
 
-	protected static ModuleParserContext createParser(ModuleDefinitionSource source) {
+	public static ModuleParserContext createParser(ModuleDefinitionSource source) {
 		def input = new ANTLRInputStream(source.contents)
 
 		def errorListener = new ParserErrorListener(source.location)

@@ -24,17 +24,21 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		typeParams?.parameters?.each { param ->
 			methodTypeParams.add(FQName.fromString(param.name.text))
 		}
+		def result = visitMethodDefinitionInternal(ctx)
+		methodTypeParams.clear()
+		return result
+	}
+
+	protected String visitMethodDefinitionInternal(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx) {
 		def returnType = ctx.returnTypeChain().accept(this)
 
-		def typeParamsResult = typeParams?.accept(this) ?: ""
+		def typeParamsResult = ctx.typeParameters()?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
 		def name = ctx.name.text
 
-		def result = \
+		return \
 """	function ${name}${typeParamsResult}(${paramsResult}):${returnType};
 """
-		methodTypeParams.clear()
-		return result
 	}
 
 	@Override

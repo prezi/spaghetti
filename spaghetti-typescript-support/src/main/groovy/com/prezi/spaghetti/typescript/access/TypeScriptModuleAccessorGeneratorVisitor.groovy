@@ -47,10 +47,11 @@ ${visitChildren(ctx)}
 	}
 
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
+	protected String visitMethodDefinitionInternal(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = ctx.returnTypeChain().accept(this)
 
+		def typeParams = ctx.typeParameters()?.accept(this) ?: ""
 		def params
 		def callParams
 		if (ctx.parameters) {
@@ -65,7 +66,7 @@ ${visitChildren(ctx)}
 		def delegate = module.alias + "." + (isStatic ? STATIC : INSTANCE)
 
 		return \
-"""	${isStatic ? "static " : ""}${ctx.name.text}(${params}):${returnType} {
+"""	${isStatic ? "static " : ""}${ctx.name.text}${typeParams}(${params}):${returnType} {
 		${returnType == "void"?"":"return "}${delegate}.${ctx.name.text}(${callParams});
 	}
 """

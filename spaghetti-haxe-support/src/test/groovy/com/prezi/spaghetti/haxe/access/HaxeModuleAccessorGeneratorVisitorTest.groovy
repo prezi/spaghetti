@@ -10,6 +10,8 @@ class HaxeModuleAccessorGeneratorVisitorTest extends Specification {
 	def "generate"() {
 		def module = new DefinitionParserHelper().parse("""module com.example.test
 
+interface MyInterface<T> {}
+
 /**
  * Initializes module.
  */
@@ -17,6 +19,7 @@ class HaxeModuleAccessorGeneratorVisitorTest extends Specification {
 void initModule(int a, int b)
 string doSomething()
 static int doStatic(int a, int b)
+static <T> MyInterface<T> returnT(T t)
 """)
 		def visitor = new HaxeModuleAccessorGeneratorVisitor(module)
 
@@ -38,6 +41,9 @@ static int doStatic(int a, int b)
 	}
 	@:extern public static inline function doStatic(a:Int, b:Int):Int {
 		return __static.doStatic(a, b);
+	}
+	@:extern public static inline function returnT<T>(t:T):com.example.test.MyInterface<T> {
+		return __static.returnT(t);
 	}
 
 }

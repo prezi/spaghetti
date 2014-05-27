@@ -24,7 +24,7 @@ string[] doSomethingElse(int a, int b)
 static int doSomethingStatic(int x)
 static void doSomethingVoid(int x)
 <T, U> T[] hello(T t, U y)
-<T> MyInterface<T> returnT(T t)
+static <T> MyInterface<T> returnT(T t)
 """)
 		def visitor = new HaxeModuleStaticProxyGeneratorVisitor(module)
 
@@ -36,6 +36,9 @@ static void doSomethingVoid(int x)
 	}
 	public function doSomethingVoid(x:Int):Void {
 		com.example.test.Test.doSomethingVoid(x);
+	}
+	public function returnT<T>(t:T):com.example.test.MyInterface<T> {
+		return com.example.test.Test.returnT(t);
 	}
 
 }

@@ -35,10 +35,11 @@ ${super.visitModuleDefinition(ctx)}
 	}
 
 	@Override
-	String visitMethodDefinition(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
+	protected String visitMethodDefinitionInternal(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
 		def returnType = ctx.returnTypeChain().accept(this)
 
+		def typeParams = ctx.typeParameters()?.accept(this) ?: ""
 		def params
 		def callParams
 		if (ctx.parameters) {
@@ -50,7 +51,7 @@ ${super.visitModuleDefinition(ctx)}
 		}
 
 		return \
-"""	public function ${ctx.name.text}(${params}):${returnType} {
+"""	public function ${ctx.name.text}${typeParams}(${params}):${returnType} {
 		${returnType == "Void"?"":"return "}${module.name}.${module.alias}.${ctx.name.text}(${callParams});
 	}
 """

@@ -17,6 +17,11 @@ class Layout implements ILayout {
 		return new TestStuffImpl<String, String>();
 	}
 
+	public static function createTestStuffWithStringKey<T>():TestStuff<T, String>
+	{
+		return new TestStuffImpl<T, String>();
+	}
+
 	public function getResource():String
 	{
 		return SpaghettiConfiguration.getResourceUrl("sample.txt");

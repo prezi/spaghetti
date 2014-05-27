@@ -120,3 +120,4 @@ const Values {
 Text createText()
 TestStuff<string, string> createTestStuff()
 string getResource()
+static <T> TestStuff<T, string> createTestStuffWithStringKey()

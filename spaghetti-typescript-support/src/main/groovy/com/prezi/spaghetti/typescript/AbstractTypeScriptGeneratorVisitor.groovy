@@ -28,17 +28,20 @@ abstract class AbstractTypeScriptGeneratorVisitor extends AbstractModuleVisitor<
 	@Override
 	String visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
 	{
-		def typeParams = ctx.typeParameters()
-		typeParams?.parameters?.each { param ->
+		ctx.typeParameters()?.parameters?.each { param ->
 			methodTypeParams.add(FQName.fromString(param.name.text))
 		}
+		def result = visitMethodDefinitionInternal(ctx)
+		methodTypeParams.clear()
+		return result
+	}
+
+	protected String visitMethodDefinitionInternal(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx) {
 		def returnType = ctx.returnTypeChain().accept(this)
 
-		def typeParamsResult = typeParams?.accept(this) ?: ""
+		def typeParamsResult = ctx.typeParameters()?.accept(this) ?: ""
 		def paramsResult = ctx.parameters?.accept(this) ?: ""
-		def result = "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};"
-		methodTypeParams.clear()
-		return result + "\n"
+		return "\t${ctx.name.text}${typeParamsResult}(${paramsResult}):${returnType};\n"
 	}
 
 	@Override

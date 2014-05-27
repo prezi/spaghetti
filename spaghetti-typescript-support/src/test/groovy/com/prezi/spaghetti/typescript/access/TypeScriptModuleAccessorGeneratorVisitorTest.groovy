@@ -10,6 +10,7 @@ class TypeScriptModuleAccessorGeneratorVisitorTest extends Specification {
 	def "generate"() {
 		def module = new DefinitionParserHelper().parse("""module com.example.test
 
+interface MyInterface<T> {}
 /**
  * Initializes module.
  */
@@ -17,6 +18,7 @@ class TypeScriptModuleAccessorGeneratorVisitorTest extends Specification {
 void initModule(int a, int b)
 string doSomething()
 static int doStatic(int a, int b)
+<T> MyInterface<T> returnT(T t)
 """)
 		def visitor = new TypeScriptModuleAccessorGeneratorVisitor(module)
 
@@ -37,6 +39,9 @@ static int doStatic(int a, int b)
 	}
 	static doStatic(a:number, b:number):number {
 		return Test.__static.doStatic(a, b);
+	}
+	returnT<T>(t:T):com.example.test.MyInterface<T> {
+		return Test.__instance.returnT(t);
 	}
 
 }
