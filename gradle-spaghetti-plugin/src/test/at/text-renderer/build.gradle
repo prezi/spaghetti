@@ -6,12 +6,3 @@ dependencies {
 	modules project(path: ":layout", configuration: "modules")
 	modulesObf project(path: ":layout", configuration: "modulesObf");
 }
-
-task configurationDependencies << {
-	println "Modules config:\n\t${configurations.modules.files.join("\n\t")}"
-	println "Modules deps:\n\t${configurations.modules.dependencies.join("\n\t")}"
-	println "Modules artifacts:\n\t${configurations.modules.artifacts*.file.join("\n\t")}"
-	println "Obfuscated config:\n\t${configurations.modulesObf.files.join("\n\t")}"
-	println "Obfuscated deps:\n\t${configurations.modulesObf.dependencies.join("\n\t")}"
-	println "Obfuscated artifacts:\n\t${configurations.modulesObf.artifacts*.file.join("\n\t")}"
-}
