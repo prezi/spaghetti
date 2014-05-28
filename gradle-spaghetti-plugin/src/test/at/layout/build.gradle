@@ -30,10 +30,16 @@ compileJs {
 	flag "-debug"
 }
 
+task copyResources(type: Copy) {
+	from "src/main/some-more-spaghetti-resources"
+	into "${buildDir}/some-more-spaghetti-resources"
+}
+
 sources {
 	main {
 		"spaghetti-resources" {
-			source.srcDir "src/main/some-more-spaghetti-resources"
+			source.srcDir "${buildDir}/some-more-spaghetti-resources"
+			builtBy copyResources
 		}
 	}
 }

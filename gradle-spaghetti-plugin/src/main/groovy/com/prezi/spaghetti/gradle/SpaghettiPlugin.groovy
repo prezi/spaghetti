@@ -59,6 +59,7 @@ class SpaghettiPlugin implements Plugin<Project> {
 		ProcessSpaghettiResources resourcesTask = project.tasks.create("processSpaghettiResources", ProcessSpaghettiResources)
 		resourcesTask.description = "Processes Spaghetti resources"
 		resourcesTask.conventionMapping.destinationDir = { project.file("${project.buildDir}/spaghetti/resources") }
+		resourcesTask.dependsOn spaghettiResourceSet
 		resourcesTask.from(spaghettiResourceSet.source);
 
 		project.tasks.withType(AbstractDefinitionAwareSpaghettiTask).all { AbstractDefinitionAwareSpaghettiTask task ->
