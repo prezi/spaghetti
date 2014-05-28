@@ -1,3 +1,5 @@
+apply plugin: "spaghetti-typescript"
+
 dependencies {
 	modules project(path: ":core", configuration: "modules")
 	modulesObf project(path: ":core", configuration: "modulesObf");
@@ -5,78 +7,11 @@ dependencies {
 	modulesObf project(path: ":layout", configuration: "modulesObf");
 }
 
-spaghetti {
-	platform "typescript"
-}
-
-task compileTsc(type: TypeScriptTask) {
-	dependsOn generateHeaders
-	source generateHeaders.outputDirectory
-	source "src/main/ts"
-	dest = file("${buildDir}/module.js");
-}
-
-task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
-	dependsOn compileTsc
-	inputFile compileTsc.dest
-}
-
-task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
-	dependsOn compileTsc
-	inputFile compileTsc.dest
-}
-
-task zipModule(type: Zip) {
-	dependsOn bundleModule
-	from bundleModule.outputDirectory
-	archiveName = "module"
-}
-
-/*
-task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
-	dependsOn compileTsc
-	inputFile compileTsc.dest
-}
-
-task zipModuleObfuscated(type: Zip) {
-	from obfuscateModule.outputDirectory
-	archiveName = "module-obfuscated"
-}
-*/
-artifacts {
-	modules zipModule
-//	modulesObf zipModuleObfuscated
-}
-
-class TypeScriptTask extends SourceTask {
-	@OutputFile
-	def dest;
-	def jsSrcs = [];
-
-	def appendJs(s) {
-		jsSrcs.add(new File(s));
-		inputs.file(new File(s));
-	}
-
-	@TaskAction
-	def run() {
-		println "Executing TypeScriptTask"
-		def typeScriptTemp = new File(project.buildDir, "typescript-output.js");
-
-		def command = ["tsc", "--out", typeScriptTemp] + source.files;
-		println command.join(" ");
-		def process = command.execute()
-		process.waitForProcessOutput(System.out, System.err);
-
-		if (process.exitValue() != 0) {
-			throw new RuntimeException("Failed TSC build: " + process.exitValue())
-		}
-
-		ant.concat(destfile: (dest as File).canonicalPath, fixlastline: 'yes') {
-            jsSrcs.each {
-                fileset(file: it)
-            }
-			fileset(file: typeScriptTemp);
-        }
-	}
+task configurationDependencies << {
+	println "Modules config:\n\t${configurations.modules.files.join("\n\t")}"
+	println "Modules deps:\n\t${configurations.modules.dependencies.join("\n\t")}"
+	println "Modules artifacts:\n\t${configurations.modules.artifacts*.file.join("\n\t")}"
+	println "Obfuscated config:\n\t${configurations.modulesObf.files.join("\n\t")}"
+	println "Obfuscated deps:\n\t${configurations.modulesObf.dependencies.join("\n\t")}"
+	println "Obfuscated artifacts:\n\t${configurations.modulesObf.artifacts*.file.join("\n\t")}"
 }

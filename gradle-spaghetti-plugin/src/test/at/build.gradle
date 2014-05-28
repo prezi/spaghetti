@@ -20,6 +20,7 @@ buildscript {
 
 configure(allprojects) {
 	group = "prezi.test"
+	apply plugin: "maven"
 
 	repositories {
 		mavenLocal()
@@ -36,7 +37,6 @@ configure(allprojects) {
 
 configure(subprojects) {
 	apply plugin: "spaghetti"
-	apply plugin: "maven"
 	
 	spaghetti {
 		sourceBaseUrl "http://github.com/prezi/spaghetti"

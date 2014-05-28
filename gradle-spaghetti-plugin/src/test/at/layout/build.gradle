@@ -14,10 +14,6 @@ dependencies {
 	test group: "haxelib3", name: "mockatoo", version: "2.1.1-haxe31"
 }
 
-spaghetti {
-	platform "haxe"
-}
-
 haxe {
 	targetPlatforms {
 		js
@@ -47,8 +43,4 @@ sources {
 task packageJsModule(type: com.prezi.spaghetti.gradle.PackageModule) {
 	bundle bundleJsModule
 	type "node"
-}
-
-artifacts {
-	modules zipJsModule
 }
