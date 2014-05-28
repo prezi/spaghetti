@@ -13,6 +13,6 @@ class ModuleBundleParameters {
 	String sourceBaseUrl
 	String javaScript
 	String sourceMap
-	Set<String> dependentModules
+	SortedSet<String> dependentModules
 	File resourcesDirectory
 }

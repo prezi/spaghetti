@@ -27,7 +27,7 @@ class ModuleBundleTest extends Specification {
 						sourceBaseUrl: "http://git.example.com/test",
 						javaScript: "console.log('hello');",
 						sourceMap: "sourcemap",
-						dependentModules: ["com.example.alma", "com.example.bela"],
+						dependentModules: ["com.example.alma", "com.example.bela"] as SortedSet,
 						resourcesDirectory: null)
 		)
 
