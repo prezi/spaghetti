@@ -2,6 +2,7 @@ package com.prezi.spaghetti.packaging
 
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleElement
+import com.prezi.spaghetti.internal.DependencyTreeResolver
 import com.prezi.spaghetti.structure.StructuredWriter
 
 /**

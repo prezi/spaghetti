@@ -1,63 +1,51 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.AbstractModuleVisitor
-import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.grammar.ModuleVisitor
-import org.antlr.v4.runtime.RuleContext
-import org.antlr.v4.runtime.misc.NotNull
-import org.antlr.v4.runtime.tree.ParseTreeVisitor
+import com.prezi.spaghetti.ast.ConstNode
+import com.prezi.spaghetti.ast.EnumNode
+import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.ModuleVisitorBase
+import com.prezi.spaghetti.ast.NamedNode
+import com.prezi.spaghetti.ast.StructNode
 
 /**
  * Created by lptr on 20/11/13.
  */
-class HaxeDefinitionIteratorVisitor extends AbstractModuleVisitor<Void> {
+class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	private final File outputDirectory
-	private final boolean dependentModule
-	private final Closure<ModuleVisitor<String>> createTypeVisitor
+	private final String packageName
 
-	HaxeDefinitionIteratorVisitor(ModuleDefinition module,
-								  File outputDirectory,
-								  boolean dependentModule,
-								  Closure<ModuleVisitor<String>> createTypeVisitor
-	) {
-		super(module)
+	HaxeDefinitionIteratorVisitor(File outputDirectory, String packageName) {
 		this.outputDirectory = outputDirectory
-		this.dependentModule = dependentModule
-		this.createTypeVisitor = createTypeVisitor
+		this.packageName = packageName
 	}
 
-	private void createSourceFile(String name, RuleContext ctx, ParseTreeVisitor<String> visitor) {
-		def contents = ctx.accept(visitor)
-		HaxeUtils.createHaxeSourceFile(module, name, outputDirectory, contents)
+	private void createSourceFile(NamedNode node, ModuleVisitorBase<String> visitor) {
+		def contents = node.accept(visitor)
+		HaxeUtils.createHaxeSourceFile(packageName, node.name, outputDirectory, contents)
 	}
 
 	@Override
-	Void visitInterfaceDefinition(@NotNull @NotNull ModuleParser.InterfaceDefinitionContext ctx)
-	{
-		createSourceFile(ctx.name.text, ctx, createTypeVisitor())
+	Void visitInterfaceNode(InterfaceNode node) {
+		createSourceFile(node, new HaxeInterfaceGeneratorVisitor())
 		return null
 	}
 
 	@Override
-	Void visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
-	{
-		createSourceFile(ctx.name.text, ctx, new HaxeEnumGeneratorVisitor())
+	Void visitEnumNode(EnumNode node) {
+		createSourceFile(node, new HaxeEnumGeneratorVisitor())
 		return null
 	}
 
 	@Override
-	Void visitStructDefinition(@NotNull @NotNull ModuleParser.StructDefinitionContext ctx)
-	{
-		createSourceFile(ctx.name.text, ctx, new HaxeStructGeneratorVisitor(module))
+	Void visitStructNode(StructNode node) {
+		createSourceFile(node, new HaxeStructGeneratorVisitor())
 		return null
 	}
 
 	@Override
-	Void visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
-	{
-		createSourceFile(ctx.name.text, ctx, new HaxeConstGeneratorVisitor(module))
+	Void visitConstNode(ConstNode node) {
+		createSourceFile(node, new HaxeConstGeneratorVisitor())
 		return null
 	}
 }

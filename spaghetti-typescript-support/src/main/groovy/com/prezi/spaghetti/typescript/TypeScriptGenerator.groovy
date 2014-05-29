@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.AbstractGenerator
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInterfaceGeneratorVisitor
@@ -18,10 +18,8 @@ class TypeScriptGenerator extends AbstractGenerator {
 
 	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
 
-	private final ModuleConfiguration config
-
 	TypeScriptGenerator(ModuleConfiguration config) {
-		this.config = config
+		super(config)
 	}
 
 	@Override
@@ -39,9 +37,8 @@ class TypeScriptGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	protected String processModuleJavaScriptInternal(ModuleDefinition module, ModuleConfiguration config, String javaScript)
+	protected String processModuleJavaScriptInternal(ModuleNode module, String javaScript)
 	{
-		return \
 """${javaScript}
 return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 """
@@ -57,22 +54,22 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 	/**
 	 * Generates local module.
 	 */
-	private void generateLocalModule(ModuleDefinition module, File outputDirectory)
+	private void generateLocalModule(ModuleNode module, File outputDirectory)
 	{
 		def contents = "declare var ${CONFIG}:any;\n"
-		contents += new TypeScriptModuleInterfaceGeneratorVisitor(module).processModule()
-		contents += new TypeScriptDefinitionIteratorVisitor(module).processModule()
-		contents += new TypeScriptModuleStaticProxyGeneratorVisitor(module).processModule()
-		contents += new TypeScriptModuleInitializerGeneratorVisitor(module, config.directDependentModules).processModule()
+		contents += new TypeScriptModuleInterfaceGeneratorVisitor().visit(module)
+		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
+		contents += new TypeScriptModuleStaticProxyGeneratorVisitor(module).visit(module)
+		contents += new TypeScriptModuleInitializerGeneratorVisitor(config.directDependentModules).visit(module)
 		TypeScriptUtils.createSourceFile(module, "I${module.alias}", outputDirectory, contents)
 	}
 
-	private static void generateDependentModule(ModuleDefinition module, File outputDirectory, boolean directDependency) {
+	private static void generateDependentModule(ModuleNode module, File outputDirectory, boolean directDependency) {
 		def contents = "declare var ${CONFIG}:any;\n"
 		if (directDependency) {
-			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).processModule()
+			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).visit(module)
 		}
-		contents += new TypeScriptDefinitionIteratorVisitor(module).processModule()
+		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 }

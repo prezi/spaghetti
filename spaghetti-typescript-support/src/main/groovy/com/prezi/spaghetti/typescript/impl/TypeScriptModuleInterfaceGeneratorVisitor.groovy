@@ -1,44 +1,25 @@
 package com.prezi.spaghetti.typescript.impl
 
-import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.WithJavaDoc
-import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
-import org.antlr.v4.runtime.misc.NotNull
+import com.prezi.spaghetti.ast.ModuleMethodNode
+import com.prezi.spaghetti.ast.ModuleMethodType
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
 /**
  * Created by lptr on 22/05/14.
  */
-class TypeScriptModuleInterfaceGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
+class TypeScriptModuleInterfaceGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
-	TypeScriptModuleInterfaceGeneratorVisitor(ModuleDefinition module) {
-		super(module)
-	}
-
-	@WithJavaDoc
 	@Override
-	String visitModuleDefinition(@NotNull ModuleParser.ModuleDefinitionContext ctx) {
-"""export interface I${module.alias} {
-${visitChildren(ctx)}
+	String visitModuleNode(ModuleNode node) {
+"""export interface I${node.alias} {
+${node.methods*.accept(this).join("")}
 }
 """
 	}
 
 	@Override
-	String visitModuleMethodDefinition(@NotNull ModuleParser.ModuleMethodDefinitionContext ctx) {
-		if (ctx.isStatic) {
-			return ""
-		}
-		return visitModuleMethodDefinitionInternal(ctx)
-	}
-
-	@WithJavaDoc
-	String visitModuleMethodDefinitionInternal(@NotNull ModuleParser.ModuleMethodDefinitionContext ctx) {
-		return visitChildren(ctx)
-	}
-
-	@Override
-	String visitTypeDefinition(@NotNull ModuleParser.TypeDefinitionContext ctx) {
-		return ""
+	String visitModuleMethodNode(ModuleMethodNode node) {
+		return node.type == ModuleMethodType.STATIC ? "" : visitMethodNode(node)
 	}
 }

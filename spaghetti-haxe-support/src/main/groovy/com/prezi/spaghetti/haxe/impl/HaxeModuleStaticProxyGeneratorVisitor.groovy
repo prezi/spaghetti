@@ -1,65 +1,56 @@
 package com.prezi.spaghetti.haxe.impl
 
-import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
-import org.antlr.v4.runtime.misc.NotNull
+import com.prezi.spaghetti.ast.AstNode
+import com.prezi.spaghetti.ast.MethodParameterNode
+import com.prezi.spaghetti.ast.ModuleMethodNode
+import com.prezi.spaghetti.ast.ModuleMethodType
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
 
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeModuleStaticProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
+class HaxeModuleStaticProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
-	HaxeModuleStaticProxyGeneratorVisitor(ModuleDefinition module)
-	{
-		super(module)
+	private final ModuleNode module
+
+	HaxeModuleStaticProxyGeneratorVisitor(ModuleNode module) {
+		this.module = module
 	}
 
 	@Override
-	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
-	{
+	String visitModuleNode(ModuleNode node) {
 		return \
-"""@:final class __${module.alias}Static {
+"""@:final class __${node.alias}Static {
 	public function new() {}
-${super.visitModuleDefinition(ctx)}
+${node.methods*.accept(this).join("")}
 }
 """
 	}
 
 	@Override
-	String visitModuleMethodDefinition(@NotNull ModuleParser.ModuleMethodDefinitionContext ctx) {
-		if (!ctx.isStatic) {
+	String visitModuleMethodNode(ModuleMethodNode node) {
+		if (node.type != ModuleMethodType.STATIC) {
 			return ""
 		}
-		return super.visitModuleMethodDefinition(ctx)
-	}
+		def returnType = node.returnType.accept(this)
+		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
+		def params = node.parameters*.accept(this).join(", ")
+		def paramNames = node.parameters*.name.join(", ")
 
-	@Override
-	protected String visitMethodDefinitionInternal(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
-	{
-		def returnType = ctx.returnTypeChain().accept(this)
-
-		def typeParams = ctx.typeParameters()?.accept(this) ?: ""
-		def params
-		def callParams
-		if (ctx.parameters) {
-			params = ctx.parameters.accept(this)
-			callParams = ctx.parameters.elements.collect { it.name.text }.join(", ")
-		} else {
-			params = ""
-			callParams = ""
-		}
-
-		return \
-"""	public function ${ctx.name.text}${typeParams}(${params}):${returnType} {
-		${returnType == "Void"?"":"return "}${module.name}.${module.alias}.${ctx.name.text}(${callParams});
+"""	public function ${node.name}${typeParams}(${params}):${returnType} {
+		${returnType == "Void"?"":"return "}${module.name}.${module.alias}.${node.name}(${paramNames});
 	}
 """
 	}
 
 	@Override
-	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
-	{
-		return ""
+	String visitMethodParameterNode(MethodParameterNode node) {
+		return node.name + ":" + node.type.accept(this)
+	}
+
+	@Override
+	String afterVisit(AstNode node, String result) {
+		return result
 	}
 }

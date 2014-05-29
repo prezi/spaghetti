@@ -1,36 +1,51 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.FQName
+import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.TypeParameterNode
+import com.prezi.spaghetti.ast.internal.DefaultNamedNodeSet
+import com.prezi.spaghetti.ast.parser.InterfaceParser
+import com.prezi.spaghetti.definition.ModuleDefinitionParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 21/05/14.
  */
-class HaxeInterfaceGeneratorVisitorTest extends Specification {
+class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
-
-interface MyInterface<X> {
+		def definition = """interface MyInterface<X> extends Tibor<X> {
 	/**
 	 * Does something.
 	 */
 	void doSomething()
 
 	string[] doSomethingElse(int a, int b)
-	<T, U> T[] hello(X x, U y)
+	<T, U> T[] hello(X->(void->int)->U f)
 }
-""")
-		def visitor = new HaxeInterfaceGeneratorVisitor(module)
+"""
+		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.interfaceDefinition()
+		def parser = new InterfaceParser(context, "com.example.test")
+		parser.parse(mockResolver([
+		        "Tibor": {
+					def superIface = Mock(InterfaceNode)
+					superIface.qualifiedName >> FQName.fromString("com.example.test.Tibor")
+					def mockParam = Mock(TypeParameterNode)
+					superIface.typeParameters >> new DefaultNamedNodeSet<TypeParameterNode>("type params", [mockParam].toSet())
+					return superIface
+				}
+		]))
+		def iface = parser.node
+		def visitor = new HaxeInterfaceGeneratorVisitor()
 
 		expect:
-		visitor.processModule() == """interface MyInterface<X> {
-
+		visitor.visit(iface) == """interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
 	 */
 	function doSomething():Void;
 	function doSomethingElse(a:Int, b:Int):Array<String>;
-	function hello<T, U>(x:X, y:U):Array<T>;
+	function hello<T, U>(f:X->(Void->Int)->U):Array<T>;
 
 }
 """

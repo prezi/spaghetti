@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.obfuscation
 
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.config.ModuleConfiguration
 import groovy.transform.TupleConstructor
 
 /**
@@ -10,7 +10,7 @@ import groovy.transform.TupleConstructor
 @TupleConstructor
 public class ObfuscationParameters {
 	ModuleConfiguration config
-	ModuleDefinition module
+	ModuleNode module
 	String javaScript
 	String sourceMap
 	URI sourceMapRoot

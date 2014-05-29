@@ -1,16 +1,22 @@
 package com.prezi.spaghetti.typescript.access
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 24/05/14.
  */
-class TypeScriptModuleAccessorGeneratorVisitorTest extends Specification {
+class TypeScriptModuleAccessorGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+		def definition = """module com.example.test
 
-interface MyInterface<T> {}
+interface MyInterface<T> {
+	/**
+	 * This should have nothing to do with the results.
+	 */
+	void someDummyMethod(int x)
+}
 /**
  * Initializes module.
  */
@@ -19,11 +25,12 @@ void initModule(int a, int b)
 string doSomething()
 static int doStatic(int a, int b)
 <T> MyInterface<T> returnT(T t)
-""")
+"""
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
 		def visitor = new TypeScriptModuleAccessorGeneratorVisitor(module)
 
 		expect:
-		visitor.processModule() == """export class Test {
+		visitor.visit(module) == """export class Test {
 
 	private static __instance:any = SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"];
 	private static __static:any = SpaghettiConfiguration["__modules"]["com.example.test"]["__static"];

@@ -1,5 +1,9 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.config.ModuleConfiguration
+import com.prezi.spaghetti.config.ModuleConfigurationParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.internal.ConventionTask
@@ -53,5 +57,33 @@ class AbstractSpaghettiTask extends ConventionTask {
 				directFilesFromConfiguration + getAdditionalDirectDependentModules().files,
 				getDependentModules().files + getAdditionalTransitiveDependentModules().files)
 		return bundles
+	}
+
+	ModuleConfiguration readConfig(Iterable<File> files) {
+		readConfigInternal(files.collect() { file ->
+			new ModuleDefinitionSource(file.toString(), file.text)
+		})
+	}
+
+	ModuleConfiguration readConfig() {
+		readConfigInternal([])
+	}
+
+	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) {
+		def bundles = lookupBundles()
+		def directSources = makeModuleSources(bundles.directBundles)
+		def transitiveSources = makeModuleSources(bundles.transitiveBundles)
+		def config = ModuleConfigurationParser.parse(
+				localDefinitions,
+				directSources,
+				transitiveSources)
+		logger.info("Loaded configuration: ${config}")
+		return config
+	}
+
+	private static List<ModuleDefinitionSource> makeModuleSources(Set<ModuleBundle> bundles) {
+		return bundles.collect { ModuleBundle module ->
+			return new ModuleDefinitionSource("module: " + module.name, module.definition)
+		}
 	}
 }

@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.typescript.access
 
-import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.definition.WithJavaDoc
-import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.ast.MethodParameterNode
+import com.prezi.spaghetti.ast.ModuleMethodNode
+import com.prezi.spaghetti.ast.ModuleMethodType
+import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
-import org.antlr.v4.runtime.misc.NotNull
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
@@ -15,60 +15,42 @@ import static com.prezi.spaghetti.ReservedWords.STATIC
  * Created by lptr on 22/05/14.
  */
 class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
-	TypeScriptModuleAccessorGeneratorVisitor(ModuleDefinition module) {
-		super(module)
+	private final ModuleNode module
+
+	TypeScriptModuleAccessorGeneratorVisitor(ModuleNode module) {
+		this.module = module
 	}
 
-	@WithJavaDoc
 	@Override
-	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
-	{
-		return \
-"""export class ${module.alias} {
+	String visitModuleNode(ModuleNode node) {
+"""export class ${node.alias} {
 
-	private static ${INSTANCE}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${INSTANCE}\"];
-	private static ${STATIC}:any = ${CONFIG}[\"${MODULES}\"][\"${module.name}\"][\"${STATIC}\"];
-${visitChildren(ctx)}
+	private static ${INSTANCE}:any = ${CONFIG}[\"${MODULES}\"][\"${node.name}\"][\"${INSTANCE}\"];
+	private static ${STATIC}:any = ${CONFIG}[\"${MODULES}\"][\"${node.name}\"][\"${STATIC}\"];
+
+${node.methods*.accept(this).join("")}
 }
 """
 	}
 
 	@Override
-	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
-	{
-		// Do not generate code for types
-		return ""
-	}
+	String visitModuleMethodNode(ModuleMethodNode node) {
+		def returnType = node.returnType.accept(this)
+		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
+		def params = node.parameters*.accept(this).join(", ")
+		def paramNames = node.parameters*.name.join(", ")
 
-	@WithJavaDoc
-	@Override
-	String visitModuleMethodDefinition(@NotNull ModuleParser.ModuleMethodDefinitionContext ctx) {
-		return super.visitModuleMethodDefinition(ctx)
-	}
-
-	@Override
-	protected String visitMethodDefinitionInternal(@NotNull @NotNull @NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
-	{
-		def returnType = ctx.returnTypeChain().accept(this)
-
-		def typeParams = ctx.typeParameters()?.accept(this) ?: ""
-		def params
-		def callParams
-		if (ctx.parameters) {
-			params = ctx.parameters.accept(this)
-			callParams = ctx.parameters.elements.collect { it.name.text }.join(", ")
-		} else {
-			params = ""
-			callParams = ""
-		}
-
-		def isStatic = ((ModuleParser.ModuleMethodDefinitionContext) ctx.parent).isStatic
+		def isStatic = node.type == ModuleMethodType.STATIC
 		def delegate = module.alias + "." + (isStatic ? STATIC : INSTANCE)
 
-		return \
-"""	${isStatic ? "static " : ""}${ctx.name.text}${typeParams}(${params}):${returnType} {
-		${returnType == "void"?"":"return "}${delegate}.${ctx.name.text}(${callParams});
+"""	${isStatic ? "static " : ""}${node.name}${typeParams}(${params}):${returnType} {
+		${returnType == "void"?"":"return "}${delegate}.${node.name}(${paramNames});
 	}
 """
+	}
+
+	@Override
+	String visitMethodParameterNode(MethodParameterNode node) {
+		return node.name + ":" + node.type.accept(this)
 	}
 }

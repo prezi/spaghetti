@@ -13,11 +13,6 @@ abstract class AbstractGeneratorFactory implements GeneratorFactory {
 	}
 
 	@Override
-	Map<String, String> getExternMapping() {
-		Collections.emptyMap()
-	}
-
-	@Override
 	Set<String> getProtectedSymbols() {
 		Collections.emptySet()
 	}

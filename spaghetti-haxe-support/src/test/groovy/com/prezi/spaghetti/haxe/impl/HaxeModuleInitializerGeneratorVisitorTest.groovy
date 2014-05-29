@@ -1,23 +1,26 @@
 package com.prezi.spaghetti.haxe.impl
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import com.prezi.spaghetti.definition.ModuleDefinition
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 21/05/14.
  */
-class HaxeModuleInitializerGeneratorVisitorTest extends Specification {
+class HaxeModuleInitializerGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def mockModule1 = createMockModule("com.example.alma")
 		def mockModule2 = createMockModule("com.example.bela")
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+
+		def definition = """module com.example.test
 static int doStatic(int x)
-""")
-		def visitor = new HaxeModuleInitializerGeneratorVisitor(module, [mockModule1, mockModule2])
+"""
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
+		def visitor = new HaxeModuleInitializerGeneratorVisitor([mockModule1, mockModule2])
 
 		expect:
-		visitor.processModule() == """@:keep class __TestInit {
+		visitor.visit(module) == """@:keep class __TestInit {
 #if (js && !test)
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
@@ -36,8 +39,8 @@ static int doStatic(int x)
 """
 	}
 
-	private ModuleDefinition createMockModule(String name) {
-		def module = Mock(ModuleDefinition)
+	private ModuleNode createMockModule(String name) {
+		def module = Mock(ModuleNode)
 		module.name >> name
 		module.alias >> name.substring(name.lastIndexOf('.') + 1).capitalize()
 		return module

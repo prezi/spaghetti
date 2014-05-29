@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.obfuscation
 
-import com.prezi.spaghetti.definition.ModuleDefinitionParser
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.ast.parser.TypeResolver
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import spock.lang.Specification
 
@@ -56,7 +57,7 @@ const Constants {
 }
 """
 		expect:
-		result == ["Constants", "alpha", "beta"]
+		result == ["alpha", "beta"]
 	}
 
 	def "enum values are found"() {
@@ -70,9 +71,9 @@ enum LeEnum {
 		result == ["alpha", "beta"]
 	}
 
-	private static List<String> visit(String what) {
-		def moduleDefCtx = ModuleDefinitionParser.parse(new ModuleDefinitionSource("test", what))
-		def result = moduleDefCtx.accept(new SymbolCollectVisitor())
+	private List<String> visit(String what) {
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", what)).parse(Mock(TypeResolver))
+		def result = module.accept(new SymbolCollectVisitor())
 		return result.sort()
 	}
 }

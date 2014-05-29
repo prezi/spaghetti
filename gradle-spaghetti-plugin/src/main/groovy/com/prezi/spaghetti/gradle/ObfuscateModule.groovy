@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.gradle
 
 import com.prezi.spaghetti.Platforms
+import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters
 import org.gradle.api.tasks.Input
@@ -21,7 +21,7 @@ class ObfuscateModule extends AbstractBundleModuleTask
 	@Override
 	protected ModuleBundle createBundle(
 			ModuleConfiguration config,
-			ModuleDefinition module,
+			ModuleNode module,
 			String javaScript,
 			String sourceMap,
 			File resourceDir) {

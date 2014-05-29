@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.packaging
 
+import com.prezi.spaghetti.internal.DependencyTreeResolver
 import spock.lang.Specification
 
 /**
