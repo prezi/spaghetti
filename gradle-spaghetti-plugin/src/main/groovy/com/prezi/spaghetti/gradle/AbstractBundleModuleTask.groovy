@@ -103,7 +103,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 						sourceBaseUrl: getSourceBaseUrl(),
 						javaScript: javaScript,
 						sourceMap: sourceMap,
-						dependentModules: config.directDependentModules*.name,
+						dependentModules: config.directDependentModules*.name as SortedSet,
 						resourcesDirectory: resourceDir
 				)
 		)
