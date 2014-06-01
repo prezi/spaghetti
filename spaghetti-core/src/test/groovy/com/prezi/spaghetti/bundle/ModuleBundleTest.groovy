@@ -59,7 +59,7 @@ class ModuleBundleTest extends Specification {
 		then:
 		1 * source.hasFile("META-INF/MANIFEST.MF") >> false
 		0 * _
-		IllegalArgumentException ex = thrown()
+		def ex = thrown IllegalArgumentException
 		ex.message.contains "Not a module, missing manifest"
 	}
 

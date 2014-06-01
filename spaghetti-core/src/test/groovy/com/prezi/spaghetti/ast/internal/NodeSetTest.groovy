@@ -78,23 +78,18 @@ class NodeSetTest extends Specification {
 	def "Duplicate: #value (#key)"() {
 		set.add value
 
-		def exception = null
-		try {
-			set.add value
-			assert false
-		} catch (InternalAstParserException ex) {
-			exception = ex
-		}
+		when:
+		set.add value
 
-		expect:
-		exception instanceof InternalAstParserException
-		exception.message == "Test with the same name already exists: " + key
+		then:
+		def ex = thrown InternalAstParserException
+		ex.message == message
 
 		where:
-		key          | value                           | set
-		""           | new TestNode("")                | new DefaultNamedNodeSet<TestNode>("test")
-		"lajos"      | new TestNode("lajos")           | new DefaultNamedNodeSet<TestNode>("test")
-		"alma.lajos" | new TestQNode(qn("alma.lajos")) | new DefaultQualifiedNodeSet<TestQNode>("test")
+		message                                              | value                           | set
+		"Test with the same name already exists: "           | new TestNode("")                | new DefaultNamedNodeSet<TestNode>("test")
+		"Test with the same name already exists: lajos"      | new TestNode("lajos")           | new DefaultNamedNodeSet<TestNode>("test")
+		"Test with the same name already exists: alma.lajos" | new TestQNode(qn("alma.lajos")) | new DefaultQualifiedNodeSet<TestQNode>("test")
 	}
 
 

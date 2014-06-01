@@ -15,7 +15,7 @@ public class InternalAstParserException extends RuntimeException {
 
 	private static String createMessage(Token start, Token stop, String message)
 	{
-		return "at line " + start.getLine() + ":" + start.getCharPositionInLine() + ": " + message;
+		return " at line " + start.getLine() + ":" + start.getCharPositionInLine() + ": " + message;
 	}
 
 	public InternalAstParserException(Token token, String message, Throwable cause)

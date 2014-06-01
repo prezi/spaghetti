@@ -11,7 +11,8 @@ class FQNameTest extends Specification {
 		FQName.fromString(what)
 
 		then:
-		thrown IllegalArgumentException
+		def ex = thrown IllegalArgumentException
+		ex.message == "Qualified name cannot be empty"
 
 		where:
 		what | _

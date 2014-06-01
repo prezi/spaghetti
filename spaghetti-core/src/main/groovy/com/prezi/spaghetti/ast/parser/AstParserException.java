@@ -8,6 +8,6 @@ public class AstParserException extends RuntimeException {
 	}
 
 	public AstParserException(ModuleDefinitionSource source, String message, Throwable cause) {
-		super("Parse error in " + source.getLocation() + " " + message, cause);
+		super("Parse error in " + source.getLocation() + message, cause);
 	}
 }

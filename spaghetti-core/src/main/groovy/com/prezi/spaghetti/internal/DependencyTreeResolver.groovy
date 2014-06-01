@@ -14,6 +14,15 @@ class DependencyTreeResolver {
 			[ module, dependencies.toSet() ]
 		}
 
+		// Check for non-existent modules
+		remainingModules.each { module, dependencies ->
+			dependencies.each {
+				if (!remainingModules.containsKey(it)) {
+					throw new IllegalArgumentException("Module found: ${it} (dependency of module ${module})")
+				}
+			}
+		}
+
 		Map<M, I> moduleInstances = [:]
 
 		while (remainingModules) {

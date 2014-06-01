@@ -42,7 +42,8 @@ class DependencyTreeResolverTest extends Specification {
 
 		then:
 		0 * _
-		thrown IllegalStateException
+		def ex = thrown IllegalStateException
+		ex.message == "Cyclic dependency detected among modules: [a, b, c]"
 	}
 
 	def "cyclic dependency 2"() {
@@ -58,7 +59,8 @@ class DependencyTreeResolverTest extends Specification {
 		then:
 		1 * processor.processDependency("b", [])
 		0 * _
-		thrown IllegalStateException
+		def ex = thrown IllegalStateException
+		ex.message == "Cyclic dependency detected among modules: [a, c]"
 	}
 
 	def "non-existent module"() {
@@ -72,8 +74,8 @@ class DependencyTreeResolverTest extends Specification {
 		], processor)
 
 		then:
-		1 * processor.processDependency("b", [])
 		0 * _
-		thrown IllegalStateException
+		def ex = thrown IllegalArgumentException
+		ex.message == "Module found: d (dependency of module a)"
 	}
 }
