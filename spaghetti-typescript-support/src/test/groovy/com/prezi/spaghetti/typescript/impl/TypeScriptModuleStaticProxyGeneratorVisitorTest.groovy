@@ -1,16 +1,22 @@
 package com.prezi.spaghetti.typescript.impl
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 24/05/14.
  */
-class TypeScriptModuleStaticProxyGeneratorVisitorTest extends Specification {
+class TypeScriptModuleStaticProxyGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+		def definition = """module com.example.test
 
-interface MyInterface<T> {}
+interface MyInterface<T> {
+	/**
+	 * This should have nothing to do with the results.
+	 */
+	void someDummyMethod(int x)
+}
 /**
  * Does something.
  */
@@ -25,11 +31,12 @@ static int doSomethingStatic(int x)
 static void doSomethingVoid(int x)
 <T, U> T[] hello(T t, U y)
 static <T> MyInterface<T> returnT(T t)
-""")
+"""
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
 		def visitor = new TypeScriptModuleStaticProxyGeneratorVisitor(module)
 
 		expect:
-		visitor.processModule() == """export class __TestStatic {
+		visitor.visit(module) == """export class __TestStatic {
 	doSomethingStatic(x:number):number {
 		return com.example.test.Test.doSomethingStatic(x);
 	}

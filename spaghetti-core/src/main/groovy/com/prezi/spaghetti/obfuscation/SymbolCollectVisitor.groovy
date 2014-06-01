@@ -1,13 +1,17 @@
 package com.prezi.spaghetti.obfuscation
 
-import com.prezi.spaghetti.grammar.ModuleBaseVisitor
-import com.prezi.spaghetti.grammar.ModuleParser
-import org.antlr.v4.runtime.misc.NotNull
+import com.prezi.spaghetti.ast.ConstNode
+import com.prezi.spaghetti.ast.EnumNode
+import com.prezi.spaghetti.ast.ExternNode
+import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.ModuleMethodNode
+import com.prezi.spaghetti.ast.ModuleVisitorBase
+import com.prezi.spaghetti.ast.StructNode
 
-class SymbolCollectVisitor extends ModuleBaseVisitor<Set<String>> {
+class SymbolCollectVisitor extends ModuleVisitorBase<Set<String>> {
 
 	@Override
-	protected Set<String> aggregateResult(Set<String> aggregate, Set<String> nextResult) {
+	Set<String> aggregateResult(Set<String> aggregate, Set<String> nextResult) {
 		return aggregate + nextResult;
 	}
 
@@ -17,33 +21,32 @@ class SymbolCollectVisitor extends ModuleBaseVisitor<Set<String>> {
 	}
 
 	@Override
-	public Set<String> visitExternTypeDefinition(@NotNull ModuleParser.ExternTypeDefinitionContext ctx) {
-
-		ctx.name.parts.collect{it.getText()};
+	Set<String> visitExternNode(ExternNode node) {
+		return node.qualifiedName.parts
 	}
 
 	@Override
-	public Set<String> visitMethodDefinition(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx){
-
-		return [ctx.name.getText()];
+	Set<String> visitInterfaceNode(InterfaceNode node) {
+		return node.methods*.name
 	}
 
 	@Override
-	public Set<String> visitStructDefinition(@NotNull ModuleParser.StructDefinitionContext ctx) {
-
-		return ctx.propertyDefinition().collect{it.property.name.getText()};
+	Set<String> visitStructNode(StructNode node) {
+		return node.properties*.name
 	}
 
 	@Override
-	public Set<String> visitConstDefinition(@NotNull ModuleParser.ConstDefinitionContext ctx) {
-
-		return [ctx.name.getText()] + ctx.constEntry()*.constEntryDecl().name.text
+	Set<String> visitConstNode(ConstNode node) {
+		return node.entries*.name
 	}
 
 	@Override
-	public Set<String> visitEnumDefinition(@NotNull ModuleParser.EnumDefinitionContext ctx) {
-
-		return ctx.enumValue().collect{it.name.getText()};
+	Set<String> visitEnumNode(EnumNode node) {
+		return node.values*.name
 	}
 
+	@Override
+	Set<String> visitModuleMethodNode(ModuleMethodNode node) {
+		return [node.name]
+	}
 }

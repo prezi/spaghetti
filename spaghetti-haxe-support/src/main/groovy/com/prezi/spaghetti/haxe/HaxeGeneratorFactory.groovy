@@ -2,7 +2,7 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.AbstractGeneratorFactory
 import com.prezi.spaghetti.Generator
-import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.config.ModuleConfiguration
 
 /**
  * Created by lptr on 23/11/13.
@@ -12,16 +12,10 @@ public class HaxeGeneratorFactory extends AbstractGeneratorFactory {
 	private static def DEFAULT_EXTERNS = [
 	        UnicodeString: "String",
 	]
-	private static def EXTERNS = (DEFAULT_EXTERNS + HaxeJsHtmlExterns.EXTERNS).asImmutable()
+	public static def EXTERNS = (DEFAULT_EXTERNS + HaxeJsHtmlExterns.EXTERNS).asImmutable()
 
 	HaxeGeneratorFactory() {
 		super("haxe", "generates Haxe code")
-	}
-
-	@Override
-	Map<String, String> getExternMapping()
-	{
-		return EXTERNS
 	}
 
 	@Override

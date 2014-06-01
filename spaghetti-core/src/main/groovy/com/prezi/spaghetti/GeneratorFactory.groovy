@@ -1,6 +1,6 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.config.ModuleConfiguration
 
 /**
  * Created by lptr on 23/11/13.
@@ -20,11 +20,6 @@ public interface GeneratorFactory {
 	 * Creates generator.
 	 */
 	Generator createGenerator(ModuleConfiguration configuration)
-
-	/**
-	 * Maps the platform's own representations to native names.
-	 */
-	Map<String, String> getExternMapping()
 
 	/**
 	 * Returns set of symbols that need to be protected by the obfuscator.

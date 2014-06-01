@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.ast.ModuleNode
 
 final class TypeScriptUtils {
-	public static File createSourceFile(ModuleDefinition module, String name, File outputDirectory, String contents) {
+	public static File createSourceFile(ModuleNode module, String name, File outputDirectory, String contents) {
 		def namespace = module.name
 		def file = new File(outputDirectory, name + ".ts")
 		file.delete()

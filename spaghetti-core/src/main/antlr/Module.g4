@@ -1,8 +1,8 @@
 grammar Module;
 
-moduleDefinition : (documentation = Doc)? annotations?
-	'module' (name = qualifiedName)
-	('as' (alias = Name))?
+moduleDefinition : ( documentation = Doc )? annotations?
+	'module' qualifiedName
+	( 'as' Name )?
 	moduleElement*
 	;
 
@@ -12,7 +12,7 @@ moduleElement	: importDeclaration
 				| moduleMethodDefinition
 	;
 
-importDeclaration : 'import' (name = qualifiedName) ('as' (alias = Name))?
+importDeclaration : 'import' qualifiedName ( 'as' Name )?
 	;
 
 typeDefinition	: interfaceDefinition
@@ -21,9 +21,9 @@ typeDefinition	: interfaceDefinition
 				| enumDefinition
 	;
 
-interfaceDefinition : (documentation = Doc)? annotations?
-	'interface' (name = Name) typeParameters?
-	( 'extends' superInterfaceDefinition (',' superInterfaceDefinition )* )?
+interfaceDefinition : ( documentation = Doc )? annotations?
+	'interface' Name typeParameters?
+	( 'extends' superInterfaceDefinition ( ',' superInterfaceDefinition )* )?
 	'{'
 		interfaceMethodDefinition*
 	'}'
@@ -32,116 +32,128 @@ interfaceDefinition : (documentation = Doc)? annotations?
 superInterfaceDefinition : qualifiedName typeArguments?
 	;
 
-externTypeDefinition : (documentation = Doc)? annotations?
-	'extern' 'interface' (name = qualifiedName)
+externTypeDefinition : ( documentation = Doc )? annotations?
+	'extern' 'interface' qualifiedName
     ;
 
-typeParameters : '<' (parameters += typeParameter ) ( ',' ( parameters += typeParameter ) )* '>'
+typeParameters : '<' Name ( ',' Name )* '>'
 	;
 
-typeParameter : (name = Name)
-	;
-
-structDefinition : (documentation = Doc)? annotations?
-	'struct' (name = Name) '{'
+structDefinition : ( documentation = Doc )? annotations?
+	'struct' Name '{'
 		propertyDefinition*
 	'}'
 	;
 
-constDefinition : (documentation = Doc)? annotations?
-	'const' ( name = Name ) '{'
+constDefinition : ( documentation = Doc )? annotations?
+	'const' Name '{'
 		constEntry*
 	'}'
 	;
 
-constEntry : (documentation = Doc)? annotations?
+constEntry : ( documentation = Doc )? annotations?
 	constEntryDecl
 	;
 
 constEntryDecl
-	: boolType? ( name = Name ) '=' ( boolValue = Boolean )
-	| intType? ( name = Name ) '=' ( intValue = Integer )
-	| floatType? ( name = Name ) '=' ( floatValue = Float )
-	| stringType? ( name = Name ) '=' ( stringValue = String )
+	: boolType? Name '=' Boolean
+	| intType? Name '=' Integer
+	| floatType? Name '=' Float
+	| stringType? Name '=' String
 	;
 
-enumDefinition : (documentation = Doc)? annotations?
-	'enum' (name = Name) '{'
-		(values += enumValue)*
+enumDefinition : ( documentation = Doc )? annotations?
+	'enum' Name '{'
+		enumValue*
 	'}'
 	;
 
-enumValue : (documentation = Doc)? annotations?
- 	(name = Name)
+enumValue : ( documentation = Doc )? annotations?
+ 	Name
 	;
 
-moduleMethodDefinition : (documentation = Doc)? annotations?
+moduleMethodDefinition : ( documentation = Doc )? annotations?
 	(isStatic = 'static')?
 	methodDefinition
 	;
 
-interfaceMethodDefinition : (documentation = Doc)? annotations?
+interfaceMethodDefinition : ( documentation = Doc )? annotations?
 	methodDefinition
 	;
 
 methodDefinition :
 	typeParameters?
-	returnTypeChain
-	(name = Name)
-	'(' ( parameters = typeNamePairs )? ')'
+	returnType
+	Name
+	'(' methodParameters? ')'
 	;
 
-propertyDefinition : (documentation = Doc)? annotations?
-	(property = typeNamePair)
+propertyDefinition : ( documentation = Doc )? annotations?
+	typeNamePair
 	;
 
 annotations : annotation+
 	;
 
-annotation : '@' (name = Name) ( '(' annotationParameters? ')' )?
+annotation : '@' Name ( '(' annotationParameters? ')' )?
 	;
 
 annotationParameters	: annotationValue
 						| annotationParameter ( ',' annotationParameter )*
 	;
 
-annotationParameter : ( name = Name ) '=' annotationValue
+annotationParameter : Name '=' annotationValue
 	;
 
-annotationValue	: ( nullValue = Null )		# annotationNullParameter
-				| ( boolValue = Boolean )	# annotationBooleanParameter
-				| ( intValue = Integer )	# annotationIntParameter
-				| ( floatValue = Float )	# annotationFloatParameter
- 				| ( stringValue = String )	# annotationStringParameter
+annotationValue	: Null
+				| Boolean
+				| Integer
+				| Float
+ 				| String
 	;
 
-typeNamePairs : ( elements += typeNamePair ) ( ',' elements += typeNamePair )*
+methodParameters : methodParameter ( ',' methodParameter )*
 	;
 
-typeNamePair : annotations? (type = typeChain) (name = Name)
+methodParameter : annotations? typeNamePair
 	;
 
-returnTypeChain	: voidType		# voidReturnTypeChain
-				| typeChain		# normalReturnTypeChain
+typeNamePair : complexType Name
 	;
 
-typeChain	: valueType
-			| callbackTypeChain
+returnType
+	: voidType
+	| complexType
 	;
 
-callbackTypeChain	: ( elements += typeChainElement ) ( '->' ( elements += typeChainElement)  )+
+complexType
+	: type
+	| typeChain
 	;
 
-typeChainElement	: returnType		# simpleTypeChainElement
-					| '(' typeChain ')'	# subTypeChainElement
+type
+	: primitiveType ArrayQualifier*
+	| objectType ArrayQualifier*
 	;
 
-returnType	: voidType
-			| valueType
+typeChain
+	: typeChainElements
+	| '(' typeChainElements ')' ArrayQualifier+
 	;
 
-valueType	: primitiveType ArrayQualifier*
-			| moduleType ArrayQualifier*
+typeChainElements
+	: voidType '->' typeChainReturnType
+	| typeChainElement ( '->' typeChainElement )* '->' typeChainReturnType
+	;
+
+typeChainReturnType
+	: voidType
+	| typeChainElement
+	;
+
+typeChainElement
+	: type
+	| '(' typeChain ')'
 	;
 
 primitiveType	: boolType
@@ -169,13 +181,13 @@ anyType : 'any'
 voidType : 'void'
 	;
 
-moduleType : ( name = qualifiedName ) ( arguments = typeArguments )?
+objectType : qualifiedName typeArguments?
 	;
 
-typeArguments : '<' ( arguments += returnType ) ( ',' ( arguments += returnType ) )* '>'
+typeArguments : '<' returnType ( ',' returnType )* '>'
 	;
 
-qualifiedName : ( parts += Name ) ( '.' parts += Name )*
+qualifiedName : Name ( '.' Name )*
 	;
 
 Null				: 'null';
@@ -183,7 +195,7 @@ Boolean				: ( 'true' | 'false' );
 Integer				: SIGN? INTEGER_NUMBER;
 Float				: SIGN? NON_INTEGER_NUMBER;
 String				: '"' STRING_GUTS '"';
-Doc					: '/**' .*? '*/' '\r'* '\n'?;
+Doc					: '/**' .*? '*/';
 Name				: [_a-zA-Z][_a-zA-Z0-9]*;
 ArrayQualifier		: '[' ']';
 

@@ -1,16 +1,16 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.StructParser
+import com.prezi.spaghetti.definition.ModuleDefinitionParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 21/05/14.
  */
-class HaxeStructGeneratorVisitorTest extends Specification {
+class HaxeStructGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
-
-/**
+		def definition = """/**
  * Hey this is my struct!
  */
 struct MyStruct {
@@ -21,17 +21,18 @@ struct MyStruct {
 	@deprecated("struct")
 	string b
 }
-""")
-		def visitor = new HaxeStructGeneratorVisitor(module)
+"""
+		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.structDefinition()
+		def parser = new StructParser(context, "com.example.test")
+		parser.parse(mockResolver())
+		def visitor = new HaxeStructGeneratorVisitor()
 
 		expect:
-		visitor.processModule() == """
-/**
+		visitor.visit(parser.node) == """/**
  * Hey this is my struct!
  */
 typedef MyStruct = {
 	var a (default, never):Int;
-
 	/**
 	 * This is field b.
 	 */

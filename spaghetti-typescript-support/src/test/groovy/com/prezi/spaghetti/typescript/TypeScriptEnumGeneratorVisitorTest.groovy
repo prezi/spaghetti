@@ -1,14 +1,15 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 22/05/14.
  */
-class TypeScriptEnumGeneratorVisitorTest extends Specification {
+class TypeScriptEnumGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+		def definition = """module com.example.test
 
 enum MyEnum {
 	/**
@@ -17,12 +18,12 @@ enum MyEnum {
 	ALMA
 	BELA
 }
-""")
+"""
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
 		def visitor = new TypeScriptEnumGeneratorVisitor()
 
 		expect:
-		visitor.visit(module.context) == """export enum MyEnum {
-
+		visitor.visit(module) == """export enum MyEnum {
 	/**
 	 * Alma.
 	 */

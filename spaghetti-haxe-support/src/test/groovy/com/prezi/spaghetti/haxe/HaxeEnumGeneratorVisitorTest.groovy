@@ -1,35 +1,37 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.EnumParser
+import com.prezi.spaghetti.definition.ModuleDefinitionParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 21/05/14.
  */
-class HaxeEnumGeneratorVisitorTest extends Specification {
+class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
-
-enum MyEnum {
+		def definition = """enum MyEnum {
 	/**
 	 * Alma.
 	 */
 	ALMA
-	@deprecated
+	@deprecated("escape \\"this\\"!")
 	BELA
 	GEZA
 }
-""")
+"""
+		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.enumDefinition()
+		def parser = new EnumParser(context, "com.example.test")
+		parser.parse(mockResolver())
 		def visitor = new HaxeEnumGeneratorVisitor()
 
 		expect:
-		visitor.visit(module.context) == """abstract MyEnum(Int) {
-
+		visitor.visit(parser.node) == """abstract MyEnum(Int) {
 	/**
 	 * Alma.
 	 */
 	public static var ALMA = new MyEnum(0);
-	@:deprecated
+	@:deprecated("escape \\"this\\"!")
 	public static var BELA = new MyEnum(1);
 	public static var GEZA = new MyEnum(2);
 

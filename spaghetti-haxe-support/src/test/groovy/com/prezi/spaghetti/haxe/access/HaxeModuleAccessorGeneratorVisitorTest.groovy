@@ -1,30 +1,39 @@
 package com.prezi.spaghetti.haxe.access
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 24/05/14.
  */
-class HaxeModuleAccessorGeneratorVisitorTest extends Specification {
+class HaxeModuleAccessorGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+		def definition = """module com.example.test
 
-interface MyInterface<T> {}
+extern interface UnicodeString
+
+interface MyInterface<T> {
+	/**
+	 * This should not influence anything.
+	 */
+	int add(int a, int b)
+}
 
 /**
  * Initializes module.
  */
 @deprecated("use doSomething() instead")
 void initModule(int a, int b)
-string doSomething()
+UnicodeString[] doSomething()
 static int doStatic(int a, int b)
 static <T> MyInterface<T> returnT(T t)
-""")
-		def visitor = new HaxeModuleAccessorGeneratorVisitor(module)
+"""
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
+		def visitor = new HaxeModuleAccessorGeneratorVisitor()
 
 		expect:
-		visitor.processModule() == """@:final class Test {
+		visitor.visit(module) == """@:final class Test {
 
 	static var __instance:Dynamic = untyped __js__('SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"]');
 	static var __static:Dynamic = untyped __js__('SpaghettiConfiguration["__modules"]["com.example.test"]["__static"]');
@@ -36,7 +45,7 @@ static <T> MyInterface<T> returnT(T t)
 	@:extern public inline function initModule(a:Int, b:Int):Void {
 		__instance.initModule(a, b);
 	}
-	@:extern public inline function doSomething():String {
+	@:extern public inline function doSomething():Array<String> {
 		return __instance.doSomething();
 	}
 	@:extern public static inline function doStatic(a:Int, b:Int):Int {

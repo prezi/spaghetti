@@ -1,64 +1,55 @@
 package com.prezi.spaghetti.typescript.impl
 
-import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.ast.AstNode
+import com.prezi.spaghetti.ast.MethodParameterNode
+import com.prezi.spaghetti.ast.ModuleMethodNode
+import com.prezi.spaghetti.ast.ModuleMethodType
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
-import org.antlr.v4.runtime.misc.NotNull
 
 /**
  * Created by lptr on 16/11/13.
  */
 class TypeScriptModuleStaticProxyGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
-	TypeScriptModuleStaticProxyGeneratorVisitor(ModuleDefinition module)
-	{
-		super(module)
+	private final ModuleNode module
+
+	TypeScriptModuleStaticProxyGeneratorVisitor(ModuleNode module) {
+		this.module = module
 	}
 
 	@Override
-	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
-	{
-		return \
-"""export class __${module.alias}Static {
-${super.visitModuleDefinition(ctx)}
+	String visitModuleNode(ModuleNode node) {
+"""export class __${node.alias}Static {
+${node.methods*.accept(this).join("")}
 }
 """
 	}
 
 	@Override
-	String visitModuleMethodDefinition(@NotNull ModuleParser.ModuleMethodDefinitionContext ctx) {
-		if (!ctx.isStatic) {
+	String visitModuleMethodNode(ModuleMethodNode node) {
+		if (node.type != ModuleMethodType.STATIC) {
 			return ""
 		}
-		return super.visitModuleMethodDefinition(ctx)
-	}
+		def returnType = node.returnType.accept(this)
+		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
+		def params = node.parameters*.accept(this).join(", ")
+		def paramNames = node.parameters*.name.join(", ")
 
-	@Override
-	protected String visitMethodDefinitionInternal(@NotNull @NotNull ModuleParser.MethodDefinitionContext ctx)
-	{
-		def returnType = ctx.returnTypeChain().accept(this)
-
-		def typeParams = ctx.typeParameters()?.accept(this) ?: ""
-		def params
-		def callParams
-		if (ctx.parameters) {
-			params = ctx.parameters.accept(this)
-			callParams = ctx.parameters.elements.collect { it.name.text }.join(", ")
-		} else {
-			params = ""
-			callParams = ""
-		}
-
-		return \
-"""	${ctx.name.text}${typeParams}(${params}):${returnType} {
-		${returnType == "void"?"":"return "}${module.name}.${module.alias}.${ctx.name.text}(${callParams});
+"""	${node.name}${typeParams}(${params}):${returnType} {
+		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.name}.${module.alias}.${node.name}(${paramNames});
 	}
 """
 	}
 
 	@Override
-	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
-	{
-		return ""
+	String visitMethodParameterNode(MethodParameterNode node) {
+		return node.name + ":" + node.type.accept(this)
+	}
+
+	@Override
+	String afterVisit(AstNode node, String result) {
+		return result
 	}
 }

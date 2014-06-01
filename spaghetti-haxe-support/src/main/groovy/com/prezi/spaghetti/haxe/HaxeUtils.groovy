@@ -1,13 +1,9 @@
 package com.prezi.spaghetti.haxe
-
-import com.prezi.spaghetti.definition.ModuleDefinition
-
 /**
  * Created by lptr on 19/11/13.
  */
 final class HaxeUtils {
-	public static File createHaxeSourceFile(ModuleDefinition module, String name, File outputDirectory, String contents) {
-		def namespace = module.name
+	public static File createHaxeSourceFile(String namespace, String name, File outputDirectory, String contents) {
 		def packageDir = createNamespacePath(outputDirectory, namespace)
 		packageDir.mkdirs()
 		def file = new File(packageDir, name + ".hx")

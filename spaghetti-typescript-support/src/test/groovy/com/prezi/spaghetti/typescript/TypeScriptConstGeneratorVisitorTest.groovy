@@ -1,14 +1,15 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 22/05/14.
  */
-class TypeScriptConstGeneratorVisitorTest extends Specification {
+class TypeScriptConstGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+		def definition = """module com.example.test
 
 /**
  * My dear constants.
@@ -22,17 +23,16 @@ const MyConstants {
 	geza = -1.23
 	tibor = "tibor"
 }
-""")
-		def visitor = new TypeScriptConstGeneratorVisitor(module)
+"""
+		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
+		def visitor = new TypeScriptConstGeneratorVisitor()
 
 		expect:
-		visitor.processModule() == """
-/**
+		visitor.visit(module) == """/**
  * My dear constants.
  */
 export class MyConstants {
 	static alma: number = 1;
-
 	/**
 	 * Bela is -123.
 	 */

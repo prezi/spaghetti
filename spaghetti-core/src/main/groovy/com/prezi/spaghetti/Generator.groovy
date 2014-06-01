@@ -1,7 +1,6 @@
 package com.prezi.spaghetti
 
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.ast.ModuleNode
 
 /**
  * Created by lptr on 12/11/13.
@@ -16,20 +15,20 @@ public interface Generator {
 	 *
 	 * <pre>
 	 *     spaghetti(function(SpaghettiConfiguration) {
-	 *         var modules = SpaghettiConfiguration.__modules;
-	 *         var baseUrl = SpaghettiConfiguration.__baseUrl;
+	 *         var modules = SpaghettiConfiguration["__modules"];
+	 *         var baseUrl = SpaghettiConfiguration["__baseUrl"];
 	 *         // Do stuff
 	 *         return {
-	 *             __instance: { ... }, // the module object instance
-	 *             __static: { ... } // exposed static methods
+	 *             "__instance": { ... }, // the module object instance
+	 *             "__static": { ... } // exposed static methods
 	 *         }
 	 *     });
 	 * </pre>
 	 */
-	String processModuleJavaScript(ModuleDefinition module, ModuleConfiguration config, String javaScript)
+	String processModuleJavaScript(ModuleNode module, String javaScript)
 
 	/**
 	 * Process the JavaScript code of an application before wrapping it into a Require JS wrapper.
 	 */
-	String processApplicationJavaScript(String javaScript);
+	String processApplicationJavaScript(String javaScript)
 }

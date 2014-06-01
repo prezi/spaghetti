@@ -1,51 +1,29 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.WithJavaDoc
-import com.prezi.spaghetti.grammar.ModuleBaseVisitor
-import com.prezi.spaghetti.grammar.ModuleParser
-import org.antlr.v4.runtime.misc.NotNull
+import com.prezi.spaghetti.ast.EnumNode
+import com.prezi.spaghetti.ast.EnumValueNode
+import com.prezi.spaghetti.ast.StringModuleVisitorBase
 
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeEnumGeneratorVisitor extends ModuleBaseVisitor<String> {
-
-	private class HaxeEnumValueGeneratorVisitor extends ModuleBaseVisitor<String> {
-		private final String enumName
-		private final int valueIndex
-
-		HaxeEnumValueGeneratorVisitor(String enumName, int valueIndex) {
-			this.enumName = enumName
-			this.valueIndex = valueIndex
-		}
-
-		@WithDeprecation
-		@WithJavaDoc
-		@Override
-		String visitEnumValue(@NotNull ModuleParser.EnumValueContext ctx) {
-"""	public static var ${ctx.name.text} = new ${enumName}(${valueIndex});
-"""
-		}
-	}
-
-	@WithDeprecation
-	@WithJavaDoc
+class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
-	String visitEnumDefinition(@NotNull @NotNull ModuleParser.EnumDefinitionContext ctx)
-	{
-		def enumName = ctx.name.text
+	String visitEnumNode(EnumNode node) {
+		def enumName = node.name
 
 		def values = []
-		ctx.values.eachWithIndex { valueCtx, index ->
-			values.add valueCtx.accept(new HaxeEnumValueGeneratorVisitor(enumName, index))
+		node.values.eachWithIndex { value, index ->
+			values.add value.accept(new EnumValueVisitor(enumName, index))
 		}
 
 		return \
 """abstract ${enumName}(Int) {
-${values.join("")}
-	static var _values:Array<${enumName}> = [ ${ctx.values.collect { it.name.text }.join(", ")} ];
-	static var _names:Array<String> =  [ ${ctx.values.collect { "\"${it.name.text}\"" }.join(", ")} ];
-	static var _namesToValues = { ${ctx.values.collect { "\"${it.name.text}\": ${it.name.text}" }.join(", ")} };
+${values.join("\n")}
+
+	static var _values:Array<${enumName}> = [ ${node.values.join(", ")} ];
+	static var _names:Array<String> =  [ ${node.values.collect { "\"${it}\"" }.join(", ")} ];
+	static var _namesToValues = { ${node.values.collect { "\"${it}\": ${it}" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
@@ -80,5 +58,20 @@ ${values.join("")}
 	}
 }
 """
+	}
+
+	private static class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
+		private final String enumName
+		private final int index
+
+		EnumValueVisitor(String enumName, int index) {
+			this.enumName = enumName
+			this.index = index
+		}
+
+		@Override
+		String visitEnumValueNode(EnumValueNode node) {
+			return "\tpublic static var ${node.name} = new ${enumName}(${index});"
+		}
 	}
 }

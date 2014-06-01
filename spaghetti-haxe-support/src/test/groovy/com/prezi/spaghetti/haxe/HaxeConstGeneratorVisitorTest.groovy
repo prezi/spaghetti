@@ -1,14 +1,15 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.definition.DefinitionParserHelper
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 /**
  * Created by lptr on 21/05/14.
  */
-class HaxeConstGeneratorVisitorTest extends Specification {
+class HaxeConstGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def module = new DefinitionParserHelper().parse("""module com.example.test
+		def definition = """module com.example.test
 
 /**
  * My dear constants.
@@ -24,18 +25,18 @@ const MyConstants {
 	geza = -1.23
 	tibor = "tibor"
 }
-""")
-		def visitor = new HaxeConstGeneratorVisitor(module)
+"""
+		def parser = ModuleParser.create(new ModuleDefinitionSource("test", definition))
+		def module = parser.parse(mockResolver())
+		def visitor = new HaxeConstGeneratorVisitor()
 
 		expect:
-		visitor.processModule() == """
-/**
+		visitor.visit(module) == """/**
  * My dear constants.
  */
 @:deprecated
 @:final class MyConstants {
 	public static inline var alma:Int = 1;
-
 	/**
 	 * Bela is -123.
 	 */

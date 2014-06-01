@@ -1,9 +1,7 @@
 package com.prezi.spaghetti.haxe.impl
 
-import com.prezi.spaghetti.definition.ModuleDefinition
-import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
-import org.antlr.v4.runtime.misc.NotNull
+import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.ast.StringModuleVisitorBase
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
@@ -14,23 +12,21 @@ import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
 /**
  * Created by lptr on 16/11/13.
  */
-class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeModuleInitializerGeneratorVisitor extends StringModuleVisitorBase {
 
-	private final Collection<ModuleDefinition> dependencies
+	private final Collection<ModuleNode> dependencies
 
-	HaxeModuleInitializerGeneratorVisitor(ModuleDefinition module, Collection<ModuleDefinition> dependencies)
+	HaxeModuleInitializerGeneratorVisitor(Collection<ModuleNode> dependencies)
 	{
-		super(module)
 		this.dependencies = dependencies
 	}
 
 	@Override
-	String visitModuleDefinition(@NotNull @NotNull ModuleParser.ModuleDefinitionContext ctx)
-	{
-		def initializerName = "__" + module.alias + "Init"
+	String visitModuleNode(ModuleNode node) {
+		def initializerName = "__" + node.alias + "Init"
 
 		def instances = []
-		dependencies.eachWithIndex { ModuleDefinition dependency, int index ->
+		dependencies.eachWithIndex { ModuleNode dependency, int index ->
 			instances.add "var dependency${index}:${dependency.name}.${dependency.alias} = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${dependency.name}\"][\"${INSTANCE}\"]');"
 		}
 		def references = (0..<instances.size()).collect { "dependency${it}" }
@@ -41,8 +37,8 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
 		${instances.join("\n\t\t")}
-		var module:${module.name}.I${module.alias} = new ${module.name}.${module.alias}(${references.join(", ")});
-		var statics = new ${module.name}.__${module.alias}Static();
+		var module:${node.name}.I${node.alias} = new ${node.name}.${node.alias}(${references.join(", ")});
+		var statics = new ${node.name}.__${node.alias}Static();
 		untyped ${HAXE_MODULE_VAR} = {
 			${INSTANCE}: module,
 			${STATIC}: statics
@@ -53,23 +49,5 @@ class HaxeModuleInitializerGeneratorVisitor extends AbstractHaxeGeneratorVisitor
 }
 """
 		return initializerContents
-	}
-
-	@Override
-	String visitConstDefinition(@NotNull @NotNull ModuleParser.ConstDefinitionContext ctx)
-	{
-		return "\"${ctx.name.text}\": new __${ctx.name.text}()"
-	}
-
-	@Override
-	String visitModuleElement(@NotNull @NotNull ModuleParser.ModuleElementContext ctx)
-	{
-		return ctx.typeDefinition()?.accept(this) ?: ""
-	}
-
-	@Override
-	String visitTypeDefinition(@NotNull @NotNull ModuleParser.TypeDefinitionContext ctx)
-	{
-		return ctx.constDefinition()?.accept(this) ?: ""
 	}
 }

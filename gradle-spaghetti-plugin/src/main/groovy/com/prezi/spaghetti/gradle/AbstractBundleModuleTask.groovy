@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.gradle
 
+import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import com.prezi.spaghetti.bundle.ModuleBundleParameters
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.definition.ModuleDefinition
+import com.prezi.spaghetti.config.ModuleConfiguration
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
@@ -81,14 +81,14 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		}
 		def config = readConfig(moduleDefinitions)
 		def module = config.getLocalModules().iterator().next()
-		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, config, getInputFile().text)
+		def processedJavaScript = createGenerator(config).processModuleJavaScript(module, getInputFile().text)
 
 		createBundle(config, module, processedJavaScript, getSourceMap()?.text, getResourcesDirectory())
 	}
 
 	protected ModuleBundle createBundle(
 			ModuleConfiguration config,
-			ModuleDefinition module,
+			ModuleNode module,
 			String javaScript,
 			String sourceMap,
 			File resourceDir) {
@@ -98,7 +98,7 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 				getOutputDirectory(),
 				new ModuleBundleParameters(
 						name: module.name,
-						definition: module.definitionSource,
+						definition: module.source.contents,
 						version: String.valueOf(project.version),
 						sourceBaseUrl: getSourceBaseUrl(),
 						javaScript: javaScript,
