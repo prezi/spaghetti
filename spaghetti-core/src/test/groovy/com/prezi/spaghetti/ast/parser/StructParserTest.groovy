@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.parser
 
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.ast.TypeParameterReference
 import spock.lang.Specification
 
 import static com.prezi.spaghetti.ast.PrimitiveType.ANY
@@ -15,12 +16,13 @@ import static com.prezi.spaghetti.ast.PrimitiveType.STRING
 class StructParserTest extends Specification {
 	def "parse primitives"() {
 		def context = AstTestUtils.parser("""
-struct MyStruct {
+struct MyStruct<T> {
 	bool boolValue
 	int intValue
 	float floatValue
 	string stringValue
 	any anyValue
+	T genericValue
 }
 """).structDefinition()
 		def parser = new StructParser(context, "com.example.test")
@@ -37,14 +39,17 @@ struct MyStruct {
 				"floatValue",
 				"stringValue",
 				"anyValue",
+				"genericValue",
 		]
-		node.properties*.type*.type == [
+		(node.properties*.type)[0..4].type == [
 				BOOL,
 				INT,
 				FLOAT,
 				STRING,
 				ANY,
 		]
+		(node.properties*.type)[5] instanceof TypeParameterReference
+		(node.properties*.type)[5].type.name == "T"
 		0 * _
 	}
 

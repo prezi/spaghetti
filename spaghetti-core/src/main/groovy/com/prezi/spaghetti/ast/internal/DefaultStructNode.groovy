@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.ast.TypeParameterNode
 
 /**
  * Created by lptr on 29/05/14.
@@ -15,6 +16,7 @@ class DefaultStructNode extends AbstractTypeNode implements StructNode, MutableD
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE
 
+	final NamedNodeSet<TypeParameterNode> typeParameters = new DefaultNamedNodeSet<>("type parameter")
 	final NamedNodeSet<DefaultPropertyNode> properties = new DefaultNamedNodeSet<>("property")
 
 	DefaultStructNode(FQName qualifiedName) {

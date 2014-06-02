@@ -40,7 +40,7 @@ typeParameters : '<' Name ( ',' Name )* '>'
 	;
 
 structDefinition : ( documentation = Doc )? annotations?
-	'struct' Name '{'
+	'struct' Name typeParameters? '{'
 		propertyDefinition*
 	'}'
 	;
