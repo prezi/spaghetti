@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * Created by lptr on 12/04/14.
@@ -20,7 +21,8 @@ class FQNameTest extends Specification {
 		""   | _
 	}
 
-	def "from string"() {
+	@Unroll
+	def "from string #nameAsString"() {
 		def fqname = FQName.fromString(nameAsString)
 
 		expect:
@@ -36,7 +38,8 @@ class FQNameTest extends Specification {
 		"bela.geza.lajos" | "bela.geza" | "lajos"
 	}
 
-	def "from namespace and local name"() {
+	@Unroll
+	def "from namespace and local name: #nameAsString"() {
 		def fqname = FQName.fromString(namespace, localName)
 
 		expect:
@@ -61,6 +64,7 @@ class FQNameTest extends Specification {
 		fqname.fullyQualifiedName == "lajos"
 	}
 
+	@Unroll
 	def "qualify name against another name"() {
 		def parent = FQName.fromString(parentNameAsString)
 		def child = FQName.fromString(nameAsString)
@@ -76,6 +80,7 @@ class FQNameTest extends Specification {
 	}
 
 
+	@Unroll
 	def "qualify local name against namespace"() {
 		def child = FQName.fromString(nameAsString)
 		def resolved = FQName.qualifyLocalName(parentNamespace, child)
@@ -89,7 +94,8 @@ class FQNameTest extends Specification {
 		"lajos.bela"    | "geza"       | "lajos.bela.geza"
 	}
 
-	def "has namespace"() {
+	@Unroll
+	def "has namespace #name"() {
 		def fqname = FQName.fromString(name)
 
 		expect:
@@ -101,7 +107,8 @@ class FQNameTest extends Specification {
 		"lajos"      | false
 	}
 
-	def "compare to"() {
+	@Unroll
+	def "compare to #a <=> #b"() {
 		def fqa = FQName.fromString(a)
 		def fqb = FQName.fromString(b)
 
@@ -115,5 +122,18 @@ class FQNameTest extends Specification {
 		"lajos"      | "lajos.bela"
 		"lajos.bela" | "bela"
 		"lajos.bela" | "lajos.bela"
+	}
+
+	@Unroll
+	def "parts of #fqName == #parts"() {
+		def name = FQName.fromString(fqName)
+
+		expect:
+		name.parts == parts
+
+		where:
+		fqName                  | parts
+		"com.example.test.Test" | ["com", "example", "test", "Test"]
+		"tibor"                 | ["tibor"]
 	}
 }
