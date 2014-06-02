@@ -28,7 +28,7 @@ class ModuleObfuscator {
 		def config = params.config
 		def module = params.module
 		Set<String> symbols = protectedSymbols + config.allModules.collect {
-			new SymbolCollectVisitor().visit(it.context)
+			new SymbolCollectVisitor().visit(it)
 		}.flatten() + (params.additionalSymbols ?: [])
 
 		// OBFUSCATE
@@ -69,5 +69,3 @@ class ModuleObfuscator {
 		)
 	}
 }
-
-
