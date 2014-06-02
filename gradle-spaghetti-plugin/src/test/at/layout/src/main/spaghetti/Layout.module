@@ -61,6 +61,10 @@ struct CharacterStyle {
 	@mutable any value
 }
 
+struct Generic<T> {
+	T element
+}
+
 @deprecated
 interface AbstractText {
 	@deprecated("use \"insertNextGen\" instead")

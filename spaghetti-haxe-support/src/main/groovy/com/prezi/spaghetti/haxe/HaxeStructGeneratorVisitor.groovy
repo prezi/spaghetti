@@ -10,7 +10,11 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
 	@Override
 	String visitStructNode(StructNode node) {
-"""typedef ${node.name} = {
+		def typeName = node.name
+		if (node.typeParameters) {
+			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
+		}
+"""typedef ${typeName} = {
 ${visitChildren(node)}
 }
 """

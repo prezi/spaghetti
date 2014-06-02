@@ -13,13 +13,14 @@ class HaxeStructGeneratorVisitorTest extends AstTestBase {
 		def definition = """/**
  * Hey this is my struct!
  */
-struct MyStruct {
+struct MyStruct<T> {
 	int a
 	/**
 	 * This is field b.
 	 */
 	@deprecated("struct")
 	string b
+	@mutable T t
 }
 """
 		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.structDefinition()
@@ -31,13 +32,14 @@ struct MyStruct {
 		visitor.visit(parser.node) == """/**
  * Hey this is my struct!
  */
-typedef MyStruct = {
+typedef MyStruct<T> = {
 	var a (default, never):Int;
 	/**
 	 * This is field b.
 	 */
 	@:deprecated("struct")
 	var b (default, never):String;
+	var t:T;
 
 }
 """

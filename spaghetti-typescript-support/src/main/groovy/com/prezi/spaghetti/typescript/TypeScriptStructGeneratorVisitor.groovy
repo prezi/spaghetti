@@ -10,7 +10,11 @@ class TypeScriptStructGeneratorVisitor extends AbstractTypeScriptGeneratorVisito
 
 	@Override
 	String visitStructNode(StructNode node) {
-"""export interface ${node.name} {
+		def typeName = node.name
+		if (node.typeParameters) {
+			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
+		}
+"""export interface ${typeName} {
 ${visitChildren(node)}
 }
 """

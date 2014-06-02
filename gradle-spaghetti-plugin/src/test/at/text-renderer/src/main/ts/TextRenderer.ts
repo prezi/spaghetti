@@ -27,6 +27,10 @@ export class RendererImpl implements Renderer {
 		this.prefix = prefix;
 		this.suffix = suffix;
 		this.testStuff = layout.createTestStuff();
+		var generic:prezi.graphics.text.Generic<string> = {
+			element: "lajos"
+		};
+		console.log("Generic: ", generic.element);
 	}
 
     render(text:prezi.graphics.text.Text):string {

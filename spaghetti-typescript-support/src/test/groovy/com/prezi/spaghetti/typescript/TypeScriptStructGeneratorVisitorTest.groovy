@@ -13,13 +13,14 @@ class TypeScriptStructGeneratorVisitorTest extends AstTestBase {
 		def definition = """/**
  * Hey this is my struct!
  */
-struct MyStruct {
+struct MyStruct<T> {
 	int a
 	/**
 	 * This is field b.
 	 */
 	@deprecated("struct")
 	string b
+	T t
 }
 """
 		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.structDefinition()
@@ -31,12 +32,13 @@ struct MyStruct {
 		visitor.visit(parser.node) == """/**
  * Hey this is my struct!
  */
-export interface MyStruct {
+export interface MyStruct<T> {
 	a: number;
 	/**
 	 * This is field b.
 	 */
 	b: string;
+	t: T;
 
 }
 """
