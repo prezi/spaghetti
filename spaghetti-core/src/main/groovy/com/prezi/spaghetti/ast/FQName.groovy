@@ -88,7 +88,7 @@ final public class FQName implements Comparable<FQName>, Serializable {
 	}
 
 	public List<String> getParts() {
-		List<String> result = namespace ? namespace.split(/\./) : []
+		List<String> result = namespace ? namespace.tokenize(".") : []
 		result.add localName
 		return result
 	}
