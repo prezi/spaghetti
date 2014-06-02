@@ -6,11 +6,11 @@ import com.prezi.spaghetti.structure.StructuredWriter
  * Created by lptr on 16/11/13.
  */
 interface ModuleBundle extends Comparable<ModuleBundle> {
-	public static final def DEFINITION_PATH = "module.def"
-	public static final def SOURCE_MAP_PATH = "module.map"
-	public static final def JAVASCRIPT_PATH = "module.js"
-	public static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
-	public static final def RESOURCES_PREFIX = "resources/"
+	static final def DEFINITION_PATH = "module.def"
+	static final def SOURCE_MAP_PATH = "module.map"
+	static final def JAVASCRIPT_PATH = "module.js"
+	static final def MANIFEST_MF_PATH = "META-INF/MANIFEST.MF"
+	static final def RESOURCES_PREFIX = "resources/"
 
 	String getName()
 	String getVersion()

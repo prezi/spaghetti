@@ -27,7 +27,7 @@ class ModuleBundleLookup {
 			}
 		}
 		Set<ModuleBundle> transitiveBundles = new TreeSet<>()
-		(potentialTransitiveDependencies - directDependencies).each { File file ->
+		(potentialTransitiveDependencies - directDependencies).each { file ->
 			def bundle = tryLoadBundle(file)
 			if (bundle && !moduleLookup.containsKey(bundle.name)) {
 				transitiveBundles.add bundle

@@ -30,7 +30,7 @@ import javax.inject.Inject
  */
 class SpaghettiHaxePlugin implements Plugin<Project> {
 
-	protected static final logger = LoggerFactory.getLogger(SpaghettiHaxePlugin)
+	private static final logger = LoggerFactory.getLogger(SpaghettiHaxePlugin)
 
 	private final Instantiator instantiator
 
@@ -70,7 +70,7 @@ class SpaghettiHaxePlugin implements Plugin<Project> {
 					@Override
 					void execute(HaxeBinaryBase compiledBinary) {
 						compiledBinary.source.add spaghettiGeneratedSourceSet
-						logger.debug("Added ${spaghettiGeneratedSourceSet} to ${compiledBinary} in ${project.path}")
+						SpaghettiHaxePlugin.logger.debug("Added ${spaghettiGeneratedSourceSet} to ${compiledBinary} in ${project.path}")
 					}
 				})
 			}

@@ -6,7 +6,6 @@ import com.prezi.spaghetti.ast.NamedNodeSet;
 import java.util.Map;
 import java.util.Set;
 
-@SuppressWarnings("UnusedDeclaration")
 public class DefaultNamedNodeSet<T extends NamedNode> extends AbstractNodeSet<String, T> implements NamedNodeSet<T> {
 	public DefaultNamedNodeSet(String type)
 	{

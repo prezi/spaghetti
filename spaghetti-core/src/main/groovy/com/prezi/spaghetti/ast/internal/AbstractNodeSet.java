@@ -12,7 +12,7 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import java.io.Serializable;
 import java.util.*;
 
-@SuppressWarnings({"NullableProblems", "UnusedDeclaration"})
+@SuppressWarnings("NullableProblems")
 public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode> extends GroovyObjectSupport implements NodeSet<K, N> {
 	public AbstractNodeSet(String type)
 	{
@@ -45,7 +45,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 
 	@Deprecated
 	@Override
-	@SuppressWarnings("SuspiciousMethodCalls")
 	public boolean contains(Object o)
 	{
 		return delegate.containsValue(o);
@@ -87,7 +86,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 	}
 
 	@Override
-	@SuppressWarnings("SuspiciousToArrayCall")
 	public <T> T[] toArray(T[] a)
 	{
 		return delegate.values().toArray(a);
@@ -144,7 +142,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 
 	@Deprecated
 	@Override
-	@SuppressWarnings("deprecation")
 	public boolean addAll(Collection<? extends N> c)
 	{
 		for (N item : c) {

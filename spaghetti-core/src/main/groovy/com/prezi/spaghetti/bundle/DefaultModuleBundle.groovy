@@ -66,24 +66,24 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, params.version ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, params.sourceBaseUrl ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_DEPENDENCIES, params.dependentModules.join(","))
-			builder.appendFile(MANIFEST_MF_PATH, { OutputStream out -> manifest.write(out) })
+			builder.appendFile(ModuleBundle.MANIFEST_MF_PATH, { out -> manifest.write(out) })
 
 			// Store definition
-			builder.appendFile DEFINITION_PATH, { OutputStream out -> out << params.definition }
+			builder.appendFile ModuleBundle.DEFINITION_PATH, { out -> out << params.definition }
 
 			// Store module itself
-			builder.appendFile JAVASCRIPT_PATH, { OutputStream out -> out << params.javaScript }
+			builder.appendFile ModuleBundle.JAVASCRIPT_PATH, { out -> out << params.javaScript }
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
-				builder.appendFile SOURCE_MAP_PATH, { OutputStream out -> out << params.sourceMap }
+				builder.appendFile ModuleBundle.SOURCE_MAP_PATH, { out -> out << params.sourceMap }
 			}
 
 			// Store resources
 			def resourceDir = params.resourcesDirectory
 			if (resourceDir?.exists()) {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
-					def resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
+					def resourcePath = ModuleBundle.RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
 					logger.debug("Adding resource {}", resourcePath)
 					builder.appendFile resourcePath, { out -> resourceFile.withInputStream { out << it } }
 					resourcePaths.add resourcePath
@@ -98,13 +98,13 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 	}
 
 	protected static DefaultModuleBundle loadInternal(StructuredReader source) {
-		if (!source.hasFile(MANIFEST_MF_PATH)) {
+		if (!source.hasFile(ModuleBundle.MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source)
 		}
-		if (!source.hasFile(DEFINITION_PATH)) {
+		if (!source.hasFile(ModuleBundle.DEFINITION_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing definition: ${source}")
 		}
-		if (!source.hasFile(JAVASCRIPT_PATH)) {
+		if (!source.hasFile(ModuleBundle.JAVASCRIPT_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing JavaScript: ${source}")
 		}
 
@@ -114,12 +114,12 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
-					case MANIFEST_MF_PATH:
+					case ModuleBundle.MANIFEST_MF_PATH:
 						manifest = new Manifest(contents())
 						break
 					default:
-						if (path.startsWith(RESOURCES_PREFIX)) {
-							resourcePaths.add(path.substring(RESOURCES_PREFIX.length()))
+						if (path.startsWith(ModuleBundle.RESOURCES_PREFIX)) {
+							resourcePaths.add(path.substring(ModuleBundle.RESOURCES_PREFIX.length()))
 						}
 						break
 				}
@@ -174,32 +174,32 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 			@Override
 			void handleFile(String path, Callable<? extends InputStream> contents) {
 				switch (path) {
-					case MANIFEST_MF_PATH:
+					case ModuleBundle.MANIFEST_MF_PATH:
 						break
-					case DEFINITION_PATH:
+					case ModuleBundle.DEFINITION_PATH:
 						if (elements.contains(ModuleBundleElement.definition)) {
 							output.appendFile "${name}.def", write(contents)
 						}
 						break
-					case JAVASCRIPT_PATH:
+					case ModuleBundle.JAVASCRIPT_PATH:
 						if (elements.contains(ModuleBundleElement.javascript)) {
 							output.appendFile "${name}.js", write(contents)
 						}
 						break
-					case SOURCE_MAP_PATH:
+					case ModuleBundle.SOURCE_MAP_PATH:
 						if (elements.contains(ModuleBundleElement.sourcemap)) {
 							output.appendFile "${name}.js.map", write(contents)
 						}
 						break
 					default:
-						if (elements.contains(ModuleBundleElement.resources) && path.startsWith(RESOURCES_PREFIX)) {
-							def resourcePath = path.substring(RESOURCES_PREFIX.length())
+						if (elements.contains(ModuleBundleElement.resources) && path.startsWith(ModuleBundle.RESOURCES_PREFIX)) {
+							def resourcePath = path.substring(ModuleBundle.RESOURCES_PREFIX.length())
 							// Skip the resources directory itself
 							if (resourcePath) {
 								def dirs = resourcePath.tokenize("/")
 								def fileName = dirs.pop()
 								def dirOutput = output
-								dirs.each { File dir ->
+								dirs.each { dir ->
 									dirOutput = dirOutput.subAppender(dir)
 								}
 								dirOutput.appendFile fileName, write(contents)

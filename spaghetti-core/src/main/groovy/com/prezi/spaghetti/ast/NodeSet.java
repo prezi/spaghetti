@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
-@SuppressWarnings({"UnusedDeclaration", "NullableProblems"})
+@SuppressWarnings("NullableProblems")
 public interface NodeSet<K extends Serializable, N extends AstNode> extends Set<N> {
 	@Deprecated
 	@Override
