@@ -3,6 +3,7 @@ package com.prezi.spaghetti.ast.parser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 
+@SuppressWarnings("UnusedDeclaration")
 public class InternalAstParserException extends RuntimeException {
 
 	public InternalAstParserException(String message, Throwable cause) {
@@ -10,10 +11,10 @@ public class InternalAstParserException extends RuntimeException {
 	}
 
 	private InternalAstParserException(Token start, Token stop, String message, Throwable cause) {
-		this(createMessage(start, stop, message), cause);
+		this(createMessage(start, message), cause);
 	}
 
-	private static String createMessage(Token start, Token stop, String message)
+	private static String createMessage(Token start, String message)
 	{
 		return " at line " + start.getLine() + ":" + start.getCharPositionInLine() + ": " + message;
 	}

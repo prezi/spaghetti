@@ -6,6 +6,7 @@ import com.prezi.spaghetti.ast.QualifiedNodeSet;
 
 import java.util.Map;
 
+@SuppressWarnings("UnusedDeclaration")
 public class DefaultQualifiedNodeSet<T extends QualifiedNode> extends AbstractNodeSet<FQName, T> implements QualifiedNodeSet<T> {
 	public DefaultQualifiedNodeSet(String type)
 	{

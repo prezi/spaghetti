@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.parser;
 
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
+@SuppressWarnings("UnusedDeclaration")
 public class AstParserException extends RuntimeException {
 	public AstParserException(ModuleDefinitionSource source, String message) {
 		this(source, message, null);

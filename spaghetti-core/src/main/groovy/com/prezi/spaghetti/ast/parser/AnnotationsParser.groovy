@@ -4,14 +4,13 @@ import com.prezi.spaghetti.ast.AnnotatedNode
 import com.prezi.spaghetti.ast.AnnotationNode
 import com.prezi.spaghetti.ast.internal.DefaultAnnotationNode
 import com.prezi.spaghetti.grammar.ModuleParser
-import com.prezi.spaghetti.grammar.ModuleParser.AnnotationValueContext
 
 /**
  * Created by lptr on 30/05/14.
  */
 class AnnotationsParser {
 	static void parseAnnotations(ModuleParser.AnnotationsContext context, AnnotatedNode node) {
-		context?.annotation()?.each { annotationCtx ->
+		context?.annotation()?.each { ModuleParser.AnnotationContext annotationCtx ->
 			node.annotations.add fromContext(annotationCtx), annotationCtx
 		}
 	}
@@ -36,7 +35,7 @@ class AnnotationsParser {
 		return new DefaultAnnotationNode(context.Name().text, parameters)
 	}
 
-	protected static Object parseAnnotationValue(AnnotationValueContext context) {
+	protected static Object parseAnnotationValue(ModuleParser.AnnotationValueContext context) {
 		def value
 		if (context.Null()) {
 			value = null
