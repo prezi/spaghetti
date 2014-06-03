@@ -41,8 +41,7 @@ class CommonJsWrapper implements Wrapper {
 		result.append /**/ "var ${SPAGHETTI_WRAPPER_FUNCTION}=function(){"
 		result.append /**//**/ "return arguments[0](${CONFIG});"
 		result.append /**/ "};"
-		result.append /**/ "return "
-		result.append /**/ javaScript
+		CommentUtils.appendAfterInitialComment(result, "return ", javaScript)
 		result.append "};"
 		return result.toString()
 	}
