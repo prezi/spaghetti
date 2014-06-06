@@ -10,7 +10,7 @@ import com.prezi.spaghetti.ast.ModuleVisitor
  */
 abstract class AbstractNode implements AstNode {
 	@Override
-	def <T> T accept(ModuleVisitor<? extends T> visitor) {
+	def <X> X accept(ModuleVisitor<? extends X> visitor) {
 		def result = visitor.beforeVisit(this)
 		try {
 			result = visitor.aggregateResult(result, acceptInternal(visitor))
@@ -33,7 +33,7 @@ abstract class AbstractNode implements AstNode {
 		return children
 	}
 
-	abstract def <T> T acceptInternal(ModuleVisitor<? extends T> visitor)
+	abstract <X> X acceptInternal(ModuleVisitor<? extends X> visitor)
 
 	@Override
 	abstract String toString()
