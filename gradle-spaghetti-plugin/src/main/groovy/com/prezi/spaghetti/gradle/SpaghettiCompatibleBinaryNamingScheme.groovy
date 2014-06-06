@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.gradle
 
 import org.gradle.api.Nullable
-import org.gradle.language.base.internal.BinaryNamingScheme
+import org.gradle.runtime.base.internal.BinaryNamingScheme
 
 /**
  * Created by lptr on 29/04/14.

@@ -20,7 +20,7 @@ import org.gradle.api.Project
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.language.base.BinaryContainer
 import org.gradle.language.base.ProjectSourceSet
-import org.gradle.language.base.internal.BinaryInternal
+import org.gradle.runtime.base.internal.BinaryInternal
 import org.slf4j.LoggerFactory
 
 import javax.inject.Inject
