@@ -2,6 +2,7 @@ package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
 import com.prezi.spaghetti.structure.IOAction
+import com.prezi.spaghetti.structure.IOCallable
 import com.prezi.spaghetti.structure.StructuredReader
 import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
@@ -19,14 +20,14 @@ class ModuleBundleTest extends Specification {
 		DefaultModuleBundle.create(
 				builder,
 				new ModuleBundleParameters(
-						name: "test",
-						definition: "definition",
-						version: "3.7",
-						sourceBaseUrl: "http://git.example.com/test",
-						javaScript: "console.log('hello');",
-						sourceMap: "sourcemap",
-						dependentModules: ["com.example.alma", "com.example.bela"] as SortedSet,
-						resourcesDirectory: null)
+						"test",
+						"definition",
+						"3.7",
+						"http://git.example.com/test",
+						"console.log('hello');",
+						"sourcemap",
+						["com.example.alma", "com.example.bela"] as SortedSet,
+						null)
 		)
 
 		then:
@@ -160,11 +161,14 @@ class ModuleBundleTest extends Specification {
 		return result
 	}
 
-	private static Closure<InputStream> content(String... lines) {
+	private static IOCallable<InputStream> content(String... lines) {
 		def data = lines.join("\n")
 		logger.info "Writing:\n${data}"
-		return {
-			new ByteArrayInputStream(data.getBytes("utf-8"))
+		return new IOCallable<InputStream>() {
+			@Override
+			InputStream call() throws IOException {
+				return new ByteArrayInputStream(data.getBytes("utf-8"))
+			}
 		}
 	}
 }

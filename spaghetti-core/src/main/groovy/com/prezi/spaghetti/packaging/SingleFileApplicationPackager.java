@@ -15,7 +15,6 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -67,7 +66,11 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 								return "modules[\"" + it + "\"]";
 							}
 						});
-						dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrapper.wrap(module, dependencies, bundle.getJavaScript()) + "(" + Joiner.on(',').join(dependencyInstances) + "));");
+						try {
+							dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrapper.wrap(module, dependencies, bundle.getJavaScript()) + "(" + Joiner.on(',').join(dependencyInstances) + "));");
+						} catch (IOException e) {
+							throw new RuntimeException(e);
+						}
 						return module;
 					}
 				});

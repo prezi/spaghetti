@@ -2,7 +2,6 @@ package com.prezi.spaghetti.structure
 
 import spock.lang.Specification
 
-import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -85,7 +84,7 @@ class StructuredReaderTest extends Specification {
 		return source
 	}
 
-	private static String get(Callable<InputStream> input) {
+	private static String get(IOCallable<InputStream> input) {
 		return input().text
 	}
 }

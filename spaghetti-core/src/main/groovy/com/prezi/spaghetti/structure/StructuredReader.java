@@ -10,23 +10,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.Callable;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public interface StructuredReader {
 	void init() throws IOException;
 
-	boolean hasFile(String path);
+	boolean hasFile(String path) throws IOException;
 
-	void processFile(String path, FileHandler handler);
+	void processFile(String path, FileHandler handler) throws IOException;
 
-	void processFiles(FileHandler handler);
+	void processFiles(FileHandler handler) throws IOException;
 
 	void close() throws IOException;
 
 	interface FileHandler {
-		void handleFile(String path, Callable<? extends InputStream> contents);
+		void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException;
 	}
 
 	class Directory implements StructuredReader {
@@ -46,7 +45,7 @@ public interface StructuredReader {
 		}
 
 		@Override
-		public void processFile(String path, FileHandler handler) {
+		public void processFile(String path, FileHandler handler) throws IOException {
 			final File file = new File(sourceDirectory, path);
 			if (!file.isFile()) {
 				throw new IllegalArgumentException("Could not find file in bundle: " + file);
@@ -56,7 +55,7 @@ public interface StructuredReader {
 		}
 
 		@Override
-		public void processFiles(final FileHandler handler) {
+		public void processFiles(final FileHandler handler) throws IOException {
 			if (!sourceDirectory.exists()) {
 				throw new IllegalArgumentException("Could not find module bundle directory: " + String.valueOf(sourceDirectory));
 			}
@@ -67,10 +66,10 @@ public interface StructuredReader {
 			}
 		}
 
-		private static void handleFile(FileHandler handler, String path, final File file) {
-			handler.handleFile(path, new Callable<InputStream>() {
+		private static void handleFile(FileHandler handler, String path, final File file) throws IOException {
+			handler.handleFile(path, new IOCallable<InputStream>() {
 				@Override
-				public InputStream call() throws Exception {
+				public InputStream call() throws IOException {
 					return new FileInputStream(file);
 				}
 			});
@@ -109,7 +108,7 @@ public interface StructuredReader {
 		}
 
 		@Override
-		public void processFile(final String path, FileHandler handler) {
+		public void processFile(final String path, FileHandler handler) throws IOException {
 			ZipEntry entry = zipFile.getEntry(path);
 			if (!DefaultGroovyMethods.asBoolean(entry)) {
 				throw new IllegalArgumentException("Could not find file \"" + path + "\" in bundle: " + zip);
@@ -119,7 +118,7 @@ public interface StructuredReader {
 		}
 
 		@Override
-		public void processFiles(FileHandler handler) {
+		public void processFiles(FileHandler handler) throws IOException {
 			UnmodifiableIterator<? extends ZipEntry> entries = Iterators.forEnumeration(zipFile.entries());
 			while (entries.hasNext()) {
 				ZipEntry entry = entries.next();
@@ -129,10 +128,10 @@ public interface StructuredReader {
 			}
 		}
 
-		private void handleEntry(FileHandler handler, final ZipEntry entry) {
-			handler.handleFile(entry.getName(), new Callable<InputStream>() {
+		private void handleEntry(FileHandler handler, final ZipEntry entry) throws IOException {
+			handler.handleFile(entry.getName(), new IOCallable<InputStream>() {
 				@Override
-				public InputStream call() throws Exception {
+				public InputStream call() throws IOException {
 					return zipFile.getInputStream(entry);
 				}
 			});
