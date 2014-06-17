@@ -6,8 +6,6 @@ import com.prezi.spaghetti.grammar.ModuleParser
 
 class AstTestUtils {
 	static ModuleParser parser(String data) {
-		ModuleDefinitionParser.createParser(new ModuleDefinitionSource(
-				location: "test",
-				contents: data)).parser
+		ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", data)).parser
 	}
 }
