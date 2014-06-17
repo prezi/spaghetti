@@ -73,6 +73,6 @@ class DependencyTreeResolverTest extends Specification {
 		then:
 		0 * _
 		def ex = thrown IllegalArgumentException
-		ex.message == "Module found: d (dependency of module a)"
+		ex.message == "Module not found: d (dependency of module a)"
 	}
 }
