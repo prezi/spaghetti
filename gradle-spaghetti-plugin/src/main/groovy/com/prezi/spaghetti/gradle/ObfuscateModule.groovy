@@ -27,14 +27,15 @@ class ObfuscateModule extends AbstractBundleModuleTask
 			File resourceDir) {
 		def obfuscator = new ModuleObfuscator(Platforms.getProtectedSymbols(getPlatform()))
 		def result = obfuscator.obfuscateModule(new ObfuscationParameters(
-				config: config,
-				module: module,
-				javaScript: javaScript,
-				sourceMap: sourceMap,
-				nodeSourceMapRoot: getNodeSourceMapRoot(),
-				closureExterns: getClosureExterns(),
-				additionalSymbols: getAdditionalSymbols(),
-				workingDirectory: getWorkDir()
+				config,
+				module,
+				javaScript,
+				sourceMap,
+				null,
+				getNodeSourceMapRoot(),
+				getClosureExterns(),
+				getAdditionalSymbols(),
+				getWorkDir()
 		))
 		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDir)
 	}
