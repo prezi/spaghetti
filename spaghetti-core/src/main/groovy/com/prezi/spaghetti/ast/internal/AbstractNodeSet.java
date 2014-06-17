@@ -10,7 +10,11 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("NullableProblems")
 public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode> extends GroovyObjectSupport implements NodeSet<K, N> {

@@ -96,6 +96,7 @@ class NodeSetTest extends Specification {
 		}
 
 		@Override
+		protected
 		def <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
 			throw new IllegalStateException("This won't work")
 		}
@@ -110,6 +111,7 @@ class NodeSetTest extends Specification {
 		}
 
 		@Override
+		protected
 		def <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
 			throw new IllegalStateException("This won't work")
 		}
