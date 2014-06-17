@@ -84,7 +84,7 @@ class CommentUtilsTest extends Specification {
 
 	@Unroll
 	def "test #description"() {
-		def result = CommentUtils.splitInitialComments(javaScript)
+		def result = CommentUtils.splitInitialComments(javaScript as String)
 
 		expect:
 		result.initialComments == comments

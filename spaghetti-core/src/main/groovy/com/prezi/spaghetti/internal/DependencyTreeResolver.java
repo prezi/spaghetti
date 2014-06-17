@@ -20,9 +20,9 @@ import java.util.Set;
 public class DependencyTreeResolver {
 	private static final Logger logger = LoggerFactory.getLogger(DependencyTreeResolver.class);
 
-	public static <M extends Comparable<M>, I> Map<M, I> resolveDependencies(Map<M, Collection<M>> dependencyTree, DependencyProcessor<M, I> processor) {
+	public static <M extends Comparable<M>, I> Map<M, I> resolveDependencies(Map<M, ? extends Collection<M>> dependencyTree, DependencyProcessor<M, I> processor) {
 		Map<M, Set<M>> remainingModules = Maps.newTreeMap();
-		for (Map.Entry<M, Collection<M>> entry : dependencyTree.entrySet()) {
+		for (Map.Entry<M, ? extends Collection<M>> entry : dependencyTree.entrySet()) {
 			remainingModules.put(entry.getKey(), Sets.newLinkedHashSet(entry.getValue()));
 		}
 

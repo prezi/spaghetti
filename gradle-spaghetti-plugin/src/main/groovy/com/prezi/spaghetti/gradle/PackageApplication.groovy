@@ -108,14 +108,14 @@ class PackageApplication extends AbstractSpaghettiTask {
 		def bundles = lookupBundles()
 		logger.info "Creating {} application in {}", getType().description, getOutputDirectory()
 		getType().packager.packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
-				bundles: bundles.allBundles,
-				baseUrl: getBaseUrl(),
-				applicationName: getApplicationName(),
-				modulesDirectory: getModulesDirectory(),
-				mainModule: getMainModule(),
-				execute: getExecute(),
-				prefixes: getPrefixes().files*.text,
-				suffixes: getSuffixes().files*.text
+				bundles.allBundles,
+				getBaseUrl(),
+				getApplicationName(),
+				getModulesDirectory(),
+				getMainModule(),
+				getExecute(),
+				getPrefixes().files*.text,
+				getSuffixes().files*.text
 		))
 	}
 }
