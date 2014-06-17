@@ -1,7 +1,4 @@
 package com.prezi.spaghetti.packaging
-/**
- * Created by lptr on 23/05/14.
- */
 enum ApplicationType {
 	AMD("AMD", new AmdApplicationPackager()),
 	COMMON_JS("Common JS", new CommonJsApplicationPackager()),

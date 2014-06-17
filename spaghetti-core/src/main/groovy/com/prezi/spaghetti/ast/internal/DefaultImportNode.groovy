@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.ImportNode
 import com.prezi.spaghetti.ast.ModuleVisitor
 
-/**
- * Created by lptr on 01/06/14.
- */
 class DefaultImportNode extends AbstractNode implements ImportNode {
 	final FQName qualifiedName
 	final String alias

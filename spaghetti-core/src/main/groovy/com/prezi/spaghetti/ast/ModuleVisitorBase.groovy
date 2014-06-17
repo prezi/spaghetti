@@ -1,8 +1,5 @@
 package com.prezi.spaghetti.ast
 
-/**
- * Created by lptr on 30/05/14.
- */
 class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 	@Override T visitAnnotationNode(AnnotationNode node) { visitChildren(node) }
 

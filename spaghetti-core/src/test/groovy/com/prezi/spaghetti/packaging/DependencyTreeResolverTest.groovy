@@ -3,9 +3,6 @@ package com.prezi.spaghetti.packaging
 import com.prezi.spaghetti.internal.DependencyTreeResolver
 import spock.lang.Specification
 
-/**
- * Created by lptr on 25/05/14.
- */
 class DependencyTreeResolverTest extends Specification {
 
 	def "normal resolution"() {

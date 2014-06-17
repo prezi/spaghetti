@@ -6,9 +6,6 @@ import org.antlr.v4.runtime.Recognizer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by lptr on 30/01/14.
- */
 class ParserErrorListener extends BaseErrorListener {
 	private static final Logger logger = LoggerFactory.getLogger(ParserErrorListener)
 	private final String location

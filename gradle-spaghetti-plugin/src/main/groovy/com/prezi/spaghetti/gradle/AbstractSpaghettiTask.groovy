@@ -9,9 +9,6 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.InputFiles
 
-/**
- * Created by lptr on 18/11/13.
- */
 class AbstractSpaghettiTask extends ConventionTask {
 
 	@InputFiles

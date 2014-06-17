@@ -6,9 +6,6 @@ import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 
-/**
- * Created by lptr on 25/05/14.
- */
 class SingleFileWrapper implements Wrapper {
 	@Override
 	String wrap(String moduleName, Collection<String> dependencies, String javaScript) {

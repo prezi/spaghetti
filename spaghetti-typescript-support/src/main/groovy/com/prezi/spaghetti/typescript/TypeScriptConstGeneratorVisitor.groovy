@@ -3,9 +3,6 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.ConstEntryNode
 import com.prezi.spaghetti.ast.ConstNode
 
-/**
- * Created by lptr on 22/05/14.
- */
 class TypeScriptConstGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	@Override
 	String visitConstNode(ConstNode node) {

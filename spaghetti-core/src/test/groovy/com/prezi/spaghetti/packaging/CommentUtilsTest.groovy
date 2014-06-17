@@ -3,9 +3,6 @@ package com.prezi.spaghetti.packaging
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * Created by lptr on 03/06/14.
- */
 class CommentUtilsTest extends Specification {
 	static def TEST_CASES = [
 			[

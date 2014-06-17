@@ -5,9 +5,6 @@ import com.prezi.spaghetti.Platforms
 import com.prezi.spaghetti.config.ModuleConfiguration
 import org.gradle.api.tasks.Input
 
-/**
- * Created by lptr on 19/04/14.
- */
 class AbstractPlatformAwareSpaghettiTask extends AbstractSpaghettiTask {
 	@Input
 	String platform

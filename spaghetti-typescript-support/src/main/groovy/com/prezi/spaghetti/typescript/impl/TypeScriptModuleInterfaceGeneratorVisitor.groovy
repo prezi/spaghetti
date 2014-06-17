@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
-/**
- * Created by lptr on 22/05/14.
- */
 class TypeScriptModuleInterfaceGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
 	@Override

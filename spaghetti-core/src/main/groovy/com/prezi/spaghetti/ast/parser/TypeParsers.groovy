@@ -22,9 +22,6 @@ import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.ParserRuleContext
 
-/**
- * Created by lptr on 29/05/14.
- */
 class TypeParsers {
 
 	static TypeReference parseReturnType(TypeResolver resolver, ModuleParser.ReturnTypeContext context) {

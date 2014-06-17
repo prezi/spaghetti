@@ -3,9 +3,6 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.MethodParameterNode
 
-/**
- * Created by lptr on 29/11/13.
- */
 abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
 	protected String visitMethodNode(MethodNode node) {

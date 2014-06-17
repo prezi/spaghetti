@@ -2,9 +2,6 @@ package com.prezi.spaghetti.gradle
 
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-/**
- * Created by lptr on 12/11/13.
- */
 class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 
 	@OutputDirectory

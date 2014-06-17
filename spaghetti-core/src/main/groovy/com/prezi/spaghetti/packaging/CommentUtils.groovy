@@ -1,8 +1,5 @@
 package com.prezi.spaghetti.packaging
 
-/**
- * Created by lptr on 03/06/14.
- */
 class CommentUtils {
 	static class SplitResult {
 		String initialComments

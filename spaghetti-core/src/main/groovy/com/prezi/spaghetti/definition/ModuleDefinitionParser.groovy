@@ -5,9 +5,6 @@ import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 
-/**
- * Created by lptr on 05/05/14.
- */
 class ModuleDefinitionParser {
 	public static ModuleParser.ModuleDefinitionContext parse(ModuleDefinitionSource source) {
 		def parserContext = createParser(source)

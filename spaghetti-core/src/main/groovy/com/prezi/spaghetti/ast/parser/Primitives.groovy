@@ -3,9 +3,6 @@ package com.prezi.spaghetti.ast.parser
 import groovy.json.StringEscapeUtils
 import org.antlr.v4.runtime.Token
 
-/**
- * Created by lptr on 29/05/14.
- */
 class Primitives {
 
 	static Integer parseInt(Token token) {

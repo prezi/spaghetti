@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import groovy.transform.EqualsAndHashCode
 
-/**
- * Created by lptr on 30/05/14.
- */
 @EqualsAndHashCode
 class DefaultPrimitiveTypeReference extends AbstractArrayedTypeReference implements PrimitiveTypeReference {
 	final PrimitiveType type

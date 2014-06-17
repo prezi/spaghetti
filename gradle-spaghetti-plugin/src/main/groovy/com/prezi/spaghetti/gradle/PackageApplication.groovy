@@ -9,9 +9,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created by lptr on 16/11/13.
- */
 class PackageApplication extends AbstractSpaghettiTask {
 
 	@Input

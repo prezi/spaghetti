@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 
-/**
- * Created by lptr on 16/11/13.
- */
 class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitEnumNode(EnumNode node) {

@@ -7,9 +7,6 @@ import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.PropertyNode
 import com.prezi.spaghetti.ast.TypeReference
 
-/**
- * Created by lptr on 29/05/14.
- */
 class DefaultPropertyNode extends AbstractTypeNamePairNode<TypeReference> implements PropertyNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

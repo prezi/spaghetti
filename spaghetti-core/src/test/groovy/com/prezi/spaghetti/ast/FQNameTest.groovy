@@ -3,9 +3,6 @@ package com.prezi.spaghetti.ast
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * Created by lptr on 12/04/14.
- */
 class FQNameTest extends Specification {
 	def "invalids"() {
 		when:

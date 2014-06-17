@@ -8,9 +8,6 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.NamedNodeSet
 
-/**
- * Created by lptr on 29/05/14.
- */
 class DefaultConstNode extends AbstractTypeNode implements ConstNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

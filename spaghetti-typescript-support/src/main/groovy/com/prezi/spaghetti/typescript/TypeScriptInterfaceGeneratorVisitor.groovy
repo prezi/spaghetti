@@ -3,9 +3,6 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.InterfaceMethodNode
 import com.prezi.spaghetti.ast.InterfaceNode
 
-/**
- * Created by lptr on 22/05/14.
- */
 class TypeScriptInterfaceGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
 	@Override

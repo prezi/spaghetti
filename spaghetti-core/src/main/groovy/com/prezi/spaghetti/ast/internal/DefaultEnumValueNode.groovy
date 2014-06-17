@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.NamedNodeSet
 
-/**
- * Created by lptr on 31/05/14.
- */
 class DefaultEnumValueNode extends AbstractNamedNode implements EnumValueNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

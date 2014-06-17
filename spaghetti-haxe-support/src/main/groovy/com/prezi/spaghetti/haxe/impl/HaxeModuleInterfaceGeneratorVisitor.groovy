@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 
-/**
- * Created by lptr on 16/11/13.
- */
 class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	@Override

@@ -14,9 +14,6 @@ import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
 import static com.prezi.spaghetti.ast.PrimitiveTypeReference.STRING
 import static com.prezi.spaghetti.ast.VoidTypeReference.VOID
 
-/**
- * Created by lptr on 21/05/14.
- */
 class TypeParsersTest extends AstTestBase {
 	@Unroll
 	def "primitives #definition"() {

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.ast.parser
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.TypeNode
 
-/**
- * Created by lptr on 29/05/14.
- */
 class ModuleTypeResolver implements TypeResolver {
 	protected final TypeResolver parent
 	protected final ModuleNode module

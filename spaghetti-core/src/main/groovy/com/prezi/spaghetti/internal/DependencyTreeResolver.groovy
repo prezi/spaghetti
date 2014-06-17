@@ -3,9 +3,6 @@ package com.prezi.spaghetti.internal
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by lptr on 25/05/14.
- */
 class DependencyTreeResolver {
 	private static final Logger logger = LoggerFactory.getLogger(DependencyTreeResolver)
 

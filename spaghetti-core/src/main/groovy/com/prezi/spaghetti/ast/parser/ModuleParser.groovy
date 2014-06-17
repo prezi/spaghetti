@@ -14,9 +14,6 @@ import com.prezi.spaghetti.grammar.ModuleParser.ModuleElementContext
 import com.prezi.spaghetti.grammar.ModuleParser.ModuleMethodDefinitionContext
 import com.prezi.spaghetti.grammar.ModuleParser.TypeDefinitionContext
 
-/**
- * Created by lptr on 27/05/14.
- */
 class ModuleParser {
 	private final ModuleDefinitionContext moduleCtx
 	private final List<AbstractModuleTypeParser> typeParsers

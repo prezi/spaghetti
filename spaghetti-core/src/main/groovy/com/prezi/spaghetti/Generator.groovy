@@ -2,9 +2,6 @@ package com.prezi.spaghetti
 
 import com.prezi.spaghetti.ast.ModuleNode
 
-/**
- * Created by lptr on 12/11/13.
- */
 public interface Generator {
 
 	abstract void generateHeaders(File outputDirectory)

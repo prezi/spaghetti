@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.TypeChain
 import com.prezi.spaghetti.ast.TypeReference
 import com.prezi.spaghetti.ast.VoidTypeReference
 
-/**
- * Created by lptr on 29/05/14.
- */
 class DefaultTypeChain extends AbstractArrayedTypeReference implements TypeChain {
 	final List<TypeReference> elements = []
 

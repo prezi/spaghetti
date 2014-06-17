@@ -3,9 +3,6 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.ConstEntryNode
 import com.prezi.spaghetti.ast.ConstNode
 
-/**
- * Created by lptr on 16/11/13.
- */
 class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
 	@Override

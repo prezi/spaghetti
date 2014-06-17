@@ -14,9 +14,6 @@ import com.prezi.spaghetti.ast.QualifiedNodeSet
 import com.prezi.spaghetti.ast.TypeNode
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 27/05/14.
- */
 class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

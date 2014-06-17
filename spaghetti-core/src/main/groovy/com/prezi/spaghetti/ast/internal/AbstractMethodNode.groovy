@@ -8,9 +8,6 @@ import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.TypeReference
 
-/**
- * Created by lptr on 27/05/14.
- */
 abstract class AbstractMethodNode extends AbstractNamedNode implements MutableMethodNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.Token
 
-/**
- * Created by lptr on 29/05/14.
- */
 abstract class TypeResolutionContext {
 	final FQName name
 

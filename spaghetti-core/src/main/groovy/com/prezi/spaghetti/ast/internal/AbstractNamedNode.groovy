@@ -2,9 +2,6 @@ package com.prezi.spaghetti.ast.internal
 
 import com.prezi.spaghetti.ast.NamedNode
 
-/**
- * Created by lptr on 30/05/14.
- */
 abstract class AbstractNamedNode extends AbstractNode implements NamedNode {
 	final String name
 

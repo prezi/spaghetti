@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.internal.MutableMethodNode
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.tree.TerminalNode
 
-/**
- * Created by lptr on 29/05/14.
- */
 class MethodParser {
 	static protected <T extends MutableMethodNode> T parseMethodDefinition(TypeResolver resolver, ModuleParser.MethodDefinitionContext methodCtx, T methodNode) {
 		methodCtx.typeParameters()?.Name()?.each { TerminalNode name ->

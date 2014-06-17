@@ -11,9 +11,6 @@ import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.TypeParameterNode
 
-/**
- * Created by lptr on 27/05/14.
- */
 class DefaultInterfaceNode extends AbstractTypeNode implements InterfaceNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

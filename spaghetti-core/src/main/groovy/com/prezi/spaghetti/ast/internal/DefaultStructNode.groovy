@@ -9,9 +9,6 @@ import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterNode
 
-/**
- * Created by lptr on 29/05/14.
- */
 class DefaultStructNode extends AbstractTypeNode implements StructNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

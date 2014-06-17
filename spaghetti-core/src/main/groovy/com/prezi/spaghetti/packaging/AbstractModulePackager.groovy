@@ -3,9 +3,6 @@ package com.prezi.spaghetti.packaging
 import com.prezi.spaghetti.bundle.ModuleBundleElement
 import com.prezi.spaghetti.structure.StructuredWriter
 
-/**
- * Created by lptr on 27/05/14.
- */
 abstract class AbstractModulePackager implements ModulePackager {
 	protected final Wrapper wrapper
 

@@ -2,9 +2,6 @@ package com.prezi.spaghetti.ast.parser
 
 import spock.lang.Specification
 
-/**
- * Created by lptr on 29/05/14.
- */
 class EnumParserTest extends Specification {
 	def "parse"() {
 		def context = AstTestUtils.parser("""

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.MethodParameterNode
 
-/**
- * Created by lptr on 31/05/14.
- */
 abstract class AbstractTypeScriptMethodGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	protected String visitMethodNode(MethodNode node) {

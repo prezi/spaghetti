@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.AstNode
 import com.prezi.spaghetti.ast.DocumentedNode
 import com.prezi.spaghetti.ast.ModuleVisitor
 
-/**
- * Created by lptr on 30/05/14.
- */
 abstract class AbstractNode implements AstNode {
 	@Override
 	def <T> T accept(ModuleVisitor<? extends T> visitor) {

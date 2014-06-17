@@ -3,9 +3,6 @@ package com.prezi.spaghetti.structure
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-/**
- * Created by lptr on 15/05/14.
- */
 abstract interface StructuredWriter extends StructuredAppender {
 	void init()
 	StructuredReader create()

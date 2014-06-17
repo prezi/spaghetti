@@ -10,9 +10,6 @@ import com.prezi.spaghetti.haxe.impl.HaxeModuleStaticProxyGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
-/**
- * Created by lptr on 12/11/13.
- */
 class HaxeGenerator extends AbstractGenerator {
 
 	// Workaround variable to trick Haxe into exposing the module

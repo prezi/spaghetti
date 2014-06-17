@@ -14,9 +14,6 @@ import java.util.jar.Manifest
 
 import static com.google.common.base.Preconditions.checkNotNull
 
-/**
- * Created by lptr on 16/11/13.
- */
 class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle)
 

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.haxe.gradle
 import com.prezi.haxe.gradle.HaxeBinaryBase
 import com.prezi.spaghetti.gradle.AbstractSpaghettiCompatibleJavaScriptBinary
 
-/**
- * Created by lptr on 09/02/14.
- */
 class DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary
 		extends AbstractSpaghettiCompatibleJavaScriptBinary
 		implements HaxeCompiledSpaghettiCompatibleJavaScriptBinary {

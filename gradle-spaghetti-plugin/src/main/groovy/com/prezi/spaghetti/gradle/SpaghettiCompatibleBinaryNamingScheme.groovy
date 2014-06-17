@@ -3,9 +3,6 @@ package com.prezi.spaghetti.gradle
 import org.gradle.api.Nullable
 import org.gradle.language.base.internal.BinaryNamingScheme
 
-/**
- * Created by lptr on 29/04/14.
- */
 class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
 	private final String parentName;
 	private final String collapsedName;

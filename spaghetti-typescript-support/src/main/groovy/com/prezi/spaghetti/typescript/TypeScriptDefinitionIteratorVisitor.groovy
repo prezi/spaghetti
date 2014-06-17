@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.StructNode
 
-/**
- * Created by lptr on 20/11/13.
- */
 class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
 
 	@Override

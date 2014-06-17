@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.InterfaceReference
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.TypeReference
 
-/**
- * Created by lptr on 29/05/14.
- */
 class DefaultInterfaceReference extends AbstractTypeNodeReference<InterfaceNode> implements InterfaceReference {
 	final List<TypeReference> arguments = []
 

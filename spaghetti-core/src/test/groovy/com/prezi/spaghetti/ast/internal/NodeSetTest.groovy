@@ -7,9 +7,6 @@ import com.prezi.spaghetti.ast.parser.InternalAstParserException
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * Created by lptr on 01/06/14.
- */
 @SuppressWarnings(["GroovyAssignabilityCheck", "GrDeprecatedAPIUsage"])
 class NodeSetTest extends Specification {
 	private static FQName qn(String name) { return FQName.fromString(name) }

@@ -2,9 +2,6 @@ package com.prezi.spaghetti.ast
 
 import com.prezi.spaghetti.ast.internal.AbstractNode
 
-/**
- * Created by lptr on 29/05/14.
- */
 interface VoidTypeReference extends TypeReference {
 	public static final VoidTypeReference VOID = new Impl();
 

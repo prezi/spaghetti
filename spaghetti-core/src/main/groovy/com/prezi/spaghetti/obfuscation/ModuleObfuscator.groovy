@@ -3,9 +3,6 @@ package com.prezi.spaghetti.obfuscation
 import com.prezi.spaghetti.ReservedWords
 import com.prezi.spaghetti.SourceMap
 
-/**
- * Created by lptr on 15/05/14.
- */
 class ModuleObfuscator {
 	private static final Set<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols()
 	private static Set<String> collectProtectedSymbols() {

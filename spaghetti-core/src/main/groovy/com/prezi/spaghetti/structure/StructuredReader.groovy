@@ -6,9 +6,6 @@ import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-/**
- * Created by lptr on 15/05/14.
- */
 public interface StructuredReader {
 	void init()
 	boolean hasFile(String path)

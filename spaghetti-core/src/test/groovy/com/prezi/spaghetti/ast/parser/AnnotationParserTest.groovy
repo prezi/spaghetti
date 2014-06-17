@@ -5,9 +5,6 @@ import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * Created by lptr on 21/05/14.
- */
 class AnnotationParserTest extends Specification {
 	@Unroll
 	def "FromContext: #annotationDecl"() {

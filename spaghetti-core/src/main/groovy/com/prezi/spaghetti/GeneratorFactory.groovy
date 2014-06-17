@@ -2,9 +2,6 @@ package com.prezi.spaghetti
 
 import com.prezi.spaghetti.config.ModuleConfiguration
 
-/**
- * Created by lptr on 23/11/13.
- */
 public interface GeneratorFactory {
 	/**
 	 * Returns name of supported platform.

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.ast.internal
 import com.prezi.spaghetti.ast.AnnotationNode
 import com.prezi.spaghetti.ast.ModuleVisitor
 
-/**
- * Created by lptr on 26/11/13.
- */
 class DefaultAnnotationNode extends AbstractNamedNode implements AnnotationNode {
 	final Map<String, Object> parameters
 

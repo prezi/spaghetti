@@ -7,9 +7,6 @@ import com.prezi.spaghetti.ast.ModuleVisitorBase
 import com.prezi.spaghetti.ast.NamedNode
 import com.prezi.spaghetti.ast.StructNode
 
-/**
- * Created by lptr on 20/11/13.
- */
 class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	private final File outputDirectory

@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.internal.DefaultAnnotationNode
 import com.prezi.spaghetti.grammar.ModuleParser
 import com.prezi.spaghetti.grammar.ModuleParser.AnnotationValueContext
 
-/**
- * Created by lptr on 30/05/14.
- */
 class AnnotationsParser {
 	static void parseAnnotations(ModuleParser.AnnotationsContext context, AnnotatedNode node) {
 		context?.annotation()?.each { annotationCtx ->

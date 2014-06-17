@@ -5,9 +5,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
 
-/**
- * Created by lptr on 20/05/14.
- */
 class MUnitWithSpaghetti extends MUnit {
 
 	@Override

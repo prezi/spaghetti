@@ -8,9 +8,6 @@ import com.prezi.spaghetti.ast.parser.ModuleTypeResolver
 import com.prezi.spaghetti.ast.parser.TypeResolver
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 30/05/14.
- */
 class ModuleConfigurationParser {
 	static ModuleConfiguration parse(
 			Collection<ModuleDefinitionSource> localModuleSources,

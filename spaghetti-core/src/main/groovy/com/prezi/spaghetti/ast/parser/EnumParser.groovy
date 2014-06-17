@@ -6,9 +6,6 @@ import com.prezi.spaghetti.ast.internal.DefaultEnumNode
 import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode
 import com.prezi.spaghetti.grammar.ModuleParser
 
-/**
- * Created by lptr on 29/05/14.
- */
 class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, EnumNode> {
 	EnumParser(ModuleParser.EnumDefinitionContext context, String moduleName) {
 		super(context, createNode(context, moduleName))

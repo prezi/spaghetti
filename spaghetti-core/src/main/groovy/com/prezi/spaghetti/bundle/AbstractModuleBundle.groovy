@@ -2,9 +2,6 @@ package com.prezi.spaghetti.bundle
 
 import groovy.transform.Canonical
 
-/**
- * Created by lptr on 19/05/14.
- */
 @Canonical(includes = "name")
 abstract class AbstractModuleBundle implements ModuleBundle {
 	final String name

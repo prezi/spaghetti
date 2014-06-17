@@ -2,9 +2,6 @@ package com.prezi.spaghetti.gradle
 
 import org.gradle.api.internal.artifacts.publish.AbstractPublishArtifact
 
-/**
- * Created by lptr on 11/02/14.
- */
 class ModuleBundleArtifact extends AbstractPublishArtifact {
 	String name
 	String extension

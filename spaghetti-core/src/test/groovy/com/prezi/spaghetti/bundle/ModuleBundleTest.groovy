@@ -7,9 +7,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
-/**
- * Created by lptr on 15/05/14.
- */
 class ModuleBundleTest extends Specification {
 
 	static final Logger logger = LoggerFactory.getLogger(ModuleBundleTest)

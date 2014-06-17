@@ -12,9 +12,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created by lptr on 19/04/14.
- */
 class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 
 	@InputFile

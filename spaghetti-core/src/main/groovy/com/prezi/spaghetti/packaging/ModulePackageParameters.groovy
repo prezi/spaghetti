@@ -4,9 +4,6 @@ import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleElement
 import groovy.transform.TupleConstructor
 
-/**
- * Created by lptr on 27/05/14.
- */
 @TupleConstructor
 class ModulePackageParameters {
 	public static final DEFAULT_ELEMENTS = EnumSet.of(ModuleBundleElement.javascript, ModuleBundleElement.javascript.resources)

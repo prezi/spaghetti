@@ -5,9 +5,6 @@ import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-/**
- * Created by lptr on 19/05/14.
- */
 class ModuleBundleFactory {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleFactory)
 

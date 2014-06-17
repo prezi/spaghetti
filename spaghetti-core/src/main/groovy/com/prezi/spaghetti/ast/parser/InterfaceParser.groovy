@@ -9,9 +9,6 @@ import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode
 import com.prezi.spaghetti.grammar.ModuleParser
 import org.antlr.v4.runtime.tree.TerminalNode
 
-/**
- * Created by lptr on 29/05/14.
- */
 class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.InterfaceDefinitionContext, InterfaceNode> {
 	InterfaceParser(ModuleParser.InterfaceDefinitionContext context, String moduleName) {
 		super(context, createNode(context, moduleName))

@@ -6,9 +6,6 @@ import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-/**
- * Created by lptr on 16/05/14.
- */
 class StructuredReaderTest extends Specification {
 	private static final File tempDir = {
 		def dir = File.createTempFile("bundle-source", ".test")

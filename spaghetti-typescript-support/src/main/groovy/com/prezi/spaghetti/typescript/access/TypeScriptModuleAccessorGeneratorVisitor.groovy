@@ -11,9 +11,6 @@ import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC
 
-/**
- * Created by lptr on 22/05/14.
- */
 class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	private final ModuleNode module
 

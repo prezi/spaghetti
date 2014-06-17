@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.internal.DefaultDocumentationNode
 import com.prezi.spaghetti.ast.internal.MutableDocumentedNode
 import org.antlr.v4.runtime.Token
 
-/**
- * Created by lptr on 30/05/14.
- */
 class DocumentationParser {
 	public static void parseDocumentation(Token documentation, MutableDocumentedNode node) {
 		if (documentation) {

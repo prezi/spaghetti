@@ -4,9 +4,6 @@ import com.prezi.spaghetti.AbstractGeneratorFactory
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.config.ModuleConfiguration
 
-/**
- * Created by lptr on 19/03/14.
- */
 class JavaScriptGeneratorFactory extends AbstractGeneratorFactory {
 
 	JavaScriptGeneratorFactory() {

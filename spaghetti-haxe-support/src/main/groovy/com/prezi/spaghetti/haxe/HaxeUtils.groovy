@@ -1,7 +1,4 @@
 package com.prezi.spaghetti.haxe
-/**
- * Created by lptr on 19/11/13.
- */
 final class HaxeUtils {
 	public static File createHaxeSourceFile(String namespace, String name, File outputDirectory, String contents) {
 		def packageDir = createNamespacePath(outputDirectory, namespace)

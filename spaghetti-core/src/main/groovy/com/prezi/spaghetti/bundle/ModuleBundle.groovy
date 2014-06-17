@@ -2,9 +2,6 @@ package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.structure.StructuredWriter
 
-/**
- * Created by lptr on 16/11/13.
- */
 interface ModuleBundle extends Comparable<ModuleBundle> {
 	static final def DEFINITION_PATH = "module.def"
 	static final def SOURCE_MAP_PATH = "module.map"

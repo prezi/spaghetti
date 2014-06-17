@@ -2,9 +2,6 @@ package com.prezi.spaghetti.packaging
 
 import com.prezi.spaghetti.structure.StructuredWriter
 
-/**
- * Created by lptr on 25/05/14.
- */
 abstract class AbstractApplicationPackager implements ApplicationPackager {
 	@Override
 	public void packageApplicationDirectory(File outputDirectory, ApplicationPackageParameters params) {

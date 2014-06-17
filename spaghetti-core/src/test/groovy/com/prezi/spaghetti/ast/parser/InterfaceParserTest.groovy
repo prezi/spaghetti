@@ -4,9 +4,6 @@ import spock.lang.Specification
 
 import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
 
-/**
- * Created by lptr on 29/05/14.
- */
 class InterfaceParserTest extends Specification {
 	def "parse"() {
 		def context = AstTestUtils.parser("""

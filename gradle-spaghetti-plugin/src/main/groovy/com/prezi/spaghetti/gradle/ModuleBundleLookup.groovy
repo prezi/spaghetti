@@ -5,9 +5,6 @@ import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import groovy.transform.TupleConstructor
 import org.slf4j.LoggerFactory
 
-/**
- * Created by lptr on 17/11/13.
- */
 class ModuleBundleLookup {
 	private static final logger = LoggerFactory.getLogger(ModuleBundleLookup)
 

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.packaging
 import com.prezi.spaghetti.bundle.ModuleBundle
 import groovy.transform.TupleConstructor
 
-/**
- * Created by lptr on 16/05/14.
- */
 @TupleConstructor
 class ApplicationPackageParameters {
 	public static final String DEFAULT_BASE_URL = "."

@@ -7,9 +7,6 @@ import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 
-/**
- * Created by lptr on 29/05/14.
- */
 class DefaultConstEntryNode extends AbstractTypeNamePairNode<PrimitiveTypeReference> implements ConstEntryNode, MutableDocumentedNode {
 	final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<>("annotation")
 	DocumentationNode documentation = DocumentationNode.NONE

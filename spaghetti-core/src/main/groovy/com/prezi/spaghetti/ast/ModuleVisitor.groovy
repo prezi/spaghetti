@@ -1,8 +1,5 @@
 package com.prezi.spaghetti.ast
 
-/**
- * Created by lptr on 30/05/14.
- */
 interface ModuleVisitor<T> {
 	T visitAnnotationNode(AnnotationNode node)
 	T visitConstEntryNode(ConstEntryNode node)

@@ -7,9 +7,6 @@ import com.prezi.spaghetti.ast.internal.DefaultConstEntryNode
 import com.prezi.spaghetti.ast.internal.DefaultConstNode
 import com.prezi.spaghetti.grammar.ModuleParser
 
-/**
- * Created by lptr on 29/05/14.
- */
 class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefinitionContext, ConstNode> {
 	ConstParser(ModuleParser.ConstDefinitionContext context, String moduleName) {
 		super(context, createNode(context, moduleName))

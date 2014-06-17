@@ -4,9 +4,6 @@ import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleElement
 import com.prezi.spaghetti.structure.StructuredWriter
 
-/**
- * Created by lptr on 16/05/14.
- */
 abstract class AbstractStructuredApplicationPackager extends AbstractApplicationPackager {
 
 	protected final Wrapper wrapper

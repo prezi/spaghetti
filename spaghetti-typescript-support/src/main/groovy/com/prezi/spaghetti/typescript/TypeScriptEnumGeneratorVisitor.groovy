@@ -3,9 +3,6 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
 
-/**
- * Created by lptr on 22/05/14.
- */
 class TypeScriptEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	@Override

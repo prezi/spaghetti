@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.parser.TypeResolver
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import spock.lang.Specification
 
-/**
- * Created by lptr on 05/05/14.
- */
 class SymbolCollectVisitorTest extends Specification {
 	def "empty module"() {
 		def result = visit "module prezi.test.tibor as Tibor"

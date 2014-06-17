@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.TypeNode
 
-/**
- * Created by lptr on 29/05/14.
- */
 class LocalModuleTypeResolver extends ModuleTypeResolver {
 	LocalModuleTypeResolver(TypeResolver parent, ModuleNode module) {
 		super(parent, module)

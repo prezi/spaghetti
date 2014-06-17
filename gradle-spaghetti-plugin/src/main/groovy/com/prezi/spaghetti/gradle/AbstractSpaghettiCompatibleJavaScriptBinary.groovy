@@ -4,9 +4,6 @@ import org.gradle.language.base.internal.AbstractBuildableModelElement
 import org.gradle.language.base.internal.BinaryInternal
 import org.gradle.language.base.internal.BinaryNamingScheme
 
-/**
- * Created by lptr on 20/05/14.
- */
 abstract class AbstractSpaghettiCompatibleJavaScriptBinary extends AbstractBuildableModelElement
 		implements SpaghettiCompatibleJavaScriptBinary, BinaryInternal {
 	private final BinaryNamingScheme namingScheme

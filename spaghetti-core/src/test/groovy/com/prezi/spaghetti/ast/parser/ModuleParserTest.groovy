@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 29/05/14.
- */
 class ModuleParserTest extends AstTestBase {
 	def "parse single"() {
 		def definition = """module com.example.test

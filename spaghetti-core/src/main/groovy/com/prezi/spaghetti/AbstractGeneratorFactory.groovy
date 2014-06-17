@@ -1,8 +1,5 @@
 package com.prezi.spaghetti
 
-/**
- * Created by lptr on 16/05/14.
- */
 abstract class AbstractGeneratorFactory implements GeneratorFactory {
 	final String platform
 	final String description

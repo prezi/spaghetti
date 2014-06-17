@@ -6,9 +6,6 @@ import spock.lang.Specification
 
 import java.util.zip.ZipFile
 
-/**
- * Created by lptr on 16/05/14.
- */
 class StructuredWriterTest extends Specification {
 	@Rule
  	public TemporaryFolder tempDir = new TemporaryFolder()

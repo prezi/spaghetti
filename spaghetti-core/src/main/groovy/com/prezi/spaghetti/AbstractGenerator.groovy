@@ -6,9 +6,6 @@ import com.prezi.spaghetti.config.ModuleConfiguration
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION
 
-/**
- * Created by lptr on 16/05/14.
- */
 abstract class AbstractGenerator implements Generator {
 	protected final ModuleConfiguration config
 

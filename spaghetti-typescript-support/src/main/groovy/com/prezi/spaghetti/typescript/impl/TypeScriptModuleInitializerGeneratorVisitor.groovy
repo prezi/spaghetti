@@ -9,9 +9,6 @@ import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC
 import static com.prezi.spaghetti.typescript.TypeScriptGenerator.CREATE_MODULE_FUNCTION
 
-/**
- * Created by lptr on 16/11/13.
- */
 class TypeScriptModuleInitializerGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	private final Collection<ModuleNode> dependencies
