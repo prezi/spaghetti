@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
+import com.prezi.spaghetti.structure.IOAction
 import com.prezi.spaghetti.structure.StructuredReader
 import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
@@ -31,9 +32,9 @@ class ModuleBundleTest extends Specification {
 		then:
 		1 * builder.init()
 		1 * builder.appendFile("META-INF/MANIFEST.MF", { manifest = get(it) })
-		1 * builder.appendFile("module.def", { get(it) == "definition" })
-		1 * builder.appendFile("module.js", { get(it) == "console.log('hello');" })
-		1 * builder.appendFile("module.map", { get(it) == "sourcemap" })
+		1 * builder.appendFile("module.def", { it == "definition" })
+		1 * builder.appendFile("module.js", { it == "console.log('hello');" })
+		1 * builder.appendFile("module.map", { it == "sourcemap" })
 		1 * builder.create()
 		1 * builder.close()
 		0 * _
@@ -150,9 +151,9 @@ class ModuleBundleTest extends Specification {
 		return new DefaultModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
 	}
 
-	private static String get(Closure cl) {
+	private static String get(IOAction<OutputStream> action) {
 		def out = new ByteArrayOutputStream()
-		cl(out)
+		action.execute(out)
 
 		def result = out.toString("utf-8")
 		logger.info "Reading:\n{}", result

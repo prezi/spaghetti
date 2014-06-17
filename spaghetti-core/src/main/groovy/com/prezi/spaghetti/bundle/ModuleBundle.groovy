@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle
 
+import com.prezi.spaghetti.structure.StructuredAppender
 import com.prezi.spaghetti.structure.StructuredWriter
 
 interface ModuleBundle extends Comparable<ModuleBundle> {
@@ -19,5 +20,5 @@ interface ModuleBundle extends Comparable<ModuleBundle> {
 	String getJavaScript()
 	String getSourceMap()
 
-	void extract(StructuredWriter.StructuredAppender output, EnumSet<ModuleBundleElement> elements)
+	void extract(StructuredAppender output, EnumSet<ModuleBundleElement> elements)
 }

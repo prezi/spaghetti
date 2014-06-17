@@ -1,9 +1,10 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
+import com.prezi.spaghetti.structure.IOAction
+import com.prezi.spaghetti.structure.StructuredAppender
 import com.prezi.spaghetti.structure.StructuredReader
 import com.prezi.spaghetti.structure.StructuredWriter
-import com.prezi.spaghetti.structure.StructuredWriter.StructuredAppender
 import groovy.io.FileType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -63,17 +64,22 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_VERSION, params.version ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_SOURCE, params.sourceBaseUrl ?: "")
 			manifest.mainAttributes.put(MANIFEST_ATTR_MODULE_DEPENDENCIES, params.dependentModules.join(","))
-			builder.appendFile(ModuleBundle.MANIFEST_MF_PATH, { out -> manifest.write(out) })
+			builder.appendFile(ModuleBundle.MANIFEST_MF_PATH, new IOAction<OutputStream>() {
+				@Override
+				void execute(OutputStream out) {
+					manifest.write(out)
+				}
+			})
 
 			// Store definition
-			builder.appendFile ModuleBundle.DEFINITION_PATH, { out -> out << params.definition }
+			builder.appendFile ModuleBundle.DEFINITION_PATH, params.definition
 
 			// Store module itself
-			builder.appendFile ModuleBundle.JAVASCRIPT_PATH, { out -> out << params.javaScript }
+			builder.appendFile ModuleBundle.JAVASCRIPT_PATH, params.javaScript
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
-				builder.appendFile ModuleBundle.SOURCE_MAP_PATH, { out -> out << params.sourceMap }
+				builder.appendFile ModuleBundle.SOURCE_MAP_PATH, params.sourceMap
 			}
 
 			// Store resources
@@ -82,7 +88,7 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 				resourceDir.eachFileRecurse(FileType.FILES) { File resourceFile ->
 					def resourcePath = ModuleBundle.RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString()
 					logger.debug("Adding resource {}", resourcePath)
-					builder.appendFile resourcePath, { out -> resourceFile.withInputStream { out << it } }
+					builder.appendFile resourcePath, resourceFile
 					resourcePaths.add resourcePath
 				}
 			}
@@ -175,17 +181,17 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 						break
 					case ModuleBundle.DEFINITION_PATH:
 						if (elements.contains(ModuleBundleElement.definition)) {
-							output.appendFile "${name}.def", write(contents)
+							output.appendFile "${name}.def", contents()
 						}
 						break
 					case ModuleBundle.JAVASCRIPT_PATH:
 						if (elements.contains(ModuleBundleElement.javascript)) {
-							output.appendFile "${name}.js", write(contents)
+							output.appendFile "${name}.js", contents()
 						}
 						break
 					case ModuleBundle.SOURCE_MAP_PATH:
 						if (elements.contains(ModuleBundleElement.sourcemap)) {
-							output.appendFile "${name}.js.map", write(contents)
+							output.appendFile "${name}.js.map", contents()
 						}
 						break
 					default:
@@ -199,15 +205,11 @@ class DefaultModuleBundle extends AbstractModuleBundle {
 								dirs.each { dir ->
 									dirOutput = dirOutput.subAppender(dir)
 								}
-								dirOutput.appendFile fileName, write(contents)
+								dirOutput.appendFile fileName, contents()
 							}
 						}
 						break
 				}
-			}
-
-			Closure write(Callable<? extends InputStream> contents) {
-				{ out -> out << contents() }
 			}
 		})
 	}
