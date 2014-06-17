@@ -10,7 +10,10 @@ import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public abstract class AbstractModulePackager implements ModulePackager {
 	protected final Wrapper wrapper;
@@ -41,14 +44,14 @@ public abstract class AbstractModulePackager implements ModulePackager {
 					@Override
 					public void execute(OutputStream out) throws IOException {
 						for (String prefix : params.prefixes) {
-							IOUtils.write(prefix, out, "utf-8");
+							IOUtils.write(prefix, out, UTF_8);
 						}
 
 						String wrappedModule = wrapper.wrap(bundle.getName(), bundle.getDependentModules(), bundle.getJavaScript());
-						IOUtils.write(wrappedModule, out, "utf-8");
+						IOUtils.write(wrappedModule, out, UTF_8);
 
 						for (String suffix : params.suffixes) {
-							IOUtils.write(suffix, out, "utf-8");
+							IOUtils.write(suffix, out, UTF_8);
 						}
 					}
 				});
