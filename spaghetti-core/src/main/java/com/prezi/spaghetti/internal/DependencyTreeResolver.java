@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class DependencyTreeResolver {
 			// Remove it from among the modules we still need to load
 			remainingModules.remove(module);
 			List<M> dependencies = Lists.newArrayList(dependencyTree.get(module));
-			dependencies.sort(Ordering.natural());
+			Collections.sort(dependencies, Ordering.natural());
 
 			logger.debug("Processing {} with dependencies: {}", module, dependencies);
 
