@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.parser.ModuleParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 21/05/14.
- */
 class HaxeModuleInitializerGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def mockModule1 = createMockModule("com.example.alma")

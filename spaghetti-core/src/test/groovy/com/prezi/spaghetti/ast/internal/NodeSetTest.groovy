@@ -7,9 +7,6 @@ import com.prezi.spaghetti.ast.parser.InternalAstParserException
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * Created by lptr on 01/06/14.
- */
 @SuppressWarnings(["GroovyAssignabilityCheck", "GrDeprecatedAPIUsage"])
 class NodeSetTest extends Specification {
 	private static FQName qn(String name) { return FQName.fromString(name) }
@@ -99,6 +96,7 @@ class NodeSetTest extends Specification {
 		}
 
 		@Override
+		protected
 		def <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
 			throw new IllegalStateException("This won't work")
 		}
@@ -113,6 +111,7 @@ class NodeSetTest extends Specification {
 		}
 
 		@Override
+		protected
 		def <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
 			throw new IllegalStateException("This won't work")
 		}

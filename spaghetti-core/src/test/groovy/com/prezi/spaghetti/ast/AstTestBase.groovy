@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.parser.TypeResolutionContext
 import com.prezi.spaghetti.ast.parser.TypeResolver
 import spock.lang.Specification
 
-/**
- * Created by lptr on 31/05/14.
- */
 class AstTestBase extends Specification {
 	protected TypeResolver mockResolver(Map<String, Closure<TypeNode>> mocker = [:]) {
 		def resolver = Mock(TypeResolver)

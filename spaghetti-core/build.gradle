@@ -5,7 +5,11 @@ configurations {
 dependencies {
 	compile localGroovy()
 	compile "org.antlr:antlr4-runtime:4.2"
-	compile "com.google.guava:guava:15.0"
+	compile "commons-lang:commons-lang:2.6"
+	compile "commons-codec:commons-codec:1.9"
+	compile "commons-io:commons-io:2.4"
+	compile "com.google.guava:guava:17.0"
+	compile "com.google.code.gson:gson:2.2.4"
 	compile "org.slf4j:slf4j-api:1.7.7"
 	antlr "org.antlr:antlr4:4.2"
 	testCompile "org.slf4j:slf4j-simple:1.7.7"

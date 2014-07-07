@@ -13,9 +13,6 @@ import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created by lptr on 16/11/13.
- */
 class PackageModule extends ConventionTask {
 
 	Object bundle
@@ -103,11 +100,7 @@ class PackageModule extends ConventionTask {
 	makeBundle() {
 		logger.info "Creating {} module in {}", getType().description, getOutputDirectory()
 		ModuleBundle bundle = loadBundle()
-		getType().packager.packageModuleDirectory(getOutputDirectory(), new ModulePackageParameters(
-				bundle: bundle,
-				prefixes: getPrefixes().files*.text,
-				suffixes: getSuffixes().files*.text
-		))
+		getType().packager.packageModuleDirectory(getOutputDirectory(), new ModulePackageParameters(bundle, getPrefixes().files*.text, getSuffixes().files*.text))
 	}
 
 	private ModuleBundle loadBundle() {

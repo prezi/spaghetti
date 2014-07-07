@@ -13,9 +13,6 @@ import com.prezi.spaghetti.ast.TypeChain
 import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.VoidTypeReference
 
-/**
- * Created by lptr on 16/11/13.
- */
 abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBase {
 	protected static final EnumMap<PrimitiveType, String> PRIMITIVE_TYPES = [
 			(PrimitiveType.BOOL): "boolean",

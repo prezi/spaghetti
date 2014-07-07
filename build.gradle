@@ -18,6 +18,9 @@ allprojects {
 	apply plugin: 'idea'
 
 	tasks.withType(Upload).all { dependsOn "check" }
+	tasks.withType(org.gradle.api.tasks.compile.JavaCompile) {
+		options.compilerArgs << "-Xlint:unchecked"
+	}
 }
 
 subprojects { subproject ->

@@ -12,9 +12,6 @@ import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC
 
-/**
- * Created by lptr on 16/11/13.
- */
 class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
 	@Override

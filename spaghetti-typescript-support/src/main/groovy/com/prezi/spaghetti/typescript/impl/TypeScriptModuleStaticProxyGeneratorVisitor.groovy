@@ -8,9 +8,6 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 
-/**
- * Created by lptr on 16/11/13.
- */
 class TypeScriptModuleStaticProxyGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	private final ModuleNode module

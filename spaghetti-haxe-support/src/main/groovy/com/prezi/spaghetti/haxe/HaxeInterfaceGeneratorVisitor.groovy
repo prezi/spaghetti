@@ -3,9 +3,6 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.InterfaceMethodNode
 import com.prezi.spaghetti.ast.InterfaceNode
 
-/**
- * Created by lptr on 16/11/13.
- */
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	@Override

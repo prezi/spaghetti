@@ -2,13 +2,9 @@ package com.prezi.spaghetti.structure
 
 import spock.lang.Specification
 
-import java.util.concurrent.Callable
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-/**
- * Created by lptr on 16/05/14.
- */
 class StructuredReaderTest extends Specification {
 	private static final File tempDir = {
 		def dir = File.createTempFile("bundle-source", ".test")
@@ -88,7 +84,7 @@ class StructuredReaderTest extends Specification {
 		return source
 	}
 
-	private static String get(Callable<InputStream> input) {
+	private static String get(IOCallable<InputStream> input) {
 		return input().text
 	}
 }

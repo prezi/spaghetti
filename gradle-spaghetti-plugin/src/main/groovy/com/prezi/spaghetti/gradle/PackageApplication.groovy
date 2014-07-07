@@ -9,9 +9,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created by lptr on 16/11/13.
- */
 class PackageApplication extends AbstractSpaghettiTask {
 
 	@Input
@@ -111,14 +108,14 @@ class PackageApplication extends AbstractSpaghettiTask {
 		def bundles = lookupBundles()
 		logger.info "Creating {} application in {}", getType().description, getOutputDirectory()
 		getType().packager.packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
-				bundles: bundles.allBundles,
-				baseUrl: getBaseUrl(),
-				applicationName: getApplicationName(),
-				modulesDirectory: getModulesDirectory(),
-				mainModule: getMainModule(),
-				execute: getExecute(),
-				prefixes: getPrefixes().files*.text,
-				suffixes: getSuffixes().files*.text
+				bundles.allBundles,
+				getBaseUrl(),
+				getApplicationName(),
+				getModulesDirectory(),
+				getMainModule(),
+				getExecute(),
+				getPrefixes().files*.text,
+				getSuffixes().files*.text
 		))
 	}
 }

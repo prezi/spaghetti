@@ -1,15 +1,14 @@
 package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.Version
+import com.prezi.spaghetti.structure.IOAction
+import com.prezi.spaghetti.structure.IOCallable
 import com.prezi.spaghetti.structure.StructuredReader
 import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
-/**
- * Created by lptr on 15/05/14.
- */
 class ModuleBundleTest extends Specification {
 
 	static final Logger logger = LoggerFactory.getLogger(ModuleBundleTest)
@@ -21,22 +20,22 @@ class ModuleBundleTest extends Specification {
 		DefaultModuleBundle.create(
 				builder,
 				new ModuleBundleParameters(
-						name: "test",
-						definition: "definition",
-						version: "3.7",
-						sourceBaseUrl: "http://git.example.com/test",
-						javaScript: "console.log('hello');",
-						sourceMap: "sourcemap",
-						dependentModules: ["com.example.alma", "com.example.bela"] as SortedSet,
-						resourcesDirectory: null)
+						"test",
+						"definition",
+						"3.7",
+						"http://git.example.com/test",
+						"console.log('hello');",
+						"sourcemap",
+						["com.example.alma", "com.example.bela"] as SortedSet,
+						null)
 		)
 
 		then:
 		1 * builder.init()
 		1 * builder.appendFile("META-INF/MANIFEST.MF", { manifest = get(it) })
-		1 * builder.appendFile("module.def", { get(it) == "definition" })
-		1 * builder.appendFile("module.js", { get(it) == "console.log('hello');" })
-		1 * builder.appendFile("module.map", { get(it) == "sourcemap" })
+		1 * builder.appendFile("module.def", { it == "definition" })
+		1 * builder.appendFile("module.js", { it == "console.log('hello');" })
+		1 * builder.appendFile("module.map", { it == "sourcemap" })
 		1 * builder.create()
 		1 * builder.close()
 		0 * _
@@ -153,20 +152,23 @@ class ModuleBundleTest extends Specification {
 		return new DefaultModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
 	}
 
-	private static String get(Closure cl) {
+	private static String get(IOAction<OutputStream> action) {
 		def out = new ByteArrayOutputStream()
-		cl(out)
+		action.execute(out)
 
 		def result = out.toString("utf-8")
 		logger.info "Reading:\n{}", result
 		return result
 	}
 
-	private static Closure<InputStream> content(String... lines) {
+	private static IOCallable<InputStream> content(String... lines) {
 		def data = lines.join("\n")
 		logger.info "Writing:\n${data}"
-		return {
-			new ByteArrayInputStream(data.getBytes("utf-8"))
+		return new IOCallable<InputStream>() {
+			@Override
+			InputStream call() throws IOException {
+				return new ByteArrayInputStream(data.getBytes("utf-8"))
+			}
 		}
 	}
 }

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-/**
- * Created by lptr on 15/02/14.
- */
 class SpaghettiBasePlugin implements Plugin<Project> {
 	static final String CONFIGURATION_NAME = "modules"
 	static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf"

@@ -9,9 +9,6 @@ import com.prezi.spaghetti.ast.parser.InterfaceParser
 import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 21/05/14.
- */
 class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def definition = """interface MyInterface<X> extends Tibor<X> {

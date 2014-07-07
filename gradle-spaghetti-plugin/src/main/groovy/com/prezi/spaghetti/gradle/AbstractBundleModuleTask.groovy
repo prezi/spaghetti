@@ -12,9 +12,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
-/**
- * Created by lptr on 19/04/14.
- */
 class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 
 	@InputFile
@@ -97,14 +94,14 @@ class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
 		ModuleBundleFactory.createDirectory(
 				getOutputDirectory(),
 				new ModuleBundleParameters(
-						name: module.name,
-						definition: module.source.contents,
-						version: String.valueOf(project.version),
-						sourceBaseUrl: getSourceBaseUrl(),
-						javaScript: javaScript,
-						sourceMap: sourceMap,
-						dependentModules: config.directDependentModules*.name as SortedSet,
-						resourcesDirectory: resourceDir
+						module.name,
+						module.source.contents,
+						String.valueOf(project.version),
+						getSourceBaseUrl(),
+						javaScript,
+						sourceMap,
+						config.directDependentModules*.name as SortedSet,
+						resourceDir
 				)
 		)
 	}

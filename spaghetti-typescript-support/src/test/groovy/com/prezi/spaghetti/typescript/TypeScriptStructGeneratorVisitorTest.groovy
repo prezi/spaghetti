@@ -5,9 +5,6 @@ import com.prezi.spaghetti.ast.parser.StructParser
 import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 21/05/14.
- */
 class TypeScriptStructGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def definition = """/**

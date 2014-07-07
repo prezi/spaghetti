@@ -18,9 +18,6 @@ import org.slf4j.LoggerFactory
 
 import javax.inject.Inject
 
-/**
- * Created by lptr on 12/11/13.
- */
 class SpaghettiPlugin implements Plugin<Project> {
 	private static final logger = LoggerFactory.getLogger(SpaghettiPlugin)
 

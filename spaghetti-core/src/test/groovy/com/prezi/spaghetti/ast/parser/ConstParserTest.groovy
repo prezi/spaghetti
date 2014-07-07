@@ -7,9 +7,6 @@ import static com.prezi.spaghetti.ast.PrimitiveType.FLOAT
 import static com.prezi.spaghetti.ast.PrimitiveType.INT
 import static com.prezi.spaghetti.ast.PrimitiveType.STRING
 
-/**
- * Created by lptr on 29/05/14.
- */
 class ConstParserTest extends Specification {
 	def "parse"() {
 		def context = AstTestUtils.parser("""

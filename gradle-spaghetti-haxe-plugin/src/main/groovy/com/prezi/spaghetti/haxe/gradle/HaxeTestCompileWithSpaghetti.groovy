@@ -8,9 +8,6 @@ import groovy.text.SimpleTemplateEngine
 import org.gradle.api.DomainObjectSet
 import org.gradle.language.base.LanguageSourceSet
 
-/**
- * Created by lptr on 20/05/14.
- */
 class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 	@Override
 	protected HaxeCommandBuilder configureHaxeCommandBuilder(File output, DomainObjectSet<LanguageSourceSet> sources) {

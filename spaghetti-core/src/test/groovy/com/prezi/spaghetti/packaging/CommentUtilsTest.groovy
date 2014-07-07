@@ -3,9 +3,6 @@ package com.prezi.spaghetti.packaging
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/**
- * Created by lptr on 03/06/14.
- */
 class CommentUtilsTest extends Specification {
 	static def TEST_CASES = [
 			[
@@ -87,7 +84,7 @@ class CommentUtilsTest extends Specification {
 
 	@Unroll
 	def "test #description"() {
-		def result = CommentUtils.splitInitialComments(javaScript)
+		def result = CommentUtils.splitInitialComments(javaScript as String)
 
 		expect:
 		result.initialComments == comments

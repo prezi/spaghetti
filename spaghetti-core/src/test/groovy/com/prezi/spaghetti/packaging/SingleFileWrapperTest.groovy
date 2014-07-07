@@ -2,9 +2,6 @@ package com.prezi.spaghetti.packaging
 
 import spock.lang.Specification
 
-/**
- * Created by lptr on 16/05/14.
- */
 class SingleFileWrapperTest extends Specification {
 	def "Single file module"() {
 		def originalScript = "__spaghetti(function(SpaghettiConfiguration){});"

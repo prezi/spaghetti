@@ -4,9 +4,6 @@ import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.parser.ModuleParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-/**
- * Created by lptr on 22/05/14.
- */
 class TypeScriptConstGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def definition = """module com.example.test

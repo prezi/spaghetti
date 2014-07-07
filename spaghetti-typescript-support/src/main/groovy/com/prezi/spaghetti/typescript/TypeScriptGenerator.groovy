@@ -11,9 +11,6 @@ import com.prezi.spaghetti.typescript.impl.TypeScriptModuleStaticProxyGeneratorV
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
-/**
- * Created by lptr on 12/11/13.
- */
 class TypeScriptGenerator extends AbstractGenerator {
 
 	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"

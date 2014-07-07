@@ -6,9 +6,6 @@ import spock.lang.Specification
 
 import java.util.zip.ZipFile
 
-/**
- * Created by lptr on 16/05/14.
- */
 class StructuredWriterTest extends Specification {
 	@Rule
  	public TemporaryFolder tempDir = new TemporaryFolder()
@@ -27,7 +24,7 @@ class StructuredWriterTest extends Specification {
 		def dir = tempDir.newFolder()
 		def builder = new StructuredWriter.Directory(dir)
 		builder.init()
-		builder.appendFile("lajos", { out -> out << "Hello" })
+		builder.appendFile("lajos", "Hello")
 		def source = builder.create()
 
 		expect:
@@ -52,7 +49,7 @@ class StructuredWriterTest extends Specification {
 		def zip = tempDir.newFile()
 		def builder = new StructuredWriter.Zip(zip)
 		builder.init()
-		builder.appendFile("lajos", { out -> out << "Hello" })
+		builder.appendFile("lajos", "Hello")
 		def source = builder.create()
 
 		def zipFile = new ZipFile(zip)

@@ -3,9 +3,6 @@ package com.prezi.spaghetti.ast.parser
 import org.antlr.v4.runtime.Token
 import spock.lang.Specification
 
-/**
- * Created by lptr on 21/05/14.
- */
 class PrimitivesTest extends Specification {
 	def "ParseBool"() {
 		when:

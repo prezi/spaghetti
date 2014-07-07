@@ -4,9 +4,6 @@ import com.prezi.spaghetti.AbstractGeneratorFactory
 import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.config.ModuleConfiguration
 
-/**
- * Created by lptr on 23/11/13.
- */
 public class HaxeGeneratorFactory extends AbstractGeneratorFactory {
 
 	private static def DEFAULT_EXTERNS = [

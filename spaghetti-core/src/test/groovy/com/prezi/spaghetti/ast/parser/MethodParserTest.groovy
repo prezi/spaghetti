@@ -11,9 +11,6 @@ import com.prezi.spaghetti.ast.internal.DefaultNamedNodeSet
 import com.prezi.spaghetti.ast.internal.MutableMethodNode
 import spock.lang.Specification
 
-/**
- * Created by lptr on 30/05/14.
- */
 class MethodParserTest extends Specification {
 	def "parse simple"() {
 		def context = AstTestUtils.parser("int add(int a, int b)").methodDefinition()
