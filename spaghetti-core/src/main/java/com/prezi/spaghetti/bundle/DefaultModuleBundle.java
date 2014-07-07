@@ -3,6 +3,7 @@ package com.prezi.spaghetti.bundle;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.Version;
 import com.prezi.spaghetti.structure.IOAction;
@@ -228,7 +229,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 						String resourcePath = path.substring(ModuleBundle.RESOURCES_PREFIX.length());
 						// Skip the resources directory itself
 						if (!Strings.isNullOrEmpty(resourcePath)) {
-							List<String> dirs = Arrays.asList(resourcePath.split("/"));
+							List<String> dirs = Lists.newArrayList(resourcePath.split("/"));
 							String fileName = dirs.remove(dirs.size() - 1);
 							StructuredAppender dirOutput = output;
 							for (String dir : dirs) {
