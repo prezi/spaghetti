@@ -109,9 +109,9 @@ class PackageApplication extends AbstractSpaghettiTask {
 		logger.info "Creating {} application in {}", getType().description, getOutputDirectory()
 		getType().packager.packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles.allBundles,
+				getModulesDirectory(),
 				getBaseUrl(),
 				getApplicationName(),
-				getModulesDirectory(),
 				getMainModule(),
 				getExecute(),
 				getPrefixes().files*.text,
