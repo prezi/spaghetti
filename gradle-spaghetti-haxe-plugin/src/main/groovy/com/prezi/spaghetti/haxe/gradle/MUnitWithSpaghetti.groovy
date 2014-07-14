@@ -38,7 +38,7 @@ class MUnitWithSpaghetti extends MUnit {
 	}
 
 	@Override
-	protected InputStream getMUnitJsHtmlTemplate() {
-		return this.class.getResourceAsStream("/js_runner-html-with-require.mtt")
+	protected URL getMUnitJsHtmlTemplate() {
+		return this.class.getResource("/js_runner-html-with-require.mtt")
 	}
 }
