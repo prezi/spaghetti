@@ -3,6 +3,7 @@ package com.prezi.spaghetti;
 import com.prezi.spaghetti.ast.ModuleNode;
 
 import java.io.File;
+import java.io.IOException;
 
 public interface Generator {
 	/**
@@ -10,7 +11,7 @@ public interface Generator {
 	 *
 	 * @param outputDirectory the directory to generate header files into.
 	 */
-	void generateHeaders(File outputDirectory);
+	void generateHeaders(File outputDirectory) throws IOException;
 
 	/**
 	 * Process the JavaScript code of a module.
