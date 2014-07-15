@@ -19,4 +19,17 @@ public enum ModuleType {
 	public final ModulePackager getPackager() {
 		return packager;
 	}
+
+	public static ModuleType fromString(String typeName) {
+		String typeUC = typeName.toUpperCase();
+		ModuleType type;
+		if (typeUC.equals("AMD") || typeUC.equals("REQUIREJS")) {
+			type = ModuleType.AMD;
+		} else if (typeUC.equals("COMMONJS") || typeUC.equals("NODE") || typeUC.equals("NODEJS")) {
+			type = ModuleType.COMMON_JS;
+		} else {
+			throw new IllegalArgumentException("Unknown module type: " + typeName);
+		}
+		return type;
+	}
 }

@@ -1,9 +1,12 @@
-package com.prezi.spaghetti.gradle
+package com.prezi.spaghetti.gradle;
 
-import org.gradle.api.Nullable
-import org.gradle.language.base.internal.BinaryNamingScheme
+import com.beust.jcommander.internal.Lists;
+import org.gradle.api.Nullable;
+import org.gradle.language.base.internal.BinaryNamingScheme;
 
-class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
+import java.util.List;
+
+public class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
 	private final String parentName;
 	private final String collapsedName;
 
@@ -42,12 +45,14 @@ class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
 			if (word == null || word.length() == 0) {
 				continue;
 			}
+
 			if (builder.length() == 0) {
 				appendUncapitalized(builder, word);
 			} else {
 				appendCapitalized(builder, word);
 			}
 		}
+
 		return builder.toString();
 	}
 
@@ -61,12 +66,11 @@ class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
 
 	@Override
 	public String getOutputDirectoryBase() {
-		return parentName
+		return parentName;
 	}
 
-	// Omitting @Override to stay compatible with Gradle 1.11
-	@SuppressWarnings("GrMethodMayBeStatic")
-	List<String> getVariantDimensions() {
-		return []
+	@Override
+	public List<String> getVariantDimensions() {
+		return Lists.newArrayList();
 	}
 }
