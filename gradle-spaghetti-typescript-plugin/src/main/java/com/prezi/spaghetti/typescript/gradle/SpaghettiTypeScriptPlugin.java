@@ -12,8 +12,8 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.internal.reflect.Instantiator;
-import org.gradle.language.base.BinaryContainer;
 import org.gradle.language.base.ProjectSourceSet;
+import org.gradle.runtime.base.BinaryContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

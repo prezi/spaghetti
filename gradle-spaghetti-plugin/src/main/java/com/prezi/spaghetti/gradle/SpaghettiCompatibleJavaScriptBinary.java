@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
-import org.gradle.language.base.Binary;
+import org.gradle.runtime.base.Binary;
 
 import java.io.File;
 

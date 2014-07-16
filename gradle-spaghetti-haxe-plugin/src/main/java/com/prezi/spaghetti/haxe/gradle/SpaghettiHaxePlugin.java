@@ -23,10 +23,10 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.internal.reflect.Instantiator;
-import org.gradle.language.base.BinaryContainer;
 import org.gradle.language.base.ProjectSourceSet;
-import org.gradle.language.base.internal.BinaryInternal;
-import org.gradle.language.base.internal.BinaryNamingScheme;
+import org.gradle.runtime.base.BinaryContainer;
+import org.gradle.runtime.base.internal.BinaryInternal;
+import org.gradle.runtime.base.internal.BinaryNamingScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
