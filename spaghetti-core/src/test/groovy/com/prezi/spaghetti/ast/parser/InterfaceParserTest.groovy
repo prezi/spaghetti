@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.ast.parser
 
+import com.google.common.collect.Iterables
 import spock.lang.Specification
 
 import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
@@ -31,7 +32,7 @@ interface MyInterface {
 		node.methods*.parameters*.type == [
 				[INT, INT],
 		]
-		node.methods.iterator().next().parameters[1].annotations*.name == ["nullable"]
+		Iterables.get(node.methods.iterator().next().parameters, 1).annotations*.name == ["nullable"]
 		0 * _
 	}
 }

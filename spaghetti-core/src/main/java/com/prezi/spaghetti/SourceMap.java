@@ -1,24 +1,26 @@
 package com.prezi.spaghetti;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
+import com.google.common.io.Files;
 import com.google.debugging.sourcemap.SourceMapConsumerV3;
 import com.google.debugging.sourcemap.SourceMapParseException;
 import com.google.debugging.sourcemap.proto.Mapping;
 import com.google.gson.Gson;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public class SourceMap {
-	public static String compose(final String mapAtoB, final String mapBtoC, final String mapAtoCName, String nodeSourceMapRoot) throws IOException {
+	public static String compose(final String mapAtoB, final String mapBtoC, String nodeSourceMapRoot) throws IOException, InterruptedException {
 		String nodeJsSource = "\nvar sourceMap = require('source-map');\n" +
 				"\n" +
 				"var mapBtoC = " + mapBtoC + ";\n" +
@@ -30,25 +32,30 @@ public class SourceMap {
 				"mapAtoC.file = ";
 
 		File nodeJsFile = File.createTempFile("nodejs_map", ".js");
+		Files.write(nodeJsSource, nodeJsFile, Charsets.UTF_8);
 
-		DefaultGroovyMethods.leftShift(nodeJsFile, nodeJsSource);
-
-		StringBuilder mapAtoCBuilder = new StringBuilder();
 		ProcessBuilder processBuilder = new ProcessBuilder("node", nodeJsFile.toString());
+		processBuilder.redirectErrorStream(true);
 		// if user gives a node_modules path use that, otherwise just assume it's there (e.g. global install)
 		if (nodeSourceMapRoot != null) {
 			processBuilder.environment().put("NODE_PATH", nodeSourceMapRoot);
 		}
 
 		Process process = processBuilder.start();
-		ProcessGroovyMethods.waitForProcessOutput(process, mapAtoCBuilder, System.err);
+		String mapAtoC;
+		InputStreamReader reader = new InputStreamReader(process.getInputStream(), Charsets.UTF_8);
+		boolean threw = true;
+		try {
+			mapAtoC = CharStreams.toString(reader);
+			threw = false;
+		} finally {
+			Closeables.close(reader, threw);
+		}
 
+		process.waitFor();
 		if (process.exitValue() != 0) {
 			throw new RuntimeException("Source map composition failed with exit code " + process.exitValue());
 		}
-
-
-		String mapAtoC = mapAtoCBuilder.toString();
 
 		// adding lineCount so that Closure stays happy
 		return addLineCount(mapBtoC, mapAtoC);
@@ -75,9 +82,8 @@ public class SourceMap {
 		Map mapJSON = gson.fromJson(sourceMap, Map.class);
 		Collection<String> sources = (List) mapJSON.get("sources");
 		sources = Collections2.transform(sources, new Function<String, String>() {
-			@Nullable
 			@Override
-			public String apply(@Nullable String input) {
+			public String apply(String input) {
 				if (input.startsWith("file://")) {
 					input = input.substring(0, "file://".length());
 				}

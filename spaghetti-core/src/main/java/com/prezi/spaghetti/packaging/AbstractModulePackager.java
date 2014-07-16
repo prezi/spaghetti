@@ -1,16 +1,16 @@
 package com.prezi.spaghetti.packaging;
 
+import com.google.common.base.Strings;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.structure.IOAction;
 import com.prezi.spaghetti.structure.StructuredWriter;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -37,7 +37,7 @@ public abstract class AbstractModulePackager implements ModulePackager {
 		try {
 			final ModuleBundle bundle = params.bundle;
 			EnumSet<ModuleBundleElement> elements = params.elements.clone();
-			DefaultGroovyMethods.removeAll(elements, new Object[]{ModuleBundleElement.javascript, ModuleBundleElement.sourcemap});
+			elements.removeAll(Arrays.asList(ModuleBundleElement.javascript, ModuleBundleElement.sourcemap));
 			bundle.extract(writer, elements);
 			if (params.elements.contains(ModuleBundleElement.javascript)) {
 				writer.appendFile(getModuleName(bundle), new IOAction<OutputStream>() {
@@ -59,7 +59,7 @@ public abstract class AbstractModulePackager implements ModulePackager {
 
 			if (params.elements.contains(ModuleBundleElement.sourcemap)) {
 				String sourceMap = bundle.getSourceMap();
-				if (DefaultGroovyMethods.asBoolean(sourceMap)) {
+				if (!Strings.isNullOrEmpty(sourceMap)) {
 					writer.appendFile(getModuleName(bundle) + ".map", sourceMap);
 				}
 			}

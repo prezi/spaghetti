@@ -1,7 +1,5 @@
 package com.prezi.spaghetti.bundle;
 
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
-
 import java.util.Set;
 
 public abstract class AbstractModuleBundle implements ModuleBundle {
@@ -25,7 +23,7 @@ public abstract class AbstractModuleBundle implements ModuleBundle {
 	}
 
 	public boolean equals(Object o) {
-		if (DefaultGroovyMethods.is(this, o)) return true;
+		if (this == o) return true;
 		if (!getClass().equals(o.getClass())) return false;
 
 		AbstractModuleBundle that = (AbstractModuleBundle) o;

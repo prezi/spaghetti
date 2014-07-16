@@ -5,13 +5,12 @@ import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.internal.DefaultDocumentationNode;
 import com.prezi.spaghetti.ast.internal.MutableDocumentedNode;
 import org.antlr.v4.runtime.Token;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.util.List;
 
 public class DocumentationParser {
 	public static void parseDocumentation(Token documentation, MutableDocumentedNode node) {
-		if (DefaultGroovyMethods.asBoolean(documentation)) {
+		if (documentation != null) {
 			String text = documentation.getText();
 			List<String> lines = Lists.newArrayList(text.substring(3, text.length() - 3).trim().split("\\r?\\n?\\s*\\*\\s?"));
 			while (!lines.isEmpty() && Strings.isNullOrEmpty(lines.get(0))) {

@@ -4,7 +4,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -110,7 +109,7 @@ public interface StructuredReader {
 		@Override
 		public void processFile(final String path, FileHandler handler) throws IOException {
 			ZipEntry entry = zipFile.getEntry(path);
-			if (!DefaultGroovyMethods.asBoolean(entry)) {
+			if (entry == null) {
 				throw new IllegalArgumentException("Could not find file \"" + path + "\" in bundle: " + zip);
 			}
 
