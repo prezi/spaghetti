@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.ast.internal;
 
+import com.google.common.base.Strings;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.PrimitiveType;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 public class DefaultPrimitiveTypeReference extends AbstractArrayedTypeReference implements PrimitiveTypeReference {
 	private final PrimitiveType type;
@@ -20,7 +20,7 @@ public class DefaultPrimitiveTypeReference extends AbstractArrayedTypeReference 
 
 	@Override
 	public String toString() {
-		return "&" + type.name().toLowerCase() + DefaultGroovyMethods.multiply("[]", getArrayDimensions());
+		return "&" + type.name().toLowerCase() + Strings.repeat("[]", getArrayDimensions());
 	}
 
 	@Override

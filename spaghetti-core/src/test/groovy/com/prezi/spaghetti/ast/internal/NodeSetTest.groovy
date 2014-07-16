@@ -84,9 +84,9 @@ class NodeSetTest extends Specification {
 
 		where:
 		message                                              | value                           | set
-		"Test with the same name already exists: "           | new TestNode("")                | new DefaultNamedNodeSet<TestNode>("test")
-		"Test with the same name already exists: lajos"      | new TestNode("lajos")           | new DefaultNamedNodeSet<TestNode>("test")
-		"Test with the same name already exists: alma.lajos" | new TestQNode(qn("alma.lajos")) | new DefaultQualifiedNodeSet<TestQNode>("test")
+		"A(n) test with the same name already exists: "           | new TestNode("")                | new DefaultNamedNodeSet<TestNode>("test")
+		"A(n) test with the same name already exists: lajos"      | new TestNode("lajos")           | new DefaultNamedNodeSet<TestNode>("test")
+		"A(n) test with the same name already exists: alma.lajos" | new TestQNode(qn("alma.lajos")) | new DefaultQualifiedNodeSet<TestQNode>("test")
 	}
 
 

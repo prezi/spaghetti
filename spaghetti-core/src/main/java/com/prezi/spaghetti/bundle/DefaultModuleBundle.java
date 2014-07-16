@@ -15,7 +15,6 @@ import groovy.lang.Reference;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +136,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		source.processFiles(new StructuredReader.FileHandler() {
 			@Override
 			public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
-				if (DefaultGroovyMethods.isCase(ModuleBundle.MANIFEST_MF_PATH, path)) {
+				if (ModuleBundle.MANIFEST_MF_PATH.equals(path)) {
 					try {
 						manifest.set(new Manifest(contents.call()));
 					} catch (IOException e) {
@@ -210,6 +209,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		source.processFiles(new StructuredReader.FileHandler() {
 			@Override
 			public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
+				//noinspection StatementWithEmptyBody
 				if (path.equals(ModuleBundle.MANIFEST_MF_PATH)) {
 					// Do not extract manifest
 				} else if (path.equals(ModuleBundle.DEFINITION_PATH)) {

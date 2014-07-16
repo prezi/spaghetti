@@ -8,7 +8,6 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.TypeChain;
 import com.prezi.spaghetti.ast.TypeReference;
 import com.prezi.spaghetti.ast.VoidTypeReference;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,7 @@ public class DefaultTypeChain extends AbstractArrayedTypeReference implements Ty
 
 	@Override
 	public TypeReference getReturnType() {
-		return DefaultGroovyMethods.last(elements);
+		return elements.get(elements.size() - 1);
 	}
 
 	@Override

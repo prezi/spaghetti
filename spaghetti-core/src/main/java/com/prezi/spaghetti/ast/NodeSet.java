@@ -20,8 +20,6 @@ public interface NodeSet<K extends Serializable, N extends AstNode> extends Set<
 
 	N get(K key);
 
-	N getAt(int index);
-
 	@Deprecated
 	@Override
 	boolean add(N t);

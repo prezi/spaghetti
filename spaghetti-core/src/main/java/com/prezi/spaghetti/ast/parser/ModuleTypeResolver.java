@@ -4,7 +4,6 @@ import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.ast.TypeNode;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 public class ModuleTypeResolver implements TypeResolver {
 	protected final TypeResolver parent;
@@ -19,7 +18,7 @@ public class ModuleTypeResolver implements TypeResolver {
 	public TypeNode resolveType(TypeResolutionContext context) {
 		FQName name = context.getName();
 		QualifiedTypeNode type = module.getTypes().get(name);
-		if (!DefaultGroovyMethods.asBoolean(type)) {
+		if (type == null) {
 			type = ((QualifiedTypeNode) (parent.resolveType(context)));
 		}
 

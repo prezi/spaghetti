@@ -7,7 +7,6 @@ import groovy.lang.GroovyObjectSupport;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -18,6 +17,9 @@ import java.util.Set;
 
 @SuppressWarnings("NullableProblems")
 public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode> extends GroovyObjectSupport implements NodeSet<K, N> {
+	private final Map<K, N> delegate;
+	private final String type;
+
 	public AbstractNodeSet(String type)
 	{
 		this(type, new LinkedHashMap<K, N>());
@@ -70,11 +72,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 	public N get(K key)
 	{
 		return delegate.get(key);
-	}
-
-	@Override
-	public N getAt(int index) {
-		return DefaultGroovyMethods.getAt(delegate.values().iterator(), index);
 	}
 
 	@Override
@@ -189,9 +186,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 
 	private String duplicateMessage(final Object name)
 	{
-		return DefaultGroovyMethods.capitalize(type) + " with the same name already exists: " + name;
+		return "A(n) " + type + " with the same name already exists: " + name;
 	}
-
-	private final Map<K, N> delegate;
-	private final String type;
 }

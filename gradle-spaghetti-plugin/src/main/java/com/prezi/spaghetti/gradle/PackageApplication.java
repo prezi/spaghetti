@@ -2,7 +2,6 @@ package com.prezi.spaghetti.gradle;
 
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationType;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
@@ -163,7 +162,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 			}
 
 		});
-		if (execute && !DefaultGroovyMethods.asBoolean(mainModule)) {
+		if ((execute == Boolean.TRUE) && (mainModule == null)) {
 			throw new IllegalArgumentException("You need to set mainModule as well when execute is true");
 		}
 	}

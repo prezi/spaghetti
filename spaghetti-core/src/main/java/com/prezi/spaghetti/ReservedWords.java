@@ -1,17 +1,9 @@
 package com.prezi.spaghetti;
 
 import com.google.common.collect.ImmutableSortedSet;
-import groovy.lang.Closure;
-import org.codehaus.groovy.runtime.DefaultGroovyMethods;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class ReservedWords {
 
