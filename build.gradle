@@ -55,7 +55,7 @@ subprojects { subproject ->
 					description subproject.description
 
 					scm {
-						url "scm:git@github.com:prezi/spaghetti.git"
+						url "http://github.com:prezi/spaghetti"
 						connection "scm:git@github.com:prezi/spaghetti.git"
 						developerConnection "scm:git@github.com:prezi/spaghetti.git"
 					}
