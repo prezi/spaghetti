@@ -68,7 +68,7 @@ public class ModuleObfuscator {
 		Object finalSourceMap;
 		if (sourceMap != null) {
 			try {
-				finalSourceMap = SourceMap.compose(sourceMap, mapJStoMin, params.nodeSourceMapRoot);
+				finalSourceMap = SourceMap.compose(sourceMap, mapJStoMin, "module.map", params.nodeSourceMapRoot);
 			} catch (InterruptedException ex) {
 				throw new IOException(ex);
 			}
