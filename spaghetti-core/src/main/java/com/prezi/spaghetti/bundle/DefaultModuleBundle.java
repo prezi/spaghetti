@@ -170,7 +170,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String sourceUrl = moduleSourceString != null ? moduleSourceString : "unknown-source";
 
 		String moduleDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES);
-		Set<String> dependentModules = moduleDependenciesString != null ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
+		Set<String> dependentModules = !Strings.isNullOrEmpty(moduleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
 		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, Collections.unmodifiableSet(resourcePaths));
 	}
 
