@@ -68,7 +68,7 @@ public class MUnitWithSpaghetti extends MUnit {
 
 			String requireJsVersion = requireJsProps.getProperty("version");
 			File requireJsFile = new File(workDir, "require.js");
-			FileUtils.forceDelete(requireJsFile);
+			FileUtils.deleteQuietly(requireJsFile);
 
 			InputStream requireJsStream = getClass().getResourceAsStream("/META-INF/resources/webjars/requirejs/" + requireJsVersion + "/require.js");
 			try {

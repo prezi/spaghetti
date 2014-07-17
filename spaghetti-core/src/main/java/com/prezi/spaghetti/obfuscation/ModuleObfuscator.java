@@ -46,7 +46,7 @@ public class ModuleObfuscator {
 		StringBuilder compressedJS = new StringBuilder();
 
 		File workDir = params.workingDirectory;
-		FileUtils.forceDelete(workDir);
+		FileUtils.deleteQuietly(workDir);
 		FileUtils.forceMkdir(workDir);
 		File closureFile = new File(workDir, "closure.js");
 		FileUtils.write(closureFile, params.javaScript);
