@@ -66,9 +66,18 @@ public class MUnitWithSpaghetti extends MUnit {
 				requireJsPropsStream.close();
 			}
 
+			getLogger().debug("Copying test application from {} to {}", getTestApplication(), workDir);
+			getServices().get(FileOperations.class).sync(new Action<CopySpec>() {
+				@Override
+				public void execute(CopySpec copySpec) {
+					copySpec.from(getTestApplication());
+					copySpec.into(workDir);
+				}
+			});
+
 			String requireJsVersion = requireJsProps.getProperty("version");
 			File requireJsFile = new File(workDir, "require.js");
-			FileUtils.forceDelete(requireJsFile);
+			FileUtils.deleteQuietly(requireJsFile);
 
 			InputStream requireJsStream = getClass().getResourceAsStream("/META-INF/resources/webjars/requirejs/" + requireJsVersion + "/require.js");
 			try {
@@ -77,15 +86,6 @@ public class MUnitWithSpaghetti extends MUnit {
 				requireJsStream.close();
 			}
 
-			getLogger().debug("Copying test application from {} to {}", getTestApplication(), workDir);
-			getServices().get(FileOperations.class).sync(new Action<CopySpec>() {
-				@Override
-				public void execute(CopySpec copySpec) {
-					copySpec.from(getTestApplication());
-					copySpec.into(workDir);
-				}
-
-			});
 			return getTestApplicationName();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

@@ -40,7 +40,7 @@ public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 		ModuleConfiguration config = readConfig(getDefinitions());
 		getLogger().info("Generating module headers for {}", config.getLocalModules());
 		File directory = getOutputDirectory();
-		FileUtils.forceDelete(directory);
+		FileUtils.deleteQuietly(directory);
 		FileUtils.forceMkdir(directory);
 		createGenerator(config).generateHeaders(directory);
 	}

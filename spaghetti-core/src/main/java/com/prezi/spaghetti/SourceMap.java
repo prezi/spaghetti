@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SourceMap {
-	public static String compose(final String mapAtoB, final String mapBtoC, String nodeSourceMapRoot) throws IOException, InterruptedException {
+	public static String compose(final String mapAtoB, final String mapBtoC, String mapAtoCName, String nodeSourceMapRoot) throws IOException, InterruptedException {
 		String nodeJsSource = "\nvar sourceMap = require('source-map');\n" +
 				"\n" +
 				"var mapBtoC = " + mapBtoC + ";\n" +
@@ -29,7 +29,8 @@ public class SourceMap {
 				"var map = sourceMap.SourceMapGenerator.fromSourceMap(new sourceMap.SourceMapConsumer(mapBtoC));\n" +
 				"map.applySourceMap(new sourceMap.SourceMapConsumer(mapAtoB), mapBtoC.sources[0]);\n" +
 				"var mapAtoC = map.toJSON();\n" +
-				"mapAtoC.file = ";
+				"mapAtoC.file = '" + mapAtoCName + "';\n" +
+				"console.log(JSON.stringify(mapAtoC));\n";
 
 		File nodeJsFile = File.createTempFile("nodejs_map", ".js");
 		Files.write(nodeJsSource, nodeJsFile, Charsets.UTF_8);

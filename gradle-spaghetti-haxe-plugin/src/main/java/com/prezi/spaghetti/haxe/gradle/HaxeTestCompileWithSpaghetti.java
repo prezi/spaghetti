@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.haxe.gradle;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.prezi.haxe.gradle.HaxeCommandBuilder;
 import com.prezi.haxe.gradle.HaxeTestCompile;
 import com.prezi.spaghetti.ReservedWords;
@@ -13,6 +13,7 @@ import org.gradle.language.base.LanguageSourceSet;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 
 public class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 	@Override
@@ -30,13 +31,12 @@ public class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 
 			FileWriter writer = new FileWriter(new File(getTestsDirectory(), "SpaghettiTest.hx"));
 			try {
-				template.make(ImmutableMap.builder()
-						.put("config", ReservedWords.CONFIG)
-						.put("haxeModule", HaxeGenerator.HAXE_MODULE_VAR)
-						.put("module", ReservedWords.INSTANCE)
-						.put("modules", ReservedWords.MODULES)
-						.build()
-				).writeTo(writer);
+				Map<String, Object> params = Maps.newHashMap();
+				params.put("config", ReservedWords.CONFIG);
+				params.put("haxeModule", HaxeGenerator.HAXE_MODULE_VAR);
+				params.put("module", ReservedWords.INSTANCE);
+				params.put("modules", ReservedWords.MODULES);
+				template.make(params).writeTo(writer);
 			} finally {
 				writer.close();
 			}

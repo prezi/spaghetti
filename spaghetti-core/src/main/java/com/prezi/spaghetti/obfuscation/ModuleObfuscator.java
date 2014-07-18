@@ -46,7 +46,7 @@ public class ModuleObfuscator {
 		StringBuilder compressedJS = new StringBuilder();
 
 		File workDir = params.workingDirectory;
-		FileUtils.forceDelete(workDir);
+		FileUtils.deleteQuietly(workDir);
 		FileUtils.forceMkdir(workDir);
 		File closureFile = new File(workDir, "closure.js");
 		FileUtils.write(closureFile, params.javaScript);
@@ -68,7 +68,7 @@ public class ModuleObfuscator {
 		Object finalSourceMap;
 		if (sourceMap != null) {
 			try {
-				finalSourceMap = SourceMap.compose(sourceMap, mapJStoMin, params.nodeSourceMapRoot);
+				finalSourceMap = SourceMap.compose(sourceMap, mapJStoMin, "module.map", params.nodeSourceMapRoot);
 			} catch (InterruptedException ex) {
 				throw new IOException(ex);
 			}

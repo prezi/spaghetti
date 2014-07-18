@@ -42,7 +42,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		setDependentModules(dependentModules);
 	}
 
-	protected ConfigurableFileCollection getAdditionalDirectDependentModulesInternal() {
+	public ConfigurableFileCollection getAdditionalDirectDependentModulesInternal() {
 		return additionalDirectDependentModulesInternal;
 	}
 
@@ -60,7 +60,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		return getProject().files(this.getAdditionalDirectDependentModulesInternal());
 	}
 
-	protected ConfigurableFileCollection getAdditionalTransitiveDependentModulesInternal() {
+	public ConfigurableFileCollection getAdditionalTransitiveDependentModulesInternal() {
 		return additionalTransitiveDependentModulesInternal;
 	}
 
