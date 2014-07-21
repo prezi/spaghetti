@@ -1,4 +1,4 @@
 package com.prezi.spaghetti.ast;
 
-public interface MethodParameterNode extends AnnotatedNode, NamedNode {
+public interface MethodParameterNode extends AnnotatedNode, NamedNode, TypeNamePairNode<TypeReference> {
 }
