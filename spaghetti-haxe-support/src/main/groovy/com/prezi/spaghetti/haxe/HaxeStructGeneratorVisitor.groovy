@@ -19,9 +19,12 @@ ${visitChildren(node)}
 
 	@Override
 	String visitPropertyNode(PropertyNode node) {
-		def mutable = node.annotations.find { it.name == "mutable"} != null
+		def mutable = node.annotations.contains("mutable")
+		def name = node.name
 		def modifiers = mutable ? "" : " (default, never)"
-"""	var ${node.name}${modifiers}:${node.type.accept(this)};
+		def type = node.type.accept(this)
+		type = wrapNullableTypeReference(type, node)
+		"""	var ${name}${modifiers}:${type};
 """
 	}
 }

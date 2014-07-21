@@ -30,6 +30,7 @@ ${node.methods*.accept(this).join("")}
 	@Override
 	String visitModuleMethodNode(ModuleMethodNode node) {
 		def returnType = node.returnType.accept(this)
+		returnType = wrapNullableTypeReference(returnType, node)
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
 		def params = node.parameters*.accept(this).join(", ")
 		def paramNames = node.parameters*.name.join(", ")
@@ -44,6 +45,8 @@ ${node.methods*.accept(this).join("")}
 
 	@Override
 	String visitMethodParameterNode(MethodParameterNode node) {
-		return node.name + ":" + node.type.accept(this)
+		def type = node.type.accept(this)
+		type = wrapNullableTypeReference(type, node)
+		return node.name + ":" + type
 	}
 }

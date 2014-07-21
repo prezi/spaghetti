@@ -74,6 +74,14 @@ abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
 		return wrapSingleTypeReference(type, reference.arrayDimensions)
 	}
 
+	static protected String wrapNullableTypeReference(String name, AnnotatedNode annotated) {
+		return wrapNullableTypeReference(name, annotated.annotations.contains("nullable"))
+	}
+
+	static protected String wrapNullableTypeReference(String name, boolean nullable) {
+		return nullable ? "Null<" + name + ">" : name
+	}
+
 	static protected String wrapSingleTypeReference(String name, int arrayDimensions) {
 		String result = name
 		(0..<arrayDimensions).each {

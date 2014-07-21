@@ -17,7 +17,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	 */
 	void doSomething()
 
-	string[] doSomethingElse(int a, int b)
+	@nullable string[] doSomethingElse(@nullable int a, int b)
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
@@ -28,7 +28,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 					def superIface = Mock(InterfaceNode)
 					superIface.qualifiedName >> FQName.fromString("com.example.test.Tibor")
 					def mockParam = Mock(TypeParameterNode)
-					superIface.typeParameters >> new DefaultNamedNodeSet<TypeParameterNode>("type params", [mockParam].toSet())
+					superIface.typeParameters >> new DefaultNamedNodeSet<TypeParameterNode>("type params", Collections.singleton(mockParam))
 					return superIface
 				}
 		]))
@@ -41,7 +41,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	 * Does something.
 	 */
 	function doSomething():Void;
-	function doSomethingElse(a:Int, b:Int):Array<String>;
+	function doSomethingElse(a:Null<Int>, b:Int):Null<Array<String>>;
 	function hello<T, U>(f:X->(Void->Int)->U):Array<T>;
 
 }

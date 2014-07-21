@@ -23,7 +23,7 @@ interface MyInterface<T> {
 @deprecated("use doSomething() instead")
 void initModule(int a, int b)
 UnicodeString[] doSomething()
-static int doStatic(int a, int b)
+@nullable static int doStatic(@nullable int a, int b)
 static <T> MyInterface<T> returnT(T t)
 """
 		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
@@ -45,7 +45,7 @@ static <T> MyInterface<T> returnT(T t)
 	@:extern public inline function doSomething():Array<String> {
 		return __instance.doSomething();
 	}
-	@:extern public static inline function doStatic(a:Int, b:Int):Int {
+	@:extern public static inline function doStatic(a:Null<Int>, b:Int):Null<Int> {
 		return __static.doStatic(a, b);
 	}
 	@:extern public static inline function returnT<T>(t:T):com.example.test.MyInterface<T> {
