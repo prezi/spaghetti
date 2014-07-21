@@ -8,10 +8,14 @@ import com.prezi.spaghetti.ast.TypeReference;
 
 public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeReference> implements MethodParameterNode {
 
-	private NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final boolean isOptional;
+	private final Object optionalValue;
 
-	public DefaultMethodParameterNode(String name, TypeReference type) {
+	public DefaultMethodParameterNode(String name, TypeReference type, boolean isOptional, Object optionalValue) {
 		super(name, type);
+		this.isOptional = isOptional;
+		this.optionalValue = optionalValue;
 	}
 
 	@Override
@@ -22,5 +26,15 @@ public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeRef
 	@Override
 	public NamedNodeSet<AnnotationNode> getAnnotations() {
 		return annotations;
+	}
+
+	@Override
+	public boolean isOptional() {
+		return isOptional;
+	}
+
+	@Override
+	public Object getOptionalValue() {
+		return optionalValue;
 	}
 }

@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.NamedNodeSet
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterNode
+import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.ast.internal.DefaultNamedNodeSet
 import com.prezi.spaghetti.ast.internal.MutableMethodNode
 import spock.lang.Specification
@@ -76,5 +77,57 @@ class MethodParserTest extends Specification {
 		1 * method.setReturnType({ it.type == typeParam })
 		1 * params.add({ it instanceof MethodParameterNode && it.name == "t" && it.type.type == typeParam }, _)
 		0 * _
+	}
+
+	def "parse optional"() {
+		def context = AstTestUtils.parser("void method(string a, int b = 12, c = \"value\")").methodDefinition()
+		def typeParam = Mock(TypeParameterNode)
+		def resolver = Mock(TypeResolver)
+		def method = Mock(MutableMethodNode)
+		def params = Mock(NamedNodeSet)
+
+		when:
+		MethodParser.parseMethodDefinition(resolver, context, method)
+
+		then:
+		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * method.parameters >> params
+		1 * method.setReturnType({ it == VoidTypeReference.VOID })
+		1 * params.add({
+			it instanceof MethodParameterNode &&
+					it.name == "a" &&
+					it.type == PrimitiveTypeReference.STRING &&
+					it.optional == false &&
+					it.optionalValue == null}, _)
+		1 * params.add({
+			it instanceof MethodParameterNode &&
+					it.name == "b" &&
+					it.type == PrimitiveTypeReference.INT &&
+					it.optional == true &&
+					it.optionalValue == 12}, _)
+		1 * params.add({
+			it instanceof MethodParameterNode &&
+					it.name == "c" &&
+					it.type == PrimitiveTypeReference.STRING &&
+					it.optional == true &&
+					it.optionalValue == "value"}, _)
+		0 * _
+	}
+
+	def "parse wrong optional"() {
+		def context = AstTestUtils.parser("void method(a = 12, int b, c = 12)").methodDefinition()
+		def typeParam = Mock(TypeParameterNode)
+		def resolver = Mock(TypeResolver)
+		def method = Mock(MutableMethodNode)
+		def params = Mock(NamedNodeSet)
+
+		when:
+		MethodParser.parseMethodDefinition(resolver, context, method)
+
+		then:
+		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * method.parameters >> params
+		def ex = thrown InternalAstParserException
+		ex.message == " at line 1:20: Only the last parameters of a method can be optional"
 	}
 }
