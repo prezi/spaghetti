@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.gradle;
 
-import org.gradle.language.base.internal.AbstractBuildableModelElement;
-import org.gradle.language.base.internal.BinaryInternal;
-import org.gradle.language.base.internal.BinaryNamingScheme;
+import org.gradle.runtime.base.internal.AbstractBuildableModelElement;
+import org.gradle.runtime.base.internal.BinaryInternal;
+import org.gradle.runtime.base.internal.BinaryNamingScheme;
 
 import java.io.File;
 
