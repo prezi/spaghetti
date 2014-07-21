@@ -5,6 +5,8 @@ Spaghetti helps you in creating large-scale modular JavaScript applications with
 
 [![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
 
+Gradle 2.0 required. With earlier versions you will get an error that `org.gradle.runtime.base.BinaryContainer` is missing.
+
 ## How does it work?
 
 When you create a Spaghetti module, you start by defining the module's API in the Spaghetti [IDL](http://en.wikipedia.org/wiki/Interface_description_language). Something like this:
