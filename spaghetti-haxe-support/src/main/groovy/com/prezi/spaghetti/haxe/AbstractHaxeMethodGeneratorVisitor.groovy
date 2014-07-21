@@ -20,6 +20,10 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 	String visitMethodParameterNode(MethodParameterNode node) {
 		def type = node.type.accept(this)
 		type = wrapNullableTypeReference(type, node)
-		return "${node.name}:${type}"
+		def result = node.name + ':' + type
+		if (node.isOptional()) {
+			result += " = " + HaxeUtils.toPrimitiveString(node.optionalValue)
+		}
+		return result
 	}
 }

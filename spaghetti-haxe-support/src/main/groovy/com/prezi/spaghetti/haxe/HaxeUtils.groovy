@@ -29,4 +29,11 @@ final class HaxeUtils {
 		return result
 	}
 
+	public static String toPrimitiveString(Object value) {
+		if (value instanceof String) {
+			return '"' + value + '"'
+		} else {
+			return String.valueOf(value)
+		}
+	}
 }

@@ -1,18 +1,17 @@
 package com.prezi.spaghetti.haxe.access
 
-import com.prezi.spaghetti.ast.MethodParameterNode
 import com.prezi.spaghetti.ast.ModuleMethodNode
 import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.VoidTypeReference
-import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
+import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC
 
-class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
@@ -41,12 +40,5 @@ ${node.methods*.accept(this).join("")}
 		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${delegate}.${node.name}(${paramNames});
 	}
 """
-	}
-
-	@Override
-	String visitMethodParameterNode(MethodParameterNode node) {
-		def type = node.type.accept(this)
-		type = wrapNullableTypeReference(type, node)
-		return node.name + ":" + type
 	}
 }
