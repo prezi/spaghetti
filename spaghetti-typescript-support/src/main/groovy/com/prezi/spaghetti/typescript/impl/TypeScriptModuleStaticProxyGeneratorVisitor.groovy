@@ -1,14 +1,13 @@
 package com.prezi.spaghetti.typescript.impl
 
 import com.prezi.spaghetti.ast.AstNode
-import com.prezi.spaghetti.ast.MethodParameterNode
 import com.prezi.spaghetti.ast.ModuleMethodNode
 import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.VoidTypeReference
-import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
+import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
-class TypeScriptModuleStaticProxyGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
+class TypeScriptModuleStaticProxyGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
 	private final ModuleNode module
 
@@ -38,11 +37,6 @@ ${node.methods*.accept(this).join("")}
 		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.name}.${module.alias}.${node.name}(${paramNames});
 	}
 """
-	}
-
-	@Override
-	String visitMethodParameterNode(MethodParameterNode node) {
-		return node.name + ":" + node.type.accept(this)
 	}
 
 	@Override
