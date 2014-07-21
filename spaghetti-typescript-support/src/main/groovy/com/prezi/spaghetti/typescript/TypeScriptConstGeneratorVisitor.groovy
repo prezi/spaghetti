@@ -15,15 +15,7 @@ ${visitChildren(node)}
 	@Override
 	String visitConstEntryNode(ConstEntryNode node) {
 		String type = PRIMITIVE_TYPES.get(node.type.type)
-		String value = toString(node.value)
+		String value = TypeScriptUtils.toPrimitiveString(node.value)
 		return "\tstatic ${node.name}: ${type} = ${value};\n"
-	}
-
-	private static String toString(Object value) {
-		if (value instanceof String) {
-			return '"' + value + '"'
-		} else {
-			return String.valueOf(value)
-		}
 	}
 }

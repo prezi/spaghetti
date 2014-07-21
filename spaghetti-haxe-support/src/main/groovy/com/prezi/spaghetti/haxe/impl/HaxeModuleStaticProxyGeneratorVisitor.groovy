@@ -1,13 +1,12 @@
 package com.prezi.spaghetti.haxe.impl
 
 import com.prezi.spaghetti.ast.AstNode
-import com.prezi.spaghetti.ast.MethodParameterNode
 import com.prezi.spaghetti.ast.ModuleMethodNode
 import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
+import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 
-class HaxeModuleStaticProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeModuleStaticProxyGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	private final ModuleNode module
 
@@ -40,13 +39,6 @@ ${node.methods*.accept(this).join("")}
 		${returnType == "Void"?"":"return "}${module.name}.${module.alias}.${node.name}(${paramNames});
 	}
 """
-	}
-
-	@Override
-	String visitMethodParameterNode(MethodParameterNode node) {
-		def type = node.type.accept(this)
-		wrapNullableTypeReference(type, node)
-		return node.name + ":" + type
 	}
 
 	@Override

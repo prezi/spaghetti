@@ -1,17 +1,16 @@
 package com.prezi.spaghetti.typescript.access
 
-import com.prezi.spaghetti.ast.MethodParameterNode
 import com.prezi.spaghetti.ast.ModuleMethodNode
 import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
+import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.INSTANCE
 import static com.prezi.spaghetti.ReservedWords.MODULES
 import static com.prezi.spaghetti.ReservedWords.STATIC
 
-class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
+class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 	private final ModuleNode module
 
 	TypeScriptModuleAccessorGeneratorVisitor(ModuleNode module) {
@@ -44,10 +43,5 @@ ${node.methods*.accept(this).join("")}
 		${returnType == "void"?"":"return "}${delegate}.${node.name}(${paramNames});
 	}
 """
-	}
-
-	@Override
-	String visitMethodParameterNode(MethodParameterNode node) {
-		return node.name + ":" + node.type.accept(this)
 	}
 }

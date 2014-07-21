@@ -17,7 +17,7 @@ interface MyInterface<X> extends Parent<X> {
 	 */
 	void doSomething()
 
-	string[] doSomethingElse(int a, int b)
+	string[] doSomethingElse(int a, int b = 12)
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
@@ -34,7 +34,7 @@ export interface MyInterface<X> extends com.example.test.Parent<X> {
 	 * Does something.
 	 */
 	doSomething():void;
-	doSomethingElse(a:number, b:number):Array<string>;
+	doSomethingElse(a:number, b:number = 12):Array<string>;
 	hello<T, U>(f:(arg0: X, arg1: () => number) => U):Array<T>;
 
 }
