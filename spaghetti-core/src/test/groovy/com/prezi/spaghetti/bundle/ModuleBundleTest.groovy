@@ -42,6 +42,7 @@ class ModuleBundleTest extends Specification {
 		manifest.tokenize("\r?\n").sort() == [
 				"Manifest-Version: 1.0",
 				"Spaghetti-Version: ${Version.SPAGHETTI_VERSION}",
+				"Spaghetti-Build: ${Version.SPAGHETTI_BUILD}",
 				"Module-Name: test",
 				"Module-Version: 3.7",
 				"Module-Dependencies: com.example.alma,com.example.bela",
