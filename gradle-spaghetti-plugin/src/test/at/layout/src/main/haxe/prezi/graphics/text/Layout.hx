@@ -8,8 +8,10 @@ class Layout implements ILayout {
 		trace("Static call: " + Core.giveMeANumber());
 	}
 
-	public function createText():Text {
-		return new TextImpl();
+	public function createText(text:String = ""):Text {
+		var result = new TextImpl();
+		result.insert(0, text, []);
+		return result;
 	}
 
 	public function createTestStuff():TestStuff<String, String>
