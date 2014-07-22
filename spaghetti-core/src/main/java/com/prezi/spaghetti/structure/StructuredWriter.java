@@ -67,14 +67,14 @@ public interface StructuredWriter extends StructuredAppender {
 
 		@Override
 		public void init() throws IOException {
-			FileUtils.deleteDirectory(directory);
-			directory.mkdirs();
+			FileUtils.deleteQuietly(directory);
+			FileUtils.forceMkdir(directory);
 		}
 
 		@Override
 		public void appendFile(String path, IOAction<OutputStream> writeContents) throws IOException {
 			File file = new File(directory, path);
-			file.getParentFile().mkdirs();
+			FileUtils.forceMkdir(file.getParentFile());
 			FileOutputStream out = new FileOutputStream(file);
 			try {
 				writeContents.execute(out);
@@ -107,8 +107,8 @@ public interface StructuredWriter extends StructuredAppender {
 
 		@Override
 		public void init() throws IOException {
-			zipFile.delete();
-			zipFile.getParentFile().mkdirs();
+			FileUtils.deleteQuietly(zipFile);
+			FileUtils.forceMkdir(zipFile.getParentFile());
 			zipStream = new ZipOutputStream(new FileOutputStream(zipFile));
 		}
 
