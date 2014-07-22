@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.packaging;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
@@ -13,8 +14,6 @@ import java.io.OutputStream;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public abstract class AbstractStructuredApplicationPackager extends AbstractApplicationPackager {
 	protected final Wrapper wrapper;
@@ -48,14 +47,14 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 			@Override
 			public void execute(OutputStream out) throws IOException {
 				for (String prefix : params.prefixes) {
-					IOUtils.write(prefix, out, UTF_8);
+					IOUtils.write(prefix, out, Charsets.UTF_8);
 				}
 
 				String wrappedApplication = wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute);
 
-				IOUtils.write(wrappedApplication, out, UTF_8);
+				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 				for (String suffix : params.suffixes) {
-					IOUtils.write(suffix, out, UTF_8);
+					IOUtils.write(suffix, out, Charsets.UTF_8);
 				}
 			}
 		});

@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.obfuscation;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilationLevel;
@@ -15,8 +16,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * lineLengthThreshold = 1 forces closure to insert a newline in the
@@ -46,7 +45,7 @@ public class ClosureCompiler {
 		com.google.javascript.jscomp.Compiler compiler = new Compiler(System.err);
 		CompilerOptions options = new CompilerOptions();
 
-		SourceFile js = SourceFile.fromFile(jsFileName, UTF_8);
+		SourceFile js = SourceFile.fromFile(jsFileName, Charsets.UTF_8);
 
 		// OPTIONS
 		compilationLevel.setOptionsForCompilationLevel(options);
@@ -59,7 +58,7 @@ public class ClosureCompiler {
 		// Set default externs so that commonly used primitives are protected
 		List<SourceFile> externs = Lists.newArrayList(CommandLineRunner.getDefaultExterns());
 		for (File customExtern : customExterns) {
-			externs.add(SourceFile.fromFile(customExtern, UTF_8));
+			externs.add(SourceFile.fromFile(customExtern, Charsets.UTF_8));
 		}
 
 		// COMPILE

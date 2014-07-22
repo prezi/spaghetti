@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.packaging;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
@@ -20,8 +21,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 	public SingleFileApplicationPackager() {
@@ -51,10 +50,10 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 			@Override
 			public void execute(final OutputStream out) throws IOException {
 				for (String prefix : params.prefixes) {
-					IOUtils.write(prefix, out, UTF_8);
+					IOUtils.write(prefix, out, Charsets.UTF_8);
 				}
 
-				IOUtils.write("var modules = [];\n", out, UTF_8);
+				IOUtils.write("var modules = [];\n", out, Charsets.UTF_8);
 				final List<String> dependencyInitializers = Lists.newArrayList();
 				DependencyTreeResolver.resolveDependencies(dependencyTree, new DependencyTreeResolver.DependencyProcessor<String, String>() {
 					@Override
@@ -74,14 +73,14 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 						return module;
 					}
 				});
-				IOUtils.write(Joiner.on('\n').join(dependencyInitializers), out, UTF_8);
+				IOUtils.write(Joiner.on('\n').join(dependencyInitializers), out, Charsets.UTF_8);
 				IOUtils.write("\n", out);
 
 				String wrappedApplication = wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute);
-				IOUtils.write(wrappedApplication, out, UTF_8);
+				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 
 				for (String suffix : params.suffixes) {
-					IOUtils.write(suffix, out, UTF_8);
+					IOUtils.write(suffix, out, Charsets.UTF_8);
 				}
 			}
 		});

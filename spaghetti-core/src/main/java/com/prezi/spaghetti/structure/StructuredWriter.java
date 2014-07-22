@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.structure;
 
+import com.google.common.base.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -11,8 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public interface StructuredWriter extends StructuredAppender {
 	void init() throws IOException;
@@ -55,7 +54,7 @@ public interface StructuredWriter extends StructuredAppender {
 			appendFile(path, new IOAction<OutputStream>() {
 				@Override
 				public void execute(OutputStream outputStream) throws IOException {
-					IOUtils.write(contents, outputStream, UTF_8);
+					IOUtils.write(contents, outputStream, Charsets.UTF_8);
 				}
 			});
 		}

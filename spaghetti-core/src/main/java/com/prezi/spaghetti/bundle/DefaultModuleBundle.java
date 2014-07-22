@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -29,8 +30,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
@@ -187,9 +186,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			source.processFile(path, new StructuredReader.FileHandler() {
 				@Override
 				public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
-					text.set(IOUtils.toString(contents.call(), UTF_8));
+					text.set(IOUtils.toString(contents.call(), Charsets.UTF_8));
 				}
-
 			});
 			return text.get();
 		} finally {
