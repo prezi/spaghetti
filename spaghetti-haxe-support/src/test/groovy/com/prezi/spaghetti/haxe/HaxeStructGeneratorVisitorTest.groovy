@@ -16,7 +16,7 @@ struct MyStruct<T> {
 	 * This is field b.
 	 */
 	@deprecated("struct")
-	@nullable string b
+	@nullable ?string b
 	@mutable T t
 }
 """
@@ -35,7 +35,7 @@ typedef MyStruct<T> = {
 	 * This is field b.
 	 */
 	@:deprecated("struct")
-	var b (default, never):Null<String>;
+	@:optional var b (default, never):Null<String>;
 	var t:T;
 
 }

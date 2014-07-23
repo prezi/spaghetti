@@ -17,7 +17,7 @@ struct MyStruct<T> {
 	bool boolValue
 	int intValue
 	float floatValue
-	string stringValue
+	?string stringValue
 	any anyValue
 	T genericValue
 }
@@ -37,6 +37,14 @@ struct MyStruct<T> {
 				"stringValue",
 				"anyValue",
 				"genericValue",
+		]
+		node.properties*.optional == [
+				false,
+				false,
+				false,
+				true,
+				false,
+				false,
 		]
 		(node.properties*.type)[0..4].type == [
 				BOOL,

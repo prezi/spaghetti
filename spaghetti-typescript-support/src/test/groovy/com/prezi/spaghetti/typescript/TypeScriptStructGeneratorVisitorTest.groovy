@@ -16,7 +16,7 @@ struct MyStruct<T> {
 	 * This is field b.
 	 */
 	@deprecated("struct")
-	string b
+	?string b
 	T t
 }
 """
@@ -34,7 +34,7 @@ export interface MyStruct<T> {
 	/**
 	 * This is field b.
 	 */
-	b: string;
+	b?: string;
 	t: T;
 
 }

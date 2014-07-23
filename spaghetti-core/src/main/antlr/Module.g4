@@ -89,7 +89,7 @@ methodDefinition :
 	;
 
 propertyDefinition : ( documentation = Doc )? annotations?
-	typeNamePair
+	( optional = '?' )? typeNamePair
 	;
 
 annotations : annotation+

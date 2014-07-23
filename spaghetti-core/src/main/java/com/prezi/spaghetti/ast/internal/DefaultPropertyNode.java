@@ -10,14 +10,21 @@ import com.prezi.spaghetti.ast.TypeReference;
 public class DefaultPropertyNode extends AbstractTypeNamePairNode<TypeReference> implements PropertyNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
+	private final boolean optional;
 
-	public DefaultPropertyNode(String name, TypeReference type) {
+	public DefaultPropertyNode(String name, TypeReference type, boolean optional) {
 		super(name, type);
+		this.optional = optional;
 	}
 
 	@Override
 	protected <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
 		return visitor.visitPropertyNode(this);
+	}
+
+	@Override
+	public boolean isOptional() {
+		return optional;
 	}
 
 	@Override

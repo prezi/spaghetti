@@ -19,7 +19,8 @@ ${visitChildren(node)}
 
 	@Override
 	String visitPropertyNode(PropertyNode node) {
-"""	${node.name}: ${node.type.accept(this)};
+		def optional = node.optional ? "?" : ""
+"""	${node.name}${optional}: ${node.type.accept(this)};
 """
 	}
 }

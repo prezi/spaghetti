@@ -23,8 +23,9 @@ ${visitChildren(node)}
 		def name = node.name
 		def modifiers = mutable ? "" : " (default, never)"
 		def type = node.type.accept(this)
+		def optional = node.optional ? "@:optional " : ""
 		type = wrapNullableTypeReference(type, node)
-		"""	var ${name}${modifiers}:${type};
+		"""	${optional}var ${name}${modifiers}:${type};
 """
 	}
 }
