@@ -21,7 +21,7 @@ enum MyEnum {}
  */
 void doSomething()
 
-string[] doSomethingElse(int a, int b, MyEnum en = null)
+string[] doSomethingElse(int a, int b, ?MyEnum en)
 // This will not be generated, because it's static
 static void doSomethingStatic(int x)
 <T, U> T[] hello(T t, U y)
@@ -36,7 +36,7 @@ static void doSomethingStatic(int x)
 	 * Does something.
 	 */
 	doSomething():void;
-	doSomethingElse(a:number, b:number, en:com.example.test.MyEnum = null):Array<string>;
+	doSomethingElse(a:number, b:number, en?:com.example.test.MyEnum):Array<string>;
 	hello<T, U>(t:T, y:U):Array<T>;
 	returnT<T>(t:T):com.example.test.MyInterface<T>;
 

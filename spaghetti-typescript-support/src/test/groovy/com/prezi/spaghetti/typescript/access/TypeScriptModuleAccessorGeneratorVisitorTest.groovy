@@ -18,7 +18,7 @@ interface MyInterface<T> {
  * Initializes module.
  */
 @deprecated("use doSomething() instead")
-void initModule(int a, b = 12)
+void initModule(int a, ?int b)
 string doSomething()
 static int doStatic(int a, int b)
 <T> MyInterface<T> returnT(T t)
@@ -35,7 +35,7 @@ static int doStatic(int a, int b)
 	/**
 	 * Initializes module.
 	 */
-	initModule(a:number, b:number = 12):void {
+	initModule(a:number, b?:number):void {
 		Test.__instance.initModule(a, b);
 	}
 	doSomething():string {

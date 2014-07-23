@@ -115,15 +115,7 @@ annotationValue	: Null
 methodParameters : methodParameter ( ',' methodParameter )*
 	;
 
-methodParameter	: annotations?  ( typeNamePair | optionalMethodParameterDecl )
-	;
-
-optionalMethodParameterDecl
-	: boolType? Name '=' Boolean
-	| intType? Name '=' Integer
-	| floatType? Name '=' Float
-	| stringType? Name '=' String
-	| complexType Name '=' Null
+methodParameter	: annotations?  ( optional = '?' )? typeNamePair
 	;
 
 typeNamePair : complexType Name

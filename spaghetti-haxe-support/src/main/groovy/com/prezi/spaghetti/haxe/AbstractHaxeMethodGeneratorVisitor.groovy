@@ -22,7 +22,7 @@ abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorV
 		type = wrapNullableTypeReference(type, node)
 		def result = node.name + ':' + type
 		if (node.isOptional()) {
-			result += " = " + HaxeUtils.toPrimitiveString(node.optionalValue)
+			result = "?" + result
 		}
 		return result
 	}

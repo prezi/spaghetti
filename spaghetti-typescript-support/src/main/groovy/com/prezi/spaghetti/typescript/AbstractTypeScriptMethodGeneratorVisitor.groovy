@@ -17,10 +17,6 @@ abstract class AbstractTypeScriptMethodGeneratorVisitor extends AbstractTypeScri
 
 	@Override
 	String visitMethodParameterNode(MethodParameterNode node) {
-		def result = node.name + ':' + node.type.accept(this)
-		if (node.optional) {
-			result += " = " + TypeScriptUtils.toPrimitiveString(node.optionalValue)
-		}
-		return result
+		return node.name + (node.optional ? "?" : "") + ':' + node.type.accept(this)
 	}
 }

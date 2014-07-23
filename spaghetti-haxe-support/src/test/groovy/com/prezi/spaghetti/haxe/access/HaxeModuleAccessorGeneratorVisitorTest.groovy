@@ -21,7 +21,7 @@ interface MyInterface<T> {
  * Initializes module.
  */
 @deprecated("use doSomething() instead")
-void initModule(int a, int b = 12)
+void initModule(int a, ?int b)
 UnicodeString[] doSomething()
 @nullable static int doStatic(@nullable int a, int b)
 static <T> MyInterface<T> returnT(T t)
@@ -39,7 +39,7 @@ static <T> MyInterface<T> returnT(T t)
 	 * Initializes module.
 	 */
 	@:deprecated("use doSomething() instead")
-	@:extern public inline function initModule(a:Int, b:Int = 12):Void {
+	@:extern public inline function initModule(a:Int, ?b:Int):Void {
 		__instance.initModule(a, b);
 	}
 	@:extern public inline function doSomething():Array<String> {

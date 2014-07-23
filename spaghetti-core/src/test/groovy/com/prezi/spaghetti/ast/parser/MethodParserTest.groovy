@@ -80,8 +80,7 @@ class MethodParserTest extends Specification {
 	}
 
 	def "parse optional"() {
-		def context = AstTestUtils.parser("void method(string a, int b = 12, c = \"value\")").methodDefinition()
-		def typeParam = Mock(TypeParameterNode)
+		def context = AstTestUtils.parser("void method(string a, ?int b, ?string c)").methodDefinition()
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MutableMethodNode)
 		def params = Mock(NamedNodeSet)
@@ -97,25 +96,22 @@ class MethodParserTest extends Specification {
 			it instanceof MethodParameterNode &&
 					it.name == "a" &&
 					it.type == PrimitiveTypeReference.STRING &&
-					it.optional == false &&
-					it.optionalValue == null}, _)
+					it.optional == false}, _)
 		1 * params.add({
 			it instanceof MethodParameterNode &&
 					it.name == "b" &&
 					it.type == PrimitiveTypeReference.INT &&
-					it.optional == true &&
-					it.optionalValue == 12}, _)
+					it.optional == true}, _)
 		1 * params.add({
 			it instanceof MethodParameterNode &&
 					it.name == "c" &&
 					it.type == PrimitiveTypeReference.STRING &&
-					it.optional == true &&
-					it.optionalValue == "value"}, _)
+					it.optional == true}, _)
 		0 * _
 	}
 
 	def "parse wrong optional"() {
-		def context = AstTestUtils.parser("void method(a = 12, int b, c = 12)").methodDefinition()
+		def context = AstTestUtils.parser("void method(?int a, int b, ?int c)").methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MutableMethodNode)

@@ -10,12 +10,10 @@ public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeRef
 
 	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
 	private final boolean isOptional;
-	private final Object optionalValue;
 
-	public DefaultMethodParameterNode(String name, TypeReference type, boolean isOptional, Object optionalValue) {
+	public DefaultMethodParameterNode(String name, TypeReference type, boolean isOptional) {
 		super(name, type);
 		this.isOptional = isOptional;
-		this.optionalValue = optionalValue;
 	}
 
 	@Override
@@ -31,10 +29,5 @@ public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeRef
 	@Override
 	public boolean isOptional() {
 		return isOptional;
-	}
-
-	@Override
-	public Object getOptionalValue() {
-		return optionalValue;
 	}
 }

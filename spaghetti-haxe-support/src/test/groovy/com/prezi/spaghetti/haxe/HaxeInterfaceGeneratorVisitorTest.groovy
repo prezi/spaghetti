@@ -17,7 +17,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	 */
 	void doSomething()
 
-	@nullable string[] doSomethingElse(@nullable int a, int b = 12)
+	@nullable string[] doSomethingElse(@nullable int a, ?int b)
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
@@ -41,7 +41,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	 * Does something.
 	 */
 	function doSomething():Void;
-	function doSomethingElse(a:Null<Int>, b:Int = 12):Null<Array<String>>;
+	function doSomethingElse(a:Null<Int>, ?b:Int):Null<Array<String>>;
 	function hello<T, U>(f:X->(Void->Int)->U):Array<T>;
 
 }
