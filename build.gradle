@@ -194,7 +194,7 @@ project(":gradle-spaghetti-haxe-plugin") {
 }
 project(":gradle-spaghetti-typescript-plugin") {
 	dependencies {
-		compile "com.prezi.typescript:gradle-typescript-plugin:2.0"
+		compile "com.prezi.typescript:gradle-typescript-plugin:2.0.1"
 	}
 }
 
