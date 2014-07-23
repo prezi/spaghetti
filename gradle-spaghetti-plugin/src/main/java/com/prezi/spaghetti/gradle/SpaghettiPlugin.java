@@ -141,22 +141,14 @@ public class SpaghettiPlugin implements Plugin<Project> {
 				// Automatically create bundle module task and artifact
 				BundleModule bundleTask = createBundleTask(project, binary);
 				Zip zipModule = createZipTask(project, binary, bundleTask, binary.getName(), "");
+				binary.setArchiveTask(zipModule);
 				logger.debug("Added bundle task {} with zip task {}", bundleTask, zipModule);
-				if (!binary.isUsedForTesting()) {
-					project.getArtifacts().add(extension.getConfiguration().getName(), zipModule);
-					logger.debug("Added bundle artifact for {}", binary);
-				}
-
 
 				// Automatically obfuscate bundle
 				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary);
 				Zip zipObfuscated = createZipTask(project, binary, obfuscateTask, binary.getName() + "-obfuscated", "obfuscated");
+				binary.setArchiveObfuscatedTask(zipObfuscated);
 				logger.debug("Added obfuscate task {} with zip artifact {}", obfuscateTask, zipObfuscated);
-				if (!binary.isUsedForTesting()) {
-					project.getArtifacts().add(extension.getObfuscatedConfiguration().getName(), zipObfuscated);
-					logger.debug("Added obfuscated bundle artifact for {}", binary);
-				}
-
 			}
 
 		});

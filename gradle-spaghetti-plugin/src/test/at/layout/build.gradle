@@ -44,3 +44,8 @@ task packageJsModule(type: com.prezi.spaghetti.gradle.PackageModule) {
 	bundle bundleJsModule
 	type "node"
 }
+
+artifacts {
+	modules zipJsModule
+	modulesObf zipJsModuleObfuscated
+}

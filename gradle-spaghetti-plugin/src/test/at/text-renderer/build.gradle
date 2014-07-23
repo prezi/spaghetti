@@ -6,3 +6,8 @@ dependencies {
 	modules project(path: ":layout", configuration: "modules")
 	modulesObf project(path: ":layout", configuration: "modulesObf");
 }
+
+artifacts {
+	modules zipModule
+	modulesObf zipModuleObfuscated
+}

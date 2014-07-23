@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
+import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.runtime.base.internal.AbstractBuildableModelElement;
 import org.gradle.runtime.base.internal.BinaryInternal;
 import org.gradle.runtime.base.internal.BinaryNamingScheme;
@@ -11,28 +12,55 @@ public abstract class AbstractSpaghettiCompatibleJavaScriptBinary extends Abstra
 	private final boolean usedForTesting;
 	private BundleModule bundleTask;
 	private ObfuscateModule obfuscateTask;
+	private AbstractArchiveTask archiveTask;
+	private AbstractArchiveTask archiveObfuscatedTask;
 
 	public AbstractSpaghettiCompatibleJavaScriptBinary(String name, boolean testing) {
 		this.namingScheme = new SpaghettiCompatibleBinaryNamingScheme(name);
 		this.usedForTesting = testing;
 	}
 
+	@Override
 	public BundleModule getBundleTask() {
 		return bundleTask;
 	}
 
+	@Override
 	public void setBundleTask(BundleModule bundleTask) {
 		this.bundleTask = bundleTask;
 	}
 
+	@Override
 	public ObfuscateModule getObfuscateTask() {
 		return obfuscateTask;
 	}
 
+	@Override
 	public void setObfuscateTask(ObfuscateModule obfuscateTask) {
 		this.obfuscateTask = obfuscateTask;
 	}
 
+	@Override
+	public AbstractArchiveTask getArchiveTask() {
+		return archiveTask;
+	}
+
+	@Override
+	public void setArchiveTask(AbstractArchiveTask archiveTask) {
+		this.archiveTask = archiveTask;
+	}
+
+	@Override
+	public AbstractArchiveTask getArchiveObfuscatedTask() {
+		return archiveObfuscatedTask;
+	}
+
+	@Override
+	public void setArchiveObfuscatedTask(AbstractArchiveTask archiveObfuscatedTask) {
+		this.archiveObfuscatedTask = archiveObfuscatedTask;
+	}
+
+	@Override
 	public boolean isUsedForTesting() {
 		return usedForTesting;
 	}

@@ -2,6 +2,10 @@ spaghetti {
 	platform "js"
 }
 
+configurations {
+	modulesObf
+}
+
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	inputFile "src/main/js/core.js"
 }
