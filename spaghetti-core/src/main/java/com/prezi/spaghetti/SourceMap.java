@@ -55,6 +55,7 @@ public class SourceMap {
 
 		process.waitFor();
 		if (process.exitValue() != 0) {
+			System.err.println(mapAtoC);
 			throw new RuntimeException("Source map composition failed with exit code " + process.exitValue());
 		}
 

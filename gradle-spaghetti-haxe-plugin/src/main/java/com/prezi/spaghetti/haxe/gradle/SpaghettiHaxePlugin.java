@@ -13,25 +13,25 @@ import com.prezi.spaghetti.gradle.PackageApplication;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiExtension;
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet;
+import com.prezi.spaghetti.gradle.SpaghettiModule;
+import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
+import com.prezi.spaghetti.gradle.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.spaghetti.packaging.ApplicationType;
 import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
-import org.gradle.internal.reflect.Instantiator;
 import org.gradle.language.base.ProjectSourceSet;
 import org.gradle.runtime.base.BinaryContainer;
-import org.gradle.runtime.base.internal.BinaryInternal;
 import org.gradle.runtime.base.internal.BinaryNamingScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.io.File;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 /**
@@ -39,12 +39,6 @@ import java.util.concurrent.Callable;
  */
 public class SpaghettiHaxePlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
-	private final Instantiator instantiator;
-
-	@Inject
-	public SpaghettiHaxePlugin(Instantiator instantiator) {
-		this.instantiator = instantiator;
-	}
 
 	@Override
 	public void apply(final Project project) {
@@ -87,15 +81,12 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		// For every Haxe binary...
 		binaryContainer.withType(HaxeBinary.class).all(new Action<HaxeBinary>() {
 			@Override
-			public void execute(HaxeBinary binary) {
+			public void execute(final HaxeBinary binary) {
 				// Add a compile, source and munit task
 				HaxeBasePlugin.createCompileTask(project, binary, HaxeCompile.class);
 				HaxeBasePlugin.createSourceTask(project, binary, Har.class);
 
-				// Create Spaghetti compatible binary
-				DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary jsBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary.class, binary, false);
-				jsBinary.builtBy(binary.getBuildDependencies());
-				binaryContainer.add(jsBinary);
+				registerSpaghettiModuleBinary(project, binary, false);
 			}
 		});
 
@@ -104,40 +95,40 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 			public void execute(final HaxeTestBinary testBinary) {
 				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompileWithSpaghetti.class);
 
-				// Create Spaghetti compatible test binary
-				final DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary jsTestBinary = instantiator.newInstance(DefaultHaxeCompiledSpaghettiCompatibleJavaScriptBinary.class, testBinary, true);
-				jsTestBinary.builtBy(new Callable<Task>() {
-					@Override
-					public Task call() throws Exception {
-						return testBinary.getCompileTask();
-					}
-				});
-				binaryContainer.add(jsTestBinary);
+				registerSpaghettiModuleBinary(project, testBinary, true);
+			}
+		});
+		binaryContainer.withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
+			@Override
+			public void execute(final HaxeSpaghettiModule moduleBinary) {
+				HaxeBinaryBase<?> binary = moduleBinary.getOriginal();
+				if (binary instanceof HaxeTestBinary) {
+					HaxeTestBinary testBinary = (HaxeTestBinary) binary;
+					final PackageApplication appTask = createTestApplication(moduleBinary, testBinary);
 
-				final PackageApplication appTask = createTestApplication(jsTestBinary);
+					MUnitWithSpaghetti munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, MUnitWithSpaghetti.class);
+					munitTask.getConventionMapping().map("testApplication", new Callable<File>() {
+						@Override
+						public File call() throws Exception {
+							return appTask.getOutputDirectory();
+						}
+					});
+					munitTask.getConventionMapping().map("testApplicationName", new Callable<String>() {
+						@Override
+						public String call() throws Exception {
+							return appTask.getApplicationName();
+						}
 
-				MUnitWithSpaghetti munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, MUnitWithSpaghetti.class);
-				munitTask.getConventionMapping().map("testApplication", new Callable<File>() {
-					@Override
-					public File call() throws Exception {
-						return appTask.getOutputDirectory();
-					}
-				});
-				munitTask.getConventionMapping().map("testApplicationName", new Callable<String>() {
-					@Override
-					public String call() throws Exception {
-						return jsTestBinary.getName() + "_test.js";
-					}
-
-				});
-				munitTask.dependsOn(appTask);
+					});
+					munitTask.dependsOn(appTask);
+				}
 			}
 
-			private PackageApplication createTestApplication(final HaxeCompiledSpaghettiCompatibleJavaScriptBinary testBinary) {
-				BinaryNamingScheme namingScheme = ((BinaryInternal) testBinary).getNamingScheme();
-				String bundleTaskName = namingScheme.getTaskName("package");
+			private PackageApplication createTestApplication(final HaxeSpaghettiModule moduleBinary, final HaxeTestBinary testBinary) {
+				BinaryNamingScheme namingScheme = testBinary.getNamingScheme();
+				String packageTaskName = namingScheme.getTaskName("package");
 
-				PackageApplication appBundleTask = project.getTasks().create(bundleTaskName, PackageApplication.class);
+				PackageApplication appBundleTask = project.getTasks().create(packageTaskName, PackageApplication.class);
 				appBundleTask.setDescription("Creates a testable application of " + testBinary);
 				appBundleTask.setGroup("test");
 				appBundleTask.getConventionMapping().map("outputDirectory", new Callable<File>() {
@@ -149,13 +140,13 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				appBundleTask.getConventionMapping().map("additionalDirectDependentModulesInternal", new Callable<FileCollection>() {
 					@Override
 					public FileCollection call() throws Exception {
-						return project.files(testBinary.getBundleTask().getOutputDirectory());
+						return project.files(moduleBinary.getBundleTask().getOutputDirectory());
 					}
 				});
 				appBundleTask.getConventionMapping().map("mainModule", new Callable<String>() {
 					@Override
 					public String call() throws Exception {
-						return ModuleBundleFactory.load(testBinary.getBundleTask().getOutputDirectory()).getName();
+						return ModuleBundleFactory.load(moduleBinary.getBundleTask().getOutputDirectory()).getName();
 					}
 				});
 				appBundleTask.getConventionMapping().map("applicationName", new Callable<String>() {
@@ -182,8 +173,23 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 						return false;
 					}
 				});
-				appBundleTask.dependsOn(testBinary.getBundleTask());
+				appBundleTask.dependsOn(moduleBinary.getBundleTask());
 				return appBundleTask;
+			}
+		});
+	}
+
+	private void registerSpaghettiModuleBinary(Project project, final HaxeBinaryBase<?> binary, final boolean testing) {
+		Callable<File> javaScriptFile = new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return binary.getCompileTask().getOutputFile();
+			}
+		};
+		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, Collections.singleton(binary.getBuildDependencies()), binary, new SpaghettiModuleFactory<HaxeBinaryBase<?>>() {
+			@Override
+			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, HaxeBinaryBase<?> original) {
+				return new HaxeSpaghettiModule(namingScheme, data, original, testing);
 			}
 		});
 	}

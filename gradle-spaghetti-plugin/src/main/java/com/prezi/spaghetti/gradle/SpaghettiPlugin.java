@@ -17,13 +17,13 @@ import org.gradle.language.base.LanguageSourceSet;
 import org.gradle.language.base.ProjectSourceSet;
 import org.gradle.language.base.plugins.LanguageBasePlugin;
 import org.gradle.runtime.base.BinaryContainer;
-import org.gradle.runtime.base.internal.BinaryInternal;
 import org.gradle.runtime.base.internal.BinaryNamingScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
@@ -47,7 +47,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 		createPlatformsTask(project);
 
-		BinaryContainer binaryContainer = project.getExtensions().getByType(BinaryContainer.class);
 		ProjectSourceSet projectSourceSet = project.getExtensions().getByType(ProjectSourceSet.class);
 		final SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
 
@@ -131,33 +130,11 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 		});
 		spaghettiGeneratedSourceSet.builtBy(generateTask);
-
-		binaryContainer.withType(SpaghettiCompatibleJavaScriptBinary.class).all(new Action<SpaghettiCompatibleJavaScriptBinary>() {
-			@Override
-			public void execute(final SpaghettiCompatibleJavaScriptBinary binary) {
-				logger.debug("Creating bundle and obfuscation for " + String.valueOf(binary));
-
-				// TODO Use a proper Spaghetti module binary instead of passing the resourcesTask around
-				// Automatically create bundle module task and artifact
-				BundleModule bundleTask = createBundleTask(project, binary);
-				Zip zipModule = createZipTask(project, binary, bundleTask, binary.getName(), "");
-				binary.setArchiveTask(zipModule);
-				logger.debug("Added bundle task {} with zip task {}", bundleTask, zipModule);
-
-				// Automatically obfuscate bundle
-				ObfuscateModule obfuscateTask = createObfuscateTask(project, binary);
-				Zip zipObfuscated = createZipTask(project, binary, obfuscateTask, binary.getName() + "-obfuscated", "obfuscated");
-				binary.setArchiveObfuscatedTask(zipObfuscated);
-				logger.debug("Added obfuscate task {} with zip artifact {}", obfuscateTask, zipObfuscated);
-			}
-
-		});
 	}
 
 	private static void createPlatformsTask(Project project) {
 		if (project.getTasks().findByName("spaghetti-platforms") != null) {
 			return;
-
 		}
 
 		Task platformsTask = project.getTasks().create("spaghetti-platforms");
@@ -179,81 +156,70 @@ public class SpaghettiPlugin implements Plugin<Project> {
 					for (GeneratorFactory factory : factories) {
 						System.out.println("  " + Strings.padEnd(factory.getPlatform(), length, ' ') + " - " + factory.getDescription());
 					}
-
 				}
-
 			}
 
 		});
 	}
 
-	private static BundleModule createBundleTask(final Project project, final SpaghettiCompatibleJavaScriptBinary binary) {
-		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).getNamingScheme();
+	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
+		BinaryContainer binaryContainer = project.getExtensions().getByType(BinaryContainer.class);
+		BinaryNamingScheme namingScheme = new SpaghettiModuleNamingScheme(moduleName);
+
+		// Bundle module
+		BundleModule bundleTask = createBundleTask(project, namingScheme, javaScriptFile, sourceMapFile, dependencies);
+		Zip zipModule = createZipTask(project, namingScheme, bundleTask, namingScheme.getLifecycleTaskName(), "");
+		logger.debug("Added bundle task {} with zip task {}", bundleTask, zipModule);
+
+		// Obfuscate bundle
+		ObfuscateModule obfuscateTask = createObfuscateTask(project, namingScheme, javaScriptFile, sourceMapFile, dependencies);
+		Zip zipObfuscated = createZipTask(project, namingScheme, obfuscateTask, namingScheme.getLifecycleTaskName() + "-obfuscated", "obfuscated");
+		logger.debug("Added obfuscate task {} with zip artifact {}", obfuscateTask, zipObfuscated);
+
+		SpaghettiModuleData data = new DefaultSpaghettiModuleData(javaScriptFile, sourceMapFile, bundleTask, obfuscateTask, zipModule, zipObfuscated);
+		SpaghettiModule moduleBinary = callback.create(namingScheme, data, payload);
+		if (dependencies != null && !dependencies.isEmpty()) {
+			moduleBinary.builtBy(dependencies);
+		}
+		binaryContainer.add(moduleBinary);
+	}
+
+	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies) {
 		String bundleTaskName = namingScheme.getTaskName("bundle");
 		BundleModule bundleTask = project.getTasks().create(bundleTaskName, BundleModule.class);
-		bundleTask.setDescription("Bundles " + String.valueOf(binary) + " module.");
-		bundleTask.getConventionMapping().map("inputFile", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return binary.getJavaScriptFile();
-			}
-
-		});
-		bundleTask.getConventionMapping().map("sourceMap", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return binary.getSourceMapFile();
-			}
-
-		});
-		bundleTask.getConventionMapping().map("outputDirectory", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return new File(project.getBuildDir(), "spaghetti/bundle/" + binary.getName());
-			}
-
-		});
-		bundleTask.dependsOn(binary);
-		binary.setBundleTask(bundleTask);
+		bundleTask.setDescription("Bundles " + namingScheme.getDescription() + " module.");
+		configureBundleTask(project, bundleTask, namingScheme, javaScriptFile, sourceMapFile, dependencies, "bundled");
 		return bundleTask;
 	}
 
-	private static ObfuscateModule createObfuscateTask(final Project project, final SpaghettiCompatibleJavaScriptBinary binary) {
-		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).getNamingScheme();
+	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies) {
 		String obfuscateTaskName = namingScheme.getTaskName("obfuscate");
 		ObfuscateModule obfuscateTask = project.getTasks().create(obfuscateTaskName, ObfuscateModule.class);
-		obfuscateTask.setDescription("Obfuscates " + String.valueOf(binary) + " module.");
-		obfuscateTask.getConventionMapping().map("inputFile", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return binary.getJavaScriptFile();
-			}
-
-		});
-		obfuscateTask.getConventionMapping().map("sourceMap", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return binary.getSourceMapFile();
-			}
-
-		});
-		obfuscateTask.getConventionMapping().map("outputDirectory", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return new File(project.getBuildDir(), "spaghetti/obfuscation/" + binary.getName());
-			}
-
-		});
-		obfuscateTask.dependsOn(binary);
-		binary.setObfuscateTask(obfuscateTask);
+		obfuscateTask.setDescription("Obfuscates " + namingScheme.getDescription() + " module.");
+		configureBundleTask(project, obfuscateTask, namingScheme, javaScriptFile, sourceMapFile, dependencies, "obfuscated");
 		return obfuscateTask;
 	}
 
-	private static Zip createZipTask(Project project, final SpaghettiCompatibleJavaScriptBinary binary, final AbstractBundleModuleTask bundleTask, final String name, String taskName) {
-		BinaryNamingScheme namingScheme = ((BinaryInternal) binary).getNamingScheme();
+	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, final String outputDir) {
+		task.getConventionMapping().map("inputFile", javaScriptFile);
+		if (sourceMapFile != null) {
+			task.getConventionMapping().map("sourceMap", sourceMapFile);
+		}
+		task.getConventionMapping().map("outputDirectory", new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return project.file(project.getBuildDir() + "/spaghetti/" + namingScheme.getOutputDirectoryBase() + "/" + outputDir);
+			}
+		});
+		if (dependencies != null && !dependencies.isEmpty()) {
+			task.dependsOn(dependencies);
+		}
+	}
+
+	private static Zip createZipTask(Project project, BinaryNamingScheme namingScheme, final AbstractBundleModuleTask bundleTask, final String name, String taskName) {
 		String zipTaskName = namingScheme.getTaskName("zip", taskName);
 		Zip zipTask = project.getTasks().create(zipTaskName, Zip.class);
-		zipTask.setDescription("Zip up " + name + " " + String.valueOf(binary) + ".");
+		zipTask.setDescription("Zip up " + name + " " + namingScheme.getDescription() + ".");
 		zipTask.dependsOn(bundleTask);
 		zipTask.from(new Callable<File>() {
 			@Override
@@ -287,7 +253,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 						}
 					}
 				}
-
 			}
 		}
 

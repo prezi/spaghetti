@@ -6,11 +6,11 @@ import org.gradle.runtime.base.internal.BinaryNamingScheme;
 
 import java.util.List;
 
-public class SpaghettiCompatibleBinaryNamingScheme implements BinaryNamingScheme {
+public class SpaghettiModuleNamingScheme implements BinaryNamingScheme {
 	private final String parentName;
 	private final String collapsedName;
 
-	public SpaghettiCompatibleBinaryNamingScheme(String parentName) {
+	public SpaghettiModuleNamingScheme(String parentName) {
 		this.parentName = parentName;
 		this.collapsedName = collapseMain(this.parentName);
 	}

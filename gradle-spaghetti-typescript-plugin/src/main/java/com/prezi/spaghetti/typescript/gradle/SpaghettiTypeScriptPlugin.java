@@ -3,6 +3,9 @@ package com.prezi.spaghetti.typescript.gradle;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiExtension;
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet;
+import com.prezi.spaghetti.gradle.SpaghettiModule;
+import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
+import com.prezi.spaghetti.gradle.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
@@ -11,22 +14,21 @@ import com.prezi.typescript.gradle.TypeScriptTestBinary;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.internal.reflect.Instantiator;
 import org.gradle.language.base.ProjectSourceSet;
 import org.gradle.runtime.base.BinaryContainer;
+import org.gradle.runtime.base.internal.BinaryNamingScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
+import java.io.File;
+import java.util.Arrays;
+import java.util.concurrent.Callable;
 
 /**
  * Add Spaghetti support to TypeScript.
  */
 public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
-	@Inject
-	public SpaghettiTypeScriptPlugin(Instantiator instantiator) {
-		this.instantiator = instantiator;
-	}
+	private static final Logger logger = LoggerFactory.getLogger(SpaghettiTypeScriptPlugin.class);
 
 	@Override
 	@SuppressWarnings("UnnecessaryQualifiedReference")
@@ -59,33 +61,34 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 		});
 
-		// For every TypeScript binary...
 		binaryContainer.withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
-			public void execute(TypeScriptBinary binary) {
-				// Create Spaghetti compatible binary
-				TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary jsBinary = instantiator.newInstance(TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary.class, binary, false);
-				jsBinary.builtBy(binary);
-				binaryContainer.add(jsBinary);
-				logger.debug("Added {} in {}", jsBinary, project.getPath());
+			public void execute(final TypeScriptBinary binary) {
+				registerSpaghettiModule(project, binary, false);
 			}
-
 		});
-
-		// For every TypeScript test binary...
 		binaryContainer.withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
-				// Create Spaghetti compatible test binary
-				TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary jsTestBinary = instantiator.newInstance(TypeScriptCompiledSpaghettiCompatibleJavaScriptBinary.class, testBinary, true);
-				jsTestBinary.builtBy(testBinary);
-				binaryContainer.add(jsTestBinary);
-				logger.debug("Added {} in {}", jsTestBinary, project.getPath());
+				registerSpaghettiModule(project, testBinary, true);
 			}
-
 		});
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(SpaghettiTypeScriptPlugin.class);
-	private final Instantiator instantiator;
+	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final boolean testing) {
+		Callable<File> javaScriptFile = new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return binary.getCompileTask().getOutputFile();
+			}
+		};
+		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
+			@Override
+			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, TypeScriptBinaryBase original) {
+				TypeScriptSpaghettiModule moduleBinary = new TypeScriptSpaghettiModule(namingScheme, data, original, testing);
+				moduleBinary.builtBy(original);
+				return moduleBinary;
+			}
+		});
+	}
 }
