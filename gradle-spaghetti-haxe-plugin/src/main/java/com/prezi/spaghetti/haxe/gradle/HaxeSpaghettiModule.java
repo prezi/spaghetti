@@ -19,6 +19,7 @@ public class HaxeSpaghettiModule extends AbstractSpaghettiModule {
 		return original;
 	}
 
+	@Override
 	public boolean isUsedForTesting() {
 		return usedForTesting;
 	}

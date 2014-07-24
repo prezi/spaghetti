@@ -19,6 +19,7 @@ public class TypeScriptSpaghettiModule extends AbstractSpaghettiModule {
 		return original;
 	}
 
+	@Override
 	public boolean isUsedForTesting() {
 		return usedForTesting;
 	}
