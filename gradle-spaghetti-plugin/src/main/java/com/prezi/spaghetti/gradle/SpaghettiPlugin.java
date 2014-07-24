@@ -4,11 +4,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.GeneratorFactory;
 import com.prezi.spaghetti.Platforms;
+import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.reflect.Instantiator;
@@ -164,6 +166,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
 		BinaryContainer binaryContainer = project.getExtensions().getByType(BinaryContainer.class);
+		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		BinaryNamingScheme namingScheme = new SpaghettiModuleNamingScheme(moduleName);
 
 		// Bundle module
@@ -181,6 +184,19 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		if (dependencies != null && !dependencies.isEmpty()) {
 			moduleBinary.builtBy(dependencies);
 		}
+
+		if (!moduleBinary.isUsedForTesting()) {
+			project.getArtifacts().add(spaghettiExtension.getConfiguration().getName(), zipModule);
+			project.getArtifacts().add(spaghettiExtension.getObfuscatedConfiguration().getName(), zipObfuscated, new Closure(project) {
+				@Override
+				public Object call(Object... arguments) {
+					ArchivePublishArtifact artifact = (ArchivePublishArtifact) this.getDelegate();
+					artifact.setClassifier("obfuscated");
+					return artifact;
+				}
+			});
+		}
+
 		binaryContainer.add(moduleBinary);
 	}
 

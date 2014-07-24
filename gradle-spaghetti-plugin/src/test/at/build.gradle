@@ -41,10 +41,6 @@ configure(subprojects) {
 	spaghetti {
 		sourceBaseUrl "http://github.com/prezi/spaghetti"
 	}
-
-	configurations {
-		modulesObf
-	}
 }
 
 apply plugin: "spaghetti"

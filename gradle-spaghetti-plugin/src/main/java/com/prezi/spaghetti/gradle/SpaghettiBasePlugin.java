@@ -9,15 +9,14 @@ import java.util.concurrent.Callable;
 
 public class SpaghettiBasePlugin implements Plugin<Project> {
 	public static final String CONFIGURATION_NAME = "modules";
+	public static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
 
 	@Override
 	public void apply(Project project) {
-		Configuration defaultConfiguration = project.getConfigurations().findByName(CONFIGURATION_NAME);
-		if (defaultConfiguration == null) {
-			defaultConfiguration = project.getConfigurations().create(CONFIGURATION_NAME);
-		}
+		Configuration defaultConfiguration = project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
+		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
 
-		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, defaultConfiguration);
+		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, defaultConfiguration, defaultObfuscatedConfiguration);
 		project.getTasks().withType(AbstractSpaghettiTask.class).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			public void execute(AbstractSpaghettiTask task) {

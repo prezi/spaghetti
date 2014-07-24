@@ -5,6 +5,7 @@ import org.gradle.api.artifacts.Configuration;
 public class SpaghettiExtension {
 	private String platform;
 	private Configuration configuration;
+	private Configuration obfuscatedConfiguration;
 	private String sourceBaseUrl;
 
 	public String getPlatform() {
@@ -31,6 +32,18 @@ public class SpaghettiExtension {
 		setConfiguration(configuration);
 	}
 
+	public Configuration getObfuscatedConfiguration() {
+		return obfuscatedConfiguration;
+	}
+
+	public void setObfuscatedConfiguration(Configuration obfuscatedConfiguration) {
+		this.obfuscatedConfiguration = obfuscatedConfiguration;
+	}
+
+	public void obfuscatedConfiguration(Configuration obfuscatedConfiguration) {
+		setObfuscatedConfiguration(obfuscatedConfiguration);
+	}
+
 	public String getSourceBaseUrl() {
 		return sourceBaseUrl;
 	}
@@ -44,7 +57,8 @@ public class SpaghettiExtension {
 		setSourceBaseUrl(source);
 	}
 
-	public SpaghettiExtension(Configuration defaultConfiguration) {
+	public SpaghettiExtension(Configuration defaultConfiguration, Configuration defaultObfuscatedConfiguration) {
 		this.configuration = defaultConfiguration;
+		this.obfuscatedConfiguration = defaultObfuscatedConfiguration;
 	}
 }
