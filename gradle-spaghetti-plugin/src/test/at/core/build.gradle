@@ -2,10 +2,6 @@ spaghetti {
 	platform "js"
 }
 
-configurations {
-	modulesObf
-}
-
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	inputFile "src/main/js/core.js"
 }
@@ -17,13 +13,13 @@ task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 task zipModule(type: Zip) {
 	dependsOn bundleModule
 	from bundleModule.outputDirectory
-	archiveName = "module"
+	baseName = "module"
 }
 
 task zipModuleObfuscated(type: Zip) {
 	dependsOn obfuscateModule
 	from obfuscateModule.outputDirectory
-	archiveName = "module-obfuscated"
+	baseName = "module-obfuscated"
 }
 
 artifacts {
