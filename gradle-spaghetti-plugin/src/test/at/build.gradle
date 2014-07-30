@@ -25,13 +25,6 @@ configure(allprojects) {
 	repositories {
 		mavenLocal()
 		mavenCentral()
-		maven {
-			credentials {
-				username nexusUser
-				password nexusPassword
-			}
-			url "https://artifactory.prezi.com/repo"
-		}
 	}
 }
 
