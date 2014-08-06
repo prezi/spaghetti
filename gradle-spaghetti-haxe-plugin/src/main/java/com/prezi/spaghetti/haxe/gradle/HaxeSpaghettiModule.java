@@ -3,7 +3,7 @@ package com.prezi.spaghetti.haxe.gradle;
 import com.prezi.haxe.gradle.HaxeBinaryBase;
 import com.prezi.spaghetti.gradle.AbstractSpaghettiModule;
 import com.prezi.spaghetti.gradle.SpaghettiModuleData;
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 
 public class HaxeSpaghettiModule extends AbstractSpaghettiModule {
 	private final HaxeBinaryBase<?> original;

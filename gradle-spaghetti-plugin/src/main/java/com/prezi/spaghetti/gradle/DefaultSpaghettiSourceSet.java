@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.gradle.incubating.AbstractLanguageSourceSet;
+import com.prezi.spaghetti.gradle.incubating.FunctionalSourceSet;
 import org.gradle.api.internal.file.DefaultSourceDirectorySet;
 import org.gradle.api.internal.file.FileResolver;
-import org.gradle.language.base.FunctionalSourceSet;
-import org.gradle.language.base.internal.AbstractLanguageSourceSet;
 
 public class DefaultSpaghettiSourceSet extends AbstractLanguageSourceSet implements SpaghettiSourceSet {
 	public DefaultSpaghettiSourceSet(String name, FunctionalSourceSet parent, FileResolver fileResolver) {

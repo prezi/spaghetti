@@ -30,11 +30,13 @@ task copyResources(type: Copy) {
 	into "${buildDir}/some-more-spaghetti-resources"
 }
 
-sources {
-	main {
-		"spaghetti-resources" {
-			source.srcDir "${buildDir}/some-more-spaghetti-resources"
-			builtBy copyResources
+spaghetti {
+	sources {
+		main {
+			"spaghetti-resources" {
+				source.srcDir "${buildDir}/some-more-spaghetti-resources"
+				builtBy copyResources
+			}
 		}
 	}
 }

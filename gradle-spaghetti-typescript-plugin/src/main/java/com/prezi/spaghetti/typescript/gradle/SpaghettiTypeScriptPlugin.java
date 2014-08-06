@@ -4,22 +4,26 @@ import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiExtension;
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet;
 import com.prezi.spaghetti.gradle.SpaghettiModule;
-import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.SpaghettiModuleData;
+import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 import com.prezi.typescript.gradle.TypeScriptBinary;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
+import com.prezi.typescript.gradle.TypeScriptExtension;
 import com.prezi.typescript.gradle.TypeScriptPlugin;
+import com.prezi.typescript.gradle.TypeScriptSourceSet;
 import com.prezi.typescript.gradle.TypeScriptTestBinary;
+import com.prezi.typescript.gradle.incubating.FunctionalSourceSet;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.language.base.ProjectSourceSet;
-import org.gradle.runtime.base.BinaryContainer;
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
+import org.gradle.api.internal.file.FileResolver;
+import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
@@ -29,6 +33,15 @@ import java.util.concurrent.Callable;
  */
 public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiTypeScriptPlugin.class);
+
+	private final Instantiator instantiator;
+	private final FileResolver fileResolver;
+
+	@Inject
+	public SpaghettiTypeScriptPlugin(Instantiator instantiator, FileResolver fileResolver) {
+		this.instantiator = instantiator;
+		this.fileResolver = fileResolver;
+	}
 
 	@Override
 	@SuppressWarnings("UnnecessaryQualifiedReference")
@@ -41,33 +54,35 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		project.getPlugins().apply(TypeScriptPlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
 
-		final BinaryContainer binaryContainer = project.getExtensions().getByType(BinaryContainer.class);
-		ProjectSourceSet projectSourceSet = project.getExtensions().getByType(ProjectSourceSet.class);
+		final TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
 
 		// Add Spaghetti generated sources to compile and source tasks
-		projectSourceSet.getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
+		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
 				logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
-				binaryContainer.withType(TypeScriptBinaryBase.class).all(new Action<TypeScriptBinaryBase>() {
+				FunctionalSourceSet spaghetti = typeScriptExtension.getSources().maybeCreate("spaghetti");
+				final TypeScriptSourceSet typescriptSourceSet = instantiator.newInstance(TypeScriptSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, fileResolver);
+				typescriptSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
+				typescriptSourceSet.builtBy(spaghettiGeneratedSourceSet);
+				typeScriptExtension.getBinaries().withType(TypeScriptBinaryBase.class).all(new Action<TypeScriptBinaryBase>() {
 					@Override
 					public void execute(TypeScriptBinaryBase compiledBinary) {
-						compiledBinary.getSource().add(spaghettiGeneratedSourceSet);
+						compiledBinary.getSource().add(typescriptSourceSet);
 						logger.debug("Added {} to {} in {}", spaghettiGeneratedSourceSet, compiledBinary, project.getPath());
 					}
 
 				});
 			}
-
 		});
 
-		binaryContainer.withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
+		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
 				registerSpaghettiModule(project, binary, false);
 			}
 		});
-		binaryContainer.withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
+		typeScriptExtension.getBinaries().withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
 				registerSpaghettiModule(project, testBinary, true);

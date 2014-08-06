@@ -2,8 +2,8 @@ package com.prezi.spaghetti.typescript.gradle;
 
 import com.prezi.spaghetti.gradle.AbstractSpaghettiModule;
 import com.prezi.spaghetti.gradle.SpaghettiModuleData;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
 
 public class TypeScriptSpaghettiModule extends AbstractSpaghettiModule {
 	private final TypeScriptBinaryBase original;

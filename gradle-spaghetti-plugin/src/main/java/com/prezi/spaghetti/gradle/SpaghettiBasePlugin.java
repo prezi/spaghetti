@@ -4,19 +4,28 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.internal.reflect.Instantiator;
 
+import javax.inject.Inject;
 import java.util.concurrent.Callable;
 
 public class SpaghettiBasePlugin implements Plugin<Project> {
 	public static final String CONFIGURATION_NAME = "modules";
 	public static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
 
+	private final Instantiator instantiator;
+
+	@Inject
+	public SpaghettiBasePlugin(Instantiator instantiator) {
+		this.instantiator = instantiator;
+	}
+
 	@Override
 	public void apply(Project project) {
 		Configuration defaultConfiguration = project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
 		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
 
-		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, defaultConfiguration, defaultObfuscatedConfiguration);
+		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, project, instantiator, defaultConfiguration, defaultObfuscatedConfiguration);
 		project.getTasks().withType(AbstractSpaghettiTask.class).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			public void execute(AbstractSpaghettiTask task) {

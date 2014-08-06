@@ -4,6 +4,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.GeneratorFactory;
 import com.prezi.spaghetti.Platforms;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
+import com.prezi.spaghetti.gradle.incubating.FunctionalSourceSet;
+import com.prezi.spaghetti.gradle.incubating.LanguageSourceSet;
 import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -14,12 +17,6 @@ import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.reflect.Instantiator;
-import org.gradle.language.base.FunctionalSourceSet;
-import org.gradle.language.base.LanguageSourceSet;
-import org.gradle.language.base.ProjectSourceSet;
-import org.gradle.language.base.plugins.LanguageBasePlugin;
-import org.gradle.runtime.base.BinaryContainer;
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,16 +41,14 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(final Project project) {
-		project.getPlugins().apply(LanguageBasePlugin.class);
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
 
 		createPlatformsTask(project);
 
-		ProjectSourceSet projectSourceSet = project.getExtensions().getByType(ProjectSourceSet.class);
 		final SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
 
 		// Add source sets
-		FunctionalSourceSet functionalSourceSet = projectSourceSet.maybeCreate("main");
+		FunctionalSourceSet functionalSourceSet = extension.getSources().maybeCreate("main");
 
 		DefaultSpaghettiSourceSet spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet.class, "spaghetti", functionalSourceSet, fileResolver);
 		spaghettiSourceSet.getSource().srcDir("src/main/spaghetti");
@@ -165,7 +160,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
-		BinaryContainer binaryContainer = project.getExtensions().getByType(BinaryContainer.class);
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		BinaryNamingScheme namingScheme = new SpaghettiModuleNamingScheme(moduleName);
 
@@ -197,7 +191,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 			});
 		}
 
-		binaryContainer.add(moduleBinary);
+		spaghettiExtension.getBinaries().add(moduleBinary);
 	}
 
 	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies) {
@@ -255,7 +249,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	public static FileCollection findDefinitions(Project project) {
-		Set<SpaghettiSourceSet> sources = project.getExtensions().getByType(ProjectSourceSet.class).getByName("main").withType(SpaghettiSourceSet.class);
+		Set<SpaghettiSourceSet> sources = project.getExtensions().getByType(SpaghettiExtension.class).getSources().getByName("main").withType(SpaghettiSourceSet.class);
 		Set<File> definitions = Sets.newLinkedHashSet();
 		for (SpaghettiSourceSet sourceSet : sources) {
 			for (File sourceDir : sourceSet.getSource().getSrcDirs()) {

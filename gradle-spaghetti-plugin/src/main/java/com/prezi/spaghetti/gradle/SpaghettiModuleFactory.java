@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 
 public interface SpaghettiModuleFactory<T> {
 	SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, T payload);

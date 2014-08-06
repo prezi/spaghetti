@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.haxe.gradle;
 
 import com.google.common.util.concurrent.Callables;
+import com.prezi.haxe.gradle.DefaultHaxeSourceSet;
 import com.prezi.haxe.gradle.Har;
 import com.prezi.haxe.gradle.HaxeBasePlugin;
 import com.prezi.haxe.gradle.HaxeBinary;
@@ -8,29 +9,29 @@ import com.prezi.haxe.gradle.HaxeBinaryBase;
 import com.prezi.haxe.gradle.HaxeCompile;
 import com.prezi.haxe.gradle.HaxeExtension;
 import com.prezi.haxe.gradle.HaxeTestBinary;
-import com.prezi.haxe.gradle.TargetPlatform;
+import com.prezi.haxe.gradle.incubating.FunctionalSourceSet;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.gradle.PackageApplication;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiExtension;
 import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet;
 import com.prezi.spaghetti.gradle.SpaghettiModule;
-import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.SpaghettiModuleData;
+import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.packaging.ApplicationType;
 import org.gradle.api.Action;
-import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
-import org.gradle.language.base.ProjectSourceSet;
-import org.gradle.runtime.base.BinaryContainer;
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
+import org.gradle.api.internal.file.FileResolver;
+import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +43,15 @@ import java.util.concurrent.Callable;
 public class SpaghettiHaxePlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
 
+	private final Instantiator instantiator;
+	private final FileResolver fileResolver;
+
+	@Inject
+	public SpaghettiHaxePlugin(Instantiator instantiator, FileResolver fileResolver) {
+		this.instantiator = instantiator;
+		this.fileResolver = fileResolver;
+	}
+
 	@Override
 	public void apply(final Project project) {
 		// Spaghetti will be working with Haxe, might as well set it
@@ -52,28 +62,30 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		project.getPlugins().apply(HaxeBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
 
-		final BinaryContainer binaryContainer = project.getExtensions().getByType(BinaryContainer.class);
-		ProjectSourceSet projectSourceSet = project.getExtensions().getByType(ProjectSourceSet.class);
-		HaxeExtension haxeExtension = project.getExtensions().getByType(HaxeExtension.class);
+		final HaxeExtension haxeExtension = project.getExtensions().getByType(HaxeExtension.class);
 
 		// We'll be needing a "js" platform
-		NamedDomainObjectContainer<TargetPlatform> targetPlatforms = haxeExtension.getTargetPlatforms();
-		targetPlatforms.maybeCreate("js");
+		haxeExtension.getTargetPlatforms().maybeCreate("js");
 
 		// Tests should always depend on modules
 		Configuration testConfiguration = project.getConfigurations().getByName("test");
 		testConfiguration.extendsFrom(spaghettiExtension.getConfiguration());
 
 		// Add Spaghetti generated sources to compile and source tasks
-		projectSourceSet.findByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
+		spaghettiExtension.getSources().findByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
 				logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
-				binaryContainer.withType(HaxeBinaryBase.class).all(new Action<HaxeBinaryBase>() {
+				Configuration config = project.getConfigurations().maybeCreate("spaghetti");
+				FunctionalSourceSet spaghetti = haxeExtension.getSources().maybeCreate("spaghetti");
+				final DefaultHaxeSourceSet haxeSourceSet = instantiator.newInstance(DefaultHaxeSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, config, fileResolver);
+				haxeSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
+				haxeSourceSet.builtBy(spaghettiGeneratedSourceSet);
+				haxeExtension.getBinaries().withType(HaxeBinaryBase.class).all(new Action<HaxeBinaryBase>() {
 					@Override
 					@SuppressWarnings("unchecked")
 					public void execute(HaxeBinaryBase compiledBinary) {
-						compiledBinary.getSource().add(spaghettiGeneratedSourceSet);
+						compiledBinary.getSource().add(haxeSourceSet);
 						logger.debug("Added {} to {} in {}", spaghettiGeneratedSourceSet, compiledBinary, project.getPath());
 					}
 				});
@@ -81,7 +93,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		});
 
 		// For every Haxe binary...
-		binaryContainer.withType(HaxeBinary.class).all(new Action<HaxeBinary>() {
+		haxeExtension.getBinaries().withType(HaxeBinary.class).all(new Action<HaxeBinary>() {
 			@Override
 			public void execute(final HaxeBinary binary) {
 				// Add a compile, source and munit task
@@ -92,7 +104,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 			}
 		});
 
-		binaryContainer.withType(HaxeTestBinary.class).all(new Action<HaxeTestBinary>() {
+		haxeExtension.getBinaries().withType(HaxeTestBinary.class).all(new Action<HaxeTestBinary>() {
 			@Override
 			public void execute(final HaxeTestBinary testBinary) {
 				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompileWithSpaghetti.class);
@@ -100,7 +112,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
 		});
-		binaryContainer.withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
+		spaghettiExtension.getBinaries().withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
 			@Override
 			public void execute(final HaxeSpaghettiModule moduleBinary) {
 				HaxeBinaryBase<?> binary = moduleBinary.getOriginal();
@@ -127,8 +139,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 			}
 
 			private PackageApplication createTestApplication(final HaxeSpaghettiModule moduleBinary, final HaxeTestBinary testBinary) {
-				BinaryNamingScheme namingScheme = testBinary.getNamingScheme();
-				String packageTaskName = namingScheme.getTaskName("package");
+				String packageTaskName = testBinary.getNamingScheme().getTaskName("package");
 
 				PackageApplication appBundleTask = project.getTasks().create(packageTaskName, PackageApplication.class);
 				appBundleTask.setDescription("Creates a testable application of " + testBinary);

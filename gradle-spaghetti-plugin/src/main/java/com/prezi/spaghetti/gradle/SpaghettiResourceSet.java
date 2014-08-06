@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
-import org.gradle.language.base.LanguageSourceSet;
+import com.prezi.spaghetti.gradle.incubating.LanguageSourceSet;
 
 public interface SpaghettiResourceSet extends LanguageSourceSet {
 }

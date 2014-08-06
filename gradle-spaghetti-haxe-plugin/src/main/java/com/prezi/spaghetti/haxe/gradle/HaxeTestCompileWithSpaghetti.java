@@ -3,12 +3,12 @@ package com.prezi.spaghetti.haxe.gradle;
 import com.google.common.collect.Maps;
 import com.prezi.haxe.gradle.HaxeCommandBuilder;
 import com.prezi.haxe.gradle.HaxeTestCompile;
+import com.prezi.haxe.gradle.incubating.LanguageSourceSet;
 import com.prezi.spaghetti.ReservedWords;
 import com.prezi.spaghetti.haxe.HaxeGenerator;
 import groovy.text.SimpleTemplateEngine;
 import groovy.text.Template;
 import org.gradle.api.DomainObjectSet;
-import org.gradle.language.base.LanguageSourceSet;
 
 import java.io.File;
 import java.io.FileWriter;

@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.gradle.incubating.AbstractBuildableModelElement;
+import com.prezi.spaghetti.gradle.incubating.BinaryInternal;
+import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
-import org.gradle.runtime.base.internal.AbstractBuildableModelElement;
-import org.gradle.runtime.base.internal.BinaryInternal;
-import org.gradle.runtime.base.internal.BinaryNamingScheme;
 
 import java.io.File;
 import java.util.concurrent.Callable;
