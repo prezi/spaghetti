@@ -23,9 +23,15 @@ public enum ModuleType {
 	public static ModuleType fromString(String typeName) {
 		String typeUC = typeName.toUpperCase();
 		ModuleType type;
-		if (typeUC.equals("AMD") || typeUC.equals("REQUIREJS")) {
+		if (typeUC.equals("AMD")
+				|| typeUC.equals("REQUIRE_JS")
+				|| typeUC.equals("REQUIREJS")) {
 			type = ModuleType.AMD;
-		} else if (typeUC.equals("COMMONJS") || typeUC.equals("NODE") || typeUC.equals("NODEJS")) {
+		} else if (typeUC.equals("COMMON_JS")
+				|| typeUC.equals("COMMONJS")
+				|| typeUC.equals("NODE_JS")
+				|| typeUC.equals("NODEJS")
+				|| typeUC.equals("NODE")) {
 			type = ModuleType.COMMON_JS;
 		} else {
 			throw new IllegalArgumentException("Unknown module type: " + typeName);

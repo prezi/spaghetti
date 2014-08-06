@@ -24,11 +24,19 @@ public enum ApplicationType {
 	public static ApplicationType fromString(String typeName) {
 		String typeUC = typeName.toUpperCase();
 		ApplicationType type;
-		if (typeUC.equals("AMD") || typeUC.equals("REQUIREJS")) {
+		if (typeUC.equals("AMD")
+				|| typeUC.equals("REQUIRE_JS")
+				|| typeUC.equals("REQUIREJS")) {
 			type = ApplicationType.AMD;
-		} else if (typeUC.equals("COMMONJS") || typeUC.equals("NODE") || typeUC.equals("NODEJS")) {
+		} else if (typeUC.equals("COMMON_JS")
+				|| typeUC.equals("COMMONJS")
+				|| typeUC.equals("NODE_JS")
+				|| typeUC.equals("NODEJS")
+				|| typeUC.equals("NODE")) {
 			type = ApplicationType.COMMON_JS;
-		} else if (typeUC.equals("SINGLE") || typeUC.equals("SINGLEFILE")) {
+		} else if (typeUC.equals("SINGLE_FILE")
+				|| typeUC.equals("SINGLEFILE")
+				|| typeUC.equals("SINGLE")) {
 			type = ApplicationType.SINGLE_FILE;
 		} else {
 			throw new IllegalArgumentException("Unknown module type: " + typeName);
