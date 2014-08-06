@@ -163,6 +163,11 @@ project(":gradle-spaghetti-plugin") {
 	dependencies {
 		compile gradleApi()
 		compile project(path: ":spaghetti-core")
+
+		// Required only for the incubating stuff brought over from Gradle 2.0
+		compile "commons-lang:commons-lang:2.6"
+		compile "commons-io:commons-io:2.4"
+
 		// Add all support projects
 		rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
 			compile project(path: supportProject.path)
