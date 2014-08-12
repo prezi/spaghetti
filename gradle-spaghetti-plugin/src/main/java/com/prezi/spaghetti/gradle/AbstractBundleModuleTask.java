@@ -113,7 +113,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	@Optional
 	public File getResourcesDirectory() {
 		File dir = getResourcesDirectoryInternal();
-		return dir.exists() ? dir : null;
+		return (dir != null && dir.exists()) ? dir : null;
 	}
 
 	public AbstractBundleModuleTask() {
