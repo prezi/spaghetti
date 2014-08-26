@@ -11,8 +11,10 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 		expect:
 		project.tasks*.name.sort() == [
 				"assemble",
+				"build",
 				"bundleJsModule",
 				"bundleTestJsModule",
+				"check",
 				"clean",
 				"compileJs",
 				"compileTestJs",
