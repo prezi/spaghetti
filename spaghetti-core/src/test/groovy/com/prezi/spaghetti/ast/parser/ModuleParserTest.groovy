@@ -9,6 +9,7 @@ class ModuleParserTest extends AstTestBase {
 	def "parse single"() {
 		def definition = """module com.example.test
 extern interface UnicodeString
+extern UnicodeString2
 
 enum MyEnum {
 	alma

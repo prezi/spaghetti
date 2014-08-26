@@ -11,12 +11,16 @@ import com.prezi.spaghetti.definition.ModuleDefinitionParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ModuleParser {
+	private static final Logger logger = LoggerFactory.getLogger(ModuleParser.class);
+
 	private final List<AbstractModuleTypeParser> typeParsers;
 	private final List<com.prezi.spaghetti.grammar.ModuleParser.ModuleMethodDefinitionContext> moduleMethodsToParse;
 	private final DefaultModuleNode module;
@@ -30,7 +34,6 @@ public class ModuleParser {
 		} catch (Exception ex) {
 			throw new AstParserException(source, "Exception while pre-parsing", ex);
 		}
-
 	}
 
 	protected ModuleParser(ModuleDefinitionSource source, com.prezi.spaghetti.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
@@ -53,6 +56,9 @@ public class ModuleParser {
 				module.getImports().put(FQName.fromString(null, importAlias), importNode);
 			} else if (elementCtx.externTypeDefinition() != null) {
 				com.prezi.spaghetti.grammar.ModuleParser.ExternTypeDefinitionContext context = elementCtx.externTypeDefinition();
+				if (context.deprecatedInterface != null) {
+					logger.warn("{}", ParseUtils.createWarning(source, context.deprecatedInterface, "'extern interface' is deprecated, use 'extern' instead"));
+				}
 				FQName fqName = FQName.fromContext(context.qualifiedName());
 				DefaultExternNode extern = new DefaultExternNode(fqName);
 				module.getExterns().add(extern, context);
@@ -66,9 +72,7 @@ public class ModuleParser {
 			} else {
 				throw new InternalAstParserException(elementCtx, "Unknown module element");
 			}
-
 		}
-
 	}
 
 	public ModuleNode parse(TypeResolver resolver) {
@@ -79,7 +83,6 @@ public class ModuleParser {
 		} catch (Exception ex) {
 			throw new AstParserException(module.getSource(), "Exception while pre-parsing", ex);
 		}
-
 	}
 
 	protected DefaultModuleNode parseInternal(TypeResolver resolver) {
@@ -118,7 +121,6 @@ public class ModuleParser {
 		} else {
 			throw new InternalAstParserException(typeCtx, "Unknown module element");
 		}
-
 	}
 
 	public final DefaultModuleNode getModule() {
