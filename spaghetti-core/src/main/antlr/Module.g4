@@ -33,7 +33,7 @@ superInterfaceDefinition : qualifiedName typeArguments?
 	;
 
 externTypeDefinition : ( documentation = Doc )? annotations?
-	'extern' ( deprecatedInterface = 'interface' )? qualifiedName
+	'extern' 'interface' qualifiedName
     ;
 
 typeParameters : '<' Name ( ',' Name )* '>'
