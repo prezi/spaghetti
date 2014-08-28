@@ -10,15 +10,13 @@ import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceReference;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.TypeParameterNode;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class DefaultInterfaceNode extends AbstractTypeNode implements InterfaceNode, MutableDocumentedNode {
+public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implements InterfaceNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<TypeParameterNode> typeParameters = new DefaultNamedNodeSet<TypeParameterNode>("type parameter");
 	private final Set<InterfaceReference> superInterfaces = new LinkedHashSet<InterfaceReference>();
 	private final NamedNodeSet<InterfaceMethodNode> methods = new DefaultNamedNodeSet<InterfaceMethodNode>("method");
 
@@ -28,7 +26,7 @@ public class DefaultInterfaceNode extends AbstractTypeNode implements InterfaceN
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), typeParameters, superInterfaces, methods);
+		return Iterables.concat(super.getChildren(), superInterfaces, methods);
 	}
 
 	@Override
@@ -49,11 +47,6 @@ public class DefaultInterfaceNode extends AbstractTypeNode implements InterfaceN
 	@Override
 	public void setDocumentation(DocumentationNode documentation) {
 		this.documentation = documentation;
-	}
-
-	@Override
-	public NamedNodeSet<TypeParameterNode> getTypeParameters() {
-		return typeParameters;
 	}
 
 	@Override

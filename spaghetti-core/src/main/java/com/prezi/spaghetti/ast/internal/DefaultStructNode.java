@@ -9,12 +9,10 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.StructNode;
-import com.prezi.spaghetti.ast.TypeParameterNode;
 
-public class DefaultStructNode extends AbstractTypeNode implements StructNode, MutableDocumentedNode {
+public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<TypeParameterNode> typeParameters = new DefaultNamedNodeSet<TypeParameterNode>("type parameter");
 	private final NamedNodeSet<PropertyNode> properties = new DefaultNamedNodeSet<PropertyNode>("property");
 
 	public DefaultStructNode(FQName qualifiedName) {
@@ -44,11 +42,6 @@ public class DefaultStructNode extends AbstractTypeNode implements StructNode, M
 	@Override
 	public void setDocumentation(DocumentationNode documentation) {
 		this.documentation = documentation;
-	}
-
-	@Override
-	public NamedNodeSet<TypeParameterNode> getTypeParameters() {
-		return typeParameters;
 	}
 
 	@Override

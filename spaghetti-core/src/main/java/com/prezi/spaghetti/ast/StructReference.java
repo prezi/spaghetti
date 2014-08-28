@@ -1,4 +1,4 @@
 package com.prezi.spaghetti.ast;
 
-public interface StructReference extends TypeNodeReference<StructNode> {
+public interface StructReference extends ParametrizedTypeNodeReference<StructNode> {
 }
