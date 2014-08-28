@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
-import com.prezi.spaghetti.ast.ExternNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ImportNode;
 import com.prezi.spaghetti.ast.ModuleMethodNode;
@@ -23,8 +22,8 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final String alias;
 	private final Map<FQName, ImportNode> imports = new LinkedHashMap<FQName, ImportNode>();
-	private final QualifiedNodeSet<ExternNode> externs = new DefaultQualifiedNodeSet<ExternNode>("extern");
 	private final QualifiedNodeSet<QualifiedTypeNode> types = new DefaultQualifiedNodeSet<QualifiedTypeNode>("type");
+	private final QualifiedNodeSet<QualifiedTypeNode> externTypes = new DefaultQualifiedNodeSet<QualifiedTypeNode>("externType");
 	private final NamedNodeSet<ModuleMethodNode> methods = new DefaultNamedNodeSet<ModuleMethodNode>("method");
 	private final ModuleDefinitionSource source;
 
@@ -37,7 +36,7 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), imports.values(), externs, types, methods);
+		return Iterables.concat(super.getChildren(), imports.values(), types, methods);
 	}
 
 	@Override
@@ -71,13 +70,13 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	}
 
 	@Override
-	public QualifiedNodeSet<ExternNode> getExterns() {
-		return externs;
+	public QualifiedNodeSet<QualifiedTypeNode> getTypes() {
+		return types;
 	}
 
 	@Override
-	public QualifiedNodeSet<QualifiedTypeNode> getTypes() {
-		return types;
+	public QualifiedNodeSet<QualifiedTypeNode> getExternTypes() {
+		return externTypes;
 	}
 
 	@Override

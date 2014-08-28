@@ -3,8 +3,10 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.AstNode
 import com.prezi.spaghetti.ast.DocumentedNode
 import com.prezi.spaghetti.ast.EnumReference
-import com.prezi.spaghetti.ast.ExternReference
+import com.prezi.spaghetti.ast.ExternInterfaceReference
 import com.prezi.spaghetti.ast.InterfaceReference
+import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode
+import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference
 import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
@@ -40,10 +42,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 	@Override
 	String visitInterfaceReference(InterfaceReference reference) {
 		def result = reference.type.qualifiedName.toString()
-		if (!reference.arguments.empty) {
-			result += "<" + reference.arguments*.accept(this).join(", ") + ">"
-		}
-		return wrapSingleTypeReference(result, reference.arrayDimensions);
+		return wrapParametrizedTypeReference(result, reference);
 	}
 
 	@Override
@@ -68,12 +67,20 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 	}
 
 	@Override
-	String visitExternReference(ExternReference reference) {
+	String visitExternInterfaceReference(ExternInterfaceReference reference) {
 		def type = reference.type.qualifiedName.toString()
 		if (TypeScriptGeneratorFactory.EXTERNS.containsKey(type)) {
 			type = TypeScriptGeneratorFactory.EXTERNS.get(type)
 		}
-		return wrapSingleTypeReference(type, reference.arrayDimensions)
+		return wrapParametrizedTypeReference(type, reference)
+	}
+
+	private String wrapParametrizedTypeReference(String type, ParametrizedTypeNodeReference<? extends ParametrizedReferableTypeNode> reference) {
+		def result = type
+		if (!reference.arguments.empty) {
+			result += "<" + reference.arguments*.accept(this).join(", ") + ">"
+		}
+		return wrapSingleTypeReference(result, reference.arrayDimensions)
 	}
 
 	static protected String wrapSingleTypeReference(String name, int arrayDimensions) {

@@ -9,6 +9,7 @@ class ModuleParserTest extends AstTestBase {
 	def "parse single"() {
 		def definition = """module com.example.test
 extern interface UnicodeString
+extern interface Iterable<T>
 
 enum MyEnum {
 	alma
@@ -18,6 +19,9 @@ enum MyEnum {
 struct MyStruct {
 	MyEnum en
 	UnicodeString str
+}
+
+interface Lajos extends Iterable<string> {
 }
 """
 
@@ -33,6 +37,11 @@ struct MyStruct {
 		module.types*.qualifiedName*.toString().asList() == [
 				"com.example.test.MyEnum",
 				"com.example.test.MyStruct",
+				"com.example.test.Lajos",
+		]
+		module.externTypes*.qualifiedName*.toString().asList() == [
+				"UnicodeString",
+				"Iterable"
 		]
 		0 * _
 	}

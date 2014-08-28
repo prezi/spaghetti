@@ -1,8 +1,10 @@
 package com.prezi.spaghetti.ast.parser;
 
+import com.prezi.spaghetti.ast.ExternInterfaceNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.InterfaceNode;
-import com.prezi.spaghetti.ast.InterfaceReference;
+import com.prezi.spaghetti.ast.InterfaceNodeBase;
+import com.prezi.spaghetti.ast.InterfaceReferenceBase;
 import com.prezi.spaghetti.ast.TypeNode;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode;
@@ -47,16 +49,20 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 			MethodParser.parseMethodDefinition(resolver, methodCtx.methodDefinition(), methodNode);
 			getNode().getMethods().add(methodNode, nameCtx);
 		}
-
 	}
 
-	protected static InterfaceReference parseSuperInterface(TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
+	protected static InterfaceReferenceBase parseSuperInterface(TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
 		TypeNode superType = resolver.resolveType(TypeResolutionContext.create(superCtx.qualifiedName()));
-		if (!(superType instanceof InterfaceNode)) {
+		if (!(superType instanceof InterfaceNodeBase)) {
 			throw new InternalAstParserException(superCtx, "Only interfaces can be super interfaces");
 		}
 
-		return TypeParsers.parseInterfaceReference(resolver, superCtx, superCtx.typeArguments(), (InterfaceNode) superType, 0);
+		if (superType instanceof InterfaceNode) {
+			return TypeParsers.parseInterfaceReference(resolver, superCtx, superCtx.typeArguments(), (InterfaceNode) superType, 0);
+		} else if (superType instanceof ExternInterfaceNode) {
+			return TypeParsers.parseExternInterfaceReference(resolver, superCtx, superCtx.typeArguments(), (ExternInterfaceNode) superType, 0);
+		} else {
+			throw new AssertionError();
+		}
 	}
-
 }

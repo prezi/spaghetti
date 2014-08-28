@@ -2,9 +2,11 @@ package com.prezi.spaghetti.ast.parser;
 
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.EnumNode;
-import com.prezi.spaghetti.ast.ExternNode;
+import com.prezi.spaghetti.ast.ExternInterfaceNode;
+import com.prezi.spaghetti.ast.ExternInterfaceReference;
 import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceReference;
+import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode;
 import com.prezi.spaghetti.ast.PrimitiveType;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.StructNode;
@@ -14,8 +16,9 @@ import com.prezi.spaghetti.ast.TypeNodeReference;
 import com.prezi.spaghetti.ast.TypeParameterNode;
 import com.prezi.spaghetti.ast.TypeReference;
 import com.prezi.spaghetti.ast.VoidTypeReference;
+import com.prezi.spaghetti.ast.internal.AbstractParametrizedTypeNodeReference;
 import com.prezi.spaghetti.ast.internal.DefaultEnumReference;
-import com.prezi.spaghetti.ast.internal.DefaultExternReference;
+import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceReference;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceReference;
 import com.prezi.spaghetti.ast.internal.DefaultPrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultStructReference;
@@ -115,6 +118,8 @@ public class TypeParsers {
 		TypeNodeReference result;
 		if (type instanceof InterfaceNode) {
 			result = parseInterfaceReference(resolver, context, context.typeArguments(), (InterfaceNode) type, dimensions);
+		} else if (type instanceof ExternInterfaceNode) {
+			result = parseExternInterfaceReference(resolver, context, context.typeArguments(), (ExternInterfaceNode) type, dimensions);
 		} else if (type instanceof StructNode) {
 			checkTypeArguments(context.typeArguments(), "Struct");
 			result = new DefaultStructReference((StructNode) type, dimensions);
@@ -124,9 +129,6 @@ public class TypeParsers {
 		} else if (type instanceof TypeParameterNode) {
 			checkTypeArguments(context.typeArguments(), "Type parameter");
 			result = new DefaultTypeParameterReference((TypeParameterNode) type, dimensions);
-		} else if (type instanceof ExternNode) {
-			checkTypeArguments(context.typeArguments(), "Extern");
-			result = new DefaultExternReference((ExternNode) type, dimensions);
 		} else {
 			throw new InternalAstParserException(name, "Unknown type reference");
 		}
@@ -138,11 +140,19 @@ public class TypeParsers {
 		if (context != null && context.returnType() != null) {
 			throw new InternalAstParserException(context, what + " cannot accept type arguments");
 		}
-
 	}
 
 	protected static InterfaceReference parseInterfaceReference(TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, InterfaceNode type, int arrayDimensions) {
 		DefaultInterfaceReference ifaceRef = new DefaultInterfaceReference(type, arrayDimensions);
+		return parseParametrizedTypeNodeReference(ifaceRef, resolver, typeCtx, argsCtx, type);
+	}
+
+	protected static ExternInterfaceReference parseExternInterfaceReference(TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, ExternInterfaceNode type, int arrayDimensions) {
+		DefaultExternInterfaceReference ifaceRef = new DefaultExternInterfaceReference(type, arrayDimensions);
+		return parseParametrizedTypeNodeReference(ifaceRef, resolver, typeCtx, argsCtx, type);
+	}
+
+	private static <T extends ParametrizedReferableTypeNode, R extends AbstractParametrizedTypeNodeReference<T>> R parseParametrizedTypeNodeReference(R reference, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, T type) {
 		List<TypeReference> arguments = Lists.newArrayList();
 
 		if (argsCtx != null) {
@@ -155,11 +165,11 @@ public class TypeParsers {
 		}
 
 		if (arguments.size() != type.getTypeParameters().size()) {
-			throw new InternalAstParserException(typeCtx, "Interface argument count don't match");
+			throw new InternalAstParserException(typeCtx, "Type argument count doesn't match number of type parameters");
 		}
 
-		ifaceRef.getArguments().addAll(arguments);
-		return ifaceRef;
+		reference.getArguments().addAll(arguments);
+		return reference;
 	}
 
 	public static PrimitiveTypeReference parsePrimitiveType(ModuleParser.PrimitiveTypeContext typeCtx, int arrayDimensions) {

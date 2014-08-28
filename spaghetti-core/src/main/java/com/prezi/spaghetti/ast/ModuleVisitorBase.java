@@ -45,12 +45,12 @@ public class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 	}
 
 	@Override
-	public T visitExternNode(ExternNode node) {
+	public T visitExternInterfaceNode(ExternInterfaceNode node) {
 		return visitChildren(node);
 	}
 
 	@Override
-	public T visitExternReference(ExternReference reference) {
+	public T visitExternInterfaceReference(ExternInterfaceReference reference) {
 		return visitChildren(reference);
 	}
 

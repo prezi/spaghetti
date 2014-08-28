@@ -21,6 +21,10 @@ typeDefinition	: interfaceDefinition
 				| enumDefinition
 	;
 
+externTypeDefinition
+	: externInterfaceDefinition
+	;
+
 interfaceDefinition : ( documentation = Doc )? annotations?
 	'interface' Name typeParameters?
 	( 'extends' superInterfaceDefinition ( ',' superInterfaceDefinition )* )?
@@ -32,8 +36,8 @@ interfaceDefinition : ( documentation = Doc )? annotations?
 superInterfaceDefinition : qualifiedName typeArguments?
 	;
 
-externTypeDefinition : ( documentation = Doc )? annotations?
-	'extern' 'interface' qualifiedName
+externInterfaceDefinition : ( documentation = Doc )? annotations?
+	'extern' 'interface' qualifiedName typeParameters?
     ;
 
 typeParameters : '<' Name ( ',' Name )* '>'

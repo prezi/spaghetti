@@ -7,7 +7,7 @@ import java.util.Map;
 public interface ModuleNode extends NamedNode, DocumentedNode, AnnotatedNode, MethodContainer<ModuleMethodNode> {
 	String getAlias();
 	Map<FQName, ImportNode> getImports();
-	QualifiedNodeSet<ExternNode> getExterns();
 	QualifiedNodeSet<QualifiedTypeNode> getTypes();
+	QualifiedNodeSet<QualifiedTypeNode> getExternTypes();
 	ModuleDefinitionSource getSource();
 }

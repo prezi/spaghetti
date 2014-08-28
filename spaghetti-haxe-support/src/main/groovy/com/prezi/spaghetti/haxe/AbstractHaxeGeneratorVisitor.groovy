@@ -5,8 +5,10 @@ import com.prezi.spaghetti.ast.AnnotationNode
 import com.prezi.spaghetti.ast.AstNode
 import com.prezi.spaghetti.ast.DocumentedNode
 import com.prezi.spaghetti.ast.EnumReference
-import com.prezi.spaghetti.ast.ExternReference
+import com.prezi.spaghetti.ast.ExternInterfaceReference
 import com.prezi.spaghetti.ast.InterfaceReference
+import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode
+import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference
 import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
@@ -37,11 +39,8 @@ abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
 
 	@Override
 	String visitInterfaceReference(InterfaceReference reference) {
-		def result = reference.type.qualifiedName.toString()
-		if (!reference.arguments.empty) {
-			result += "<" + reference.arguments*.accept(this).join(", ") + ">"
-		}
-		return wrapSingleTypeReference(result, reference.arrayDimensions);
+		def type = reference.type.qualifiedName.toString()
+		return wrapParametrizedTypeReference(type, reference)
 	}
 
 	@Override
@@ -66,12 +65,20 @@ abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
 	}
 
 	@Override
-	String visitExternReference(ExternReference reference) {
+	String visitExternInterfaceReference(ExternInterfaceReference reference) {
 		def type = reference.type.qualifiedName.toString()
 		if (HaxeGeneratorFactory.EXTERNS.containsKey(type)) {
 			type = HaxeGeneratorFactory.EXTERNS.get(type)
 		}
-		return wrapSingleTypeReference(type, reference.arrayDimensions)
+		return wrapParametrizedTypeReference(type, reference)
+	}
+
+	private String wrapParametrizedTypeReference(String type, ParametrizedTypeNodeReference<? extends ParametrizedReferableTypeNode> reference) {
+		def result = type
+		if (!reference.arguments.empty) {
+			result += "<" + reference.arguments*.accept(this).join(", ") + ">"
+		}
+		return wrapSingleTypeReference(result, reference.arrayDimensions)
 	}
 
 	static protected String wrapNullableTypeReference(String name, AnnotatedNode annotated) {

@@ -3,7 +3,6 @@ package com.prezi.spaghetti.ast.parser;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ModuleMethodType;
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.ast.internal.DefaultExternNode;
 import com.prezi.spaghetti.ast.internal.DefaultImportNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleNode;
@@ -52,9 +51,9 @@ public class ModuleParser {
 				module.getImports().put(FQName.fromString(null, importAlias), importNode);
 			} else if (elementCtx.externTypeDefinition() != null) {
 				com.prezi.spaghetti.grammar.ModuleParser.ExternTypeDefinitionContext context = elementCtx.externTypeDefinition();
-				FQName fqName = FQName.fromContext(context.qualifiedName());
-				DefaultExternNode extern = new DefaultExternNode(fqName);
-				module.getExterns().add(extern, context);
+				AbstractModuleTypeParser typeParser = createExternTypeDef(context, moduleName);
+				typeParsers.add(typeParser);
+				module.getExternTypes().add(typeParser.getNode(), context);
 			} else if (elementCtx.typeDefinition() != null) {
 				com.prezi.spaghetti.grammar.ModuleParser.TypeDefinitionContext context = elementCtx.typeDefinition();
 				AbstractModuleTypeParser typeParser = createTypeDef(context, moduleName);
@@ -111,6 +110,14 @@ public class ModuleParser {
 			return new StructParser(typeCtx.structDefinition(), moduleName);
 		} else if (typeCtx.interfaceDefinition() != null) {
 			return new InterfaceParser(typeCtx.interfaceDefinition(), moduleName);
+		} else {
+			throw new InternalAstParserException(typeCtx, "Unknown module element");
+		}
+	}
+
+	protected static AbstractModuleTypeParser createExternTypeDef(com.prezi.spaghetti.grammar.ModuleParser.ExternTypeDefinitionContext typeCtx, String moduleName) {
+		if (typeCtx.externInterfaceDefinition() != null) {
+			return new ExternInterfaceParser(typeCtx.externInterfaceDefinition());
 		} else {
 			throw new InternalAstParserException(typeCtx, "Unknown module element");
 		}

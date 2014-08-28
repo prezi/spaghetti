@@ -6,8 +6,8 @@ import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.ast.TypeNode;
 
 public class ModuleTypeResolver implements TypeResolver {
-	protected final TypeResolver parent;
-	protected final ModuleNode module;
+	private final TypeResolver parent;
+	private final ModuleNode module;
 
 	public ModuleTypeResolver(TypeResolver parent, ModuleNode module) {
 		this.parent = parent;

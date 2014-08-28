@@ -8,8 +8,8 @@ public interface ModuleVisitor<T> {
 	T visitEnumNode(EnumNode node);
 	T visitEnumReference(EnumReference reference);
 	T visitEnumValueNode(EnumValueNode node);
-	T visitExternNode(ExternNode node);
-	T visitExternReference(ExternReference reference);
+	T visitExternInterfaceNode(ExternInterfaceNode node);
+	T visitExternInterfaceReference(ExternInterfaceReference reference);
 	T visitImportNode(ImportNode node);
 	T visitInterfaceMethodNode(InterfaceMethodNode node);
 	T visitInterfaceNode(InterfaceNode node);

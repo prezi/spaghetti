@@ -6,9 +6,13 @@ import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.ast.TypeNode;
 
-public class LocalModuleTypeResolver extends ModuleTypeResolver {
+public class LocalModuleTypeResolver implements TypeResolver {
+	private final TypeResolver parent;
+	private final ModuleNode module;
+
 	public LocalModuleTypeResolver(TypeResolver parent, ModuleNode module) {
-		super(parent, module);
+		this.parent = parent;
+		this.module = module;
 	}
 
 	@Override
@@ -22,14 +26,14 @@ public class LocalModuleTypeResolver extends ModuleTypeResolver {
 
 		// If not found, try to resolve as locally defined extern
 		if (type == null) {
-			type = module.getExterns().get(name);
+			type = module.getExternTypes().get(name);
 		}
 
 		// If still not found, try parent
 		if (type == null) {
-			type = ((QualifiedTypeNode) (super.resolveType(context.withName(scopedName))));
+			type = (QualifiedTypeNode) parent.resolveType(context.withName(scopedName));
 		}
 
-		return ((TypeNode) (type));
+		return type;
 	}
 }

@@ -8,7 +8,7 @@ import com.prezi.spaghetti.ast.ConstEntryNode;
 import com.prezi.spaghetti.ast.ConstNode;
 import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
-import com.prezi.spaghetti.ast.ExternNode;
+import com.prezi.spaghetti.ast.ExternInterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceMethodNode;
 import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.ModuleMethodNode;
@@ -33,7 +33,7 @@ class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> {
 	}
 
 	@Override
-	public Collection<String> visitExternNode(ExternNode node) {
+	public Collection<String> visitExternInterfaceNode(ExternInterfaceNode node) {
 		return node.getQualifiedName().getParts();
 	}
 
