@@ -18,6 +18,7 @@ struct MyStruct<T> {
 	@deprecated("struct")
 	@nullable ?string b
 	@mutable T t
+	T convert(T value)
 }
 """
 		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.structDefinition()
@@ -37,6 +38,7 @@ typedef MyStruct<T> = {
 	@:deprecated("struct")
 	@:optional var b (default, never):Null<String>;
 	var t:T;
+	function convert(value:T):T;
 
 }
 """

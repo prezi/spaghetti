@@ -18,6 +18,7 @@ struct MyStruct<T> {
 	@deprecated("struct")
 	?string b
 	T t
+	T convert(T value)
 }
 """
 		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.structDefinition()
@@ -36,6 +37,7 @@ export interface MyStruct<T> {
 	 */
 	b?: string;
 	t: T;
+	convert(value:T):T;
 
 }
 """

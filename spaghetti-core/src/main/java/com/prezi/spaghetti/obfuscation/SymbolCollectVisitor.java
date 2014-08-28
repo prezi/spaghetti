@@ -9,12 +9,12 @@ import com.prezi.spaghetti.ast.ConstNode;
 import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.ExternInterfaceNode;
-import com.prezi.spaghetti.ast.InterfaceMethodNode;
 import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.ModuleMethodNode;
 import com.prezi.spaghetti.ast.ModuleVisitorBase;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.StructNode;
+import com.prezi.spaghetti.ast.TypeMethodNode;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,9 +39,9 @@ class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> {
 
 	@Override
 	public Collection<String> visitInterfaceNode(InterfaceNode node) {
-		return Collections2.transform(node.getMethods(), new Function<InterfaceMethodNode, String>() {
+		return Collections2.transform(node.getMethods(), new Function<TypeMethodNode, String>() {
 			@Override
-			public String apply(InterfaceMethodNode method) {
+			public String apply(TypeMethodNode method) {
 				return method.getName();
 			}
 		});

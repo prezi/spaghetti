@@ -88,4 +88,27 @@ struct StructB {
 		]
 		0 * _
 	}
+
+	def "parse method"() {
+		def context = AstTestUtils.parser("""
+struct MyStruct<T> {
+	T convertToRelative(T absolute)
+}
+""").structDefinition()
+		def parser = new StructParser(context, "com.example.test")
+
+		when:
+		parser.parse(Mock(TypeResolver))
+		def node = parser.node
+
+		then:
+		node.name == "MyStruct"
+		node.methods*.name == [
+				"convertToRelative",
+		]
+		node.methods*.returnType*.type.name == [
+				"T",
+		]
+		0 * _
+	}
 }

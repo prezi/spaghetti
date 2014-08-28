@@ -11,7 +11,6 @@ public interface ModuleVisitor<T> {
 	T visitExternInterfaceNode(ExternInterfaceNode node);
 	T visitExternInterfaceReference(ExternInterfaceReference reference);
 	T visitImportNode(ImportNode node);
-	T visitInterfaceMethodNode(InterfaceMethodNode node);
 	T visitInterfaceNode(InterfaceNode node);
 	T visitInterfaceReference(InterfaceReference reference);
 	T visitMethodParameterNode(MethodParameterNode node);
@@ -22,6 +21,7 @@ public interface ModuleVisitor<T> {
 	T visitStructNode(StructNode node);
 	T visitStructReference(StructReference reference);
 	T visitTypeChain(TypeChain chain);
+	T visitTypeMethodNode(TypeMethodNode node);
 	T visitTypeParameterNode(TypeParameterNode node);
 	T visitTypeParameterReference(TypeParameterReference reference);
 	T visitVoidTypeReference(VoidTypeReference reference);

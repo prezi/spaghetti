@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.ast.parser;
 
 import com.prezi.spaghetti.ast.FQName;
-import com.prezi.spaghetti.ast.ModuleMethodType;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.internal.DefaultImportNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleMethodNode;
@@ -51,7 +50,7 @@ public class ModuleParser {
 				module.getImports().put(FQName.fromString(null, importAlias), importNode);
 			} else if (elementCtx.externTypeDefinition() != null) {
 				com.prezi.spaghetti.grammar.ModuleParser.ExternTypeDefinitionContext context = elementCtx.externTypeDefinition();
-				AbstractModuleTypeParser typeParser = createExternTypeDef(context, moduleName);
+				AbstractModuleTypeParser typeParser = createExternTypeDef(context);
 				typeParsers.add(typeParser);
 				module.getExternTypes().add(typeParser.getNode(), context);
 			} else if (elementCtx.typeDefinition() != null) {
@@ -88,14 +87,8 @@ public class ModuleParser {
 
 		// Parse module methods
 		for (com.prezi.spaghetti.grammar.ModuleParser.ModuleMethodDefinitionContext methodCtx : moduleMethodsToParse) {
-			TerminalNode nameCtx = methodCtx.methodDefinition().Name();
-			String methodName = nameCtx.getText();
-			ModuleMethodType methodType = methodCtx.isStatic != null ? ModuleMethodType.STATIC : ModuleMethodType.DYNAMIC;
-			DefaultModuleMethodNode method = new DefaultModuleMethodNode(methodName, methodType);
-			AnnotationsParser.parseAnnotations(methodCtx.annotations(), method);
-			DocumentationParser.parseDocumentation(methodCtx.documentation, method);
-			MethodParser.parseMethodDefinition(resolver, methodCtx.methodDefinition(), method);
-			module.getMethods().add(method, nameCtx);
+			DefaultModuleMethodNode methodNode = MethodParser.parseModuleMethodDefinition(resolver, methodCtx);
+			module.getMethods().add(methodNode, methodCtx.methodDefinition().Name());
 		}
 
 		return module;
@@ -115,7 +108,7 @@ public class ModuleParser {
 		}
 	}
 
-	protected static AbstractModuleTypeParser createExternTypeDef(com.prezi.spaghetti.grammar.ModuleParser.ExternTypeDefinitionContext typeCtx, String moduleName) {
+	protected static AbstractModuleTypeParser createExternTypeDef(com.prezi.spaghetti.grammar.ModuleParser.ExternTypeDefinitionContext typeCtx) {
 		if (typeCtx.externInterfaceDefinition() != null) {
 			return new ExternInterfaceParser(typeCtx.externInterfaceDefinition());
 		} else {

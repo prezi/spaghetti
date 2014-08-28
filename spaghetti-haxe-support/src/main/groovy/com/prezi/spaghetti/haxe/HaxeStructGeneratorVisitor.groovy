@@ -2,8 +2,9 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ast.PropertyNode
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.ast.TypeMethodNode
 
-class HaxeStructGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
+class HaxeStructGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
 	@Override
 	String visitStructNode(StructNode node) {
@@ -27,5 +28,10 @@ ${visitChildren(node)}
 		type = wrapNullableTypeReference(type, node)
 		"""	${optional}var ${name}${modifiers}:${type};
 """
+	}
+
+	@Override
+	String visitTypeMethodNode(TypeMethodNode node) {
+		return visitMethodNode(node)
 	}
 }

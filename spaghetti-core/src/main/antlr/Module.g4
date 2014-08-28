@@ -29,7 +29,7 @@ interfaceDefinition : ( documentation = Doc )? annotations?
 	'interface' Name typeParameters?
 	( 'extends' superInterfaceDefinition ( ',' superInterfaceDefinition )* )?
 	'{'
-		interfaceMethodDefinition*
+		typeMethodDefinition*
 	'}'
 	;
 
@@ -45,8 +45,13 @@ typeParameters : '<' Name ( ',' Name )* '>'
 
 structDefinition : ( documentation = Doc )? annotations?
 	'struct' Name typeParameters? '{'
-		propertyDefinition*
+		structElementDefinition*
 	'}'
+	;
+
+structElementDefinition
+	: propertyDefinition
+	| typeMethodDefinition
 	;
 
 constDefinition : ( documentation = Doc )? annotations?
@@ -81,7 +86,7 @@ moduleMethodDefinition : ( documentation = Doc )? annotations?
 	methodDefinition
 	;
 
-interfaceMethodDefinition : ( documentation = Doc )? annotations?
+typeMethodDefinition : ( documentation = Doc )? annotations?
 	methodDefinition
 	;
 
