@@ -1,15 +1,20 @@
 package com.prezi.spaghetti.gradle;
 
+import org.gradle.api.Project;
 import org.gradle.api.tasks.Copy;
-import org.gradle.language.jvm.internal.SimpleStaleClassCleaner;
-import org.gradle.language.jvm.internal.StaleClassCleaner;
+
+import java.io.File;
 
 public class ProcessSpaghettiResources extends Copy {
 	@Override
 	protected void copy() {
-		StaleClassCleaner cleaner = new SimpleStaleClassCleaner(getOutputs());
-		cleaner.setDestinationDir(getDestinationDir());
-		cleaner.execute();
+		Project project = getProject();
+		String prefix = getDestinationDir().getAbsolutePath() + File.separator;
+		for (File file : getOutputs().getPreviousFiles()) {
+			if (file.getAbsolutePath().startsWith(prefix)) {
+				project.delete(file);
+			}
+		}
 		super.copy();
 	}
 }
