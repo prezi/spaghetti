@@ -44,7 +44,6 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 	}
 
 	@Override
-	@SuppressWarnings("UnnecessaryQualifiedReference")
 	public void apply(final Project project) {
 		// Spaghetti will be working with TypeScript, might as well set it
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
@@ -65,7 +64,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		});
 
 		// Add Spaghetti generated test sources to test compile and test source tasks
-		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
+		spaghettiExtension.getSources().getByName("test").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
 				addSpaghettiSourceSet(project, typeScriptExtension, spaghettiGeneratedSourceSet, TypeScriptTestBinary.class, "spaghetti-test");
