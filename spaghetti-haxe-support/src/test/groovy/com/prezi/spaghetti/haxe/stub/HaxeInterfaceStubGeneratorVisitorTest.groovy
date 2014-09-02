@@ -44,7 +44,7 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 		def visitor = new HaxeInterfaceStubGeneratorVisitor()
 
 		expect:
-		visitor.visit(iface) == """class MyInterfaceStub<X> implements com.example.test.Tibor<X> {
+		visitor.visit(iface) == """class MyInterfaceStub<X> implements MyInterface<X> {
 	/**
 	 * Does something.
 	 */

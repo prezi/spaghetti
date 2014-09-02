@@ -26,15 +26,11 @@ class TypeScriptInterfaceStubGeneratorVisitor extends AbstractTypeScriptGenerato
 
 	@Override
 	String visitInterfaceNode(InterfaceNode node) {
-		def typeName = node.name + "Stub"
-		if (node.typeParameters) {
-			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
-		}
-		def superTypes = node.superInterfaces*.accept(this)
+		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
 		def methodDefinitions = visitMethodDefinitions(node, [:], [], Sets.newLinkedHashSet()).join("")
 
 		return  \
- """${defineType(typeName, superTypes)}
+ """export class ${node.name}Stub${typeParams} implements ${node.name}${typeParams} {
 ${methodDefinitions}
 }
 """
@@ -64,15 +60,6 @@ ${methodDefinitions}
 		}
 
 		return methodDefinitions
-	}
-
-	private static String defineType(String typeName, Collection<String> superTypes) {
-		def declaration = "export class ${typeName}"
-		if (!superTypes.empty) {
-			declaration += " implements ${superTypes.join(", ")}"
-		}
-		declaration += " {"
-		return declaration
 	}
 
 	private static class MethodGenerator extends AbstractTypeScriptGeneratorVisitor {

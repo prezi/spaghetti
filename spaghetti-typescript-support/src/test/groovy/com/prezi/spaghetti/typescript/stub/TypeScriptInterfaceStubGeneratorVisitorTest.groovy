@@ -44,7 +44,7 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 		def visitor = new TypeScriptInterfaceStubGeneratorVisitor()
 
 		expect:
-		visitor.visit(iface) == """export class MyInterfaceStub<X> implements com.example.test.Tibor<X> {
+		visitor.visit(iface) == """export class MyInterfaceStub<X> implements MyInterface<X> {
 	/**
 	 * Does something.
 	 */
