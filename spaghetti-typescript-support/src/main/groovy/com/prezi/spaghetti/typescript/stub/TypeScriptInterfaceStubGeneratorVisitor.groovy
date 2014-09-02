@@ -51,8 +51,8 @@ ${methodDefinitions}
 			if (superIfaceRef instanceof InterfaceReference) {
 				def superIface = superIfaceRef.type
 				for (int i = 0; i < superIface.typeParameters.size(); i++) {
-					def param = superIface.typeParameters[i];
-					def ref = superIfaceRef.arguments[i];
+					def param = superIface.typeParameters.getAt(i);
+					def ref = superIfaceRef.arguments.get(i);
 					superBindings.put(param, ref)
 				}
 				visitMethodDefinitions(superIface, bindings, methodDefinitions, methodsGenerated)
