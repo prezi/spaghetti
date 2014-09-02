@@ -20,14 +20,14 @@ public class ModuleConfigurationParser {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
 		DefaultModuleConfiguration configNode = new DefaultModuleConfiguration();
 
-		Collection<ModuleParser> transitiveParser = createParsersFor(transitiveModuleSources);
-		Collection<ModuleParser> directParser = createParsersFor(dependentModuleSources);
+		Collection<ModuleParser> transitiveParsers = createParsersFor(transitiveModuleSources);
+		Collection<ModuleParser> directParsers = createParsersFor(dependentModuleSources);
 		Collection<ModuleParser> localParsers = createParsersFor(localModuleSources);
 
-		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParser, transitiveParser));
+		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParsers, transitiveParsers));
 
-		parsedModules(resolver, transitiveParser, configNode.getTransitiveDependentModules(), parsedModules);
-		parsedModules(resolver, directParser, configNode.getDirectDependentModules(), parsedModules);
+		parsedModules(resolver, transitiveParsers, configNode.getTransitiveDependentModules(), parsedModules);
+		parsedModules(resolver, directParsers, configNode.getDirectDependentModules(), parsedModules);
 		parsedModules(resolver, localParsers, configNode.getLocalModules(), parsedModules);
 
 		return configNode;
