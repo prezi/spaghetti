@@ -80,7 +80,7 @@ ${methodDefinitions}
 			if (returnType == VoidTypeReference.VOID) {
 				returnCall = "";
 			} else {
-				if (returnType instanceof PrimitiveTypeReference) {
+				if (returnType instanceof PrimitiveTypeReference && returnType.arrayDimensions == 0) {
 					returnCall = "return ${PRIMITIVE_RETURN_VALUES.get(returnType.type)};";
 				} else {
 					returnCall = "return null;"
