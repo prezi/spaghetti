@@ -1,12 +1,14 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.AbstractGenerator
+import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInterfaceGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleStaticProxyGeneratorVisitor
+import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
@@ -30,6 +32,19 @@ class TypeScriptGenerator extends AbstractGenerator {
 		}
 		config.transitiveDependentModules.each { dependentModule ->
 			generateDependentModule(dependentModule, outputDirectory, false)
+		}
+	}
+
+	@Override
+	void generateStubs(File outputDirectory) throws IOException {
+		config.allModules.each { module ->
+			def contents = ""
+			for (type in module.types) {
+				if (type instanceof InterfaceNode) {
+					contents += new TypeScriptInterfaceStubGeneratorVisitor().visit(type)
+				}
+			}
+			TypeScriptUtils.createSourceFile(module, module.alias + "Stubs", outputDirectory, contents)
 		}
 	}
 

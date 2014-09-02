@@ -14,6 +14,13 @@ public interface Generator {
 	void generateHeaders(File outputDirectory) throws IOException;
 
 	/**
+	 * Generate stub implementation.
+	 *
+	 * @param outputDirectory the directory to generate header files into.
+	 */
+	void generateStubs(File outputDirectory) throws IOException;
+
+	/**
 	 * Process the JavaScript code of a module.
 	 * Needs to provide a function call to <code>spaghetti()</code> that returns a module object.
 	 * <p/>

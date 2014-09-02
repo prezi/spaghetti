@@ -1,12 +1,14 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.AbstractGenerator
+import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleInterfaceGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleStaticProxyGeneratorVisitor
+import com.prezi.spaghetti.haxe.stub.HaxeInterfaceStubGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
 
@@ -33,6 +35,18 @@ class HaxeGenerator extends AbstractGenerator {
 		}
 		config.directDependentModules.each { dependentModule ->
 			generateModuleAccessor(dependentModule, outputDirectory)
+		}
+	}
+
+	@Override
+	public void generateStubs(File outputDirectory) throws IOException {
+		config.allModules.each { module ->
+			for (type in module.types) {
+				if (type instanceof InterfaceNode) {
+					def contents = new HaxeInterfaceStubGeneratorVisitor().visit(type)
+					HaxeUtils.createHaxeSourceFile(module.name, type.name + "Stub", outputDirectory, contents)
+				}
+			}
 		}
 	}
 

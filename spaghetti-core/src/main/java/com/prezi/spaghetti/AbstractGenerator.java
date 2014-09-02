@@ -3,6 +3,9 @@ package com.prezi.spaghetti;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.config.ModuleConfiguration;
 
+import java.io.File;
+import java.io.IOException;
+
 import static com.prezi.spaghetti.ReservedWords.CONFIG;
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION;
 
@@ -27,4 +30,13 @@ public abstract class AbstractGenerator implements Generator {
 
 	protected abstract String processModuleJavaScriptInternal(ModuleNode moduleDefinition, String javaScript);
 
+	@Override
+	public void generateHeaders(File outputDirectory) throws IOException {
+		// Do nothing by default
+	}
+
+	@Override
+	public void generateStubs(File outputDirectory) throws IOException {
+		// Do nothing by default
+	}
 }

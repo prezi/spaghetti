@@ -107,9 +107,14 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		});
 
 		// Automatically generate module headers
-		final GenerateHeaders generateTask = project.getTasks().create("generateHeaders", GenerateHeaders.class);
-		generateTask.setDescription("Generates Spaghetti headers.");
-		logger.debug("Created {}", generateTask);
+		final GenerateHeaders generateHeadersTask = project.getTasks().create("generateHeaders", GenerateHeaders.class);
+		generateHeadersTask.setDescription("Generates Spaghetti headers.");
+		logger.debug("Created {}", generateHeadersTask);
+
+		// Add task for generating stubs
+		final GenerateStubs generateStubs = project.getTasks().create("generateStubs", GenerateStubs.class);
+		generateStubs.setDescription("Generates Spaghetti stubs.");
+		logger.debug("Created {}", generateStubs);
 
 		// Create source set
 		LanguageSourceSet spaghettiGeneratedSourceSet = functionalSourceSet.findByName("spaghetti-generated");
@@ -122,11 +127,11 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiGeneratedSourceSet.getSource().srcDir(new Callable<File>() {
 			@Override
 			public File call() throws Exception {
-				return generateTask.getOutputDirectory();
+				return generateHeadersTask.getOutputDirectory();
 			}
 
 		});
-		spaghettiGeneratedSourceSet.builtBy(generateTask);
+		spaghettiGeneratedSourceSet.builtBy(generateHeadersTask);
 	}
 
 	private static void createPlatformsTask(Project project) {
