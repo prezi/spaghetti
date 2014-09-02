@@ -1,18 +1,16 @@
 package com.prezi.spaghetti.typescript.stub
 
 import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.FQName
-import com.prezi.spaghetti.ast.InterfaceNode
-import com.prezi.spaghetti.ast.TypeMethodNode
-import com.prezi.spaghetti.ast.TypeParameterNode
-import com.prezi.spaghetti.ast.internal.DefaultNamedNodeSet
+import com.prezi.spaghetti.ast.parser.AstTestUtils
 import com.prezi.spaghetti.ast.parser.InterfaceParser
-import com.prezi.spaghetti.definition.ModuleDefinitionParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
-		def definition = """interface MyInterface<X> extends Tibor<X> {
+		def definitionTibor = """interface Tibor<T> {
+	T getSomeT()
+}
+"""
+		def definition = """interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
 	 */
@@ -27,19 +25,10 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.interfaceDefinition()
-		def parser = new InterfaceParser(context, "com.example.test")
-		parser.parse(mockResolver([
-		        "Tibor": {
-					def superIface = Mock(InterfaceNode)
-					superIface.qualifiedName >> FQName.fromString("com.example.test.Tibor")
-					superIface.superInterfaces >> [].toSet()
-					superIface.methods >> new DefaultNamedNodeSet<TypeMethodNode>("methods")
-					def mockParam = Mock(TypeParameterNode)
-					superIface.typeParameters >> new DefaultNamedNodeSet<TypeParameterNode>("type params", Collections.singleton(mockParam))
-					return superIface
-				}
-		]))
+		def tibor = new InterfaceParser(AstTestUtils.parser(definitionTibor).interfaceDefinition(), "com.example.test")
+		tibor.parse(AstTestUtils.resolver())
+		def parser = new InterfaceParser(AstTestUtils.parser(definition).interfaceDefinition(), "com.example.test")
+		parser.parse(AstTestUtils.resolver(tibor.node))
 		def iface = parser.node
 		def visitor = new TypeScriptInterfaceStubGeneratorVisitor()
 
@@ -68,6 +57,9 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 		return null;
 	}
 	hello<T, U>(f:(arg0: X, arg1: () => number) => U):Array<T> {
+		return null;
+	}
+	getSomeT():X {
 		return null;
 	}
 
