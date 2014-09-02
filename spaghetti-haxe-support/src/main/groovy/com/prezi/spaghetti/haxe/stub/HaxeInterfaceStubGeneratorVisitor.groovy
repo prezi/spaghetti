@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.haxe.stub
 
-import com.prezi.spaghetti.GeneratorUtils
+import com.prezi.spaghetti.ast.AstUtils
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.MethodParameterNode
@@ -26,7 +26,7 @@ class HaxeInterfaceStubGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
 		def superTypes = node.superInterfaces*.accept(this)
-		Collection<TypeMethodNode> methods = GeneratorUtils.getAllInterfaces(node)*.findAll { it instanceof InterfaceNode }*.methods.flatten()
+		Collection<TypeMethodNode> methods = AstUtils.getAllInterfaces(node)*.findAll { it instanceof InterfaceNode }*.methods.flatten()
 		def methodDefinitions = methods*.accept(this).join("")
 
 		return   \
