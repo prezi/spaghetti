@@ -37,7 +37,7 @@ ${methodDefinitions}
 	private static String defineType(String typeName, Collection<String> superTypes) {
 		def declaration = "class ${typeName}"
 		superTypes.each { superType ->
-			declaration += " extends ${superType}"
+			declaration += " implements ${superType}"
 		}
 		return declaration + " {"
 	}

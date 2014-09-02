@@ -37,7 +37,7 @@ ${methodDefinitions}
 	private static String defineType(String typeName, Collection<String> superTypes) {
 		def declaration = "export class ${typeName}"
 		if (!superTypes.empty) {
-			declaration += " extends ${superTypes.join(", ")}"
+			declaration += " implements ${superTypes.join(", ")}"
 		}
 		declaration += " {"
 		return declaration
