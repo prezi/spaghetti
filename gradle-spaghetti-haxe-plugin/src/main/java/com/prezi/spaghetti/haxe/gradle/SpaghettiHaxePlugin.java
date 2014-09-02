@@ -72,7 +72,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		testConfiguration.extendsFrom(spaghettiExtension.getConfiguration());
 
 		// Add Spaghetti generated sources to compile and source tasks
-		spaghettiExtension.getSources().findByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
+		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
 				logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
