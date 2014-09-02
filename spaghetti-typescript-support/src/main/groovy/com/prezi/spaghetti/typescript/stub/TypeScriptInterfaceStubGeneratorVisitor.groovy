@@ -55,7 +55,7 @@ ${methodDefinitions}
 					def ref = superIfaceRef.arguments.get(i);
 					superBindings.put(param, ref)
 				}
-				visitMethodDefinitions(superIface, bindings, methodDefinitions, methodsGenerated)
+				visitMethodDefinitions(superIface, superBindings, methodDefinitions, methodsGenerated)
 			}
 		}
 
