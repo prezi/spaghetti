@@ -39,7 +39,6 @@ public class TypeParsers {
 		} else {
 			throw new InternalAstParserException(context, "Unknown return type");
 		}
-
 	}
 
 	public static TypeReference parseComplexType(TypeResolver resolver, ModuleParser.ComplexTypeContext context) {
@@ -50,7 +49,6 @@ public class TypeParsers {
 		} else {
 			throw new InternalAstParserException(context, "Unknown complex type");
 		}
-
 	}
 
 	public static TypeReference parseType(TypeResolver resolver, ModuleParser.TypeContext context) {
@@ -62,7 +60,6 @@ public class TypeParsers {
 		} else {
 			throw new InternalAstParserException(context, "Unknown type");
 		}
-
 	}
 
 	public static TypeChain parseTypeChain(TypeResolver resolver, ModuleParser.TypeChainContext context) {
@@ -72,7 +69,6 @@ public class TypeParsers {
 		} else {
 			throw new InternalAstParserException(context, "Unknown type chain");
 		}
-
 	}
 
 	public static TypeChain parseTypeChainElements(final TypeResolver resolver, ModuleParser.TypeChainElementsContext context, int dimensions) {
@@ -107,7 +103,6 @@ public class TypeParsers {
 		} else {
 			throw new InternalAstParserException(context, "Unknown type chain element");
 		}
-
 	}
 
 	public static TypeReference parseObjectType(TypeResolver resolver, ModuleParser.ObjectTypeContext context, int dimensions) {
