@@ -29,7 +29,12 @@ import java.util.regex.Pattern;
 
 public class SpaghettiPlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiPlugin.class);
+
+	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
+	public static final String SPAGHETTI_GENERATED_TEST_SOURCE_SET = "spaghetti-generated-test";
+
 	private static final Pattern MODULE_FILE_PATTERN = Pattern.compile(".+\\.module");
+
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
 
@@ -48,15 +53,16 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		final SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
 
 		// Add source sets
-		FunctionalSourceSet functionalSourceSet = extension.getSources().maybeCreate("main");
+		FunctionalSourceSet mainSources = extension.getSources().maybeCreate("main");
+		FunctionalSourceSet testSources = extension.getSources().maybeCreate("test");
 
-		DefaultSpaghettiSourceSet spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet.class, "spaghetti", functionalSourceSet, fileResolver);
+		DefaultSpaghettiSourceSet spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet.class, "spaghetti", mainSources, fileResolver);
 		spaghettiSourceSet.getSource().srcDir("src/main/spaghetti");
-		functionalSourceSet.add(spaghettiSourceSet);
+		mainSources.add(spaghettiSourceSet);
 
-		DefaultSpaghettiResourceSet spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet.class, "spaghetti-resources", functionalSourceSet, fileResolver);
+		DefaultSpaghettiResourceSet spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet.class, "spaghetti-resources", mainSources, fileResolver);
 		spaghettiResourceSet.getSource().srcDir("src/main/spaghetti-resources");
-		functionalSourceSet.add(spaghettiResourceSet);
+		mainSources.add(spaghettiResourceSet);
 
 		// TODO Use a proper Spaghetti module binary to tie this together
 		final ProcessSpaghettiResources resourcesTask = project.getTasks().create("processSpaghettiResources", ProcessSpaghettiResources.class);
@@ -107,31 +113,54 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		});
 
 		// Automatically generate module headers
+		addGenerateHeadersTask(project, mainSources);
+
+		// Add task for generating stubs
+		addGenerateStubsTask(project, testSources);
+	}
+
+	private void addGenerateHeadersTask(Project project, FunctionalSourceSet functionalSourceSet) {
 		final GenerateHeaders generateHeadersTask = project.getTasks().create("generateHeaders", GenerateHeaders.class);
 		generateHeadersTask.setDescription("Generates Spaghetti headers.");
 		logger.debug("Created {}", generateHeadersTask);
 
-		// Add task for generating stubs
-		final GenerateStubs generateStubs = project.getTasks().create("generateStubs", GenerateStubs.class);
-		generateStubs.setDescription("Generates Spaghetti stubs.");
-		logger.debug("Created {}", generateStubs);
-
 		// Create source set
-		LanguageSourceSet spaghettiGeneratedSourceSet = functionalSourceSet.findByName("spaghetti-generated");
-		if (spaghettiGeneratedSourceSet == null) {
-			spaghettiGeneratedSourceSet = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, "spaghetti-generated", functionalSourceSet, fileResolver);
-			functionalSourceSet.add(spaghettiGeneratedSourceSet);
-			logger.debug("Added {}", spaghettiGeneratedSourceSet);
+		LanguageSourceSet spaghettiHeaders = functionalSourceSet.findByName(SPAGHETTI_GENERATED_SOURCE_SET);
+		if (spaghettiHeaders == null) {
+			spaghettiHeaders = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_SOURCE_SET, functionalSourceSet, fileResolver);
+			functionalSourceSet.add(spaghettiHeaders);
+			logger.debug("Added {}", spaghettiHeaders);
 		}
 
-		spaghettiGeneratedSourceSet.getSource().srcDir(new Callable<File>() {
+		spaghettiHeaders.getSource().srcDir(new Callable<File>() {
 			@Override
 			public File call() throws Exception {
 				return generateHeadersTask.getOutputDirectory();
 			}
-
 		});
-		spaghettiGeneratedSourceSet.builtBy(generateHeadersTask);
+		spaghettiHeaders.builtBy(generateHeadersTask);
+	}
+
+	private void addGenerateStubsTask(Project project, FunctionalSourceSet functionalSourceSet) {
+		final GenerateStubs generateStubsTask = project.getTasks().create("generateStubs", GenerateStubs.class);
+		generateStubsTask.setDescription("Generates Spaghetti stubs.");
+		logger.debug("Created {}", generateStubsTask);
+
+		// Create source set
+		LanguageSourceSet spaghettiStubs = functionalSourceSet.findByName(SPAGHETTI_GENERATED_TEST_SOURCE_SET);
+		if (spaghettiStubs == null) {
+			spaghettiStubs = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_TEST_SOURCE_SET, functionalSourceSet, fileResolver);
+			functionalSourceSet.add(spaghettiStubs);
+			logger.debug("Added {}", spaghettiStubs);
+		}
+
+		spaghettiStubs.getSource().srcDir(new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return generateStubsTask.getOutputDirectory();
+			}
+		});
+		spaghettiStubs.builtBy(generateStubsTask);
 	}
 
 	private static void createPlatformsTask(Project project) {

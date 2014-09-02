@@ -75,20 +75,15 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
-				Configuration config = project.getConfigurations().maybeCreate("spaghetti");
-				FunctionalSourceSet spaghetti = haxeExtension.getSources().maybeCreate("spaghetti");
-				final DefaultHaxeSourceSet haxeSourceSet = instantiator.newInstance(DefaultHaxeSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, config, fileResolver);
-				haxeSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
-				haxeSourceSet.builtBy(spaghettiGeneratedSourceSet);
-				haxeExtension.getBinaries().withType(HaxeBinaryBase.class).all(new Action<HaxeBinaryBase>() {
-					@Override
-					@SuppressWarnings("unchecked")
-					public void execute(HaxeBinaryBase compiledBinary) {
-						compiledBinary.getSource().add(haxeSourceSet);
-						logger.debug("Added {} to {} in {}", spaghettiGeneratedSourceSet, compiledBinary, project.getPath());
-					}
-				});
+				addSpaghettiSourceSet(project, haxeExtension, spaghettiGeneratedSourceSet, HaxeBinaryBase.class, "spaghetti");
+			}
+		});
+
+		// Add Spaghetti generated test sources to test compile and test source tasks
+		spaghettiExtension.getSources().getByName("test").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
+			@Override
+			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
+				addSpaghettiSourceSet(project, haxeExtension, spaghettiGeneratedSourceSet, HaxeBinaryBase.class, "spaghetti");
 			}
 		});
 
@@ -168,6 +163,22 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				appBundleTask.getConventionMapping().map("execute", Callables.returning(false));
 				appBundleTask.dependsOn(moduleBinary.getBundleTask());
 				return appBundleTask;
+			}
+		});
+	}
+
+	private <T extends HaxeBinaryBase<?>> void addSpaghettiSourceSet(final Project project, HaxeExtension haxeExtension, final SpaghettiGeneratedSourceSet spaghettiSourceSet, Class<T> binaryType, String sourceSetName) {
+		logger.debug("Adding {} to binaries in {}", spaghettiSourceSet, project.getPath());
+		Configuration config = project.getConfigurations().maybeCreate("spaghetti");
+		FunctionalSourceSet spaghetti = haxeExtension.getSources().maybeCreate(sourceSetName);
+		final DefaultHaxeSourceSet haxeSourceSet = instantiator.newInstance(DefaultHaxeSourceSet.class, spaghettiSourceSet.getName(), spaghetti, config, fileResolver);
+		haxeSourceSet.getSource().source(spaghettiSourceSet.getSource());
+		haxeSourceSet.builtBy(spaghettiSourceSet);
+		haxeExtension.getBinaries().withType(binaryType).all(new Action<T>() {
+			@Override
+			public void execute(T compiledBinary) {
+				compiledBinary.getSource().add(haxeSourceSet);
+				logger.debug("Added {} to {} in {}", spaghettiSourceSet, compiledBinary, project.getPath());
 			}
 		});
 	}

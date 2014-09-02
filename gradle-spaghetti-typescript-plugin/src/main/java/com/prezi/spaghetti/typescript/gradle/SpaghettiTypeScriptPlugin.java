@@ -60,19 +60,15 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
-				FunctionalSourceSet spaghetti = typeScriptExtension.getSources().maybeCreate("spaghetti");
-				final TypeScriptSourceSet typescriptSourceSet = instantiator.newInstance(TypeScriptSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, fileResolver);
-				typescriptSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
-				typescriptSourceSet.builtBy(spaghettiGeneratedSourceSet);
-				typeScriptExtension.getBinaries().withType(TypeScriptBinaryBase.class).all(new Action<TypeScriptBinaryBase>() {
-					@Override
-					public void execute(TypeScriptBinaryBase compiledBinary) {
-						compiledBinary.getSource().add(typescriptSourceSet);
-						logger.debug("Added {} to {} in {}", spaghettiGeneratedSourceSet, compiledBinary, project.getPath());
-					}
+				addSpaghettiSourceSet(project, typeScriptExtension, spaghettiGeneratedSourceSet, TypeScriptBinaryBase.class, "spaghetti");
+			}
+		});
 
-				});
+		// Add Spaghetti generated test sources to test compile and test source tasks
+		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
+			@Override
+			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
+				addSpaghettiSourceSet(project, typeScriptExtension, spaghettiGeneratedSourceSet, TypeScriptTestBinary.class, "spaghetti-test");
 			}
 		});
 
@@ -86,6 +82,21 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
 				registerSpaghettiModule(project, testBinary, true);
+			}
+		});
+	}
+
+	private <T extends TypeScriptBinaryBase> void addSpaghettiSourceSet(final Project project, TypeScriptExtension typeScriptExtension, final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet, Class<T> binaryType, String sourceSetName) {
+		logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
+		FunctionalSourceSet spaghetti = typeScriptExtension.getSources().maybeCreate(sourceSetName);
+		final TypeScriptSourceSet typescriptSourceSet = instantiator.newInstance(TypeScriptSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, fileResolver);
+		typescriptSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
+		typescriptSourceSet.builtBy(spaghettiGeneratedSourceSet);
+		typeScriptExtension.getBinaries().withType(binaryType).all(new Action<T>() {
+			@Override
+			public void execute(T compiledBinary) {
+				compiledBinary.getSource().add(typescriptSourceSet);
+				logger.debug("Added {} to {} in {}", spaghettiGeneratedSourceSet, compiledBinary, project.getPath());
 			}
 		});
 	}
