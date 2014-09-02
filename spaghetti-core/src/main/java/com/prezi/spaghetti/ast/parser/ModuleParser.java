@@ -119,4 +119,11 @@ public class ModuleParser {
 	public final DefaultModuleNode getModule() {
 		return module;
 	}
+
+	@Override
+	public String toString() {
+		return "ModuleParser{" +
+				"module=" + module +
+				'}';
+	}
 }

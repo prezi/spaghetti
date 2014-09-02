@@ -37,4 +37,11 @@ public class ModuleDefinitionSource {
 		result = 31 * result + (contents != null ? contents.hashCode() : 0);
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return "ModuleDefinitionSource{" +
+				"location='" + location + '\'' +
+				'}';
+	}
 }
