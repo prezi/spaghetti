@@ -1,7 +1,5 @@
 package com.prezi.spaghetti.config;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
@@ -34,12 +32,11 @@ public class ModuleConfigurationParser {
 	}
 
 	private static Collection<ModuleParser> createParsersFor(Collection<ModuleDefinitionSource> sources) {
-		return Collections2.transform(sources, new Function<ModuleDefinitionSource, ModuleParser>() {
-			@Override
-			public ModuleParser apply(ModuleDefinitionSource input) {
-				return ModuleParser.create(input);
-			}
-		});
+		Set<ModuleParser> parsers = Sets.newLinkedHashSet();
+		for (ModuleDefinitionSource source : sources) {
+			parsers.add(ModuleParser.create(source));
+		}
+		return parsers;
 	}
 
 	private static TypeResolver createResolverFor(Iterable<ModuleParser> parsers) {
