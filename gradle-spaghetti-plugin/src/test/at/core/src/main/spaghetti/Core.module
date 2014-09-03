@@ -1,3 +1,13 @@
 module prezi.graphics.core as Core
 
+enum JsEnum {
+	ALMA
+	BELA
+}
+
+const JsConst {
+	int alma = 1
+	bela = "bela"
+}
+
 static int giveMeANumber()

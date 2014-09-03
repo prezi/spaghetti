@@ -3,7 +3,7 @@ return {
 	},
 	__static: {
 		giveMeANumber: function() {
-			return 42;
+			return 41 + prezi.graphics.core.JsConst.alma;
 		}
 	},
 	__consts: {
