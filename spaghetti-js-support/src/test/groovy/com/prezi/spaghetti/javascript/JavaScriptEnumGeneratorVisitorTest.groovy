@@ -36,7 +36,7 @@ class JavaScriptEnumGeneratorVisitorTest extends AstTestBase {
 		var test = example.test;
 	})(com.example || (com.example = {}));
 	var example = com.example;
-})(com || com = {}));
+})(com || (com = {}));
 """
 	}
 }

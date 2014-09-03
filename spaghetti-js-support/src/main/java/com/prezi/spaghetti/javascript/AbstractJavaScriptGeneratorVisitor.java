@@ -7,14 +7,14 @@ import com.prezi.spaghetti.ast.StringModuleVisitorBase;
 import java.util.Arrays;
 import java.util.List;
 
-public class AbstractJavaScriptGeneratorVisitor extends StringModuleVisitorBase {
+abstract public class AbstractJavaScriptGeneratorVisitor extends StringModuleVisitorBase {
 	protected static <T extends QualifiedNode> String embedInPackageStructure(T node, PackagedGenerator<T> generator) {
 		List<String> levels = Arrays.asList(node.getQualifiedName().namespace.split("\\."));
 		String topLevel = levels.get(0);
 		return "var " + topLevel + ";\n"
 				+ "(function (" + topLevel + ") {\n"
 				+ defineLevel(node, 1, topLevel, levels.subList(1, levels.size()), generator)
-				+ "})(" + topLevel + " || " + topLevel + " = {}));\n";
+				+ "})(" + topLevel + " || (" + topLevel + " = {}));\n";
 	}
 
 	private static <T extends QualifiedNode> String defineLevel(T node, int indentLevel, String parent, List<String> remainingLevels, PackagedGenerator<T> generator) {
