@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.haxe;
+package com.prezi.spaghetti.javascript;
 
 import com.prezi.spaghetti.AbstractGenerator;
 import com.prezi.spaghetti.ast.ModuleNode;
