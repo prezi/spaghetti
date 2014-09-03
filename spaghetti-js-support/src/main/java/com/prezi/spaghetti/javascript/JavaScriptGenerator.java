@@ -1,10 +1,16 @@
 package com.prezi.spaghetti.javascript;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.CharSink;
+import com.google.common.io.Files;
 import com.prezi.spaghetti.AbstractGenerator;
+import com.prezi.spaghetti.GeneratorUtils;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class JavaScriptGenerator extends AbstractGenerator {
 	public JavaScriptGenerator(ModuleConfiguration config) {
@@ -12,7 +18,13 @@ public class JavaScriptGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	public void generateHeaders(File outputDirectory) {
+	public void generateHeaders(File outputDirectory) throws IOException {
+		String contents = "";
+		for (ModuleNode moduleNode : config.getAllModules()) {
+			contents += moduleNode.accept(new JavaScriptConstGeneratorVisitor());
+			contents += moduleNode.accept(new JavaScriptEnumGeneratorVisitor());
+			createSourceFile(moduleNode.getAlias(), outputDirectory, contents);
+		}
 	}
 
 	@Override
@@ -20,4 +32,16 @@ public class JavaScriptGenerator extends AbstractGenerator {
 		return javaScript;
 	}
 
+	public static File createSourceFile(String name, File outputDirectory, String contents) throws IOException {
+		File file = new File(outputDirectory, name + ".js");
+		FileUtils.deleteQuietly(file);
+		CharSink out = Files.asCharSink(file, Charsets.UTF_8);
+		out.write(
+				"/*\n"
+				+ " * " + GeneratorUtils.createHeaderComment() + "\n"
+				+ " */\n"
+				+ contents
+		);
+		return file;
+	}
 }
