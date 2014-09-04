@@ -21,6 +21,7 @@ public class JavaScriptGenerator extends AbstractGenerator {
 	public void generateHeaders(File outputDirectory) throws IOException {
 		String contents = "";
 		for (ModuleNode moduleNode : config.getAllModules()) {
+			// TODO Generate the package structure once per module, and put everything in the module under that single structure
 			contents += moduleNode.accept(new JavaScriptConstGeneratorVisitor());
 			contents += moduleNode.accept(new JavaScriptEnumGeneratorVisitor());
 			createSourceFile(moduleNode.getAlias(), outputDirectory, contents);
