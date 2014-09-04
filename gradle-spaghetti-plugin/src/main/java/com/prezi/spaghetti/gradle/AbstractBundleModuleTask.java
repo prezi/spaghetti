@@ -8,10 +8,12 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
@@ -27,6 +29,8 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private String sourceBaseUrl;
 	private File sourceMap;
 	private File resourcesDirectoryInternal;
+	private final ConfigurableFileCollection prefixes = getProject().files();
+	private final ConfigurableFileCollection suffixes = getProject().files();
 
 	@InputFile
 	public File getInputFile() {
@@ -126,6 +130,32 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		});
 	}
 
+	@InputFiles
+	public ConfigurableFileCollection getPrefixes() {
+		return prefixes;
+	}
+
+	public void prefixes(Object... prefixes) {
+		this.getPrefixes().from(prefixes);
+	}
+
+	public void prefix(Object... prefixes) {
+		this.prefixes(prefixes);
+	}
+
+	@InputFiles
+	public ConfigurableFileCollection getSuffixes() {
+		return suffixes;
+	}
+
+	public void suffixes(Object... suffixes) {
+		this.getSuffixes().from(suffixes);
+	}
+
+	public void suffix(Object... suffixes) {
+		this.suffixes(suffixes);
+	}
+
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException {
 		final FileCollection moduleDefinitions = getDefinitions();
@@ -139,7 +169,16 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 
 		ModuleConfiguration config = readConfig(moduleDefinitions);
 		ModuleNode module = config.getLocalModules().iterator().next();
-		String inputContents = Files.asCharSource(getInputFile(), Charsets.UTF_8).read();
+
+		String inputContents = "";
+		for (File prefixFile : getPrefixes()) {
+			inputContents += Files.asCharSource(prefixFile, Charsets.UTF_8).read();
+		}
+		inputContents += Files.asCharSource(getInputFile(), Charsets.UTF_8).read();
+		for (File suffixFile : getSuffixes()) {
+			inputContents += Files.asCharSource(suffixFile, Charsets.UTF_8).read();
+		}
+
 		String processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputContents);
 
 		File sourceMap = getSourceMap();

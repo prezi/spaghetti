@@ -2,31 +2,16 @@ spaghetti {
 	platform "js"
 }
 
-task combineJs {
-	dependsOn generateHeaders
-	def source = file("src/main/js/core.js")
-	def output = file("${buildDir}/combined/core.js")
-	inputs.file source
-	inputs.files generateHeaders.outputDirectory
-	outputs.file output
-	ext.outputFile = output
-
-	doLast {
-		mkdir(output.parentFile)
-		delete(output)
-		output << generateHeaders.outputDirectory.listFiles()*.text.join("\n")
-		output << source.text
-	}
-}
-
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
-	dependsOn combineJs
-	inputFile combineJs.outputFile
+	dependsOn generateHeaders
+	prefix generateHeaders.outputDirectory.listFiles()
+	inputFile "src/main/js/core.js"
 }
 
 task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
-	dependsOn combineJs
-	inputFile combineJs.outputFile
+	dependsOn generateHeaders
+	prefix generateHeaders.outputDirectory.listFiles()
+	inputFile "src/main/js/core.js"
 }
 
 task zipModule(type: Zip) {
