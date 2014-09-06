@@ -23,14 +23,14 @@ Install the latest version of Spaghetti from the root of the Spaghetti repositor
 
 ```base
 $ cd ..
-$ gradle install
+$ ./gradlew install
 ```
 
 Then you can build the test application:
 
 ```bash
 $ cd spaghetti-gradle-example
-$ gradle packWebApp
+$ ../gradlew packWebApp
 $ open app/build/webapp/index.html
 ```
 
