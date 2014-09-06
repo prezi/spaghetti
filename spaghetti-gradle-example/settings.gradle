@@ -1,4 +1,4 @@
+include "app"
 include "core"
 include "layout"
 include "text-renderer"
-include "app"

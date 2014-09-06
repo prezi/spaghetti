@@ -8,8 +8,8 @@ buildscript {
 	println "Using version ${gitVersion}"
 
 	repositories {
-		mavenCentral()
 		mavenLocal()
+		mavenCentral()
 	}
 
 	dependencies {
@@ -19,24 +19,14 @@ buildscript {
 }
 
 configure(allprojects) {
-	group = "prezi.test"
+	group "com.prezi.spaghetti.test"
+}
+
+configure(subprojects) {
 	apply plugin: "maven"
 
 	repositories {
 		mavenLocal()
 		mavenCentral()
 	}
-}
-
-configure(subprojects) {
-	apply plugin: "spaghetti"
-	
-	spaghetti {
-		sourceBaseUrl "http://github.com/prezi/spaghetti"
-	}
-}
-
-apply plugin: "spaghetti"
-
-task resolveStack(type:com.prezi.spaghetti.gradle.ResolveStack) {
 }

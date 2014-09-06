@@ -1,3 +1,5 @@
+apply plugin: "spaghetti"
+
 configurations {
 	antlr
 }
