@@ -34,9 +34,16 @@ $ gradle packWebApp
 $ open app/build/webapp/index.html
 ```
 
+![Demo application](http://i.imgur.com/uNd1VLT.jpg)
+
 You will see the following output on the JavaScript console:
 
 ```text
-[Log] Text rendered with TextRenderer module: [Hello World] (application.js, line 90)
-[Log] Internals: Internal implementation stuff here (application.js, line 91)
+Application booting up.
+Application has run.
+Layout name: prezi.graphics.text
+Static call: 42
+Text renderer name: prezi.graphics.text.render
+Core stuff: 42
+...
 ```
