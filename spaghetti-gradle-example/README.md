@@ -19,9 +19,17 @@ $ brew install node
 $ npm install -g typescript
 ```
 
+Install the latest version of Spaghetti from the root of the Spaghetti repository:
+
+```base
+$ cd ..
+$ gradle install
+```
+
 Then you can build the test application:
 
 ```bash
+$ cd spaghetti-gradle-example
 $ gradle packWebApp
 $ open app/build/webapp/index.html
 ```
