@@ -35,15 +35,3 @@ $ open app/build/webapp/index.html
 ```
 
 ![Demo application](http://i.imgur.com/uNd1VLT.jpg)
-
-You will see the following output on the JavaScript console:
-
-```text
-Application booting up.
-Application has run.
-Layout name: prezi.graphics.text
-Static call: 42
-Text renderer name: prezi.graphics.text.render
-Core stuff: 42
-...
-```
