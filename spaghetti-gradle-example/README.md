@@ -21,7 +21,7 @@ $ npm install -g typescript
 
 Install the latest version of Spaghetti from the root of the Spaghetti repository:
 
-```base
+```bash
 $ cd ..
 $ ./gradlew install
 ```
