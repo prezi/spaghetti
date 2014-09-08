@@ -4,11 +4,12 @@ import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.MethodParameterNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.TypeReference;
 
 public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeReference> implements MethodParameterNode {
 
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private final boolean isOptional;
 
 	public DefaultMethodParameterNode(String name, TypeReference type, boolean isOptional) {

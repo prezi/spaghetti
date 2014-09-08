@@ -7,15 +7,16 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.StructNode;
 import com.prezi.spaghetti.ast.TypeMethodNode;
 
 public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<PropertyNode> properties = new DefaultNamedNodeSet<PropertyNode>("property");
-	private final NamedNodeSet<TypeMethodNode> methods = new DefaultNamedNodeSet<TypeMethodNode>("method");
+	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
+	private final NamedNodeSet<TypeMethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultStructNode(FQName qualifiedName) {
 		super(qualifiedName);

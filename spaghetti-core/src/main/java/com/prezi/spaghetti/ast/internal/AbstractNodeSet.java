@@ -31,7 +31,7 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 		addAll(elements);
 	}
 
-	public AbstractNodeSet(String type, Map<K, N> delegate)
+	protected AbstractNodeSet(String type, Map<K, N> delegate)
 	{
 		this.type = type;
 		this.delegate = delegate;

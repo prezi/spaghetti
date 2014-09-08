@@ -3,8 +3,8 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.TypeParameterNode
-import com.prezi.spaghetti.ast.internal.DefaultNamedNodeSet
 import com.prezi.spaghetti.ast.parser.InterfaceParser
 import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
@@ -28,7 +28,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 					def superIface = Mock(InterfaceNode)
 					superIface.qualifiedName >> FQName.fromString("com.example.test.Tibor")
 					def mockParam = Mock(TypeParameterNode)
-					superIface.typeParameters >> new DefaultNamedNodeSet<TypeParameterNode>("type params", Collections.singleton(mockParam))
+					superIface.typeParameters >> NodeSets.newNamedNodeSet("type params", Collections.singleton(mockParam))
 					return superIface
 				}
 		]))

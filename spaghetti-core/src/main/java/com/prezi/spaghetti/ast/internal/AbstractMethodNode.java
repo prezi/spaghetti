@@ -6,17 +6,18 @@ import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.MethodParameterNode;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.TypeParameterNode;
 import com.prezi.spaghetti.ast.TypeReference;
 
 import java.util.Collections;
 
 public abstract class AbstractMethodNode extends AbstractNamedNode implements MutableMethodNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<TypeParameterNode> typeParameters = new DefaultNamedNodeSet<TypeParameterNode>("type parameter");
+	private final NamedNodeSet<TypeParameterNode> typeParameters = NodeSets.newNamedNodeSet("type parameter");
 	private TypeReference returnType;
-	private final NamedNodeSet<MethodParameterNode> parameters = new DefaultNamedNodeSet<MethodParameterNode>("parameter");
+	private final NamedNodeSet<MethodParameterNode> parameters = NodeSets.newNamedNodeSet("parameter");
 
 	public AbstractMethodNode(String name) {
 		super(name);

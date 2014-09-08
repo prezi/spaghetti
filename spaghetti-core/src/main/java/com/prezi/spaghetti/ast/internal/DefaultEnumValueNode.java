@@ -5,9 +5,10 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 
 public class DefaultEnumValueNode extends AbstractNamedNode implements EnumValueNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 
 	public DefaultEnumValueNode(String name) {

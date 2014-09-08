@@ -4,11 +4,12 @@ import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.TypeReference;
 
 public class DefaultPropertyNode extends AbstractTypeNamePairNode<TypeReference> implements PropertyNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final boolean optional;
 

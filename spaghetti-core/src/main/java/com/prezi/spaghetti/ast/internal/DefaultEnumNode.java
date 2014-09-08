@@ -9,11 +9,12 @@ import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 
 public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<EnumValueNode> values = new DefaultNamedNodeSet<EnumValueNode>("enum value");
+	private final NamedNodeSet<EnumValueNode> values = NodeSets.newNamedNodeSet("enum value");
 
 	public DefaultEnumNode(FQName qualifiedName) {
 		super(qualifiedName);

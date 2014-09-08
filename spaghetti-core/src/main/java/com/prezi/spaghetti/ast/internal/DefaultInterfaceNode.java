@@ -9,16 +9,17 @@ import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceReferenceBase;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
+import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.TypeMethodNode;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implements InterfaceNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = new DefaultNamedNodeSet<AnnotationNode>("annotation");
+	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final Set<InterfaceReferenceBase> superInterfaces = new LinkedHashSet<InterfaceReferenceBase>();
-	private final NamedNodeSet<TypeMethodNode> methods = new DefaultNamedNodeSet<TypeMethodNode>("method");
+	private final NamedNodeSet<TypeMethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultInterfaceNode(FQName qualifiedName) {
 		super(qualifiedName);

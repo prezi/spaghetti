@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.internal
 
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.ModuleVisitor
+import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.QualifiedNode
 import com.prezi.spaghetti.ast.parser.InternalAstParserException
 import spock.lang.Specification
@@ -18,9 +19,9 @@ class NodeSetTest extends Specification {
 
 		where:
 		key              | value                           | set
-		""               | new TestNode("")                | new DefaultNamedNodeSet<TestNode>("test")
-		"lajos"          | new TestNode("lajos")           | new DefaultNamedNodeSet<TestNode>("test")
-		qn("alma.lajos") | new TestQNode(qn("alma.lajos")) | new DefaultQualifiedNodeSet<TestQNode>("test")
+		""               | new TestNode("")                | NodeSets.newNamedNodeSet("test")
+		"lajos"          | new TestNode("lajos")           | NodeSets.newNamedNodeSet("test")
+		qn("alma.lajos") | new TestQNode(qn("alma.lajos")) | NodeSets.newQualifiedNodeSet("test")
 	}
 
 	@Unroll
@@ -65,9 +66,9 @@ class NodeSetTest extends Specification {
 
 		where:
 		value                           | value2                               | set
-		new TestNode("")                | new TestNode("2")                    | new DefaultNamedNodeSet<TestNode>("test")
-		new TestNode("lajos")           | new TestNode("lajos2")               | new DefaultNamedNodeSet<TestNode>("test")
-		new TestQNode(qn("alma.lajos")) | new TestQNode(qn("alma.lajos.bela")) | new DefaultQualifiedNodeSet<TestQNode>("test")
+		new TestNode("")                | new TestNode("2")                    | NodeSets.newNamedNodeSet("test")
+		new TestNode("lajos")           | new TestNode("lajos2")               | NodeSets.newNamedNodeSet("test")
+		new TestQNode(qn("alma.lajos")) | new TestQNode(qn("alma.lajos.bela")) | NodeSets.newQualifiedNodeSet("test")
 	}
 
 
@@ -84,9 +85,9 @@ class NodeSetTest extends Specification {
 
 		where:
 		message                                              | value                           | set
-		"A(n) test with the same name already exists: "           | new TestNode("")                | new DefaultNamedNodeSet<TestNode>("test")
-		"A(n) test with the same name already exists: lajos"      | new TestNode("lajos")           | new DefaultNamedNodeSet<TestNode>("test")
-		"A(n) test with the same name already exists: alma.lajos" | new TestQNode(qn("alma.lajos")) | new DefaultQualifiedNodeSet<TestQNode>("test")
+		"A(n) test with the same name already exists: "           | new TestNode("")                | NodeSets.newNamedNodeSet("test")
+		"A(n) test with the same name already exists: lajos"      | new TestNode("lajos")           | NodeSets.newNamedNodeSet("test")
+		"A(n) test with the same name already exists: alma.lajos" | new TestQNode(qn("alma.lajos")) | NodeSets.newQualifiedNodeSet("test")
 	}
 
 

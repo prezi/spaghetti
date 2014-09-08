@@ -4,11 +4,11 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.MethodParameterNode
 import com.prezi.spaghetti.ast.NamedNodeSet
+import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.VoidTypeReference
-import com.prezi.spaghetti.ast.internal.DefaultNamedNodeSet
 import com.prezi.spaghetti.ast.internal.MutableMethodNode
 import spock.lang.Specification
 
@@ -23,7 +23,7 @@ class MethodParserTest extends Specification {
 		MethodParser.parseMethodDefinition(resolver, context, method)
 
 		then:
-		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
 		1 * method.setReturnType({ it == PrimitiveTypeReference.INT })
 		1 * params.add({ it instanceof MethodParameterNode && it.name == "a" && it.type == PrimitiveTypeReference.INT }, _)
@@ -52,9 +52,9 @@ class MethodParserTest extends Specification {
 			}
 			throw new UnsupportedOperationException()
 		}
-		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
-		_ * mockIfaceI.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * mockIfaceI.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		1 * method.setReturnType({ it.type == mockStructA })
 		1 * params.add({ it instanceof MethodParameterNode && it.name == "i" && it.type.type == mockIfaceI }, _)
 		0 * _
@@ -71,7 +71,7 @@ class MethodParserTest extends Specification {
 		MethodParser.parseMethodDefinition(resolver, context, method)
 
 		then:
-		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameter", [ typeParam ].toSet())
+		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameter", [ typeParam ].toSet())
 		_ * typeParam.qualifiedName >> FQName.fromString("T")
 		_ * method.parameters >> params
 		1 * method.setReturnType({ it.type == typeParam })
@@ -89,7 +89,7 @@ class MethodParserTest extends Specification {
 		MethodParser.parseMethodDefinition(resolver, context, method)
 
 		then:
-		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
 		1 * method.setReturnType({ it == VoidTypeReference.VOID })
 		1 * params.add({
@@ -121,7 +121,7 @@ class MethodParserTest extends Specification {
 		MethodParser.parseMethodDefinition(resolver, context, method)
 
 		then:
-		_ * method.typeParameters >> new DefaultNamedNodeSet<>("type parameters")
+		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
 		def ex = thrown InternalAstParserException
 		ex.message == " at line 1:20: Only the last parameters of a method can be optional"
