@@ -8,12 +8,6 @@ import java.util.SortedSet;
 public class ReservedWords {
 
 	@Protected
-	public static final String INSTANCE = "__instance";
-
-	@Protected
-	public static final String STATIC = "__static";
-
-	@Protected
 	public static final String SPAGHETTI_WRAPPER_FUNCTION = "__spaghetti";
 	public static final String CONFIG = "SpaghettiConfiguration";
 
@@ -22,6 +16,7 @@ public class ReservedWords {
 
 	@Protected
 	public static final String GET_NAME_FUNCTION = "getName";
+	public static final String MODULE = "module";
 	public static final String MODULES = "__modules";
 	public static final String BASE_URL = "__baseUrl";
 	public static final String SPAGHETTI_MODULE_CONFIGURATION = "SpaghettiConfiguration";

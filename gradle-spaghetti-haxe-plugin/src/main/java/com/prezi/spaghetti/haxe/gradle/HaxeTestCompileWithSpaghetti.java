@@ -34,7 +34,7 @@ public class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 				Map<String, Object> params = Maps.newHashMap();
 				params.put("config", ReservedWords.CONFIG);
 				params.put("haxeModule", HaxeGenerator.HAXE_MODULE_VAR);
-				params.put("module", ReservedWords.INSTANCE);
+				params.put("module", ReservedWords.MODULE);
 				params.put("modules", ReservedWords.MODULES);
 				template.make(params).writeTo(writer);
 			} finally {

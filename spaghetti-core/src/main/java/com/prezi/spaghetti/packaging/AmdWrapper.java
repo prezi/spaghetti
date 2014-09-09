@@ -17,7 +17,7 @@ import static com.prezi.spaghetti.ReservedWords.BASE_URL;
 import static com.prezi.spaghetti.ReservedWords.CONFIG;
 import static com.prezi.spaghetti.ReservedWords.GET_NAME_FUNCTION;
 import static com.prezi.spaghetti.ReservedWords.GET_RESOURCE_URL_FUNCTION;
-import static com.prezi.spaghetti.ReservedWords.INSTANCE;
+import static com.prezi.spaghetti.ReservedWords.MODULE;
 import static com.prezi.spaghetti.ReservedWords.MODULES;
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION;
 
@@ -73,7 +73,7 @@ public class AmdWrapper implements Wrapper {
 		if (mainModule != null) {
 			result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 			if (execute) {
-				result.append("__mainModule[\"").append(INSTANCE).append("\"][\"main\"]();");
+				result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
 			}
 
 			result.append("});\n");

@@ -6,8 +6,7 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
-import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInterfaceGeneratorVisitor
-import com.prezi.spaghetti.typescript.impl.TypeScriptModuleStaticProxyGeneratorVisitor
+import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
@@ -66,13 +65,12 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 	/**
 	 * Generates local module.
 	 */
-	private void generateLocalModule(ModuleNode module, File outputDirectory)
+	private static void generateLocalModule(ModuleNode module, File outputDirectory)
 	{
 		def contents = "declare var ${CONFIG}:any;\n"
-		contents += new TypeScriptModuleInterfaceGeneratorVisitor().visit(module)
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
-		contents += new TypeScriptModuleStaticProxyGeneratorVisitor(module).visit(module)
-		contents += new TypeScriptModuleInitializerGeneratorVisitor(config.directDependentModules).visit(module)
+		contents += new TypeScriptModuleProxyGeneratorVisitor(module).visit(module)
+		contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
 		TypeScriptUtils.createSourceFile(module, "I${module.alias}", outputDirectory, contents)
 	}
 

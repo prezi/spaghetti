@@ -7,7 +7,7 @@ import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ImportNode;
-import com.prezi.spaghetti.ast.ModuleMethodNode;
+import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
@@ -25,7 +25,7 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	private final Map<FQName, ImportNode> imports = Maps.newLinkedHashMap();
 	private final QualifiedNodeSet<QualifiedTypeNode> types = NodeSets.newQualifiedNodeSet("type");
 	private final QualifiedNodeSet<QualifiedTypeNode> externTypes = NodeSets.newQualifiedNodeSet("externType");
-	private final NamedNodeSet<ModuleMethodNode> methods = NodeSets.newNamedNodeSet("method");
+	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 	private final ModuleDefinitionSource source;
 
 	public DefaultModuleNode(String name, String alias, ModuleDefinitionSource source) {
@@ -81,7 +81,7 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	}
 
 	@Override
-	public NamedNodeSet<ModuleMethodNode> getMethods() {
+	public NamedNodeSet<MethodNode> getMethods() {
 		return methods;
 	}
 

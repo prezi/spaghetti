@@ -5,7 +5,8 @@ import com.prezi.spaghetti.ast.MethodParameterNode
 
 abstract class AbstractHaxeMethodGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
-	protected String visitMethodNode(MethodNode node) {
+	@Override
+	String visitMethodNode(MethodNode node) {
 		def returnType = node.returnType.accept(this)
 		returnType = wrapNullableTypeReference(returnType, node)
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""

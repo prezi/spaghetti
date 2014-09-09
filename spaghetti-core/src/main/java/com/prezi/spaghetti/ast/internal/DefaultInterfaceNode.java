@@ -7,10 +7,10 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceReferenceBase;
+import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
-import com.prezi.spaghetti.ast.TypeMethodNode;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -19,7 +19,7 @@ public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implement
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final Set<InterfaceReferenceBase> superInterfaces = new LinkedHashSet<InterfaceReferenceBase>();
-	private final NamedNodeSet<TypeMethodNode> methods = NodeSets.newNamedNodeSet("method");
+	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultInterfaceNode(FQName qualifiedName) {
 		super(qualifiedName);
@@ -56,7 +56,7 @@ public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implement
 	}
 
 	@Override
-	public NamedNodeSet<TypeMethodNode> getMethods() {
+	public NamedNodeSet<MethodNode> getMethods() {
 		return methods;
 	}
 }

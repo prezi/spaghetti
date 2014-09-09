@@ -17,7 +17,7 @@ import static com.prezi.spaghetti.ReservedWords.BASE_URL;
 import static com.prezi.spaghetti.ReservedWords.CONFIG;
 import static com.prezi.spaghetti.ReservedWords.GET_NAME_FUNCTION;
 import static com.prezi.spaghetti.ReservedWords.GET_RESOURCE_URL_FUNCTION;
-import static com.prezi.spaghetti.ReservedWords.INSTANCE;
+import static com.prezi.spaghetti.ReservedWords.MODULE;
 import static com.prezi.spaghetti.ReservedWords.MODULES;
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION;
 
@@ -77,7 +77,7 @@ public class CommonJsWrapper implements Wrapper {
 			}
 		});
 		if (mainModule != null && execute) {
-			result.append("modules[").append(CommonJsWrapper.getIndex(moduleIndexes, mainModule)).append("][\"").append(INSTANCE).append("\"][\"main\"]();\n");
+			result.append("modules[").append(CommonJsWrapper.getIndex(moduleIndexes, mainModule)).append("][\"").append(MODULE).append("\"][\"main\"]();\n");
 		}
 
 		return result.toString();
@@ -90,5 +90,4 @@ public class CommonJsWrapper implements Wrapper {
 
 		return moduleIndexes.get(module);
 	}
-
 }

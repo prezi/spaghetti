@@ -1,25 +1,27 @@
 package com.prezi.spaghetti.haxe.access
 
-import com.prezi.spaghetti.ast.ModuleMethodNode
-import com.prezi.spaghetti.ast.ModuleMethodType
+import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.CONFIG
-import static com.prezi.spaghetti.ReservedWords.INSTANCE
+import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
-import static com.prezi.spaghetti.ReservedWords.STATIC
 
 class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
+	private final ModuleNode module
+
+	HaxeModuleAccessorGeneratorVisitor(ModuleNode module) {
+		this.module = module
+	}
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
 		return \
 """@:final class ${node.alias} {
 
-	static var ${INSTANCE}:Dynamic = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${node.name}\"][\"${INSTANCE}\"]');
-	static var ${STATIC}:Dynamic = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${node.name}\"][\"${STATIC}\"]');
+	static var module:Dynamic = untyped __js__('${CONFIG}[\"${MODULES}\"][\"${node.name}\"][\"${MODULE}\"]');
 
 ${node.methods*.accept(this).join("")}
 }
@@ -27,17 +29,16 @@ ${node.methods*.accept(this).join("")}
 	}
 
 	@Override
-	String visitModuleMethodNode(ModuleMethodNode node) {
+	String visitMethodNode(MethodNode node) {
 		def returnType = node.returnType.accept(this)
 		returnType = wrapNullableTypeReference(returnType, node)
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
 		def params = node.parameters*.accept(this).join(", ")
 		def paramNames = node.parameters*.name.join(", ")
-		def delegate = node.type == ModuleMethodType.STATIC ? STATIC : INSTANCE
 
 		return \
-"""	@:extern public ${node.type == ModuleMethodType.STATIC ? "static " : ""}inline function ${node.name}${typeParams}(${params}):${returnType} {
-		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${delegate}.${node.name}(${paramNames});
+"""	@:extern public static inline function ${node.name}${typeParams}(${params}):${returnType} {
+		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.alias}.module.${node.name}(${paramNames});
 	}
 """
 	}

@@ -10,7 +10,7 @@ import java.util.Set;
 
 import static com.prezi.spaghetti.ReservedWords.BASE_URL;
 import static com.prezi.spaghetti.ReservedWords.CONFIG;
-import static com.prezi.spaghetti.ReservedWords.INSTANCE;
+import static com.prezi.spaghetti.ReservedWords.MODULE;
 import static com.prezi.spaghetti.ReservedWords.MODULES;
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_WRAPPER_FUNCTION;
 
@@ -55,7 +55,7 @@ public class SingleFileWrapper implements Wrapper {
 	public String makeApplication(String baseUrl, String modulesRoot, Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
 		StringBuilder result = new StringBuilder();
 		if (execute) {
-			result.append("modules[\"").append(mainModule).append("\"][\"").append(INSTANCE).append("\"][\"main\"]();");
+			result.append("modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"][\"main\"]();");
 		}
 
 		return result.toString();

@@ -1,7 +1,5 @@
 package com.prezi.spaghetti.haxe.impl
 
-import com.prezi.spaghetti.ast.ModuleMethodNode
-import com.prezi.spaghetti.ast.ModuleMethodType
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 
@@ -13,10 +11,5 @@ class HaxeModuleInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVis
 ${node.methods*.accept(this).join("")}
 }
 """
-	}
-
-	@Override
-	String visitModuleMethodNode(ModuleMethodNode node) {
-		return node.type == ModuleMethodType.STATIC ? "" : visitMethodNode(node)
 	}
 }

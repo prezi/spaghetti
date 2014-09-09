@@ -60,11 +60,6 @@ public class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 	}
 
 	@Override
-	public T visitTypeMethodNode(TypeMethodNode node) {
-		return visitChildren(node);
-	}
-
-	@Override
 	public T visitInterfaceNode(InterfaceNode node) {
 		return visitChildren(node);
 	}
@@ -75,12 +70,12 @@ public class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 	}
 
 	@Override
-	public T visitMethodParameterNode(MethodParameterNode node) {
+	public T visitMethodNode(MethodNode node) {
 		return visitChildren(node);
 	}
 
 	@Override
-	public T visitModuleMethodNode(ModuleMethodNode node) {
+	public T visitMethodParameterNode(MethodParameterNode node) {
 		return visitChildren(node);
 	}
 

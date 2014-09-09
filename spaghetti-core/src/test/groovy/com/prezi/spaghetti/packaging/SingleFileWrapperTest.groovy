@@ -44,7 +44,7 @@ class SingleFileWrapperTest extends Specification {
 
 		expect:
 		result == [
-				'modules["com.example.test"]["__instance"]["main"]();'
+				'modules["com.example.test"]["module"]["main"]();'
 		].join("")
 	}
 }

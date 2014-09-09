@@ -3,10 +3,10 @@ package com.prezi.spaghetti.ast;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceReference;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceReference;
+import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodParameterNode;
 import com.prezi.spaghetti.ast.internal.DefaultStructReference;
 import com.prezi.spaghetti.ast.internal.DefaultTypeChain;
-import com.prezi.spaghetti.ast.internal.DefaultTypeMethodNode;
 
 import java.util.Map;
 import java.util.Set;
@@ -78,9 +78,9 @@ public class AstUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static TypeMethodNode resolveTypeParameters(TypeMethodNode methodNode, Map<TypeParameterNode, TypeReference> bindings) {
+	public static MethodNode resolveTypeParameters(MethodNode methodNode, Map<TypeParameterNode, TypeReference> bindings) {
 		TypeReference returnType = resolveTypeParameters(methodNode.getReturnType(), bindings);
-		DefaultTypeMethodNode result = new DefaultTypeMethodNode(methodNode.getName());
+		DefaultMethodNode result = new DefaultMethodNode(methodNode.getName());
 		result.setDocumentation(methodNode.getDocumentation());
 		result.getAnnotations().addAll(methodNode.getAnnotations());
 		result.getTypeParameters().addAll(methodNode.getTypeParameters());

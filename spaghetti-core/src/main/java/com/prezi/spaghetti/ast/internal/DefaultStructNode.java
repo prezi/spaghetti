@@ -5,18 +5,18 @@ import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.StructNode;
-import com.prezi.spaghetti.ast.TypeMethodNode;
 
 public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
-	private final NamedNodeSet<TypeMethodNode> methods = NodeSets.newNamedNodeSet("method");
+	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultStructNode(FQName qualifiedName) {
 		super(qualifiedName);
@@ -53,7 +53,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 	}
 
 	@Override
-	public NamedNodeSet<TypeMethodNode> getMethods() {
+	public NamedNodeSet<MethodNode> getMethods() {
 		return methods;
 	}
 }

@@ -5,6 +5,7 @@ import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.MethodParameterNode;
+import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.TypeParameterNode;
@@ -12,20 +13,25 @@ import com.prezi.spaghetti.ast.TypeReference;
 
 import java.util.Collections;
 
-public abstract class AbstractMethodNode extends AbstractNamedNode implements MutableMethodNode, MutableDocumentedNode {
+public class DefaultMethodNode extends AbstractNamedNode implements MutableMethodNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final NamedNodeSet<TypeParameterNode> typeParameters = NodeSets.newNamedNodeSet("type parameter");
 	private TypeReference returnType;
 	private final NamedNodeSet<MethodParameterNode> parameters = NodeSets.newNamedNodeSet("parameter");
 
-	public AbstractMethodNode(String name) {
+	public DefaultMethodNode(String name) {
 		super(name);
 	}
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
 		return Iterables.concat(super.getChildren(), typeParameters, Collections.singleton(returnType), parameters);
+	}
+
+	@Override
+	protected <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
+		return visitor.visitMethodNode(this);
 	}
 
 	@Override

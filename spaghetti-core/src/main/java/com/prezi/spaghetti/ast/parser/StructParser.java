@@ -3,9 +3,9 @@ package com.prezi.spaghetti.ast.parser;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.StructNode;
 import com.prezi.spaghetti.ast.TypeReference;
+import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultPropertyNode;
 import com.prezi.spaghetti.ast.internal.DefaultStructNode;
-import com.prezi.spaghetti.ast.internal.DefaultTypeMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
 import com.prezi.spaghetti.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -47,10 +47,10 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 				AnnotationsParser.parseAnnotations(propCtx.annotations(), propertyNode);
 				DocumentationParser.parseDocumentation(propCtx.documentation, propertyNode);
 				getNode().getProperties().add(propertyNode, propCtx);
-			} else if (elemCtx.typeMethodDefinition() != null) {
-				ModuleParser.TypeMethodDefinitionContext methodCtx = elemCtx.typeMethodDefinition();
-				DefaultTypeMethodNode methodNode = MethodParser.parseTypeMethodDefinition(resolver, methodCtx);
-				getNode().getMethods().add(methodNode, methodCtx.methodDefinition().Name());
+			} else if (elemCtx.methodDefinition() != null) {
+				ModuleParser.MethodDefinitionContext methodCtx = elemCtx.methodDefinition();
+				DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(resolver, methodCtx);
+				getNode().getMethods().add(methodNode, methodCtx.Name());
 			}
 		}
 	}

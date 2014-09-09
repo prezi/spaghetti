@@ -6,8 +6,7 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
-import com.prezi.spaghetti.haxe.impl.HaxeModuleInterfaceGeneratorVisitor
-import com.prezi.spaghetti.haxe.impl.HaxeModuleStaticProxyGeneratorVisitor
+import com.prezi.spaghetti.haxe.impl.HaxeModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.haxe.stub.HaxeInterfaceStubGeneratorVisitor
 
 import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
@@ -25,8 +24,7 @@ class HaxeGenerator extends AbstractGenerator {
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateModuleInterface(module, outputDirectory)
-			generateModuleInitializer(module, config.directDependentModules, outputDirectory)
+			generateModuleInitializer(module, outputDirectory)
 			generateModuleStaticProxy(module, outputDirectory)
 			generateModuleTypes(module, outputDirectory)
 		}
@@ -69,30 +67,21 @@ return ${HAXE_MODULE_VAR};
 	}
 
 	/**
-	 * Generates main interface for module.
-	 */
-	private static void generateModuleInterface(ModuleNode module, File outputDirectory)
-	{
-		def contents = new HaxeModuleInterfaceGeneratorVisitor().visit(module)
-		HaxeUtils.createHaxeSourceFile(module.name, "I${module.alias}", outputDirectory, contents)
-	}
-
-	/**
 	 * Generates static proxy.
 	 */
 	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory)
 	{
-		def contents = new HaxeModuleStaticProxyGeneratorVisitor(module).visit(module)
+		def contents = new HaxeModuleProxyGeneratorVisitor(module).visit(module)
 		HaxeUtils.createHaxeSourceFile(module.name, "__${module.alias}Static", outputDirectory, contents)
 	}
 
 	/**
 	 * Generates initializer for module.
 	 */
-	private static void generateModuleInitializer(ModuleNode module, Collection<ModuleNode> dependencies, File outputDirectory)
+	private static void generateModuleInitializer(ModuleNode module, File outputDirectory)
 	{
 		def initializerName = "__" + module.alias + "Init"
-		def initializerContents = new HaxeModuleInitializerGeneratorVisitor(dependencies).visit(module)
+		def initializerContents = new HaxeModuleInitializerGeneratorVisitor().visit(module)
 		HaxeUtils.createHaxeSourceFile(module.name, initializerName, outputDirectory, initializerContents)
 	}
 
@@ -101,7 +90,7 @@ return ${HAXE_MODULE_VAR};
 	 */
 	private static void generateModuleAccessor(ModuleNode module, File outputDirectory)
 	{
-		def contents = new HaxeModuleAccessorGeneratorVisitor().visit(module)
+		def contents = new HaxeModuleAccessorGeneratorVisitor(module).visit(module)
 		HaxeUtils.createHaxeSourceFile(module.name, module.alias, outputDirectory, contents)
 	}
 

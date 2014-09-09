@@ -9,7 +9,6 @@ import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.MethodParameterNode
 import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
-import com.prezi.spaghetti.ast.TypeMethodNode
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.TypeReference
 import com.prezi.spaghetti.ast.VoidTypeReference
@@ -64,8 +63,8 @@ ${methodDefinitions}
 
 	private static class MethodGenerator extends AbstractHaxeGeneratorVisitor {
 		@Override
-		String visitTypeMethodNode(TypeMethodNode node) {
-			def returnType = node.returnType.accept(this)
+		String visitMethodNode(MethodNode node) {
+			String returnType = node.returnType.accept(this)
 			returnType = wrapNullableTypeReference(returnType, node)
 			def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
 			def params = node.parameters*.accept(this).join(", ")

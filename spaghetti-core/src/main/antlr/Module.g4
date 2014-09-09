@@ -9,7 +9,7 @@ moduleDefinition : ( documentation = Doc )? annotations?
 moduleElement	: importDeclaration
 				| typeDefinition
 				| externTypeDefinition
-				| moduleMethodDefinition
+				| methodDefinition
 	;
 
 importDeclaration : 'import' qualifiedName ( 'as' Name )?
@@ -29,7 +29,7 @@ interfaceDefinition : ( documentation = Doc )? annotations?
 	'interface' Name typeParameters?
 	( 'extends' superInterfaceDefinition ( ',' superInterfaceDefinition )* )?
 	'{'
-		typeMethodDefinition*
+		methodDefinition*
 	'}'
 	;
 
@@ -51,7 +51,7 @@ structDefinition : ( documentation = Doc )? annotations?
 
 structElementDefinition
 	: propertyDefinition
-	| typeMethodDefinition
+	| methodDefinition
 	;
 
 constDefinition : ( documentation = Doc )? annotations?
@@ -81,16 +81,7 @@ enumValue : ( documentation = Doc )? annotations?
  	Name
 	;
 
-moduleMethodDefinition : ( documentation = Doc )? annotations?
-	(isStatic = 'static')?
-	methodDefinition
-	;
-
-typeMethodDefinition : ( documentation = Doc )? annotations?
-	methodDefinition
-	;
-
-methodDefinition :
+methodDefinition : ( documentation = Doc )? annotations?
 	typeParameters?
 	returnType
 	Name

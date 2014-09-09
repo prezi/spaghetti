@@ -7,7 +7,7 @@ import com.prezi.spaghetti.ast.InterfaceNodeBase;
 import com.prezi.spaghetti.ast.InterfaceReferenceBase;
 import com.prezi.spaghetti.ast.TypeNode;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode;
-import com.prezi.spaghetti.ast.internal.DefaultTypeMethodNode;
+import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
 import com.prezi.spaghetti.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -41,9 +41,9 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 			getNode().getSuperInterfaces().add(parseSuperInterface(resolver, superCtx));
 		}
 
-		for (ModuleParser.TypeMethodDefinitionContext methodCtx : getContext().typeMethodDefinition()) {
-			DefaultTypeMethodNode methodNode = MethodParser.parseTypeMethodDefinition(resolver, methodCtx);
-			getNode().getMethods().add(methodNode, methodCtx.methodDefinition().Name());
+		for (ModuleParser.MethodDefinitionContext methodCtx : getContext().methodDefinition()) {
+			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(resolver, methodCtx);
+			getNode().getMethods().add(methodNode, methodCtx.Name());
 		}
 	}
 

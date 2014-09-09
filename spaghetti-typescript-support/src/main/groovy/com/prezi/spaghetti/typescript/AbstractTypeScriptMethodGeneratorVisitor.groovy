@@ -5,7 +5,8 @@ import com.prezi.spaghetti.ast.MethodParameterNode
 
 abstract class AbstractTypeScriptMethodGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
-	protected String visitMethodNode(MethodNode node) {
+	@Override
+	String visitMethodNode(MethodNode node) {
 		def returnType = node.returnType.accept(this)
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
 		def params = node.parameters*.accept(this).join(", ")

@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.InterfaceNode
-import com.prezi.spaghetti.ast.TypeMethodNode
+import com.prezi.spaghetti.ast.MethodNode
 
 class TypeScriptInterfaceGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
@@ -28,10 +28,5 @@ ${methodDefinitions}
 		}
 		declaration += " {"
 		return declaration
-	}
-
-	@Override
-	String visitTypeMethodNode(TypeMethodNode node) {
-		return visitMethodNode(node)
 	}
 }
