@@ -20,6 +20,7 @@ buildscript {
 
 configure(allprojects) {
 	group "com.prezi.spaghetti.test"
+	version "0.1"
 }
 
 configure(subprojects) {

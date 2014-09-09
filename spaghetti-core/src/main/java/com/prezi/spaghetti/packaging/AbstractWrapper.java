@@ -3,6 +3,7 @@ package com.prezi.spaghetti.packaging;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.prezi.spaghetti.Version;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,6 +11,8 @@ import java.util.Map;
 import static com.prezi.spaghetti.ReservedWords.BASE_URL;
 import static com.prezi.spaghetti.ReservedWords.GET_NAME_FUNCTION;
 import static com.prezi.spaghetti.ReservedWords.GET_RESOURCE_URL_FUNCTION;
+import static com.prezi.spaghetti.ReservedWords.GET_SPAGHETTI_VERSION;
+import static com.prezi.spaghetti.ReservedWords.GET_VERSION;
 import static com.prezi.spaghetti.ReservedWords.MODULES;
 import static com.prezi.spaghetti.packaging.CommentUtils.appendAfterInitialComment;
 
@@ -29,6 +32,10 @@ public abstract class AbstractWrapper implements Wrapper {
 		String moduleName = params.bundle.getName();
 		builder.append("var baseUrl=").append(baseUrl).append(";");
 		builder.append("return{");
+		// '"getVersion":function(){return "1.0"},',
+		// '"spaghettiVersion":function(){return "' + Version.SPAGHETTI_BUILD + '";},',
+		builder.append("\"").append(GET_VERSION).append("\":function(){return \"").append(params.bundle.getVersion()).append("\";},");
+		builder.append("\"").append(GET_SPAGHETTI_VERSION).append("\":function(){return \"").append(Version.SPAGHETTI_BUILD).append("\";},");
 		builder.append("\"").append(BASE_URL).append("\":baseUrl,");
 		builder.append("\"").append(MODULES).append("\":{");
 		builder.append(Joiner.on(',').join(modules));
@@ -44,7 +51,8 @@ public abstract class AbstractWrapper implements Wrapper {
 		builder.append("}");
 		builder.append("};");
 		builder.append("})(arguments)),");
-		builder.append("\"version\":\"").append(params.bundle.getVersion()).append("\"");
+		builder.append("\"version\":\"").append(params.bundle.getVersion()).append("\",");
+		builder.append("\"spaghettiVersion\":\"").append(Version.SPAGHETTI_BUILD).append("\"");
 		builder.append("};");
 	}
 }

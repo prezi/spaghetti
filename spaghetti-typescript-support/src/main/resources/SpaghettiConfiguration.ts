@@ -1,16 +1,21 @@
 declare class SpaghettiConfiguration {
     /**
-     * Get the configuration instance.
+     * Returns the module version.
      */
-    static getInstance():SpaghettiConfiguration;
+    public static getVersion():string;
+
+    /**
+     * Returns the Spaghetti version used to build the module.
+     */
+    public static getSpaghettiVersion():string;
 
     /**
    	 * Returns the name of the module.
    	 */
-    static getName():string;
+    public static getName():string;
 
     /**
    	 * Returns a URL pointing to this module's given resource.
    	 */
-    static getResourceUrl(resource:string):string;
+    public static getResourceUrl(resource:string):string;
 }
