@@ -29,7 +29,7 @@ int doStatic(int a, int b)
 		expect:
 		visitor.visit(module) == """export class Test {
 
-	private static module:any = SpaghettiConfiguration["__modules"]["com.example.test"]["module"];
+	private static module:any = SpaghettiConfiguration["modules"]["com.example.test"]["module"];
 
 	/**
 	 * Initializes module.

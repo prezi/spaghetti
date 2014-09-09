@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ast.InterfaceNode
-import com.prezi.spaghetti.ast.MethodNode
 
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 

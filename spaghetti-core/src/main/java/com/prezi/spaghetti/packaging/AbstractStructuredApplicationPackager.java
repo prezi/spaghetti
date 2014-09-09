@@ -32,7 +32,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 			bundle.extract(moduleAppender, EnumSet.of(ModuleBundleElement.resources, ModuleBundleElement.sourcemap));
 
 			// Add JavaScript
-			String wrappedJavaScript = wrapper.wrap(bundle.getName(), bundle.getDependentModules(), bundle.getJavaScript());
+			String wrappedJavaScript = wrapper.wrap(new ModuleWrappingParameters(bundle));
 			String moduleFile = getModuleFileName(bundle);
 			moduleAppender.appendFile(moduleFile, wrappedJavaScript);
 		}

@@ -72,7 +72,7 @@ return ${HAXE_MODULE_VAR};
 	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory)
 	{
 		def contents = new HaxeModuleProxyGeneratorVisitor(module).visit(module)
-		HaxeUtils.createHaxeSourceFile(module.name, "__${module.alias}Static", outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(module.name, "__${module.alias}Proxy", outputDirectory, contents)
 	}
 
 	/**

@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.PropertyNode
 import com.prezi.spaghetti.ast.StructNode
-import com.prezi.spaghetti.ast.MethodNode
 
 class TypeScriptStructGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 

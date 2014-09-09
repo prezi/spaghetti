@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SingleFileApplicationPackager extends AbstractApplicationPackager {
+	private final Wrapper wrapper;
+
 	public SingleFileApplicationPackager() {
 		this.wrapper = new SingleFileWrapper();
 	}
@@ -66,7 +68,8 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 							}
 						});
 						try {
-							dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrapper.wrap(module, dependencies, bundle.getJavaScript()) + "(" + Joiner.on(',').join(dependencyInstances) + "));");
+							String wrappedModule = wrapper.wrap(new ModuleWrappingParameters(bundle));
+							dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrappedModule + "(" + Joiner.on(',').join(dependencyInstances) + "));");
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}
@@ -85,6 +88,4 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 			}
 		});
 	}
-
-	private final Wrapper wrapper;
 }

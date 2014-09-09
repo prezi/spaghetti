@@ -2,19 +2,16 @@ package prezi.graphics.text;
 
 import prezi.graphics.core.Core;
 
-class Layout implements ILayout {
-	public function new(core:Core) {
+class Layout {
+	public static function createText(text:String = ""):Text {
 		trace("Layout name: " + SpaghettiConfiguration.getName());
 		trace("Static call: " + Core.giveMeANumber());
-	}
-
-	public function createText(text:String = ""):Text {
 		var result = new TextImpl();
 		result.insert(0, text, []);
 		return result;
 	}
 
-	public function createTestStuff():TestStuff<String, String>
+	public static function createTestStuff():TestStuff<String, String>
 	{
 		return new TestStuffImpl<String, String>();
 	}
@@ -24,9 +21,8 @@ class Layout implements ILayout {
 		return new TestStuffImpl<T, String>();
 	}
 
-	public function getResource():String
+	public static function getResource():String
 	{
 		return SpaghettiConfiguration.getResourceUrl("sample.txt");
 	}
 }
-

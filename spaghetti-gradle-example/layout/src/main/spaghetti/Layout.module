@@ -124,4 +124,4 @@ const Values {
 Text createText(?string text)
 TestStuff<string, string> createTestStuff()
 string getResource()
-static <T> TestStuff<T, string> createTestStuffWithStringKey()
+<T> TestStuff<T, string> createTestStuffWithStringKey()
