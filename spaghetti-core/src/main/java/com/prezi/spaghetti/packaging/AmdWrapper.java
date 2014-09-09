@@ -14,7 +14,7 @@ import java.util.Set;
 
 import static com.prezi.spaghetti.ReservedWords.MODULE;
 
-public class AmdWrapper extends AbstractWrapper {
+public class AmdWrapper extends AbstractWrapper implements StructuredWrapper {
 
 	@Override
 	public String wrap(ModuleWrappingParameters params) throws IOException {
@@ -40,9 +40,9 @@ public class AmdWrapper extends AbstractWrapper {
 	}
 
 	@Override
-	public String makeApplication(String baseUrl, String modulesRoot, Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
+	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
 		StringBuilder result = new StringBuilder();
-		result.append(makeConfig(baseUrl, modulesRoot, Sets.newTreeSet(dependencyTree.keySet())));
+		result.append(makeConfig(getModulesDirectory(), Sets.newTreeSet(dependencyTree.keySet())));
 		if (mainModule != null) {
 			result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 			if (execute) {
@@ -55,7 +55,12 @@ public class AmdWrapper extends AbstractWrapper {
 		return result.toString();
 	}
 
-	private static String makeConfig(final String baseUrl, String modulesRoot, Collection<String> moduleNames) {
+	@Override
+	public String getModulesDirectory() {
+		return "modules";
+	}
+
+	private static String makeConfig(String modulesRoot, Collection<String> moduleNames) {
 		final String normalizedModulesRoot = modulesRoot.endsWith("/") ? modulesRoot : modulesRoot + "/";
 
 		Iterable<String> paths = Iterables.transform(moduleNames, new Function<String, String>() {
@@ -64,6 +69,6 @@ public class AmdWrapper extends AbstractWrapper {
 				return "\"" + moduleName + "\": \"" + normalizedModulesRoot + moduleName + "/" + moduleName + "\"";
 			}
 		});
-		return "require[\"config\"]({" + "\"baseUrl\":\"" + baseUrl + "\"," + "\"paths\":{" + Joiner.on(',').join(paths) + "}" + "});";
+		return "require[\"config\"]({" + "\"baseUrl\":\".\"," + "\"paths\":{" + Joiner.on(',').join(paths) + "}" + "});";
 	}
 }

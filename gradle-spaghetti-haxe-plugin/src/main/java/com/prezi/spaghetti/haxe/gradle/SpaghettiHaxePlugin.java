@@ -159,7 +159,6 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				});
 				appBundleTask.getConventionMapping().map("applicationName", Callables.returning(testBinary.getName() + "_test.js"));
 				appBundleTask.getConventionMapping().map("type", Callables.returning(ApplicationType.AMD));
-				appBundleTask.getConventionMapping().map("baseUrl", Callables.returning("."));
 				appBundleTask.getConventionMapping().map("execute", Callables.returning(false));
 				appBundleTask.dependsOn(moduleBinary.getBundleTask());
 				return appBundleTask;

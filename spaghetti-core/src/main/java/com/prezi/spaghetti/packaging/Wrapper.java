@@ -7,5 +7,5 @@ import java.util.Set;
 public interface Wrapper {
 	String wrap(ModuleWrappingParameters params) throws IOException;
 
-	String makeApplication(String baseUrl, String modulesRoot, Map<String, Set<String>> dependencyTree, String mainModule, boolean execute);
+	String makeApplication(Map<String, Set<String>> dependencyTree, String mainModule, boolean execute);
 }

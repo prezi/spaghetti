@@ -47,16 +47,16 @@ class AmdWrapperTest extends WrapperTestBase {
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new AmdWrapper().makeApplication("lajos", "mods", dependencyTree, "com.example.test", true)
+		def result = new AmdWrapper().makeApplication(dependencyTree, "com.example.test", true)
 
 		expect:
 		result == [
 				'require["config"]({',
-					'"baseUrl":"lajos",',
+					'"baseUrl":".",',
 					'"paths":{',
-						'"com.example.alma": "mods/com.example.alma/com.example.alma",',
-						'"com.example.bela": "mods/com.example.bela/com.example.bela",',
-						'"com.example.test": "mods/com.example.test/com.example.test"',
+						'"com.example.alma": "modules/com.example.alma/com.example.alma",',
+						'"com.example.bela": "modules/com.example.bela/com.example.bela",',
+						'"com.example.test": "modules/com.example.test/com.example.test"',
 					'}',
 				'});',
 		        'require(["com.example.test"],function(__mainModule){',

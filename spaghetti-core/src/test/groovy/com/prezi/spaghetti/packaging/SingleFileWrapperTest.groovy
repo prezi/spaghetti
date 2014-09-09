@@ -45,7 +45,7 @@ class SingleFileWrapperTest extends WrapperTestBase {
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new SingleFileWrapper().makeApplication("lajos", "mods", dependencyTree, "com.example.test", true)
+		def result = new SingleFileWrapper().makeApplication(dependencyTree, "com.example.test", true)
 
 		expect:
 		result == [
