@@ -1,6 +1,7 @@
 package com.prezi.spaghetti;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public final class Version {
@@ -8,9 +9,12 @@ public final class Version {
 	private static Properties loadProperties() {
 		Properties props = new Properties();
 		try {
-			props.load(Version.class.getResourceAsStream("/spaghetti.properties"));
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load spaghetti.properties");
+			InputStream input = Version.class.getResourceAsStream("/spaghetti.properties");
+			if (input != null) {
+				props.load(input);
+			}
+		} catch (IOException ignored) {
+			// Silently swallow error
 		}
 		return props;
 	}
