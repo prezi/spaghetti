@@ -9,6 +9,7 @@ import com.prezi.haxe.gradle.HaxeBinaryBase;
 import com.prezi.haxe.gradle.HaxeCompile;
 import com.prezi.haxe.gradle.HaxeExtension;
 import com.prezi.haxe.gradle.HaxeTestBinary;
+import com.prezi.haxe.gradle.HaxeTestCompile;
 import com.prezi.haxe.gradle.incubating.FunctionalSourceSet;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.gradle.PackageApplication;
@@ -102,7 +103,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		haxeExtension.getBinaries().withType(HaxeTestBinary.class).all(new Action<HaxeTestBinary>() {
 			@Override
 			public void execute(final HaxeTestBinary testBinary) {
-				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompileWithSpaghetti.class);
+				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompile.class);
 
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
