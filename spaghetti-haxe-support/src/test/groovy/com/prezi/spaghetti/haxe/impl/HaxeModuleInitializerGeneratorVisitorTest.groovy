@@ -13,10 +13,10 @@ int doStatic(int x)
 		def visitor = new HaxeModuleInitializerGeneratorVisitor()
 
 		expect:
-		visitor.visit(module) == """@:keep class __TestInit {
+		visitor.visit(module) == """@:keep class __TestModuleInit {
 	public static var delayedInitFinished = delayedInit();
 	static function delayedInit():Bool {
-		untyped __haxeModule = new com.example.test.__TestProxy();
+		untyped __haxeModule = new com.example.test.__TestModuleProxy();
 		return true;
 	}
 }

@@ -33,7 +33,7 @@ interface Lajos extends Iterable<string> {
 
 		then:
 		module.name == "com.example.test"
-		module.alias == "Test"
+		module.alias == "TestModule"
 		module.types*.qualifiedName*.toString().asList() == [
 				"com.example.test.MyEnum",
 				"com.example.test.MyStruct",

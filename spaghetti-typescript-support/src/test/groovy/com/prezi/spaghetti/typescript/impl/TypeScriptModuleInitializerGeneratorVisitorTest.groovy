@@ -22,7 +22,7 @@ int doStatic(int x)
 
 		expect:
 		visitor.visit(module) == """export function __createSpaghettiModule():any {
-	return new com.example.test.__TestProxy();
+	return new com.example.test.__TestModuleProxy();
 }
 """
 	}

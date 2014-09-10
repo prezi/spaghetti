@@ -33,24 +33,24 @@ void doSomethingVoid(int x)
 		def visitor = new TypeScriptModuleProxyGeneratorVisitor(module)
 
 		expect:
-		visitor.visit(module) == """export class __TestProxy {
+		visitor.visit(module) == """export class __TestModuleProxy {
 	doSomething():void {
-		com.example.test.Test.doSomething();
+		com.example.test.TestModule.doSomething();
 	}
 	doSomethingElse(a:number, b:number):Array<string> {
-		return com.example.test.Test.doSomethingElse(a, b);
+		return com.example.test.TestModule.doSomethingElse(a, b);
 	}
 	doSomethingStatic(x:number):number {
-		return com.example.test.Test.doSomethingStatic(x);
+		return com.example.test.TestModule.doSomethingStatic(x);
 	}
 	doSomethingVoid(x:number):void {
-		com.example.test.Test.doSomethingVoid(x);
+		com.example.test.TestModule.doSomethingVoid(x);
 	}
 	hello<T, U>(t:T, y:U):Array<T> {
-		return com.example.test.Test.hello(t, y);
+		return com.example.test.TestModule.hello(t, y);
 	}
 	returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return com.example.test.Test.returnT(t);
+		return com.example.test.TestModule.returnT(t);
 	}
 
 }

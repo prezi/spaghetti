@@ -30,7 +30,7 @@ UnicodeString[] doSomething()
 		def visitor = new HaxeModuleAccessorGeneratorVisitor(module)
 
 		expect:
-		visitor.visit(module) == """@:final class Test {
+		visitor.visit(module) == """@:final class TestModule {
 
 	static var module:Dynamic = untyped __js__('SpaghettiConfiguration["modules"]["com.example.test"]["module"]');
 
@@ -39,16 +39,16 @@ UnicodeString[] doSomething()
 	 */
 	@:deprecated("use doSomething() instead")
 	@:extern public static inline function initModule(a:Int, ?b:Int):Void {
-		Test.module.initModule(a, b);
+		TestModule.module.initModule(a, b);
 	}
 	@:extern public static inline function doSomething():Array<String> {
-		return Test.module.doSomething();
+		return TestModule.module.doSomething();
 	}
 	@:extern public static inline function doStatic(a:Null<Int>, b:Int):Null<Int> {
-		return Test.module.doStatic(a, b);
+		return TestModule.module.doStatic(a, b);
 	}
 	@:extern public static inline function returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return Test.module.returnT(t);
+		return TestModule.module.returnT(t);
 	}
 
 }

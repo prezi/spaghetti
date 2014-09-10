@@ -36,7 +36,12 @@ public class ModuleParser {
 
 		String moduleName = moduleCtx.qualifiedName().getText();
 		List<String> nameParts = Arrays.asList(moduleCtx.qualifiedName().getText().split("\\."));
-		String moduleAlias = moduleCtx.Name() != null ? moduleCtx.Name().getText() : StringUtils.capitalize(nameParts.get(nameParts.size() - 1));
+		String moduleAlias;
+		if (moduleCtx.Name() != null) {
+			moduleAlias = moduleCtx.Name().getText();
+		} else {
+			moduleAlias = StringUtils.capitalize(nameParts.get(nameParts.size() - 1)) + "Module";
+		}
 		this.module = new DefaultModuleNode(moduleName, moduleAlias, source);
 		AnnotationsParser.parseAnnotations(moduleCtx.annotations(), module);
 		DocumentationParser.parseDocumentation(moduleCtx.documentation, module);

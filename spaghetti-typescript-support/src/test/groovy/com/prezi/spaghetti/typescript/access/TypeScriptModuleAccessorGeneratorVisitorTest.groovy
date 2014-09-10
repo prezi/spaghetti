@@ -27,7 +27,7 @@ int doStatic(int a, int b)
 		def visitor = new TypeScriptModuleAccessorGeneratorVisitor(module)
 
 		expect:
-		visitor.visit(module) == """export class Test {
+		visitor.visit(module) == """export class TestModule {
 
 	private static module:any = SpaghettiConfiguration["modules"]["com.example.test"]["module"];
 
@@ -35,16 +35,16 @@ int doStatic(int a, int b)
 	 * Initializes module.
 	 */
 	static initModule(a:number, b?:number):void {
-		Test.module.initModule(a, b);
+		TestModule.module.initModule(a, b);
 	}
 	static doSomething():string {
-		return Test.module.doSomething();
+		return TestModule.module.doSomething();
 	}
 	static doStatic(a:number, b:number):number {
-		return Test.module.doStatic(a, b);
+		return TestModule.module.doStatic(a, b);
 	}
 	static returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return Test.module.returnT(t);
+		return TestModule.module.returnT(t);
 	}
 
 }

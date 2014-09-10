@@ -33,25 +33,25 @@ void doSomethingVoid(int x)
 		def visitor = new HaxeModuleProxyGeneratorVisitor(module)
 
 		expect:
-		visitor.visit(module) == """@:final class __TestProxy {
+		visitor.visit(module) == """@:final class __TestModuleProxy {
 	public function new() {}
 	public function doSomething():Void {
-		com.example.test.Test.doSomething();
+		com.example.test.TestModule.doSomething();
 	}
 	public function doSomethingElse(a:Int, b:Int):Array<String> {
-		return com.example.test.Test.doSomethingElse(a, b);
+		return com.example.test.TestModule.doSomethingElse(a, b);
 	}
 	public function doSomethingStatic(x:Int):Int {
-		return com.example.test.Test.doSomethingStatic(x);
+		return com.example.test.TestModule.doSomethingStatic(x);
 	}
 	public function doSomethingVoid(x:Int):Void {
-		com.example.test.Test.doSomethingVoid(x);
+		com.example.test.TestModule.doSomethingVoid(x);
 	}
 	public function hello<T, U>(t:T, y:U):Array<T> {
-		return com.example.test.Test.hello(t, y);
+		return com.example.test.TestModule.hello(t, y);
 	}
 	public function returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return com.example.test.Test.returnT(t);
+		return com.example.test.TestModule.returnT(t);
 	}
 
 }

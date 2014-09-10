@@ -4,7 +4,7 @@ import prezi.graphics.core.Core;
 import prezi.graphics.text.CharacterStyleType;
 import prezi.graphics.text.Layout;
 import prezi.graphics.text.Values;
-import prezi.graphics.text.render.TextRenderer;
+import prezi.graphics.text.render.RenderModule;
 
 class Client {
 	public static function main() {
@@ -16,7 +16,7 @@ class Client {
 		style.value = "normal";
 		text.insert(0, "World", [ style ]);
 		text.insert(0, Values.HI, []);
-		var renderer = prezi.graphics.text.render.TextRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
+		var renderer = RenderModule.createRenderer("Text rendered with render module: [", "]");
 		trace(renderer.render(text));
 
 		var testStuff = prezi.graphics.text.Layout.createTestStuff();
@@ -35,7 +35,7 @@ class Client {
 		trace("doAync() returned: " + result);
 
 		trace("Haxe resource: " + prezi.graphics.text.Layout.getResource());
-		trace("TypeScript resource: " + prezi.graphics.text.render.TextRenderer.getResource());
+		trace("TypeScript resource: " + RenderModule.getResource());
 	}
 
 	static function callback(name:String, converter:Int->String)

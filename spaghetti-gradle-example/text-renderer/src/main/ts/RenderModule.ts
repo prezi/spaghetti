@@ -1,6 +1,6 @@
 module prezi.graphics.text.render {
 
-export class TextRenderer {
+export class RenderModule {
 	static createRenderer(prefix:string, suffix:string):Renderer {
 		console.log("Text renderer name: " + SpaghettiConfiguration.getName());
 		console.log("Text renderer version: " + SpaghettiConfiguration.getVersion());
