@@ -9,7 +9,7 @@ import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.haxe.stub.HaxeInterfaceStubGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS
 
 class HaxeGenerator extends AbstractGenerator {
 
@@ -60,10 +60,10 @@ return ${HAXE_MODULE_VAR};
 	}
 
 	/**
-	 * Copies SpaghettiConfiguration.hx to the generated source directory.
+	 * Copies Spaghetti.hx to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
-		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.hx") << HaxeGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.hx")
+		new File(outputDirectory, "${SPAGHETTI_CLASS}.hx") << HaxeGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.hx")
 	}
 
 	/**

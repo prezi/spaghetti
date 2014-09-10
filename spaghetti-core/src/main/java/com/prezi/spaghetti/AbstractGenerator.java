@@ -6,7 +6,7 @@ import com.prezi.spaghetti.config.ModuleConfiguration;
 import java.io.File;
 import java.io.IOException;
 
-import static com.prezi.spaghetti.ReservedWords.CONFIG;
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS;
 
 public abstract class AbstractGenerator implements Generator {
 
@@ -24,7 +24,7 @@ public abstract class AbstractGenerator implements Generator {
 	@Override
 	public final String processModuleJavaScript(ModuleNode module, String javaScript) {
 		final String processedJavaScript = processModuleJavaScriptInternal(module, javaScript);
-		return "function(" + CONFIG + ") {\n" + processedJavaScript + "\n}\n";
+		return "function(" + SPAGHETTI_CLASS + ") {\n" + processedJavaScript + "\n}\n";
 	}
 
 	protected abstract String processModuleJavaScriptInternal(ModuleNode moduleDefinition, String javaScript);

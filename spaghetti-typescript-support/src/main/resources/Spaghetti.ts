@@ -1,4 +1,4 @@
-declare class SpaghettiConfiguration {
+declare class Spaghetti {
     /**
      * Returns the module version.
      */

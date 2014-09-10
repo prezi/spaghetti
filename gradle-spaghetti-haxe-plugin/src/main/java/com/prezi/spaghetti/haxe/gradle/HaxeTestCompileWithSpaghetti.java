@@ -32,7 +32,7 @@ public class HaxeTestCompileWithSpaghetti extends HaxeTestCompile {
 			FileWriter writer = new FileWriter(new File(getTestsDirectory(), "SpaghettiTest.hx"));
 			try {
 				Map<String, Object> params = Maps.newHashMap();
-				params.put("config", ReservedWords.CONFIG);
+				params.put("config", ReservedWords.SPAGHETTI_CLASS);
 				params.put("haxeModule", HaxeGenerator.HAXE_MODULE_VAR);
 				params.put("module", ReservedWords.MODULE);
 				params.put("modules", ReservedWords.MODULES);

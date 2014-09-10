@@ -2,14 +2,14 @@ module prezi.graphics.text.render {
 
 export class RenderModule {
 	static createRenderer(prefix:string, suffix:string):Renderer {
-		console.log("Text renderer name: " + SpaghettiConfiguration.getName());
-		console.log("Text renderer version: " + SpaghettiConfiguration.getVersion());
-		console.log("Text renderer built by Spaghetti version " + SpaghettiConfiguration.getSpaghettiVersion());
+		console.log("Text renderer name: " + Spaghetti.getName());
+		console.log("Text renderer version: " + Spaghetti.getVersion());
+		console.log("Text renderer built by Spaghetti version " + Spaghetti.getSpaghettiVersion());
 		console.log("Core stuff: " + prezi.graphics.core.Core.giveMeANumber());
 		return new RendererImpl(prefix, suffix);
 	}
 	static getResource():string {
-		return SpaghettiConfiguration.getResourceUrl("some-resource.txt");
+		return Spaghetti.getResourceUrl("some-resource.txt");
 	}
 }
 

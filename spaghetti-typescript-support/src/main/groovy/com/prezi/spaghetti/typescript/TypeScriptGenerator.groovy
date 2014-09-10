@@ -9,8 +9,7 @@ import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorV
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.CONFIG
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_MODULE_CONFIGURATION
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS
 
 class TypeScriptGenerator extends AbstractGenerator {
 
@@ -51,7 +50,7 @@ class TypeScriptGenerator extends AbstractGenerator {
 	protected String processModuleJavaScriptInternal(ModuleNode module, String javaScript)
 	{
 """${javaScript}
-return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
+return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 """
 	}
 
@@ -59,7 +58,7 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 	 * Copies Spaghetti.hx to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
-		new File(outputDirectory, "${SPAGHETTI_MODULE_CONFIGURATION}.ts") << TypeScriptGenerator.class.getResourceAsStream("/${SPAGHETTI_MODULE_CONFIGURATION}.ts")
+		new File(outputDirectory, "${SPAGHETTI_CLASS}.ts") << TypeScriptGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.ts")
 	}
 
 	/**
@@ -67,7 +66,7 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 	 */
 	private static void generateLocalModule(ModuleNode module, File outputDirectory)
 	{
-		def contents = "declare var ${CONFIG}:any;\n"
+		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		contents += new TypeScriptModuleProxyGeneratorVisitor(module).visit(module)
 		contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
@@ -75,7 +74,7 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${CONFIG});
 	}
 
 	private static void generateDependentModule(ModuleNode module, File outputDirectory, boolean directDependency) {
-		def contents = "declare var ${CONFIG}:any;\n"
+		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
 		if (directDependency) {
 			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).visit(module)
 		}

@@ -4,9 +4,9 @@ import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.CONFIG
 import static com.prezi.spaghetti.ReservedWords.MODULE
 import static com.prezi.spaghetti.ReservedWords.MODULES
+import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS
 
 class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 	private final ModuleNode module
@@ -19,7 +19,7 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptMethodG
 	String visitModuleNode(ModuleNode node) {
 """export class ${node.alias} {
 
-	private static ${MODULE}:any = ${CONFIG}[\"${MODULES}\"][\"${node.name}\"][\"${MODULE}\"];
+	private static ${MODULE}:any = ${SPAGHETTI_CLASS}[\"${MODULES}\"][\"${node.name}\"][\"${MODULE}\"];
 
 ${node.methods*.accept(this).join("")}
 }

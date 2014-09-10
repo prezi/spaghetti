@@ -32,7 +32,7 @@ UnicodeString[] doSomething()
 		expect:
 		visitor.visit(module) == """@:final class TestModule {
 
-	static var module:Dynamic = untyped __js__('SpaghettiConfiguration["modules"]["com.example.test"]["module"]');
+	static var module:Dynamic = untyped __js__('Spaghetti["modules"]["com.example.test"]["module"]');
 
 	/**
 	 * Initializes module.

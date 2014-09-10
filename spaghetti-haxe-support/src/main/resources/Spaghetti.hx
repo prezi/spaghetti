@@ -1,4 +1,4 @@
-extern class SpaghettiConfiguration {
+extern class Spaghetti {
 	/**
 	 * Returns the module version.
 	 */

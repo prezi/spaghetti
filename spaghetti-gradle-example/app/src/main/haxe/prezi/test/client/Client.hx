@@ -8,9 +8,9 @@ import prezi.graphics.text.render.RenderModule;
 
 class Client {
 	public static function main() {
-		trace("App name: " + SpaghettiConfiguration.getName());
-		trace("App version: " + SpaghettiConfiguration.getVersion());
-		trace("App built by Spaghetti version " + SpaghettiConfiguration.getSpaghettiVersion());
+		trace("App name: " + Spaghetti.getName());
+		trace("App version: " + Spaghetti.getVersion());
+		trace("App built by Spaghetti version " + Spaghetti.getSpaghettiVersion());
 		var text = prezi.graphics.text.Layout.createText();
 		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
 		style.value = "normal";

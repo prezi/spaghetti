@@ -4,7 +4,7 @@ import prezi.graphics.core.Core;
 
 class Layout {
 	public static function createText(text:String = ""):Text {
-		trace("Layout name: " + SpaghettiConfiguration.getName());
+		trace("Layout name: " + Spaghetti.getName());
 		trace("Static call: " + Core.giveMeANumber());
 		var result = new TextImpl();
 		result.insert(0, text, []);
@@ -23,6 +23,6 @@ class Layout {
 
 	public static function getResource():String
 	{
-		return SpaghettiConfiguration.getResourceUrl("sample.txt");
+		return Spaghetti.getResourceUrl("sample.txt");
 	}
 }
