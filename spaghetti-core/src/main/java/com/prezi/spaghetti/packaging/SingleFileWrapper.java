@@ -21,7 +21,7 @@ public class SingleFileWrapper extends AbstractWrapper {
 
 		StringBuilder result = new StringBuilder();
 		result.append("function(){");
-		wrapModuleObject(result, params, "__dirname", modules);
+		wrapModuleObject(result, params, "var baseUrl=__dirname;", modules);
 		result.append("}");
 		return result.toString();
 	}

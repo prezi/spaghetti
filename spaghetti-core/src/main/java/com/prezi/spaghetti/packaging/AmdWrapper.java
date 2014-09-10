@@ -26,15 +26,12 @@ public class AmdWrapper extends AbstractWrapper implements StructuredWrapper {
 			index++;
 		}
 
-		String baseUrl =
-		"(function(){"
-			+ "var moduleUrl=args[0][\"toUrl\"](\"" + params.bundle.getName() + ".js\");"
-			+ "return moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));"
-		+ "})()";
+		String baseUrlDeclaration = "var moduleUrl=args[0][\"toUrl\"](\"" + params.bundle.getName() + ".js\");"
+			+ "var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));";
 
 		StringBuilder result = new StringBuilder();
 		result.append("define([\"").append(Joiner.on("\",\"").join(moduleNamesWithRequire)).append("\"],function(){");
-		wrapModuleObject(result, params, baseUrl, modules);
+		wrapModuleObject(result, params, baseUrlDeclaration, modules);
 		result.append("});");
 		return result.toString();
 	}
