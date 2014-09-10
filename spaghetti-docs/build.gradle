@@ -1,0 +1,18 @@
+task collectJavadoc(type: Copy) { collector ->
+	def outputDirectory = file("${buildDir}/javadoc")
+	parent.subprojects { subproject ->
+		tasks.withType(Javadoc) { javadoc ->
+			collector.dependsOn javadoc
+			from ({javadoc.destinationDir}) {
+				into (subproject.name)
+			}
+		}
+		tasks.withType(Groovydoc) { javadoc ->
+			collector.dependsOn javadoc
+			from ({javadoc.destinationDir}) {
+				into (subproject.name)
+			}
+		}
+	}
+	into outputDirectory
+}

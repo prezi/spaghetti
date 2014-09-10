@@ -1,3 +1,5 @@
+def gradleVer = "2.0"
+
 String gitVersion
 if (hasProperty("release")) {
 	gitVersion = [ "git", "describe", "--match", "[0-9]*", "--dirty"].execute().text.trim()
@@ -24,25 +26,13 @@ allprojects {
 }
 
 subprojects { subproject ->
-	apply plugin: 'groovy'
 	apply plugin: 'maven'
-
-	sourceCompatibility = "1.6"
-	targetCompatibility = "1.6"
 
 	repositories {
 		mavenLocal()
 		mavenCentral()
 		maven {
 			url "http://gradle.artifactoryonline.com/gradle/libs"
-		}
-	}
-
-	dependencies {
-		testCompile "junit:junit:4.11"
-		testCompile "org.mockito:mockito-all:1.9.5"
-		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
-			exclude group: "org.codehaus.groovy"
 		}
 	}
 
@@ -124,10 +114,26 @@ subprojects { subproject ->
 			}
 		}
 	}
+}
 
-	task groovydocJar(type: Jar, dependsOn: groovydoc) {
-		classifier = "javadoc"
-		from "build/docs/groovydoc"
+def codeProjects = subprojects.findAll {
+			it.name == "spaghetti-core" || it.name ==~ /gradle-.*/ || it.name ==~ /spaghetti-.*-support/
+		}
+def groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-typescript-support") ]
+def javaProjects = codeProjects - groovyProjects
+
+configure(codeProjects) {
+	apply plugin: 'groovy'
+
+	sourceCompatibility = "1.6"
+	targetCompatibility = "1.6"
+
+	dependencies {
+		testCompile "junit:junit:4.11"
+		testCompile "org.mockito:mockito-all:1.9.5"
+		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
+			exclude group: "org.codehaus.groovy"
+		}
 	}
 
 	task sourcesJar(type: Jar) {
@@ -141,8 +147,70 @@ subprojects { subproject ->
 
 	artifacts {
 		archives jar
-		archives groovydocJar
 		archives sourcesJar
+	}
+}
+
+configure(codeProjects) {
+	String[] apis = [
+		"http://docs.oracle.com/javase/8/docs/api/",
+		"http://groovy.codehaus.org/gapi/",
+		"http://www.gradle.org/docs/${gradleVer}/javadoc/"
+	]
+
+	tasks.withType(Javadoc) {
+		options.links(apis)
+	}
+
+	tasks.withType(Groovydoc) {
+		groovydoc.groovyClasspath = configurations.compile
+		// Done in doFirst() so that we don't download stuff in configuration phase
+		doFirst {
+			apis.each {
+				link(it, *(new URL("$it/package-list").text.tokenize("\n")))
+			}
+		}
+	}
+}
+
+configure(javaProjects) {
+	task javadocJar(type: Jar) {
+		dependsOn javadoc
+		classifier = "javadoc"
+		from javadoc.destinationDir
+	}
+
+	artifacts {
+		archives javadocJar
+	}
+}
+
+configure(groovyProjects) {
+	task groovydocJar(type: Jar) {
+		dependsOn groovydoc
+		classifier = "javadoc"
+		from groovydoc.destinationDir
+	}
+
+	artifacts {
+		archives groovydocJar
+	}
+}
+
+// Make Javadocs depend on core
+configure(codeProjects - project(":spaghetti-core")) {
+	def coreJavadoc = project(":spaghetti-core").tasks.javadoc
+
+	javadoc {
+		dependsOn coreJavadoc
+		options.linksOffline "../spaghetti-core", coreJavadoc.destinationDir.path
+	}
+
+	groovydoc {
+		dependsOn coreJavadoc
+		doFirst {
+			link("http://prezi.github.io/spaghetti/javadoc/spaghetti-core", *(new File(coreJavadoc.destinationDir, "package-list").text.tokenize("\n")))
+		}
 	}
 }
 
@@ -191,12 +259,14 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 		compile project(path: ":gradle-spaghetti-plugin")
 	}
 }
+
 project(":gradle-spaghetti-haxe-plugin") {
 	dependencies {
 		compile "com.prezi.haxe:gradle-haxe-plugin:4.1.1"
 		compile "org.webjars:requirejs:2.1.8"
 	}
 }
+
 project(":gradle-spaghetti-typescript-plugin") {
 	dependencies {
 		compile "com.prezi.typescript:gradle-typescript-plugin:2.2.1"
@@ -204,5 +274,5 @@ project(":gradle-spaghetti-typescript-plugin") {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+	gradleVersion = gradleVer
 }
