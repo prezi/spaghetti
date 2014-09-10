@@ -1,0 +1,17 @@
+com.prezi.spaghetti
+com.prezi.spaghetti.ast
+com.prezi.spaghetti.ast.internal
+com.prezi.spaghetti.ast.parser
+com.prezi.spaghetti.bundle
+com.prezi.spaghetti.config
+com.prezi.spaghetti.definition
+com.prezi.spaghetti.gradle
+com.prezi.spaghetti.gradle.incubating
+com.prezi.spaghetti.grammar
+com.prezi.spaghetti.haxe.gradle
+com.prezi.spaghetti.internal
+com.prezi.spaghetti.javascript
+com.prezi.spaghetti.obfuscation
+com.prezi.spaghetti.packaging
+com.prezi.spaghetti.structure
+com.prezi.spaghetti.typescript.gradle
