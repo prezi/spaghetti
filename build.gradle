@@ -116,11 +116,11 @@ subprojects { subproject ->
 	}
 }
 
-def codeProjects = subprojects.findAll {
+ext.codeProjects = subprojects.findAll {
 			it.name == "spaghetti-core" || it.name ==~ /gradle-.*/ || it.name ==~ /spaghetti-.*-support/
 		}
-def groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-typescript-support") ]
-def javaProjects = codeProjects - groovyProjects
+ext.groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-typescript-support") ]
+ext.javaProjects = codeProjects - groovyProjects
 
 configure(codeProjects) {
 	apply plugin: 'groovy'
@@ -141,10 +141,6 @@ configure(codeProjects) {
 		classifier = "sources"
 	}
 
-	javadoc {
-		options.noTimestamp = true
-	}
-
 	jar {
 		from rootProject.file("LICENSE.txt")
 	}
@@ -155,7 +151,7 @@ configure(codeProjects) {
 	}
 }
 
-configure(codeProjects) {
+subprojects {
 	String[] apis = [
 		"http://docs.oracle.com/javase/8/docs/api/",
 		"http://groovy.codehaus.org/gapi/",
@@ -163,7 +159,9 @@ configure(codeProjects) {
 	]
 
 	tasks.withType(Javadoc) {
-		options.links(apis)
+		options.encoding = "UTF-8"
+		options.links apis
+		options.noTimestamp = true
 	}
 
 	tasks.withType(Groovydoc) {
