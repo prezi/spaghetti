@@ -5,14 +5,18 @@ task cloneSite(type: Exec) {
 	outputs.dir siteDirectory
 	commandLine "git", "clone", "--branch", "gh-pages", "--depth", "1", "git@github.com:prezi/spaghetti", siteDirectory
 	doFirst {
-		delete(siteDirectory)
-		mkdir(siteDirectory)
+		delete siteDirectory
+		mkdir siteDirectory
 	}
 }
 
 task collectJavadoc(type: Copy) { collector ->
 	dependsOn cloneSite
 	def outputDirectory = file("${siteDirectory}/javadoc")
+	doFirst {
+		// Make sure we don't leave stale HTMLs behind
+		delete outputDirectory
+	}
 	parent.subprojects { subproject ->
 		tasks.withType(Javadoc) { javadoc ->
 			collector.dependsOn javadoc
