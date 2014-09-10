@@ -29,5 +29,12 @@ configure(subprojects) {
 	repositories {
 		mavenLocal()
 		mavenCentral()
+		maven {
+			url "https://artifactory.prezi.com/libs-release/"
+			credentials {
+				username nexusUser
+				password nexusPassword
+			}
+		}
 	}
 }
