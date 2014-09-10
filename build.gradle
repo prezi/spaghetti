@@ -141,6 +141,10 @@ configure(codeProjects) {
 		classifier = "sources"
 	}
 
+	javadoc {
+		options.noTimestamp = true
+	}
+
 	jar {
 		from rootProject.file("LICENSE.txt")
 	}
