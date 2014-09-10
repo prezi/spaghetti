@@ -201,17 +201,17 @@ configure(groovyProjects) {
 
 def inheritJavadoc(Project target, Project dependency) {
 	def coreJavadoc = dependency.tasks.javadoc
-	def dependencyUrl = "http://prezi.github.io/spaghetti/javadoc/" + dependency.name
+	def javadocUrl = "http://prezi.github.io/spaghetti/javadoc/"
 
 	target.javadoc {
 		dependsOn coreJavadoc
-		options.linksOffline dependencyUrl, coreJavadoc.destinationDir.path
+		options.linksOffline javadocUrl, coreJavadoc.destinationDir.path
 	}
 
 	target.groovydoc {
 		dependsOn coreJavadoc
 		doFirst {
-			link(dependencyUrl, *(new File(coreJavadoc.destinationDir, "package-list").text.tokenize("\n")))
+			link(javadocUrl, *(new File(coreJavadoc.destinationDir, "package-list").text.tokenize("\n")))
 		}
 	}
 }
