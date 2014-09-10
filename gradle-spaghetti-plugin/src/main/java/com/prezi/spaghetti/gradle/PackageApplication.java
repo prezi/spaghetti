@@ -19,9 +19,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
 	private String mainModule;
-	private String baseUrl = ApplicationPackageParameters.DEFAULT_BASE_URL;
 	private String applicationName = ApplicationPackageParameters.DEFAULT_APPLICATION_NAME;
-	private String modulesDirectory = ApplicationPackageParameters.DEFAULT_MODULES_DIRECTORY;
 	private ApplicationType type = ApplicationType.COMMON_JS;
 	private Boolean execute = null;
 	private File outputDirectory;
@@ -42,20 +40,6 @@ public class PackageApplication extends AbstractSpaghettiTask {
 	}
 
 	@Input
-	public String getBaseUrl() {
-		return baseUrl;
-	}
-
-	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void baseUrl(String baseUrl) {
-		setBaseUrl(baseUrl);
-	}
-
-	@Input
 	public String getApplicationName() {
 		return applicationName;
 	}
@@ -69,20 +53,6 @@ public class PackageApplication extends AbstractSpaghettiTask {
 		setApplicationName(applicationName);
 	}
 
-	@Input
-	public String getModulesDirectory() {
-		return modulesDirectory;
-	}
-
-	public void setModulesDirectory(String modulesDirectory) {
-		this.modulesDirectory = modulesDirectory;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void modulesDirectory(String directory) {
-		setModulesDirectory(directory);
-	}
-
 	@InputFiles
 	public ConfigurableFileCollection getPrefixes() {
 		return prefixes;
@@ -92,6 +62,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 		this.getPrefixes().from(prefixes);
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void prefix(Object... prefixes) {
 		this.prefixes(prefixes);
 	}
@@ -105,6 +76,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 		this.getSuffixes().from(suffixes);
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void suffix(Object... suffixes) {
 		this.suffixes(suffixes);
 	}
@@ -174,8 +146,6 @@ public class PackageApplication extends AbstractSpaghettiTask {
 		getLogger().info("Creating {} application in {}", getType().getDescription(), getOutputDirectory());
 		getType().getPackager().packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles.getAllBundles(),
-				getModulesDirectory(),
-				getBaseUrl(),
 				getApplicationName(),
 				getMainModule(),
 				getExecute(),

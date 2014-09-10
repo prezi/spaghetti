@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.PropertyNode
 import com.prezi.spaghetti.ast.StructNode
-import com.prezi.spaghetti.ast.TypeMethodNode
 
 class TypeScriptStructGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
@@ -23,10 +22,5 @@ ${visitChildren(node)}
 		def optional = node.optional ? "?" : ""
 """	${node.name}${optional}: ${node.type.accept(this)};
 """
-	}
-
-	@Override
-	String visitTypeMethodNode(TypeMethodNode node) {
-		return visitMethodNode(node)
 	}
 }

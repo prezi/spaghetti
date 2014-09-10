@@ -20,32 +20,31 @@ interface MyInterface<T> {
 @deprecated("use doSomething() instead")
 void initModule(int a, ?int b)
 string doSomething()
-static int doStatic(int a, int b)
+int doStatic(int a, int b)
 <T> MyInterface<T> returnT(T t)
 """
 		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
 		def visitor = new TypeScriptModuleAccessorGeneratorVisitor(module)
 
 		expect:
-		visitor.visit(module) == """export class Test {
+		visitor.visit(module) == """export class TestModule {
 
-	private static __instance:any = SpaghettiConfiguration["__modules"]["com.example.test"]["__instance"];
-	private static __static:any = SpaghettiConfiguration["__modules"]["com.example.test"]["__static"];
+	private static module:any = Spaghetti["modules"]["com.example.test"]["module"];
 
 	/**
 	 * Initializes module.
 	 */
-	initModule(a:number, b?:number):void {
-		Test.__instance.initModule(a, b);
+	static initModule(a:number, b?:number):void {
+		TestModule.module.initModule(a, b);
 	}
-	doSomething():string {
-		return Test.__instance.doSomething();
+	static doSomething():string {
+		return TestModule.module.doSomething();
 	}
 	static doStatic(a:number, b:number):number {
-		return Test.__static.doStatic(a, b);
+		return TestModule.module.doStatic(a, b);
 	}
-	returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return Test.__instance.returnT(t);
+	static returnT<T>(t:T):com.example.test.MyInterface<T> {
+		return TestModule.module.returnT(t);
 	}
 
 }

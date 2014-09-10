@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.google.common.collect.ImmutableSet;
-import com.prezi.spaghetti.ReservedWords;
 import com.prezi.spaghetti.SourceMap;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.config.ModuleConfiguration;
@@ -17,8 +16,6 @@ public class ModuleObfuscator {
 	private static Set<String> collectProtectedSymbols() {
 		ImmutableSet.Builder<String> builder = ImmutableSet.builder();
 		builder.add("prototype");
-		// Spaghetti reserved words
-		builder.addAll(ReservedWords.PROTECTED_WORDS);
 		return builder.build();
 	}
 

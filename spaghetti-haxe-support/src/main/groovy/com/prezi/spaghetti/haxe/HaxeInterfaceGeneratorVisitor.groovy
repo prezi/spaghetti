@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ast.InterfaceNode
-import com.prezi.spaghetti.ast.TypeMethodNode
 
 class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 
@@ -27,10 +26,5 @@ ${methodDefinitions}
 			declaration += " extends ${superType}"
 		}
 		return declaration + " {"
-	}
-
-	@Override
-	String visitTypeMethodNode(TypeMethodNode node) {
-		return visitMethodNode(node)
 	}
 }

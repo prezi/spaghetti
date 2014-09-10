@@ -4,27 +4,22 @@ import prezi.graphics.core.Core;
 import prezi.graphics.text.CharacterStyleType;
 import prezi.graphics.text.Layout;
 import prezi.graphics.text.Values;
-import prezi.graphics.text.render.TextRenderer;
+import prezi.graphics.text.render.RenderModule;
 
-class Client implements IClient {
-	public var layout(default, null):Layout;
-	public var textRenderer(default, null):TextRenderer;
-	public function new(core:Core, layout:Layout, textRenderer:TextRenderer) {
-		this.layout = layout;
-		this.textRenderer = textRenderer;
-		trace("App name: " + SpaghettiConfiguration.getName());
-	}
-
-	public function main() {
-		var text = layout.createText();
+class Client {
+	public static function main() {
+		trace("App name: " + Spaghetti.getName());
+		trace("App version: " + Spaghetti.getVersion());
+		trace("App built by Spaghetti version " + Spaghetti.getSpaghettiVersion());
+		var text = prezi.graphics.text.Layout.createText();
 		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };
 		style.value = "normal";
 		text.insert(0, "World", [ style ]);
 		text.insert(0, Values.HI, []);
-		var renderer = textRenderer.createRenderer("Text rendered with TextRenderer module: [", "]");
+		var renderer = RenderModule.createRenderer("Text rendered with render module: [", "]");
 		trace(renderer.render(text));
 
-		var testStuff = layout.createTestStuff();
+		var testStuff = prezi.graphics.text.Layout.createTestStuff();
 		testStuff.registerCallback(function (message:String) {
 			trace("Received callback message: " + message);
 		});
@@ -39,11 +34,11 @@ class Client implements IClient {
 		var result = testStuff.doAsync(callback, function(value:Int):String { return Std.string(value + 1); });
 		trace("doAync() returned: " + result);
 
-		trace("Haxe resource: " + layout.getResource());
-		trace("TypeScript resource: " + textRenderer.getResource());
+		trace("Haxe resource: " + prezi.graphics.text.Layout.getResource());
+		trace("TypeScript resource: " + RenderModule.getResource());
 	}
 
-	function callback(name:String, converter:Int->String)
+	static function callback(name:String, converter:Int->String)
 	{
 		trace('Name: ${name}, converting 42: ${converter(42)}');
 	}

@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class SingleFileApplicationPackager extends AbstractApplicationPackager {
+	private final Wrapper wrapper;
+
 	public SingleFileApplicationPackager() {
 		this.wrapper = new SingleFileWrapper();
 	}
@@ -66,7 +68,8 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 							}
 						});
 						try {
-							dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrapper.wrap(module, dependencies, bundle.getJavaScript()) + "(" + Joiner.on(',').join(dependencyInstances) + "));");
+							String wrappedModule = wrapper.wrap(new ModuleWrappingParameters(bundle));
+							dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrappedModule + "(" + Joiner.on(',').join(dependencyInstances) + "));");
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}
@@ -76,7 +79,7 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 				IOUtils.write(Joiner.on('\n').join(dependencyInitializers), out, Charsets.UTF_8);
 				IOUtils.write("\n", out);
 
-				String wrappedApplication = wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute);
+				String wrappedApplication = wrapper.makeApplication(dependencyTree, params.mainModule, params.execute);
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 
 				for (String suffix : params.suffixes) {
@@ -85,6 +88,4 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 			}
 		});
 	}
-
-	private final Wrapper wrapper;
 }

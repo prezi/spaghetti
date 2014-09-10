@@ -46,7 +46,7 @@ public abstract class AbstractModulePackager implements ModulePackager {
 							IOUtils.write(prefix, out, Charsets.UTF_8);
 						}
 
-						String wrappedModule = wrapper.wrap(bundle.getName(), bundle.getDependentModules(), bundle.getJavaScript());
+						String wrappedModule = wrapper.wrap(new ModuleWrappingParameters(bundle));
 						IOUtils.write(wrappedModule, out, Charsets.UTF_8);
 
 						for (String suffix : params.suffixes) {

@@ -16,15 +16,15 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractStructuredApplicationPackager extends AbstractApplicationPackager {
-	protected final Wrapper wrapper;
+	protected final StructuredWrapper wrapper;
 
-	public AbstractStructuredApplicationPackager(Wrapper wrapper) {
+	public AbstractStructuredApplicationPackager(StructuredWrapper wrapper) {
 		this.wrapper = wrapper;
 	}
 
 	@Override
 	public void packageApplicationInternal(StructuredWriter writer, final ApplicationPackageParameters params) throws IOException {
-		StructuredAppender modulesAppender = writer.subAppender(params.modulesDirectory);
+		StructuredAppender modulesAppender = writer.subAppender(wrapper.getModulesDirectory());
 
 		for (ModuleBundle bundle : params.bundles) {
 			// Extract resources
@@ -32,7 +32,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 			bundle.extract(moduleAppender, EnumSet.of(ModuleBundleElement.resources, ModuleBundleElement.sourcemap));
 
 			// Add JavaScript
-			String wrappedJavaScript = wrapper.wrap(bundle.getName(), bundle.getDependentModules(), bundle.getJavaScript());
+			String wrappedJavaScript = wrapper.wrap(new ModuleWrappingParameters(bundle));
 			String moduleFile = getModuleFileName(bundle);
 			moduleAppender.appendFile(moduleFile, wrappedJavaScript);
 		}
@@ -50,7 +50,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 					IOUtils.write(prefix, out, Charsets.UTF_8);
 				}
 
-				String wrappedApplication = wrapper.makeApplication(params.baseUrl, params.modulesDirectory, dependencyTree, params.mainModule, params.execute);
+				String wrappedApplication = wrapper.makeApplication(dependencyTree, params.mainModule, params.execute);
 
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 				for (String suffix : params.suffixes) {

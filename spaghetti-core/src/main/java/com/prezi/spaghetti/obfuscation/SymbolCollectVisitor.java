@@ -4,17 +4,14 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.ast.ConstEntryNode;
 import com.prezi.spaghetti.ast.ConstNode;
 import com.prezi.spaghetti.ast.EnumNode;
-import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.ExternInterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceNode;
-import com.prezi.spaghetti.ast.ModuleMethodNode;
+import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.ModuleVisitorBase;
-import com.prezi.spaghetti.ast.PropertyNode;
+import com.prezi.spaghetti.ast.NamedNode;
 import com.prezi.spaghetti.ast.StructNode;
-import com.prezi.spaghetti.ast.TypeMethodNode;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,47 +35,36 @@ class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> {
 	}
 
 	@Override
+	public Collection<String> visitModuleNode(ModuleNode node) {
+		return Sets.newLinkedHashSet(Iterables.concat(super.visitModuleNode(node), extractNames(node.getMethods())));
+	}
+
+	@Override
 	public Collection<String> visitInterfaceNode(InterfaceNode node) {
-		return Collections2.transform(node.getMethods(), new Function<TypeMethodNode, String>() {
-			@Override
-			public String apply(TypeMethodNode method) {
-				return method.getName();
-			}
-		});
+		return extractNames(node.getMethods());
 	}
 
 	@Override
 	public Collection<String> visitStructNode(StructNode node) {
-		return Collections2.transform(node.getProperties(), new Function<PropertyNode, String>() {
-			@Override
-			public String apply(PropertyNode property) {
-				return property.getName();
-			}
-		});
+		return extractNames(node.getProperties());
 	}
 
 	@Override
 	public Collection<String> visitConstNode(ConstNode node) {
-		return Collections2.transform(node.getEntries(), new Function<ConstEntryNode, String>() {
-			@Override
-			public String apply(ConstEntryNode constEntry) {
-				return constEntry.getName();
-			}
-		});
+		return extractNames(node.getEntries());
 	}
 
 	@Override
 	public Collection<String> visitEnumNode(EnumNode node) {
-		return Collections2.transform(node.getValues(), new Function<EnumValueNode, String>() {
-			@Override
-			public String apply(EnumValueNode enumValue) {
-				return enumValue.getName();
-			}
-		});
+		return extractNames(node.getValues());
 	}
 
-	@Override
-	public Collection<String> visitModuleMethodNode(ModuleMethodNode node) {
-		return Collections.singleton(node.getName());
+	private static Collection<String> extractNames(Collection<? extends NamedNode> nodes) {
+		return Collections2.transform(nodes, new Function<NamedNode, String>() {
+			@Override
+			public String apply(NamedNode method) {
+				return method.getName();
+			}
+		});
 	}
 }

@@ -25,15 +25,10 @@ public interface Generator {
 	 * Needs to provide a function call to <code>spaghetti()</code> that returns a module object.
 	 * <p/>
 	 * <pre>
-	 *     spaghetti(function(SpaghettiConfiguration) {
-	 *         var modules = SpaghettiConfiguration["__modules"];
-	 *         var baseUrl = SpaghettiConfiguration["__baseUrl"];
-	 *         // Do stuff
-	 *         return {
-	 *             "__instance": { ... }, // the module object instance
-	 *             "__static": { ... } // exposed static methods
-	 *         }
-	 *     });
+	 *     function(Spaghetti) {
+	 *         // original code
+	 *         return module;
+	 *     }
 	 * </pre>
 	 *
 	 * @param module     the module the JavaScript is being processed for.

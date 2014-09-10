@@ -1,32 +1,20 @@
 package com.prezi.spaghetti.ast.parser;
 
-import com.prezi.spaghetti.ast.ModuleMethodType;
 import com.prezi.spaghetti.ast.TypeReference;
+import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodParameterNode;
-import com.prezi.spaghetti.ast.internal.DefaultModuleMethodNode;
-import com.prezi.spaghetti.ast.internal.DefaultTypeMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
 import com.prezi.spaghetti.ast.internal.MutableMethodNode;
 import com.prezi.spaghetti.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class MethodParser {
-	protected static DefaultModuleMethodNode parseModuleMethodDefinition(TypeResolver resolver, ModuleParser.ModuleMethodDefinitionContext methodCtx) {
-		String name = methodCtx.methodDefinition().Name().getText();
-		ModuleMethodType type = methodCtx.isStatic != null ? ModuleMethodType.STATIC : ModuleMethodType.DYNAMIC;
-		DefaultModuleMethodNode methodNode = new DefaultModuleMethodNode(name, type);
+	protected static DefaultMethodNode parseMethodDefinition(TypeResolver resolver, ModuleParser.MethodDefinitionContext methodCtx) {
+		String name = methodCtx.Name().getText();
+		DefaultMethodNode methodNode = new DefaultMethodNode(name);
 		AnnotationsParser.parseAnnotations(methodCtx.annotations(), methodNode);
 		DocumentationParser.parseDocumentation(methodCtx.documentation, methodNode);
-		MethodParser.parseMethodDefinition(resolver, methodCtx.methodDefinition(), methodNode);
-		return methodNode;
-	}
-
-	protected static DefaultTypeMethodNode parseTypeMethodDefinition(TypeResolver resolver, ModuleParser.TypeMethodDefinitionContext methodCtx) {
-		String name = methodCtx.methodDefinition().Name().getText();
-		DefaultTypeMethodNode methodNode = new DefaultTypeMethodNode(name);
-		AnnotationsParser.parseAnnotations(methodCtx.annotations(), methodNode);
-		DocumentationParser.parseDocumentation(methodCtx.documentation, methodNode);
-		parseMethodDefinition(resolver, methodCtx.methodDefinition(), methodNode);
+		MethodParser.parseMethodDefinition(resolver, methodCtx, methodNode);
 		return methodNode;
 	}
 

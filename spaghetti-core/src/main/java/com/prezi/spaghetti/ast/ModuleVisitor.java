@@ -13,15 +13,14 @@ public interface ModuleVisitor<T> {
 	T visitImportNode(ImportNode node);
 	T visitInterfaceNode(InterfaceNode node);
 	T visitInterfaceReference(InterfaceReference reference);
+	T visitMethodNode(MethodNode node);
 	T visitMethodParameterNode(MethodParameterNode node);
-	T visitModuleMethodNode(ModuleMethodNode node);
 	T visitModuleNode(ModuleNode node);
 	T visitPrimitiveTypeReference(PrimitiveTypeReference reference);
 	T visitPropertyNode(PropertyNode node);
 	T visitStructNode(StructNode node);
 	T visitStructReference(StructReference reference);
 	T visitTypeChain(TypeChain chain);
-	T visitTypeMethodNode(TypeMethodNode node);
 	T visitTypeParameterNode(TypeParameterNode node);
 	T visitTypeParameterReference(TypeParameterReference reference);
 	T visitVoidTypeReference(VoidTypeReference reference);
