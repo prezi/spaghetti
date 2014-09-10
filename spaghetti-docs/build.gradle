@@ -1,5 +1,18 @@
+def siteDirectory = file("${buildDir}/site")
+def shouldPublish = parent.hasProperty("release") && parent.hasProperty("sonatype")
+
+task cloneSite(type: Exec) {
+	outputs.dir siteDirectory
+	commandLine "git", "clone", "--branch", "gh-pages", "--depth", "1", "git@github.com:prezi/spaghetti", siteDirectory
+	doFirst {
+		delete(siteDirectory)
+		mkdir(siteDirectory)
+	}
+}
+
 task collectJavadoc(type: Copy) { collector ->
-	def outputDirectory = file("${buildDir}/javadoc")
+	dependsOn cloneSite
+	def outputDirectory = file("${siteDirectory}/javadoc")
 	parent.subprojects { subproject ->
 		tasks.withType(Javadoc) { javadoc ->
 			collector.dependsOn javadoc
@@ -22,5 +35,38 @@ task collectJavadoc(type: Copy) { collector ->
 			return line.replace(matcher.group(1), "")
 		}
 		return line;
+	}
+}
+
+task buildSite {
+	dependsOn collectJavadoc
+}
+
+task addSite(type: Exec) {
+	dependsOn buildSite
+	onlyIf { shouldPublish }
+	commandLine "git", "add", "--all"
+	workingDir siteDirectory
+}
+
+task commitSite(type: Exec) {
+	dependsOn addSite
+	onlyIf { shouldPublish }
+	commandLine "git", "commit", "--message", "Updated site for ${version} release"
+	workingDir siteDirectory
+}
+
+task publishSite(type: Exec) {
+	dependsOn commitSite
+	onlyIf { shouldPublish }
+	commandLine "git", "push"
+	workingDir siteDirectory
+}
+
+task check {}
+
+tasks.withType(Upload) {
+	if (shouldPublish) {
+		dependsOn publishSite
 	}
 }

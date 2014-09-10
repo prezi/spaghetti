@@ -207,7 +207,7 @@ def inheritJavadoc(Project target, Project dependency) {
 
 	target.javadoc {
 		dependsOn coreJavadoc
-		options.linksOffline dependencyUrl, coreJavadoc.destinationDir.path
+		options.linksOffline "../" + dependency.name, coreJavadoc.destinationDir.path
 	}
 
 	target.groovydoc {
