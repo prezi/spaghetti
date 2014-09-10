@@ -201,21 +201,30 @@ configure(groovyProjects) {
 	}
 }
 
-// Make Javadocs depend on core
-configure(codeProjects - project(":spaghetti-core")) {
-	def coreJavadoc = project(":spaghetti-core").tasks.javadoc
+def inheritJavadoc(Project target, Project dependency) {
+	def coreJavadoc = dependency.tasks.javadoc
+	def dependencyUrl = "http://prezi.github.io/spaghetti/javadoc/" + dependency.name
 
-	javadoc {
+	target.javadoc {
 		dependsOn coreJavadoc
-		options.linksOffline "../spaghetti-core", coreJavadoc.destinationDir.path
+		options.linksOffline dependencyUrl, coreJavadoc.destinationDir.path
 	}
 
-	groovydoc {
+	target.groovydoc {
 		dependsOn coreJavadoc
 		doFirst {
-			link("http://prezi.github.io/spaghetti/javadoc/spaghetti-core", *(new File(coreJavadoc.destinationDir, "package-list").text.tokenize("\n")))
+			link(dependencyUrl, *(new File(coreJavadoc.destinationDir, "package-list").text.tokenize("\n")))
 		}
 	}
+}
+
+// Make Javadocs depend on core
+configure(codeProjects - project(":spaghetti-core")) { p ->
+	inheritJavadoc p, project(":spaghetti-core")
+}
+
+configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) { p ->
+	inheritJavadoc p, project(":gradle-spaghetti-plugin")
 }
 
 project(":spaghetti-core") {
