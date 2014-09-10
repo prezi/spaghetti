@@ -23,7 +23,7 @@ public interface Generator {
 	/**
 	 * Process the JavaScript code of a module.
 	 * Needs to provide a function call to <code>spaghetti()</code> that returns a module object.
-	 * <p/>
+	 *
 	 * <pre>
 	 *     function(Spaghetti) {
 	 *         // original code

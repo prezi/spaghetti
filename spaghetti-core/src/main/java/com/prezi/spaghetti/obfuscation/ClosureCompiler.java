@@ -20,15 +20,17 @@ import java.util.Set;
 /**
  * lineLengthThreshold = 1 forces closure to insert a newline in the
  * obfuscated code every chance it gets.
- * <p/>
+ * <p>
  * The reason we want this is because column number information in
  * stack traces are inconsistent across browsers. Most of the time
  * we only have line numbers, which means we cannot exactly tell
  * where in the code the obfuscated statement in question
  * originates from.
- * <p/>
+ * </p>
+ * <p>
  * This way we don't rely on support for column number information
  * in browsers.
+ * </p>
  */
 public class ClosureCompiler {
 
