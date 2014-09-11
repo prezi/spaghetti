@@ -28,6 +28,8 @@ allprojects {
 
 subprojects { subproject ->
 	apply plugin: 'maven'
+	// For some reason this is needed ot have dependencies in POM files
+	apply plugin: "java"
 
 	repositories {
 		mavenLocal()
@@ -161,7 +163,7 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 
 	artifacts {
 		archives jar
-//		archives docJar
+		archives docJar
 		archives sourcesJar
 	}
 }

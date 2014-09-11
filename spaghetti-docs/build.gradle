@@ -64,8 +64,6 @@ task publishSite(type: Exec) {
 	workingDir siteDirectory
 }
 
-task check {}
-
 tasks.withType(Upload) {
 	if (shouldPublish) {
 		dependsOn publishSite
