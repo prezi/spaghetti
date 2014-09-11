@@ -146,8 +146,22 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 		from rootProject.file("LICENSE.txt")
 	}
 
+	def doc
+	if (project.name ==~ /spaghetti-(haxe|typescript)-support/) {
+		doc = groovydoc
+	} else {
+		doc = javadoc
+	}
+
+	task docJar(type: Jar) {
+		dependsOn doc
+		classifier = "javadoc"
+		from doc.destinationDir
+	}
+
 	artifacts {
 		archives jar
+		archives docJar
 		archives sourcesJar
 	}
 }
@@ -175,30 +189,6 @@ subprojects {
 				link(it, *(new URL("$it/package-list").text.tokenize("\n")))
 			}
 		}
-	}
-}
-
-configure(javaProjects) {
-	task javadocJar(type: Jar) {
-		dependsOn javadoc
-		classifier = "javadoc"
-		from javadoc.destinationDir
-	}
-
-	artifacts {
-		archives javadocJar
-	}
-}
-
-configure(groovyProjects) {
-	task groovydocJar(type: Jar) {
-		dependsOn groovydoc
-		classifier = "javadoc"
-		from groovydoc.destinationDir
-	}
-
-	artifacts {
-		archives groovydocJar
 	}
 }
 
