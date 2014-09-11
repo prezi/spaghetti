@@ -123,7 +123,7 @@ ext.codeProjects = subprojects.findAll {
 ext.groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-typescript-support") ]
 ext.javaProjects = codeProjects - groovyProjects
 
-configure(codeProjects) {
+configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	apply plugin: 'groovy'
 
 	sourceCompatibility = "1.6"
