@@ -4,6 +4,7 @@ Spaghetti
 Spaghetti helps you in creating large-scale modular JavaScript applications with modules written in different compile-to-JS languages. It allows a module's code to call another module in a type-safe way regardless of the language either module is written in.
 
 [![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
+[![Analytics](https://ga-beacon.appspot.com/UA-54695510-1/github.com/prezi/spaghetti)](https://github.com/igrigorik/ga-beacon)
 
 Currently Spaghetti can only be used from Gradle. We plan to support other build systems and a stand-alone command-line tool in the future.
 
