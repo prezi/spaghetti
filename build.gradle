@@ -161,7 +161,7 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 
 	artifacts {
 		archives jar
-		archives docJar
+//		archives docJar
 		archives sourcesJar
 	}
 }
