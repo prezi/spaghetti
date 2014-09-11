@@ -16,6 +16,7 @@ def signArtifacts = sonatype || hasProperty("sign")
 
 allprojects {
 	group = 'com.prezi.spaghetti'
+	description = "Spaghetti"
 	version = gitVersion
 	apply plugin: 'idea'
 
