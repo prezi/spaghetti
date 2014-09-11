@@ -22,11 +22,11 @@ public class AmdWrapper extends AbstractWrapper implements StructuredWrapper {
 		Map<String, String> modules = Maps.newLinkedHashMap();
 		int index = 0;
 		for (String name : moduleNamesWithRequire) {
-			modules.put(name, "args[" + index + "]");
+			modules.put(name, "dependencies[" + index + "]");
 			index++;
 		}
 
-		String baseUrlDeclaration = "var moduleUrl=args[0][\"toUrl\"](\"" + params.bundle.getName() + ".js\");"
+		String baseUrlDeclaration = "var moduleUrl=dependencies[0][\"toUrl\"](\"" + params.bundle.getName() + ".js\");"
 			+ "var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));";
 
 		StringBuilder result = new StringBuilder();
