@@ -8,7 +8,7 @@ class HaxeModuleAccessorGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def definition = """module com.example.test
 
-extern interface UnicodeString
+extern interface JSON
 
 interface MyInterface<T> {
 	/**
@@ -22,7 +22,7 @@ interface MyInterface<T> {
  */
 @deprecated("use doSomething() instead")
 void initModule(int a, ?int b)
-UnicodeString[] doSomething()
+JSON[] doSomething()
 @nullable int doStatic(@nullable int a, int b)
 <T> MyInterface<T> returnT(T t)
 """
@@ -41,7 +41,7 @@ UnicodeString[] doSomething()
 	@:extern public static inline function initModule(a:Int, ?b:Int):Void {
 		TestModule.module.initModule(a, b);
 	}
-	@:extern public static inline function doSomething():Array<String> {
+	@:extern public static inline function doSomething():Array<haxe.Json> {
 		return TestModule.module.doSomething();
 	}
 	@:extern public static inline function doStatic(a:Null<Int>, b:Int):Null<Int> {

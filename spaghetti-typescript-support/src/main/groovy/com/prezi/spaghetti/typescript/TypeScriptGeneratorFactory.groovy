@@ -7,7 +7,6 @@ import com.prezi.spaghetti.config.ModuleConfiguration
 public class TypeScriptGeneratorFactory extends AbstractGeneratorFactory {
 
 	public static def EXTERNS = [
-			"UnicodeString": "string"
 	].asImmutable()
 
 	TypeScriptGeneratorFactory() {

@@ -8,7 +8,7 @@ import com.prezi.spaghetti.definition.ModuleDefinitionSource
 class ModuleParserTest extends AstTestBase {
 	def "parse single"() {
 		def definition = """module com.example.test
-extern interface UnicodeString
+extern interface JSON
 extern interface Iterable<T>
 
 enum MyEnum {
@@ -18,7 +18,7 @@ enum MyEnum {
 
 struct MyStruct {
 	MyEnum en
-	UnicodeString str
+	JSON str
 }
 
 interface Lajos extends Iterable<string> {
@@ -40,7 +40,7 @@ interface Lajos extends Iterable<string> {
 				"com.example.test.Lajos",
 		]
 		module.externTypes*.qualifiedName*.toString().asList() == [
-				"UnicodeString",
+				"JSON",
 				"Iterable"
 		]
 		0 * _

@@ -7,7 +7,7 @@ import com.prezi.spaghetti.config.ModuleConfiguration
 public class HaxeGeneratorFactory extends AbstractGeneratorFactory {
 
 	private static def DEFAULT_EXTERNS = [
-	        UnicodeString: "String",
+	        JSON: "haxe.Json",
 	]
 	public static def EXTERNS = (DEFAULT_EXTERNS + HaxeJsHtmlExterns.EXTERNS).asImmutable()
 
