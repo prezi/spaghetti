@@ -3,8 +3,6 @@
  */
 module prezi.graphics.text as Layout
 
-extern interface UnicodeString
-
 /**
  * Different types of character styles.
  */
@@ -68,7 +66,7 @@ struct Generic<T> {
 @deprecated
 interface AbstractText {
 	@deprecated("use \"insertNextGen\" instead")
-	void insert(int offset, UnicodeString text, @nullable CharacterStyle[] withStyles)
+	void insert(int offset, string text, @nullable CharacterStyle[] withStyles)
 	void delete(int offset, int end)
 }
 
@@ -80,7 +78,7 @@ interface Text extends AbstractText {
 	 * Inserts the given string at <code>offset</code>.
 	 */
 	@deprecated
-	UnicodeString getRawText()
+	string getRawText()
 }
 
 extern interface HTMLCanvasElement
