@@ -9,8 +9,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 
-@Command(name = "headers", description = "Generates headers in the implementation language")
-public class GenerateHeadersCommand extends AbstractLanguageAwareCommand {
+@Command(name = "stubs", description = "Generates stubs in the implementation language")
+public class GenerateStubsCommand extends AbstractLanguageAwareCommand {
 
 	@Option(name = {"-o", "--output", "--output-directory"},
 			description = "Output directory",
@@ -31,7 +31,7 @@ public class GenerateHeadersCommand extends AbstractLanguageAwareCommand {
 		Generator generator = createGenerator(config);
 		FileUtils.deleteDirectory(outputDirectory);
 		FileUtils.forceMkdir(outputDirectory);
-		generator.generateHeaders(outputDirectory);
+		generator.generateStubs(outputDirectory);
 		return 0;
 	}
 }

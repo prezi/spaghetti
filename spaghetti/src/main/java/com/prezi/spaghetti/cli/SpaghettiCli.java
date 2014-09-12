@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Level;
 import com.prezi.spaghetti.cli.commands.AbstractCommand;
 import com.prezi.spaghetti.cli.commands.BundleModuleCommand;
 import com.prezi.spaghetti.cli.commands.GenerateHeadersCommand;
+import com.prezi.spaghetti.cli.commands.GenerateStubsCommand;
 import com.prezi.spaghetti.cli.commands.PackageApplicationCommand;
 import io.airlift.command.Cli;
 import io.airlift.command.Help;
@@ -26,11 +27,17 @@ public class SpaghettiCli {
 				.withDescription("typed JavaScript module system")
 				.withDefaultCommand(Help.class)
 				.withCommands(
-						GenerateHeadersCommand.class,
 						BundleModuleCommand.class,
 						PackageApplicationCommand.class,
 						Help.class
-				);
+				)
+				.withGroup("generate")
+					.withDescription("Generate source code")
+					.withDefaultCommand(Help.class)
+					.withCommands(
+							GenerateHeadersCommand.class,
+							GenerateStubsCommand.class
+					);
 
 		Cli<Callable<?>> parser = builder.build();
 		int exitValue;
