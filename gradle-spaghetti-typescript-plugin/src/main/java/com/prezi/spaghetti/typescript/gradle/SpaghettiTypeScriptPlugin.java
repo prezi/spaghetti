@@ -48,7 +48,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		// Spaghetti will be working with TypeScript, might as well set it
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
-		spaghettiExtension.setPlatform("typescript");
+		spaghettiExtension.setLanguage("typescript");
 
 		project.getPlugins().apply(TypeScriptPlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);

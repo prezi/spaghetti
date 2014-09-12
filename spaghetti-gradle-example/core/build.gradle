@@ -1,7 +1,7 @@
 apply plugin: "spaghetti"
 
 spaghetti {
-	platform "js"
+	language "js"
 }
 
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {

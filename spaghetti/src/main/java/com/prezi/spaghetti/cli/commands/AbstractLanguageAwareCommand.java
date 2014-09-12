@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.cli.commands;
 
 import com.prezi.spaghetti.Generator;
-import com.prezi.spaghetti.Platforms;
+import com.prezi.spaghetti.Languages;
 import com.prezi.spaghetti.config.ModuleConfiguration;
 import io.airlift.command.Option;
 
@@ -15,6 +15,6 @@ public abstract class AbstractLanguageAwareCommand extends AbstractDefinitionAwa
 	protected String language;
 
 	protected Generator createGenerator(ModuleConfiguration config) throws IOException {
-		return Platforms.createGeneratorForPlatform(language, config);
+		return Languages.createGeneratorForLanguage(language, config);
 	}
 }

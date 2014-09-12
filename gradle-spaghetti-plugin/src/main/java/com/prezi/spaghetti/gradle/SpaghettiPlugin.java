@@ -3,7 +3,7 @@ package com.prezi.spaghetti.gradle;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.GeneratorFactory;
-import com.prezi.spaghetti.Platforms;
+import com.prezi.spaghetti.Languages;
 import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.gradle.incubating.FunctionalSourceSet;
 import com.prezi.spaghetti.gradle.incubating.LanguageSourceSet;
@@ -48,7 +48,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	public void apply(final Project project) {
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
 
-		createPlatformsTask(project);
+		createLanguagesTask(project);
 
 		final SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
 
@@ -163,29 +163,29 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiStubs.builtBy(generateStubsTask);
 	}
 
-	private static void createPlatformsTask(Project project) {
-		if (project.getTasks().findByName("spaghetti-platforms") != null) {
+	private static void createLanguagesTask(Project project) {
+		if (project.getTasks().findByName("spaghetti-languages") != null) {
 			return;
 		}
 
-		Task platformsTask = project.getTasks().create("spaghetti-platforms");
-		platformsTask.setGroup("help");
-		platformsTask.setDescription("Show supported Spaghetti platforms.");
-		platformsTask.doLast(new Action<Task>() {
+		Task languagesTask = project.getTasks().create("spaghetti-languages");
+		languagesTask.setGroup("help");
+		languagesTask.setDescription("Show supported Spaghetti languages.");
+		languagesTask.doLast(new Action<Task>() {
 			@Override
 			public void execute(Task task) {
-				Set<GeneratorFactory> factories = Platforms.getGeneratorFactories();
+				Set<GeneratorFactory> factories = Languages.getGeneratorFactories();
 				if (factories.isEmpty()) {
-					System.out.println("No platform support for Spaghetti is found");
+					System.out.println("No language support for Spaghetti is found");
 				} else {
-					System.out.println("Spaghetti supports the following platforms:\n");
+					System.out.println("Spaghetti supports the following languages:\n");
 					int length = 0;
 					for (GeneratorFactory factory : factories) {
-						length = Math.max(length, factory.getPlatform().length());
+						length = Math.max(length, factory.getLanguage().length());
 					}
 
 					for (GeneratorFactory factory : factories) {
-						System.out.println("  " + Strings.padEnd(factory.getPlatform(), length, ' ') + " - " + factory.getDescription());
+						System.out.println("  " + Strings.padEnd(factory.getLanguage(), length, ' ') + " - " + factory.getDescription());
 					}
 				}
 			}

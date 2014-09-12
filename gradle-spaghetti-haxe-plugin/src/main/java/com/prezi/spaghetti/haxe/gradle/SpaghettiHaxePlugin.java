@@ -58,7 +58,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		// Spaghetti will be working with Haxe, might as well set it
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
-		spaghettiExtension.setPlatform("haxe");
+		spaghettiExtension.setLanguage("haxe");
 
 		project.getPlugins().apply(HaxeBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);

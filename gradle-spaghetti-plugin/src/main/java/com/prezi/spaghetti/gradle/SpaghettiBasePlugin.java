@@ -37,13 +37,13 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 				});
 			}
 		});
-		project.getTasks().withType(AbstractPlatformAwareSpaghettiTask.class).all(new Action<AbstractPlatformAwareSpaghettiTask>() {
+		project.getTasks().withType(AbstractLanguageAwareSpaghettiTask.class).all(new Action<AbstractLanguageAwareSpaghettiTask>() {
 			@Override
-			public void execute(AbstractPlatformAwareSpaghettiTask task) {
-				task.getConventionMapping().map("platform", new Callable<String>() {
+			public void execute(AbstractLanguageAwareSpaghettiTask task) {
+				task.getConventionMapping().map("language", new Callable<String>() {
 					@Override
 					public String call() throws Exception {
-						return extension.getPlatform();
+						return extension.getLanguage();
 					}
 				});
 			}

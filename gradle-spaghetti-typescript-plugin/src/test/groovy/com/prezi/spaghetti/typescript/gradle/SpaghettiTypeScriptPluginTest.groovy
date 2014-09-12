@@ -25,7 +25,7 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"obfuscateJsModule",
 				"obfuscateTestJsModule",
 				"processSpaghettiResources",
-				"spaghetti-platforms",
+				"spaghetti-languages",
 				"testJs",
 				"testJsModule",
 				"zipJsModule",

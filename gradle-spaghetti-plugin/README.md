@@ -36,7 +36,7 @@ You can generate Haxe interfaces and proxies from dependent modules, and interfa
 ```groovy
 task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateHeaders) {
 	definition "Layout.module"
-	platform "haxe"
+	language "haxe"
 	outputDirectory "${buildDir}/spaghetti-module"
 }
 ```
@@ -82,7 +82,7 @@ Build your application, and then bundle it for [RequireJS](http://requirejs.org/
 task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 	dependsOn compileHaxe
 	configuration configurations.modules
-	platform "haxe"
+	language "haxe"
 	inputFile compileHaxe.outputFile
 	outputFile "${buildDir}/app.js"
 }

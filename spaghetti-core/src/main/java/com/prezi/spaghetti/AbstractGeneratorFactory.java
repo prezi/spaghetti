@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.Set;
 
 public abstract class AbstractGeneratorFactory implements GeneratorFactory {
-	private final String platform;
+	private final String language;
 	private final String description;
 
-	protected AbstractGeneratorFactory(String platform, String description) {
-		this.platform = platform;
+	protected AbstractGeneratorFactory(String language, String description) {
+		this.language = language;
 		this.description = description;
 	}
 
@@ -17,8 +17,8 @@ public abstract class AbstractGeneratorFactory implements GeneratorFactory {
 		return Collections.emptySet();
 	}
 
-	public final String getPlatform() {
-		return platform;
+	public final String getLanguage() {
+		return language;
 	}
 
 	public final String getDescription() {

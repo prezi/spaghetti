@@ -6,16 +6,16 @@ import java.util.Set;
 
 public interface GeneratorFactory {
 	/**
-	 * Returns name of supported platform.
+	 * Returns name of supported language.
 	 *
-	 * @return the identifier of the platform.
+	 * @return the identifier of the language.
 	 */
-	public abstract String getPlatform();
+	public abstract String getLanguage();
 
 	/**
-	 * Returns description of the platform.
+	 * Returns description of the language.
 	 *
-	 * @return the description of the platform.
+	 * @return the description of the language.
 	 */
 	public abstract String getDescription();
 

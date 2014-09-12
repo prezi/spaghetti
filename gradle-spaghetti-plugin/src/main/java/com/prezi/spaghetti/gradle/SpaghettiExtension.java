@@ -15,7 +15,7 @@ public class SpaghettiExtension {
 	private final ProjectSourceSet sources;
 	private final BinaryContainer binaries;
 
-	private String platform;
+	private String language;
 	private Configuration configuration;
 	private Configuration obfuscatedConfiguration;
 	private String sourceBaseUrl;
@@ -52,16 +52,16 @@ public class SpaghettiExtension {
 		action.execute(binaries);
 	}
 
-	public String getPlatform() {
-		return platform;
+	public String getLanguage() {
+		return language;
 	}
 
-	public void setPlatform(String platform) {
-		this.platform = platform;
+	public void setLanguage(String language) {
+		this.language = language;
 	}
 
-	public void platform(String platform) {
-		setPlatform(platform);
+	public void language(String language) {
+		setLanguage(language);
 	}
 
 	public Configuration getConfiguration() {
