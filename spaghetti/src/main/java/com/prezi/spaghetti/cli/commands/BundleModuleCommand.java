@@ -1,13 +1,11 @@
 package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
-import com.prezi.spaghetti.cli.SpaghettiCliException;
 import com.prezi.spaghetti.config.ModuleConfiguration;
 import io.airlift.command.Command;
 import io.airlift.command.Option;
@@ -48,14 +46,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 
 	@Override
 	public Integer call() throws Exception {
-		OutputType type;
-		if (Strings.isNullOrEmpty(this.type) || this.type.toUpperCase().equals("ZIP")) {
-			type = OutputType.ZIP;
-		} else if (this.type.toUpperCase().equals("DIR")){
-			type = OutputType.DIR;
-		} else {
-			throw new SpaghettiCliException("Invalid bundle type: " + this.type);
-		}
+		OutputType type = OutputType.fromString(this.type, output);
 
 		ModuleConfiguration config = parseConfig();
 		ModuleNode moduleNode = config.getLocalModules().first();
@@ -71,7 +62,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		String processedJavaScript = createGenerator(config).processModuleJavaScript(moduleNode, javaScript);
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();
-		for (ModuleNode dependentModule : config.getAllDependentModules()) {
+		for (ModuleNode dependentModule : config.getDirectDependentModules()) {
 			dependentModules.add(dependentModule.getName());
 		}
 
@@ -86,15 +77,13 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				resourcesDirectory);
 
 		switch (type) {
-			case DIR:
+			case DIRECTORY:
 				ModuleBundleFactory.createDirectory(output, params);
+				break;
 			case ZIP:
 				ModuleBundleFactory.createZip(output, params);
+				break;
 		}
 		return 0;
-	}
-
-	private static enum OutputType {
-		DIR, ZIP
 	}
 }
