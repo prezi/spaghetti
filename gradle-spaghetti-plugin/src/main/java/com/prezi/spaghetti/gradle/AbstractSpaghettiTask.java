@@ -55,6 +55,16 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		this.additionalDirectDependentModules(additionalDirectDependentModules);
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
+	public void additionalDependentModules(Object... modules) {
+		additionalDirectDependentModules(modules);
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void additionalDependentModule(Object... modules) {
+		additionalDirectDependentModules(modules);
+	}
+
 	@InputFiles
 	public ConfigurableFileCollection getAdditionalDirectDependentModules() {
 		return getProject().files(this.getAdditionalDirectDependentModulesInternal());
