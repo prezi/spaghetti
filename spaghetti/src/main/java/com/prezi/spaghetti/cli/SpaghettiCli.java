@@ -6,6 +6,7 @@ import com.prezi.spaghetti.cli.commands.BundleModuleCommand;
 import com.prezi.spaghetti.cli.commands.GenerateHeadersCommand;
 import com.prezi.spaghetti.cli.commands.GenerateStubsCommand;
 import com.prezi.spaghetti.cli.commands.PackageApplicationCommand;
+import com.prezi.spaghetti.cli.commands.VersionCommand;
 import io.airlift.command.Cli;
 import io.airlift.command.Help;
 import io.airlift.command.ParseException;
@@ -29,6 +30,7 @@ public class SpaghettiCli {
 				.withCommands(
 						BundleModuleCommand.class,
 						PackageApplicationCommand.class,
+						VersionCommand.class,
 						Help.class
 				)
 				.withGroup("generate")
