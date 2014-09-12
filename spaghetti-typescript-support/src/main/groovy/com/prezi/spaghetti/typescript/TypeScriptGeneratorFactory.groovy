@@ -6,8 +6,7 @@ import com.prezi.spaghetti.config.ModuleConfiguration
 
 public class TypeScriptGeneratorFactory extends AbstractGeneratorFactory {
 
-	public static def EXTERNS = [
-	].asImmutable()
+	public static Map<String, String> EXTERNS = Collections.emptyMap()
 
 	TypeScriptGeneratorFactory() {
 		super("typescript", "generates TypeScript code")
