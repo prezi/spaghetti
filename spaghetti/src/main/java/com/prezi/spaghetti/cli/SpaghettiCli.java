@@ -2,6 +2,7 @@ package com.prezi.spaghetti.cli;
 
 import ch.qos.logback.classic.Level;
 import com.prezi.spaghetti.cli.commands.AbstractCommand;
+import com.prezi.spaghetti.cli.commands.BundleModuleCommand;
 import com.prezi.spaghetti.cli.commands.GenerateHeadersCommand;
 import io.airlift.command.Cli;
 import io.airlift.command.Help;
@@ -25,6 +26,7 @@ public class SpaghettiCli {
 				.withDefaultCommand(Help.class)
 				.withCommands(
 						GenerateHeadersCommand.class,
+						BundleModuleCommand.class,
 						Help.class
 				);
 
