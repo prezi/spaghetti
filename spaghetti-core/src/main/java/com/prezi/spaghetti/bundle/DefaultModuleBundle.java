@@ -246,4 +246,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
 		return spaghettiVersion.startsWith("2.");
 	}
+
+	@Override
+	public String toString() {
+		return getName();
+	}
 }
