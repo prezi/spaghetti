@@ -233,6 +233,36 @@ configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	}
 }
 
+configure(project(":spaghetti")) {
+	apply plugin: "application"
+
+	dependencies {
+		compile project(":spaghetti-core")
+		compile "io.airlift:airline:0.6"
+		compile "ch.qos.logback:logback-classic:1.1.2"
+		runtime rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
+	}
+
+	mainClassName = "com.prezi.spaghetti.cli.SpaghettiCli"
+
+	build { dependsOn installApp }
+
+	configure(applicationDistribution) {
+		from(rootProject.file("README.md")) {
+			into "/"
+		}
+		from(rootProject.file("LICENSE.txt")) {
+			into "/"
+		}
+	}
+
+	artifacts {
+		archives(distZip) {
+			classifier "dist"
+		}
+	}
+}
+
 project(":gradle-spaghetti-plugin") {
 	dependencies {
 		compile gradleApi()
@@ -243,9 +273,7 @@ project(":gradle-spaghetti-plugin") {
 		compile "commons-io:commons-io:2.4"
 
 		// Add all support projects
-		rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }.each { supportProject ->
-			compile project(path: supportProject.path)
-		}
+		compile rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
 	}
 
 	task run(type: Exec) {
