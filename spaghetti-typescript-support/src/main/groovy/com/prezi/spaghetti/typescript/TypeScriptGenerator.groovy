@@ -70,7 +70,7 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		contents += new TypeScriptModuleProxyGeneratorVisitor(module).visit(module)
 		contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
-		TypeScriptUtils.createSourceFile(module, "I${module.alias}", outputDirectory, contents)
+		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
 	}
 
 	private static void generateDependentModule(ModuleNode module, File outputDirectory, boolean directDependency) {
