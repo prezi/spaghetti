@@ -15,7 +15,7 @@ public class SingleFileWrapper extends AbstractWrapper {
 		Map<String, String> modules = Maps.newLinkedHashMap();
 		int index = 0;
 		for (String dependency : Sets.newTreeSet(params.bundle.getDependentModules())) {
-			modules.put(dependency, "args[" + index + "]");
+			modules.put(dependency, "dependencies[" + index + "]");
 			index++;
 		}
 
