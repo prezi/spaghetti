@@ -10,7 +10,7 @@ Modularizing a large, evolving JavaScript applications is hard, because the unty
 
 ## How Does it Work?
 
-Spaghetti modules are written in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org). Each module's API is defined in a [Spaghetti Interface Definition file](wiki/Spaghetti Syntax).
+Spaghetti modules are written in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org). Each module's API is defined in a [Spaghetti Interface Definition file](/../../wiki/Spaghetti Syntax).
 
 Based on this abstract API definition, Spaghetti ensures type safety on both sides of the communiaction:
 
@@ -86,7 +86,7 @@ console.log(greeter.sayHello("World"));
 
 ## Try It
 
-Check [the tutorial here](wiki/Tutorial) for a step-by-step introduction to Spaghetti.
+Check [the tutorial here](/../../wiki/Tutorial) for a step-by-step introduction to Spaghetti.
 
 There is a working example under [spaghetti-gradle-example](spaghetti-gradle-example). This one uses the Gradle build integration.
 
