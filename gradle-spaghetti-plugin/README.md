@@ -154,7 +154,7 @@ task packageApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
 }
 ```
 
-Available packaging types are:
+Available packaging types are (case-insensitive):
 
-* "node" or "commonjs" for CommonJS/NodeJS compatible executable
-* "amd" or "requirejs" for AMD/RequireJS compatible executable
+* `node` or `commonjs` for CommonJS/NodeJS compatible executable
+* `amd` or `requirejs` for AMD/RequireJS compatible executable
