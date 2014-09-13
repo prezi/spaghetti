@@ -105,3 +105,8 @@ Read more about in the [plugin's readme](gradle-spaghetti-plugin/README.md).
 ### Other Build Systems
 
 Maven support is planned, but no clear deadline is decided right now.
+
+## Documentation
+
+The documentation is [available on the wiki](/../../wiki).
+
