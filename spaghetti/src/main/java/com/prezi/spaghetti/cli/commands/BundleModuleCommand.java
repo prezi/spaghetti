@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
@@ -70,7 +71,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		ModuleBundleParameters params = new ModuleBundleParameters(
 				moduleNode.getName(),
 				moduleNode.getSource().getContents(),
-				version,
+				!Strings.isNullOrEmpty(version) ? version : "unspecified",
 				sourceBaseUrl,
 				processedJavaScript,
 				sourceMap,
