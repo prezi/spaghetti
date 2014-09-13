@@ -6,22 +6,22 @@ Spaghetti provides type-safe communication between JavaScript modules.
 [![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
 [![Analytics](https://ga-beacon.appspot.com/UA-54695510-1/github.com/prezi/spaghetti)](https://github.com/igrigorik/ga-beacon)
 
-In JavaScript, modularizing a large, evolving application is hard, because the untyped nature of the modules makes it difficult to keep track of changing APIs. Spaghetti tries to remedy this situation by allowing compilers to check communication between modules. This way, when an API becomes incompatible, instead of runtime problems, you can deal with compile-time errors.
+Modularizing a large, evolving JavaScript applications is hard, because the untyped nature of the modules makes it difficult to keep track of changing APIs. Spaghetti uses compilers to check communication between modules, transforming run-time API compatibility problems into compile errors.
 
 ## How Does it Work?
 
-Spaghetti modules are written in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org). Each module has a [Spaghetti Interface Definition file](wiki/Spaghetti Syntax) that defines the module's API.
+Spaghetti modules are written in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org). Each module's API is defined in a [Spaghetti Interface Definition file](wiki/Spaghetti Syntax).
 
-Spaghetti ensures type safety in the communication between modules in two ways:
+Based on this abstract API definition, Spaghetti ensures type safety on both sides of the communiaction:
 
-* it generates interfaces and other types for you to implement in your chosen language to ensure that your module implements the right API,
-* it generates proxies and other types in your chosen language to access dependent modules in a type-safe way.
+* When implementing a module, its Spaghetti API gets transpiled into language specific source code. This code declares the API in language-specific terms (i.e. classes and interfaces). Your module's implementation must be compatible with these generated interfaces, and in turn with the Spaghetti API.
+* Spaghetti generates language-specific proxy classes to access other modules in a type-safe way, based on those modules' Spaghetti APIs.
 
-This approach also allows modules to be written using different languages.
+This approach also allows modules to be written using different languages (e.g. you can access modules written in TypeScript from a Haxe module etc.).
 
 ## Example
 
-The definition of a Spaghetti module looks something like this:
+The definition of a Spaghetti module looks like this:
 
 ```
 module com.example.test as TestModule
@@ -84,40 +84,24 @@ var greeter = com.example.test.TestModule.createGreeter();
 console.log(greeter.sayHello("World"));
 ```
 
-Check out the working example under [spaghetti-gradle-example](spaghetti-gradle-example).
+## Try It
 
-## Build System Support
+Check [the tutorial here](wiki/Tutorial) for a step-by-step introduction to Spaghetti.
+
+There is a working example under [spaghetti-gradle-example](spaghetti-gradle-example). This one uses the Gradle build integration.
+
+## How to Use It?
 
 ### Command-Line Tool
 
-You can use Spaghetti via a command-line tool. You can build it like this:
-
-```bash
-$ ./gradlew installApp
-$ export PATH=`pwd`/spaghetti/build/install/spaghetti/bin:$PATH
-```
-
-It has a comprehensive help system (thanks to the awesome [Airline](https://github.com/airlift/airline) library):
-
-```bash
-$ spaghetti help
-usage: spaghetti <command> [<args>]
-
-The most commonly used spaghetti commands are:
-    bundle     Create a module bundle.
-    generate   Generate source code
-    help       Display help information
-    package    Package an application
-
-See 'spaghetti help <command>' for more information on a specific command.
-```
+The quickest way to try Spaghetti is to use it via its [command-line tool](spaghetti).
 
 ### Gradle
 
-Spaghetti comes with a Gradle plugin that makes it easy to integrate Spaghetti into your workflow.
+Spaghetti comes with a Gradle plugin that makes it easy to integrate Spaghetti into your workflow when building larger applications.
 
 Read more about in the [plugin's readme](gradle-spaghetti-plugin/README.md).
 
-### Other Systems
+### Other Build Systems
 
 Maven support is planned, but no clear deadline is decided right now.
