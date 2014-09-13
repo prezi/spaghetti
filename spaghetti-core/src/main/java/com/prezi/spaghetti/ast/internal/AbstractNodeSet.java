@@ -3,7 +3,6 @@ package com.prezi.spaghetti.ast.internal;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.NodeSet;
 import com.prezi.spaghetti.ast.parser.InternalAstParserException;
-import groovy.lang.GroovyObjectSupport;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -16,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("NullableProblems")
-public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode> extends GroovyObjectSupport implements NodeSet<K, N> {
+public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode> implements NodeSet<K, N> {
 	private final Map<K, N> delegate;
 	private final String type;
 

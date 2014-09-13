@@ -12,7 +12,6 @@ import com.prezi.spaghetti.structure.IOCallable;
 import com.prezi.spaghetti.structure.StructuredAppender;
 import com.prezi.spaghetti.structure.StructuredReader;
 import com.prezi.spaghetti.structure.StructuredWriter;
-import groovy.lang.Reference;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -28,6 +27,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -132,7 +132,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 
 
-		final Reference<Manifest> manifest = new Reference<Manifest>(null);
+		final AtomicReference<Manifest> manifest = new AtomicReference<Manifest>(null);
 		final Set<String> resourcePaths = Sets.newLinkedHashSet();
 		source.processFiles(new StructuredReader.FileHandler() {
 			@Override
@@ -182,7 +182,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 				return null;
 			}
 
-			final Reference<String> text = new Reference<String>(null);
+			final AtomicReference<String> text = new AtomicReference<String>(null);
 			source.processFile(path, new StructuredReader.FileHandler() {
 				@Override
 				public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {

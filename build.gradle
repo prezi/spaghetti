@@ -137,6 +137,7 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
 			exclude group: "org.codehaus.groovy"
 		}
+		testCompile "org.codehaus.groovy:groovy:2.3.6"
 	}
 
 	task sourcesJar(type: Jar) {
@@ -223,6 +224,12 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) { p -
 project(":spaghetti-core") {
 	dependencies {
 		compile "com.google.javascript:closure-compiler:v20140508"
+	}
+}
+
+configure(groovyProjects) {
+	dependencies {
+		compile "org.codehaus.groovy:groovy:2.3.6"
 	}
 }
 

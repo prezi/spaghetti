@@ -16,7 +16,7 @@ import com.prezi.spaghetti.ast.StructReference
 import com.prezi.spaghetti.ast.TypeChain
 import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.VoidTypeReference
-import groovy.json.StringEscapeUtils
+import org.apache.commons.lang.StringEscapeUtils
 
 abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
 	protected static final EnumMap<PrimitiveType, String> PRIMITIVE_TYPES = [

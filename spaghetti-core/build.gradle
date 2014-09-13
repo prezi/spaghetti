@@ -3,7 +3,6 @@ configurations {
 }
 
 dependencies {
-	compile localGroovy()
 	compile "org.antlr:antlr4-runtime:4.2"
 	compile "commons-lang:commons-lang:2.6"
 	compile "commons-codec:commons-codec:1.9"
