@@ -52,19 +52,11 @@ There is a working example under [spaghetti-gradle-example](spaghetti-gradle-exa
 
 ## How to Use It?
 
-### Command-Line Tool
+Spaghetti is a Java-based tool, and requires Java 7 or newer. It has multiple interfaces:
 
-The quickest way to try Spaghetti is to use it via its [command-line tool](spaghetti).
-
-### Gradle
-
-Spaghetti comes with a Gradle plugin that makes it easy to integrate Spaghetti into your workflow when building larger applications.
-
-Read more about in the [plugin's readme](gradle-spaghetti-plugin/README.md).
-
-### Other Build Systems
-
-Maven support is planned, but no clear deadline is decided right now.
+* the [command-line tool](spaghetti) is the quickest way to get working with Spaghetti
+* the [Gradle plugins](gradle-spaghetti-plugin/README.md) make it easy to integrate Spaghetti into your workflow
+* Maven and other build system support is planned but no deadline has been set yet.
 
 ## Documentation
 
