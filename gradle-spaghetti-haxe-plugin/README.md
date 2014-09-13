@@ -1,9 +1,9 @@
 Spaghetti Haxe Gradle Plugin
 ============================
 
-## Basic usage
+For an example on how to use the plugin, see [the Spaghetti Gradle example here](../spaghetti-gradle-example). Gradle 2.0 or newer is required to use the plugin.
 
-You can apply the Spaghetti Haxe plugin by:
+## Basic usage
 
 ```groovy
 buildscript {
@@ -12,19 +12,20 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.prezi.spaghetti:gradle-spaghetti-haxe-plugin:1.4.1"
+        classpath "com.prezi.spaghetti:gradle-spaghetti-haxe-plugin:<version>"
     }
 }
 
 apply plugin: "spaghetti-haxe"
 ```
 
+For available version numbers, please check [the list of Spaghetti releases](/../../releases).
+
 It does the following things:
 
-* Applies the [gradle-spaghetti-plugin](../gradle-spaghetti-plugin)
-* Applies the [gradle-haxe-plugin](https://github.com/prezi/gradle-haxe-plugin) without creating tasks
+* Applies the [Spaghetti plugin](../gradle-spaghetti-plugin)
+* Applies the [Haxe plugin](https://github.com/prezi/gradle-haxe-plugin) without creating tasks
 * Sets Spaghetti's target language to `haxe`
-* Creates the `js` Haxe target platform
+* Configures the `js` Haxe target platform
 * Makes sure the all `test` configurations have access to dependent modules
-* Configures the Haxe plugin to include generated Spaghetti sources when compiling and testing artifacts, and when creating the source bundles
-* Creates special tasks for compilation and MUnit testing that work with Spaghetti modules
+* Configures the Haxe plugin to include generated Spaghetti sources when compiling and testing artifacts, and when creating source bundles
