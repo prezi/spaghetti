@@ -22,7 +22,8 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 	private String wrapper;
 
 	@Option(name = {"-o", "--output"},
-			description = "Output directory of ZIP file")
+			description = "Output directory of ZIP file",
+			required = true)
 	private File output;
 
 	@Option(name = {"--name"},

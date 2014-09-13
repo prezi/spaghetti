@@ -33,7 +33,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 	private String sourceBaseUrl;
 
 	@Option(name = {"-o", "--output"},
-			description = "Output directory of ZIP file")
+			description = "Output directory of ZIP file",
+			required = true)
 	private File output;
 
 	@Option(name = {"-V", "--version"},
