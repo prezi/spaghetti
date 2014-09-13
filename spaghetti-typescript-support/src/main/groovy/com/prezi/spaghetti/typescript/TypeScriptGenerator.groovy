@@ -66,7 +66,7 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 	 */
 	private static void generateLocalModule(ModuleNode module, File outputDirectory)
 	{
-		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
+		def contents = ""
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		contents += new TypeScriptModuleProxyGeneratorVisitor(module).visit(module)
 		contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
