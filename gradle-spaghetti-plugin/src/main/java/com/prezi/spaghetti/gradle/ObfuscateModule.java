@@ -82,8 +82,13 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void closureExtern(Object... extern) {
-		closureExterns.addAll(Arrays.asList((Object[]) extern));
+	public void closureExterns(Object... externs) {
+		closureExterns.addAll(Arrays.asList(externs));
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void closureExtern(Object... externs) {
+		closureExterns(externs);
 	}
 
 	@InputFiles
