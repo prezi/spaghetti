@@ -52,9 +52,7 @@ spaghetti {
 
 ## Tasks
 
-### Generating headers
-
-**Syntax:**
+### Generating Headers
 
 ```groovy
 task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateHeaders) {
@@ -78,7 +76,9 @@ task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateHeaders) {
 }
 ```
 
-### Bundling the module
+### Generating Stubs
+
+### Bundling the Module
 
 ```groovy
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
@@ -111,7 +111,7 @@ The `ObfuscateModule` task takes the same properties as `BundleModule`, and adds
 
 ```groovy
 task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
-    // Extern definition files for Closure
+    // Extern definition files for Closure (see below)
     closureExterns <files>
     
     // Additional symbols to protect during Closure compilation
