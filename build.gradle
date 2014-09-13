@@ -1,4 +1,5 @@
 def gradleVer = "2.0"
+def groovyVersion = "2.3.6"
 
 String gitVersion
 if (hasProperty("release")) {
@@ -137,7 +138,7 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
 			exclude group: "org.codehaus.groovy"
 		}
-		testCompile "org.codehaus.groovy:groovy:2.3.6"
+		testCompile "org.codehaus.groovy:groovy:${groovyVersion}"
 	}
 
 	task sourcesJar(type: Jar) {
@@ -170,6 +171,14 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 }
 
 subprojects {
+	configurations {
+		groovydoc { extendsFrom compile }
+	}
+
+	dependencies {
+		groovydoc "org.codehaus.groovy:groovy-all:${groovyVersion}"
+	}
+
 	String[] apis = [
 		"http://docs.oracle.com/javase/8/docs/api/",
 		"http://groovy.codehaus.org/gapi/",
@@ -185,7 +194,7 @@ subprojects {
 	}
 
 	tasks.withType(Groovydoc) {
-		groovydoc.groovyClasspath = configurations.compile
+		groovydoc.groovyClasspath = configurations.groovydoc
 		// Done in doFirst() so that we don't download stuff in configuration phase
 		doFirst {
 			apis.each {
@@ -229,7 +238,7 @@ project(":spaghetti-core") {
 
 configure(groovyProjects) {
 	dependencies {
-		compile "org.codehaus.groovy:groovy:2.3.6"
+		compile "org.codehaus.groovy:groovy:${groovyVersion}"
 	}
 }
 
