@@ -1,7 +1,10 @@
 Spaghetti Demo
 ==============
 
-This is a simple demo application. It has three modules:
+This is a simple demo application. Check it out online: http://prezi.github.io/spaghetti/demo/
+
+The application has three modules:
+
 * `core` is a vanilla JS module
 * `layout` is a Haxe module
 * `text-renderer` is a TypeScript module
