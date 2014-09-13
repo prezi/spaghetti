@@ -1,9 +1,14 @@
 Spaghetti Gradle Plugin
 =======================
 
-## Basic usage
+For an example on how to use the plugin, see [the Spaghetti Gradle example here](../spaghetti-gradle-example). If you want to work with one of the supported languages, it's better to use the Spaghetti plugin through its language-specific descendants:
 
-You can apply the Spaghetti plugin by:
+* the [Spaghetti TypeScript plugin](../gradle-spaghetti-typescript-plugin), or
+* the [Spaghetti Haxe plugin](../gradle-spaghetti-haxe-plugin).
+
+Gradle 2.0 or newer is required to use the plugins.
+
+## Basic usage
 
 ```groovy
 buildscript {
@@ -12,78 +17,129 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:1.4.1"
+        classpath "com.prezi.spaghetti:gradle-spaghetti-plugin:<version>"
     }
 }
 
 apply plugin: "spaghetti"
 ```
 
-It does a number of things:
+For available version numbers, please check [the list of Spaghetti releases](/../../releases).
+
+When applied to a project, the plugin configures a number of things:
 
 * Creates the `modules` configuration -- the main configuration to publish module bundles to
 * Creates the `modulesObf` configuration to publish obfuscated module bundles to
 * Adds the `spaghetti` extension to the build
-* Specifies the default location for Spaghetti module definitions as `src/main/spaghetti`
-* Adds a [`GenerateHeaders`](#generating-headers) task (see below) that looks for definitions in the default location
-* If you are using a language that can generate Spaghetti compatible JavaScript (only the [Gradle Haxe plugin](https://github.com/prezi/gradle-haxe-plugin) is capable of this right now), it will also add a [`BundleModule`](#bundling-the-module) and an [`ObfuscateModule`](#obfuscation) task for each of these binaries
-	* if you are working with a non-compatible language, you will have to create these tasks manually
+* Adds a [`GenerateHeaders`](#generating-headers) task (see below) that looks for definitions in `src/main/spaghetti`
+
+When using either the [Spaghetti Haxe plugin](../gradle-spaghetti-haxe-plugin) or the [Spaghetti TypeScript plugin](../gradle-spaghetti-typescript-plugin), generated code will automatically be included in the compilation of your code, and a [BundleModule](#bundling-the-module) and an [ObfuscateModule](#obfuscation) task is automatically created. The bundled and obfuscated ZIPs are automatically added to the artifacts of the `modules` and `modulesObf` configurations, respectively.
+
+## Tasks
 
 ### Generating headers
 
-You can generate Haxe interfaces and proxies from dependent modules, and interfaces to implement from the current module:
+**Syntax:**
 
 ```groovy
 task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateHeaders) {
-	definition "Layout.module"
-	language "haxe"
-	outputDirectory "${buildDir}/spaghetti-module"
+    // The Spaghetti definition file
+    definition <file>
+
+    // The language to generate headers in
+    language <language>
+
+    // The configuration holding any dependent modules
+    dependentModules <configuration>
+
+    // Additional directly dependent modules
+    additionalDirectDependentModules <Set<File>>
+
+    // Additional transitive dependent modules
+    additionalTransitiveDependentModules <Set<File>>
+
+    // The location to generate headers into
+    outputDirectory <directory>
 }
 ```
 
 ### Bundling the module
 
-You can then implement these interfaces, and compile all your code to a JavaScript file. Now you only have to bundle your code into a Spaghetti-compatible module, and you're all set:
-
 ```groovy
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
-	// Depend on the compile task
-	dependsOn compileHaxe
-	// The module definition to include in the bundle
-	definition "src/main/spaghetti/MyModule.module"
-	// Wrap and bundle the compiled JS
-	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/mymodule.zip"
+    // The Spaghetti definition file
+    definition <file>
+
+    // The language of the module's implementation
+    language <language>
+    
+    // The compiled JavaScript code of the module
+    inputFile <file>
+
+    // The configuration holding any dependent modules
+    dependentModules <configuration>
+
+    // Additional directly dependent modules
+    additionalDirectDependentModules <Set<File>>
+
+    // Additional transitive dependent modules
+    additionalTransitiveDependentModules <Set<File>>
+
+    // The location to create the bundle in
+    outputDirectory <directory>
 }
 ```
-
-## Advanced topics
 
 ### Obfuscation
 
+The `ObfuscateModule` task takes the same properties as `BundleModule`, and adds some more:
 
 ```groovy
 task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
-	// Depend on the compile task
-	dependsOn compileHaxe
-	// The module definition to include in the bundle
-	definition "src/main/spaghetti/MyModule.module"
-	// Wrap and bundle the compiled JS
-	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/mymodule-obfuscated.zip"
+    // Extern definition files for Closure
+    closureExterns <files>
+    
+    // Additional symbols to protect during Closure compilation
+    additionalSymbols <symbols>
+    
+    // Working directory for Closure compiler
+    workDir <directory>
 }
 ```
 
-### Generating an application
+Read more here about [why and how externs can be useful](https://developers.google.com/closure/compiler/docs/api-tutorial3#externs).
 
-Build your application, and then bundle it for [RequireJS](http://requirejs.org/):
+### Packaging applications
 
 ```groovy
-task bundleApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
-	dependsOn compileHaxe
-	configuration configurations.modules
-	language "haxe"
-	inputFile compileHaxe.outputFile
-	outputFile "${buildDir}/app.js"
+task packageApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
+    // The configuration holding the application's modules
+    dependentModules <configuration>
+
+    // Additional directly dependent modules
+    additionalDirectDependentModules <Set<File>>
+
+    // Additional transitive dependent modules
+    additionalTransitiveDependentModules <Set<File>>
+    
+    // Name of the main module of the application
+    mainModule <name>
+    
+    // Whether or not to actually call mainModule.main()
+    execute <true|false>
+    
+    // The name of the application (executable name is applicationName + '.js')
+    applicationName <name>
+    
+    // The type of the packaging (see below)
+    type <packaging>
+
+    // The location to create the bundle in
+    outputDirectory <directory>
 }
 ```
+
+Available packaging types are:
+
+* "node" or "commonjs" for CommonJS/NodeJS compatible executable
+* "amd" or "requirejs" for AMD/RequireJS compatible executable
