@@ -88,10 +88,6 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		return getProject().files(this.getAdditionalTransitiveDependentModulesInternal());
 	}
 
-	protected SpaghettiPlugin getPlugin() {
-		return getProject().getPlugins().getPlugin(SpaghettiPlugin.class);
-	}
-
 	protected ModuleBundleLookupResult lookupBundles() throws IOException {
 		Set<File> directDependencies = Sets.newLinkedHashSet();
 		for (ResolvedDependency dependency : getDependentModules().getResolvedConfiguration().getFirstLevelModuleDependencies()) {
