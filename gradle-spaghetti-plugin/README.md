@@ -35,6 +35,21 @@ When applied to a project, the plugin configures a number of things:
 
 When using either the [Spaghetti Haxe plugin](../gradle-spaghetti-haxe-plugin) or the [Spaghetti TypeScript plugin](../gradle-spaghetti-typescript-plugin), generated code will automatically be included in the compilation of your code, and a [BundleModule](#bundling-the-module) and an [ObfuscateModule](#obfuscation) task is automatically created. The bundled and obfuscated ZIPs are automatically added to the artifacts of the `modules` and `modulesObf` configurations, respectively.
 
+## Extension
+
+```groovy
+spaghetti {
+    // Pre-configure all Spaghetti tasks to use this language
+    language <language>
+
+    // Use this configuration to look for dependent modules and to publish bundles
+    configuration <configuration>
+
+    // Use this configuration to publish obfuscated bundles
+    obfuscatedConfiguration <configuration>
+}
+```
+
 ## Tasks
 
 ### Generating headers
