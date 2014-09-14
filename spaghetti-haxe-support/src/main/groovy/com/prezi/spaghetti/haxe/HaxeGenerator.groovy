@@ -4,6 +4,7 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGenerator
+import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleProxyGeneratorVisitor
@@ -16,23 +17,28 @@ class HaxeGenerator extends AbstractGenerator {
 	// Workaround variable to trick Haxe into exposing the module
 	public static final String HAXE_MODULE_VAR = "__haxeModule"
 
-	HaxeGenerator(ModuleConfiguration config) {
-		super(config)
+	private final String header
+	private final ModuleConfiguration config
+
+	HaxeGenerator(GeneratorParameters params) {
+		super(params)
+		this.header = params.header
+		this.config = params.moduleConfiguration
 	}
 
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateModuleInitializer(module, outputDirectory)
-			generateModuleStaticProxy(module, outputDirectory)
-			generateModuleTypes(module, outputDirectory)
+			generateModuleInitializer(module, outputDirectory, header)
+			generateModuleStaticProxy(module, outputDirectory, header)
+			generateModuleTypes(module, outputDirectory, header)
 		}
 		config.allDependentModules.each { dependentModule ->
-			generateModuleTypes(dependentModule, outputDirectory)
+			generateModuleTypes(dependentModule, outputDirectory, header)
 		}
 		config.directDependentModules.each { dependentModule ->
-			generateModuleAccessor(dependentModule, outputDirectory)
+			generateModuleAccessor(dependentModule, outputDirectory, header)
 		}
 	}
 
@@ -42,7 +48,7 @@ class HaxeGenerator extends AbstractGenerator {
 			for (type in module.types) {
 				if (type instanceof InterfaceNode) {
 					def contents = new HaxeInterfaceStubGeneratorVisitor().visit(type)
-					HaxeUtils.createHaxeSourceFile(module.name, type.name + "Stub", outputDirectory, contents)
+					HaxeUtils.createHaxeSourceFile(header, module.name, type.name + "Stub", outputDirectory, contents)
 				}
 			}
 		}
@@ -69,36 +75,36 @@ return ${HAXE_MODULE_VAR};
 	/**
 	 * Generates static proxy.
 	 */
-	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory)
+	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory, String header)
 	{
 		def contents = new HaxeModuleProxyGeneratorVisitor(module).visit(module)
-		HaxeUtils.createHaxeSourceFile(module.name, "__${module.alias}Proxy", outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(header, module.name, "__${module.alias}Proxy", outputDirectory, contents)
 	}
 
 	/**
 	 * Generates initializer for module.
 	 */
-	private static void generateModuleInitializer(ModuleNode module, File outputDirectory)
+	private static void generateModuleInitializer(ModuleNode module, File outputDirectory, String header)
 	{
 		def initializerName = "__" + module.alias + "Init"
 		def initializerContents = new HaxeModuleInitializerGeneratorVisitor().visit(module)
-		HaxeUtils.createHaxeSourceFile(module.name, initializerName, outputDirectory, initializerContents)
+		HaxeUtils.createHaxeSourceFile(header, module.name, initializerName, outputDirectory, initializerContents)
 	}
 
 	/**
 	 * Generates accessor class for module.
 	 */
-	private static void generateModuleAccessor(ModuleNode module, File outputDirectory)
+	private static void generateModuleAccessor(ModuleNode module, File outputDirectory, String header)
 	{
 		def contents = new HaxeModuleAccessorGeneratorVisitor(module).visit(module)
-		HaxeUtils.createHaxeSourceFile(module.name, module.alias, outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(header, module.name, module.alias, outputDirectory, contents)
 	}
 
 	/**
 	 * Generates interfaces, enums, structs and constants defined in the module.
 	 */
-	private static void generateModuleTypes(ModuleNode module, File outputDirectory)
+	private static void generateModuleTypes(ModuleNode module, File outputDirectory, String header)
 	{
-		new HaxeDefinitionIteratorVisitor(outputDirectory, module.name).visit(module)
+		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.name).visit(module)
 	}
 }

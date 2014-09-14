@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.generator;
 
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.config.ModuleConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +10,8 @@ import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS;
 
 public abstract class AbstractGenerator implements Generator {
 
-	protected final ModuleConfiguration config;
-
-	public AbstractGenerator(ModuleConfiguration config) {
-		this.config = config;
+	@SuppressWarnings("UnusedParameters")
+	public AbstractGenerator(GeneratorParameters params) {
 	}
 
 	@Override

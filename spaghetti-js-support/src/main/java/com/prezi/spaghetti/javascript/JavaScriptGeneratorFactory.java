@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.javascript;
 
-import com.prezi.spaghetti.config.ModuleConfiguration;
 import com.prezi.spaghetti.generator.AbstractGeneratorFactory;
 import com.prezi.spaghetti.generator.Generator;
+import com.prezi.spaghetti.generator.GeneratorParameters;
 
 public class JavaScriptGeneratorFactory extends AbstractGeneratorFactory {
 	public JavaScriptGeneratorFactory() {
@@ -10,8 +10,8 @@ public class JavaScriptGeneratorFactory extends AbstractGeneratorFactory {
 	}
 
 	@Override
-	public Generator createGenerator(ModuleConfiguration configuration) {
-		return new JavaScriptGenerator(configuration);
+	public Generator createGenerator(GeneratorParameters params) {
+		return new JavaScriptGenerator(params);
 	}
 
 }

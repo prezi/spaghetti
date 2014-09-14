@@ -10,16 +10,18 @@ import com.prezi.spaghetti.ast.StructNode
 class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	private final File outputDirectory
+	private final String header
 	private final String packageName
 
-	HaxeDefinitionIteratorVisitor(File outputDirectory, String packageName) {
+	HaxeDefinitionIteratorVisitor(File outputDirectory, String header, String packageName) {
 		this.outputDirectory = outputDirectory
+		this.header = header
 		this.packageName = packageName
 	}
 
 	private void createSourceFile(NamedNode node, ModuleVisitorBase<String> visitor) {
 		def contents = node.accept(visitor)
-		HaxeUtils.createHaxeSourceFile(packageName, node.name, outputDirectory, contents)
+		HaxeUtils.createHaxeSourceFile(header, packageName, node.name, outputDirectory, contents)
 	}
 
 	@Override

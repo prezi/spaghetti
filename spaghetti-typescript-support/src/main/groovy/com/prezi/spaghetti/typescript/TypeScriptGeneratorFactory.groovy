@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGeneratorFactory
 import com.prezi.spaghetti.generator.Generator
+import com.prezi.spaghetti.generator.GeneratorParameters
 
 public class TypeScriptGeneratorFactory extends AbstractGeneratorFactory {
 
@@ -13,7 +13,7 @@ public class TypeScriptGeneratorFactory extends AbstractGeneratorFactory {
 	}
 
 	@Override
-	Generator createGenerator(ModuleConfiguration configuration) {
-		return new TypeScriptGenerator(configuration)
+	Generator createGenerator(GeneratorParameters params) {
+		return new TypeScriptGenerator(params)
 	}
 }

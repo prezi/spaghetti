@@ -1,15 +1,14 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.generator.internal.GeneratorUtils
 
 final class TypeScriptUtils {
-	public static File createSourceFile(ModuleNode module, String name, File outputDirectory, String contents) {
+	public static File createSourceFile(String header, ModuleNode module, String name, File outputDirectory, String contents) {
 		def namespace = module.name
 		def file = new File(outputDirectory, name + ".ts")
 		file.delete()
 		file << "/*\n"
-		file << " * " + GeneratorUtils.createHeaderComment() + "\n"
+		file << " * " + header + "\n"
 		file << " */\n"
 		if (namespace)
 		{

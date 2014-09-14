@@ -1,7 +1,5 @@
 package com.prezi.spaghetti.generator;
 
-import com.prezi.spaghetti.config.ModuleConfiguration;
-
 import java.util.Set;
 
 public interface GeneratorFactory {
@@ -22,10 +20,10 @@ public interface GeneratorFactory {
 	/**
 	 * Creates generator.
 	 *
-	 * @param configuration the module configuration the generator will use.
+	 * @param params The generation parameters.
 	 * @return the generator.
 	 */
-	public abstract Generator createGenerator(ModuleConfiguration configuration);
+	public abstract Generator createGenerator(GeneratorParameters params);
 
 	/**
 	 * Returns set of symbols that need to be protected by the obfuscator.

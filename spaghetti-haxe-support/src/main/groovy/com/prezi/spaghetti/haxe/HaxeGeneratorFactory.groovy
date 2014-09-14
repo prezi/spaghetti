@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGeneratorFactory
 import com.prezi.spaghetti.generator.Generator
+import com.prezi.spaghetti.generator.GeneratorParameters
 
 public class HaxeGeneratorFactory extends AbstractGeneratorFactory {
 
@@ -24,8 +24,7 @@ public class HaxeGeneratorFactory extends AbstractGeneratorFactory {
 	}
 
 	@Override
-	Generator createGenerator(ModuleConfiguration configuration)
-	{
-		return new HaxeGenerator(configuration)
+	Generator createGenerator(GeneratorParameters params) {
+		return new HaxeGenerator(params)
 	}
 }

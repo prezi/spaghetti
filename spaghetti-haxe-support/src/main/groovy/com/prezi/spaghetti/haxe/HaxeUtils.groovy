@@ -1,15 +1,13 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.generator.internal.GeneratorUtils
-
 final class HaxeUtils {
-	public static File createHaxeSourceFile(String namespace, String name, File outputDirectory, String contents) {
+	public static File createHaxeSourceFile(String header, String namespace, String name, File outputDirectory, String contents) {
 		def packageDir = createNamespacePath(outputDirectory, namespace)
 		packageDir.mkdirs()
 		def file = new File(packageDir, name + ".hx")
 		file.delete()
 		file << "/*\n"
-		file << " * " + GeneratorUtils.createHeaderComment() + "\n"
+		file << " * " + header + "\n"
 		file << " */\n"
 		if (namespace)
 		{

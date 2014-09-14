@@ -4,6 +4,7 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGenerator
+import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
@@ -15,21 +16,26 @@ class TypeScriptGenerator extends AbstractGenerator {
 
 	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
 
-	TypeScriptGenerator(ModuleConfiguration config) {
-		super(config)
+	private final String header
+	private final ModuleConfiguration config
+
+	TypeScriptGenerator(GeneratorParameters params) {
+		super(params)
+		this.header = params.header
+		this.config = params.moduleConfiguration
 	}
 
 	@Override
 	void generateHeaders(File outputDirectory) {
 		config.localModules.each { module ->
 			copySpaghettiClass(outputDirectory)
-			generateLocalModule(module, outputDirectory)
+			generateLocalModule(module, outputDirectory, header)
 		}
 		config.directDependentModules.each { dependentModule ->
-			generateDependentModule(dependentModule, outputDirectory, true)
+			generateDependentModule(dependentModule, outputDirectory, header, true)
 		}
 		config.transitiveDependentModules.each { dependentModule ->
-			generateDependentModule(dependentModule, outputDirectory, false)
+			generateDependentModule(dependentModule, outputDirectory, header, false)
 		}
 	}
 
@@ -42,7 +48,7 @@ class TypeScriptGenerator extends AbstractGenerator {
 					contents += new TypeScriptInterfaceStubGeneratorVisitor().visit(type)
 				}
 			}
-			TypeScriptUtils.createSourceFile(module, module.alias + "Stubs", outputDirectory, contents)
+			TypeScriptUtils.createSourceFile(header, module, module.alias + "Stubs", outputDirectory, contents)
 		}
 	}
 
@@ -64,21 +70,21 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 	/**
 	 * Generates local module.
 	 */
-	private static void generateLocalModule(ModuleNode module, File outputDirectory)
+	private static void generateLocalModule(ModuleNode module, File outputDirectory, String header)
 	{
 		def contents = ""
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		contents += new TypeScriptModuleProxyGeneratorVisitor(module).visit(module)
 		contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
-		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
+		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
 
-	private static void generateDependentModule(ModuleNode module, File outputDirectory, boolean directDependency) {
+	private static void generateDependentModule(ModuleNode module, File outputDirectory, String header, boolean directDependency) {
 		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
 		if (directDependency) {
 			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).visit(module)
 		}
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
-		TypeScriptUtils.createSourceFile(module, module.alias, outputDirectory, contents)
+		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
 }
