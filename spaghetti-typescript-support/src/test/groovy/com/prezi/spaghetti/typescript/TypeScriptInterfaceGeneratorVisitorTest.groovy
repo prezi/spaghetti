@@ -21,7 +21,7 @@ interface MyInterface<X> extends Parent<X> {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def parser = ModuleParser.create(new ModuleDefinitionSource("test", definition))
+		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
 		def module = parser.parse(mockResolver())
 		def visitor = new TypeScriptInterfaceGeneratorVisitor()
 

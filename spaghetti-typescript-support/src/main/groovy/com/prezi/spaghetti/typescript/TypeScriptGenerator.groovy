@@ -2,7 +2,7 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.config.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor

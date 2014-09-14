@@ -1,11 +1,9 @@
 package com.prezi.spaghetti.cli.commands;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.config.ModuleConfiguration;
-import com.prezi.spaghetti.config.ModuleConfigurationParser;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import io.airlift.command.Option;
 
@@ -33,13 +31,12 @@ public abstract class AbstractDefinitionAwareCommand extends AbstractSpaghettiCo
 	private static Collection<ModuleDefinitionSource> parseDefinitionSources(String path) throws IOException {
 		Collection<ModuleDefinitionSource> sources = Sets.newLinkedHashSet();
 		for (ModuleBundle bundle : parseBundles(path)) {
-			sources.add(new ModuleDefinitionSource(bundle.getName(), bundle.getDefinition()));
+			sources.add(ModuleDefinitionSource.fromBundle(bundle));
 		}
 		return sources;
 	}
 
 	private static ModuleDefinitionSource parseDefinition(File file) throws IOException {
-		String contents = Files.asCharSource(file, Charsets.UTF_8).read();
-		return new ModuleDefinitionSource(file.getPath(), contents);
+		return ModuleDefinitionSource.fromFile(file);
 	}
 }

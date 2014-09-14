@@ -70,7 +70,7 @@ enum LeEnum {
 	}
 
 	private List<String> visit(String what) {
-		def module = ModuleParser.create(new ModuleDefinitionSource("test", what)).parse(Mock(TypeResolver))
+		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", what)).parse(Mock(TypeResolver))
 		def result = module.accept(new SymbolCollectVisitor())
 		return result.sort()
 	}

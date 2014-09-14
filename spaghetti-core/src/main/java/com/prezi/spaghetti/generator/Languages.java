@@ -3,7 +3,7 @@ package com.prezi.spaghetti.generator;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.Version;
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;

@@ -21,7 +21,7 @@ const MyConstants {
 	tibor = "tibor"
 }
 """
-		def parser = ModuleParser.create(new ModuleDefinitionSource("test", definition))
+		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
 		def module = parser.parse(mockResolver())
 		def visitor = new JavaScriptConstGeneratorVisitor()
 

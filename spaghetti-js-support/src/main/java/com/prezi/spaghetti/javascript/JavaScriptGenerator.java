@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharSink;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.AbstractGenerator;
 import com.prezi.spaghetti.generator.GeneratorParameters;
 import org.apache.commons.io.FileUtils;

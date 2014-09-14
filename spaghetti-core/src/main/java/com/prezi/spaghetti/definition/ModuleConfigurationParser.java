@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.config;
+package com.prezi.spaghetti.definition;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -8,8 +8,7 @@ import com.prezi.spaghetti.ast.internal.parser.MissingTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser;
 import com.prezi.spaghetti.ast.internal.parser.ModuleTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
-import com.prezi.spaghetti.config.internal.DefaultModuleConfiguration;
-import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.DefaultModuleConfiguration;
 
 import java.util.Collection;
 import java.util.Collections;

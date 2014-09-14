@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 
 import java.io.File;
 import java.net.URI;

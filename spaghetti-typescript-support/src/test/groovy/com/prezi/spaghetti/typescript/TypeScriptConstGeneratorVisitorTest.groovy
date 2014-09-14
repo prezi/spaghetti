@@ -21,7 +21,7 @@ const MyConstants {
 	tibor = "tibor"
 }
 """
-		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
+		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
 		def visitor = new TypeScriptConstGeneratorVisitor()
 
 		expect:

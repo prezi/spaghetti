@@ -26,7 +26,7 @@ JSON[] doSomething()
 @nullable int doStatic(@nullable int a, int b)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
+		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
 		def visitor = new HaxeModuleAccessorGeneratorVisitor(module)
 
 		expect:

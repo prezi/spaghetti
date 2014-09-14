@@ -1,14 +1,14 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class AnnotationParserTest extends Specification {
 	@Unroll
 	def "FromContext: #annotationDecl"() {
-		def parserContext = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", annotationDecl))
+		def parserContext = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", annotationDecl))
 		def annotation = AnnotationsParser.fromContext(parserContext.parser.annotation())
 
 		expect:

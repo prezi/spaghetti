@@ -1,9 +1,9 @@
-package com.prezi.spaghetti.config.internal;
+package com.prezi.spaghetti.definition.internal;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 
 import java.util.Collections;
 import java.util.SortedSet;

@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.config;
+package com.prezi.spaghetti.definition;
 
 import com.prezi.spaghetti.ast.ModuleNode;
 

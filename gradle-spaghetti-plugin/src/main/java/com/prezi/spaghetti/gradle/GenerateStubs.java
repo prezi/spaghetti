@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.tasks.OutputDirectory;

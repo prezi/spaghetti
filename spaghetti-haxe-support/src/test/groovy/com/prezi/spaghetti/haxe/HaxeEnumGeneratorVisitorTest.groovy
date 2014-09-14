@@ -2,8 +2,8 @@ package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.internal.parser.EnumParser
-import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 
 class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -17,7 +17,7 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 	GEZA
 }
 """
-		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.enumDefinition()
+		def context = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition)).parser.enumDefinition()
 		def parser = new EnumParser(context, "com.example.test")
 		parser.parse(mockResolver())
 		def visitor = new HaxeEnumGeneratorVisitor()

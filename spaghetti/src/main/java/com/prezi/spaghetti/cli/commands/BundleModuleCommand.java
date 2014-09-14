@@ -8,7 +8,7 @@ import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.cli.SpaghettiCliException;
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.Languages;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;

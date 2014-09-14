@@ -25,7 +25,7 @@ interface Lajos extends Iterable<string> {
 }
 """
 
-		def parser = ModuleParser.create(new ModuleDefinitionSource("test", definition))
+		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
 
 		when:
 		parser.parse(mockResolver())
@@ -63,9 +63,9 @@ struct MyStruct {
 }
 """
 		def resolver = mockResolver()
-		def moduleA = ModuleParser.create(new ModuleDefinitionSource("test", moduleADef)).parse(resolver)
+		def moduleA = ModuleParser.create(ModuleDefinitionSource.fromString("test", moduleADef)).parse(resolver)
 		resolver = new ModuleTypeResolver(resolver, moduleA)
-		def moduleB = ModuleParser.create(new ModuleDefinitionSource("test", moduleBDef)).parse(resolver)
+		def moduleB = ModuleParser.create(ModuleDefinitionSource.fromString("test", moduleBDef)).parse(resolver)
 		StructNode struct = moduleB.types.get(FQName.fromString("test.b.MyStruct")) as StructNode
 
 		expect:

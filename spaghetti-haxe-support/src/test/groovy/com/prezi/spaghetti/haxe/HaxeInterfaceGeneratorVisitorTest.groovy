@@ -6,8 +6,8 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
-import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 
 class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -21,7 +21,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def context = ModuleDefinitionParser.createParser(new ModuleDefinitionSource("test", definition)).parser.interfaceDefinition()
+		def context = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition)).parser.interfaceDefinition()
 		def parser = new InterfaceParser(context, "com.example.test")
 		parser.parse(mockResolver([
 		        "Tibor": {

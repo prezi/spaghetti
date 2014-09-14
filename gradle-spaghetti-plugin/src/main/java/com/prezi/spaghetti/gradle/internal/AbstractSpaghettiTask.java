@@ -1,13 +1,11 @@
 package com.prezi.spaghetti.gradle.internal;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.config.ModuleConfiguration;
-import com.prezi.spaghetti.config.ModuleConfigurationParser;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
@@ -105,8 +103,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	public ModuleConfiguration readConfig(File definition) throws IOException {
 		ModuleDefinitionSource definitionSource;
 		try {
-			String contents = Files.asCharSource(definition, Charsets.UTF_8).read();
-			definitionSource = new ModuleDefinitionSource(definition.getPath(), contents);
+			definitionSource = ModuleDefinitionSource.fromFile(definition);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -125,9 +122,9 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	private static Collection<ModuleDefinitionSource> makeModuleSources(Set<ModuleBundle> bundles) {
 		return Collections2.transform(bundles, new Function<ModuleBundle, ModuleDefinitionSource>() {
 			@Override
-			public ModuleDefinitionSource apply(ModuleBundle module) {
+			public ModuleDefinitionSource apply(ModuleBundle bundle) {
 				try {
-					return new ModuleDefinitionSource("module: " + module.getName(), module.getDefinition());
+					return ModuleDefinitionSource.fromBundle(bundle);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}

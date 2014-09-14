@@ -1,6 +1,5 @@
-package com.prezi.spaghetti.definition;
+package com.prezi.spaghetti.definition.internal;
 
-import com.prezi.spaghetti.definition.internal.ParserErrorListener;
 import com.prezi.spaghetti.internal.grammar.ModuleLexer;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 

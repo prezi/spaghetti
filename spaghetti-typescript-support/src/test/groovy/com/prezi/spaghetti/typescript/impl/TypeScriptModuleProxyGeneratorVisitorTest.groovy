@@ -29,7 +29,7 @@ void doSomethingVoid(int x)
 <T, U> T[] hello(T t, U y)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(new ModuleDefinitionSource("test", definition)).parse(mockResolver())
+		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
 		def visitor = new TypeScriptModuleProxyGeneratorVisitor(module)
 
 		expect:

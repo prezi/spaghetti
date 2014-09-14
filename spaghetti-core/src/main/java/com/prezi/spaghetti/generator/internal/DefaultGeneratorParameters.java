@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.generator.internal;
 
-import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.GeneratorParameters;
 
 public class DefaultGeneratorParameters implements GeneratorParameters {
