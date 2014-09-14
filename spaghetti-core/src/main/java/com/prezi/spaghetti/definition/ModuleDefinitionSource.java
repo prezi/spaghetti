@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Source with location for mdule definitions.
+ * Source with location for module definitions.
  */
 public final class ModuleDefinitionSource {
 	private final String location;
