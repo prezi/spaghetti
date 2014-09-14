@@ -46,9 +46,11 @@ If you make a typo in `sayHello`, or try to pass a `number`, the TypeScript comp
 
 ## Try It
 
-Check [the tutorial here](/../../wiki/Tutorial) for a step-by-step introduction to Spaghetti.
+If you want to get to know Spaghetti, you have options to
 
-There is a working example under [spaghetti-gradle-example](spaghetti-gradle-example). This one uses the Gradle build integration.
+* check the [demo application](http://prezi.github.io/spaghetti/demo),
+* follow [the tutorial](/../../wiki/Tutorial) for a step-by-step introduction to Spaghetti, or
+* see the [code behind the demo](spaghetti-gradle-example), which uses the Gradle integration.
 
 ## How to Use It?
 
