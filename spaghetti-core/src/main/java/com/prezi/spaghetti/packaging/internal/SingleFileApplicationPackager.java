@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
@@ -36,7 +37,7 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 		for (ModuleBundle bundle : params.bundles) {
 			// Extract resources
 			StructuredAppender moduleAppender = writer.subAppender(bundle.getName());
-			bundle.extract(moduleAppender, EnumSet.of(ModuleBundleElement.resources));
+			((ModuleBundleInternal) bundle).extract(moduleAppender, EnumSet.of(ModuleBundleElement.RESOURCES));
 		}
 
 		final Map<String, ModuleBundle> bundles = Maps.uniqueIndex(params.bundles, new Function<ModuleBundle, String>() {

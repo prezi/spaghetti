@@ -4,7 +4,7 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 
 import java.util.Set;
 
-public abstract class AbstractModuleBundle implements ModuleBundle {
+public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final String name;
 	private final String version;
 	private final String sourceBaseUrl;

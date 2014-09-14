@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.cli.commands;
 
+import com.prezi.spaghetti.structure.OutputType;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationType;

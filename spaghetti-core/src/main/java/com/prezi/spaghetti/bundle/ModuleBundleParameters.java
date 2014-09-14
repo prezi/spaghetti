@@ -3,6 +3,9 @@ package com.prezi.spaghetti.bundle;
 import java.io.File;
 import java.util.SortedSet;
 
+/**
+ * Parameters for creating module bundles.
+ */
 public class ModuleBundleParameters {
 	public final String name;
 	public final String definition;

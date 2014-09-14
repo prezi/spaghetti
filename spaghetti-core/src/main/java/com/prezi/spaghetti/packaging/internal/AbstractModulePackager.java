@@ -2,8 +2,8 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ModulePackageParameters;
 import com.prezi.spaghetti.packaging.ModulePackager;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
@@ -40,11 +40,11 @@ public abstract class AbstractModulePackager implements ModulePackager {
 	protected void packageModule(StructuredWriter writer, final ModulePackageParameters params) throws IOException {
 		writer.init();
 		try {
-			final ModuleBundle bundle = params.bundle;
+			final ModuleBundleInternal bundle = (ModuleBundleInternal) params.bundle;
 			EnumSet<ModuleBundleElement> elements = params.elements.clone();
-			elements.removeAll(Arrays.asList(ModuleBundleElement.javascript, ModuleBundleElement.sourcemap));
+			elements.removeAll(Arrays.asList(ModuleBundleElement.JAVASCRIPT, ModuleBundleElement.SOURCE_MAP));
 			bundle.extract(writer, elements);
-			if (params.elements.contains(ModuleBundleElement.javascript)) {
+			if (params.elements.contains(ModuleBundleElement.JAVASCRIPT)) {
 				writer.appendFile(getModuleName(bundle), new IOAction<OutputStream>() {
 					@Override
 					public void execute(OutputStream out) throws IOException {
@@ -62,7 +62,7 @@ public abstract class AbstractModulePackager implements ModulePackager {
 				});
 			}
 
-			if (params.elements.contains(ModuleBundleElement.sourcemap)) {
+			if (params.elements.contains(ModuleBundleElement.SOURCE_MAP)) {
 				String sourceMap = bundle.getSourceMap();
 				if (!Strings.isNullOrEmpty(sourceMap)) {
 					writer.appendFile(getModuleName(bundle) + ".map", sourceMap);

@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import com.prezi.spaghetti.structure.OutputType;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
@@ -113,14 +114,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				dependentModules,
 				resourcesDirectory);
 
-		switch (type) {
-			case DIRECTORY:
-				ModuleBundleFactory.createDirectory(output, params);
-				break;
-			case ZIP:
-				ModuleBundleFactory.createZip(output, params);
-				break;
-		}
+		ModuleBundleFactory.create(type, output, params);
 		return 0;
 	}
 

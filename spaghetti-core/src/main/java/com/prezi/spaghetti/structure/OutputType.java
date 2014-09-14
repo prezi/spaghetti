@@ -1,7 +1,6 @@
-package com.prezi.spaghetti.cli.commands;
+package com.prezi.spaghetti.structure;
 
 import com.google.common.base.Strings;
-import com.prezi.spaghetti.cli.SpaghettiCliException;
 
 import java.io.File;
 
@@ -20,7 +19,7 @@ public enum OutputType {
 		} else if (type.toUpperCase().equals("DIR") || type.toUpperCase().equals("DIRECTORY")){
 			return OutputType.DIRECTORY;
 		} else {
-			throw new SpaghettiCliException("Invalid bundle type: " + type);
+			throw new IllegalArgumentException("Invalid bundle type: " + type);
 		}
 	}
 }

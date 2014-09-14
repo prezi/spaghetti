@@ -1,6 +1,8 @@
 package com.prezi.spaghetti.bundle;
 
+import com.prezi.spaghetti.structure.OutputType;
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.structure.StructuredReader;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryReader;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
@@ -14,31 +16,73 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 
-public class ModuleBundleFactory {
+/**
+ * Creates, loads and extracts module bundles.
+ */
+public final class ModuleBundleFactory {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleFactory.class);
 
+	/**
+	 * Create a module bundle.
+	 *
+	 * @param type   whether to create a ZIP or an exploded directory bundle.
+	 * @param output the location of the bundle.
+	 * @param params the parameters for creating the bundle.
+	 * @return the created bundle.
+	 */
+	public static ModuleBundle create(OutputType type, File output, ModuleBundleParameters params) throws IOException {
+		switch (type) {
+			case ZIP:
+				return createZip(output, params);
+			case DIRECTORY:
+				return createDirectory(output, params);
+			default:
+				throw new AssertionError("Unknown type: " + type);
+		}
+	}
+
+	/**
+	 * Create a ZIP module bundle.
+	 *
+	 * @param outputFile the location of ZIP file to create.
+	 * @param params     the parameters for creating the bundle.
+	 * @return the created bundle.
+	 */
 	public static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) throws IOException {
 		return DefaultModuleBundle.create(new StructuredZipWriter(outputFile), params);
 	}
 
+	/**
+	 * Create an exploded directory module bundle.
+	 *
+	 * @param outputDirectory the location of directory to create.
+	 * @param params          the parameters for creating the bundle.
+	 * @return the created bundle.
+	 */
 	public static ModuleBundle createDirectory(File outputDirectory, ModuleBundleParameters params) throws IOException {
 		return DefaultModuleBundle.create(new StructuredDirectoryWriter(outputDirectory), params);
 	}
 
-	public static ModuleBundle load(final File inputFile) throws IOException {
-		if (!inputFile.exists()) {
-			throw new IllegalArgumentException("Module not found: " + String.valueOf(inputFile));
+	/**
+	 * Loads an existing module bundle from a ZIP file or an exploded directory.
+	 *
+	 * @param input the location of the bundle.
+	 * @return the loaded bundle.
+	 */
+	public static ModuleBundle load(final File input) throws IOException {
+		if (!input.exists()) {
+			throw new IllegalArgumentException("Module not found: " + String.valueOf(input));
 		}
 
 		StructuredReader source;
-		if (inputFile.isFile()) {
-			logger.debug("{} is a file, trying to load as ZIP", inputFile);
-			source = new StructuredZipReader(inputFile);
-		} else if (inputFile.isDirectory()) {
-			logger.debug("{} is a directory, trying to load as exploded", inputFile);
-			source = new StructuredDirectoryReader(inputFile);
+		if (input.isFile()) {
+			logger.debug("{} is a file, trying to load as ZIP", input);
+			source = new StructuredZipReader(input);
+		} else if (input.isDirectory()) {
+			logger.debug("{} is a directory, trying to load as exploded", input);
+			source = new StructuredDirectoryReader(input);
 		} else {
-			throw new RuntimeException("Unknown module format: " + inputFile);
+			throw new RuntimeException("Unknown module format: " + input);
 		}
 
 		source.init();
@@ -49,6 +93,13 @@ public class ModuleBundleFactory {
 		}
 	}
 
+	/**
+	 * Extracts a loaded module bundle into a directory.
+	 *
+	 * @param bundle          the bundle to extract.
+	 * @param outputDirectory the directory to extract into.
+	 * @param elements        the elements of the bundle to extract. If none is provided, all elements will be extracted.
+	 */
 	public static void extract(ModuleBundle bundle, File outputDirectory, ModuleBundleElement... elements) throws IOException {
 		EnumSet<ModuleBundleElement> elemEnum;
 		if (elements == null) {
@@ -59,17 +110,20 @@ public class ModuleBundleFactory {
 		extract(bundle, outputDirectory, elemEnum);
 	}
 
+	/**
+	 * Extracts a loaded module bundle into a directory.
+	 *
+	 * @param bundle          the bundle to extract.
+	 * @param outputDirectory the directory to extract into.
+	 * @param elements        the elements of the bundle to extract.
+	 */
 	public static void extract(ModuleBundle bundle, File outputDirectory, EnumSet<ModuleBundleElement> elements) throws IOException {
 		StructuredDirectoryWriter output = new StructuredDirectoryWriter(outputDirectory);
 		output.init();
 		try {
-			bundle.extract(output, elements);
+			((ModuleBundleInternal) bundle).extract(output, elements);
 		} finally {
 			output.close();
 		}
-	}
-
-	public static void extract(ModuleBundle bundle, File outputDirectory) throws IOException {
-		ModuleBundleFactory.extract(bundle, outputDirectory, EnumSet.allOf(ModuleBundleElement.class));
 	}
 }

@@ -212,23 +212,24 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		source.processFiles(new StructuredReader.FileHandler() {
 			@Override
 			public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
-				//noinspection StatementWithEmptyBody
 				if (path.equals(MANIFEST_MF_PATH)) {
-					// Do not extract manifest
+					if (elements.contains(ModuleBundleElement.MANIFEST)) {
+						output.subAppender("META-INF").appendFile("MANIFEST.MF", contents.call());
+					}
 				} else if (path.equals(DEFINITION_PATH)) {
-					if (elements.contains(ModuleBundleElement.definition)) {
+					if (elements.contains(ModuleBundleElement.DEFINITION)) {
 						output.appendFile(name + ".def", contents.call());
 					}
 				} else if (path.equals(JAVASCRIPT_PATH)) {
-					if (elements.contains(ModuleBundleElement.javascript)) {
+					if (elements.contains(ModuleBundleElement.JAVASCRIPT)) {
 						output.appendFile(name + ".js", contents.call());
 					}
 				} else if (path.equals(SOURCE_MAP_PATH)) {
-					if (elements.contains(ModuleBundleElement.sourcemap)) {
+					if (elements.contains(ModuleBundleElement.SOURCE_MAP)) {
 						output.appendFile(name + ".js.map", contents.call());
 					}
 				} else {
-					if (elements.contains(ModuleBundleElement.resources) && path.startsWith(RESOURCES_PREFIX)) {
+					if (elements.contains(ModuleBundleElement.RESOURCES) && path.startsWith(RESOURCES_PREFIX)) {
 						String resourcePath = path.substring(RESOURCES_PREFIX.length());
 						// Skip the resources directory itself
 						if (!Strings.isNullOrEmpty(resourcePath)) {

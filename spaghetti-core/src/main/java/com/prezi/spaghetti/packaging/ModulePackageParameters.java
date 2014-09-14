@@ -6,7 +6,7 @@ import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import java.util.EnumSet;
 
 public class ModulePackageParameters {
-	public static final EnumSet<ModuleBundleElement> DEFAULT_ELEMENTS = EnumSet.of(ModuleBundleElement.javascript, ModuleBundleElement.resources);
+	public static final EnumSet<ModuleBundleElement> DEFAULT_ELEMENTS = EnumSet.of(ModuleBundleElement.JAVASCRIPT, ModuleBundleElement.RESOURCES);
 
 	public final ModuleBundle bundle;
 	public final Iterable<String> prefixes;

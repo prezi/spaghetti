@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 import com.prezi.spaghetti.structure.IOAction;
@@ -31,7 +32,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 		for (ModuleBundle bundle : params.bundles) {
 			// Extract resources
 			StructuredAppender moduleAppender = modulesAppender.subAppender(bundle.getName());
-			bundle.extract(moduleAppender, EnumSet.of(ModuleBundleElement.resources, ModuleBundleElement.sourcemap));
+			((ModuleBundleInternal) bundle).extract(moduleAppender, EnumSet.of(ModuleBundleElement.RESOURCES, ModuleBundleElement.SOURCE_MAP));
 
 			// Add JavaScript
 			String wrappedJavaScript = wrapper.wrap(new ModuleWrapperParameters(bundle));
