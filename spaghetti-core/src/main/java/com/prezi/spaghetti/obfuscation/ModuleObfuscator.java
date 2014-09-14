@@ -14,13 +14,24 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Set;
 
+/**
+ * Obfuscates a module's code with Google Closure Compiler.
+ */
 public class ModuleObfuscator {
+	private static final Set<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols();
+	private final Set<String> protectedSymbols;
+
 	private static Set<String> collectProtectedSymbols() {
 		ImmutableSet.Builder<String> builder = ImmutableSet.builder();
 		builder.add("prototype");
 		return builder.build();
 	}
 
+	/**
+	 * Creates an obfuscator that will protect the given symbols.
+	 *
+	 * @param protectedSymbols the symbols to protect.
+	 */
 	public ModuleObfuscator(Collection<String> protectedSymbols) {
 		ImmutableSet.Builder<String> builder = ImmutableSet.builder();
 		builder.addAll(DEFAULT_PROTECTED_SYMBOLS);
@@ -28,6 +39,12 @@ public class ModuleObfuscator {
 		this.protectedSymbols = builder.build();
 	}
 
+	/**
+	 * Obfuscates a module and updates its source map (if any).
+	 *
+	 * @param params the obfuscation parameters.
+	 * @return the obfuscated JavaScript with the updated source map.
+	 */
 	public ObfuscationResult obfuscateModule(ObfuscationParameters params) throws IOException {
 		ModuleConfiguration config = params.config;
 		ModuleNode module = params.module;
@@ -82,7 +99,4 @@ public class ModuleObfuscator {
 
 		return new ObfuscationResult(compressedJS.toString(), (String) finalSourceMap);
 	}
-
-	private static final Set<String> DEFAULT_PROTECTED_SYMBOLS = collectProtectedSymbols();
-	private final Set<String> protectedSymbols;
 }

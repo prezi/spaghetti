@@ -7,6 +7,9 @@ import java.io.File;
 import java.net.URI;
 import java.util.Set;
 
+/**
+ * Parameter object for obfuscation.
+ */
 public class ObfuscationParameters {
 	public final ModuleConfiguration config;
 	public final ModuleNode module;
