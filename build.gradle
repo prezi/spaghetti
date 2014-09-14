@@ -187,10 +187,16 @@ subprojects {
 		// "http://prezi.github.io/gradle-typescript-plugin/javadoc/",
 	]
 
+	def excludes = [
+		"**/internal/*",
+		"**/com/prezi/spaghetti/gradle/incubating/*"
+	]
+
 	tasks.withType(Javadoc) {
 		options.encoding = "UTF-8"
 		options.links apis
 		options.noTimestamp = true
+		exclude excludes
 	}
 
 	tasks.withType(Groovydoc) {
@@ -201,6 +207,8 @@ subprojects {
 				link(it, *(new URL("$it/package-list").text.tokenize("\n")))
 			}
 		}
+		exclude "**/internal/**"
+		exclude excludes
 	}
 }
 
