@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.prezi.spaghetti.ast.AnnotatedNode;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.internal.DefaultAnnotationNode;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 import java.util.Collections;
 import java.util.Map;

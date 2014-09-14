@@ -2,7 +2,7 @@ package com.prezi.spaghetti.ast;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.Serializable;

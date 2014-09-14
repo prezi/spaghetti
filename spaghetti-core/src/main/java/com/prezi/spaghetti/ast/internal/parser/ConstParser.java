@@ -5,7 +5,7 @@ import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultConstEntryNode;
 import com.prezi.spaghetti.ast.internal.DefaultConstNode;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefinitionContext, ConstNode> {
 	public ConstParser(ModuleParser.ConstDefinitionContext context, String moduleName) {

@@ -24,7 +24,7 @@ import com.prezi.spaghetti.ast.internal.DefaultPrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultStructReference;
 import com.prezi.spaghetti.ast.internal.DefaultTypeChain;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 

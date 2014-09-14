@@ -4,7 +4,7 @@ import com.prezi.spaghetti.ast.ExternInterfaceNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ExternInterfaceParser extends AbstractModuleTypeParser<ModuleParser.ExternInterfaceDefinitionContext, ExternInterfaceNode> {

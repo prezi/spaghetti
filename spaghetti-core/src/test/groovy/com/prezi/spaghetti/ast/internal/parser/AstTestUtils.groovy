@@ -3,7 +3,7 @@ package com.prezi.spaghetti.ast.internal.parser
 import com.prezi.spaghetti.ast.QualifiedTypeNode
 import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
-import com.prezi.spaghetti.grammar.ModuleParser
+import com.prezi.spaghetti.internal.grammar.ModuleParser
 
 class AstTestUtils {
 	static ModuleParser parser(String data) {

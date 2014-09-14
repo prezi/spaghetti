@@ -21,8 +21,8 @@ task generateGrammar(type: JavaExec) {
 	outputs.dir generatedGrammar
 	main = "org.antlr.v4.Tool"
 	args = [
-			"-o", "${generatedGrammar}/com/prezi/spaghetti/grammar",
-			"-package", "com.prezi.spaghetti.grammar",
+			"-o", "${generatedGrammar}/com/prezi/spaghetti/internal/grammar",
+			"-package", "com.prezi.spaghetti.internal.grammar",
 			"-no-listener",
 			"-visitor",
 			grammarFile

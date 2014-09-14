@@ -9,7 +9,7 @@ import com.prezi.spaghetti.ast.TypeNode;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.InterfaceDefinitionContext, InterfaceNode> {

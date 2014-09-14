@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
 import com.prezi.spaghetti.ast.FQName;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.Token;
 
 public abstract class TypeResolutionContext {

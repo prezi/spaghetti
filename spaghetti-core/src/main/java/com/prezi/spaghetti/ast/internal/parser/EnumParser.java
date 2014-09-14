@@ -4,7 +4,7 @@ import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.internal.DefaultEnumNode;
 import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode;
-import com.prezi.spaghetti.grammar.ModuleParser;
+import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, EnumNode> {
 	public EnumParser(ModuleParser.EnumDefinitionContext context, String moduleName) {
