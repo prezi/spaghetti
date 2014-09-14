@@ -28,7 +28,13 @@ task aggregateJavadoc(type: Javadoc) {
 
 </script>"""
 
-	parent.javaProjects.each { subproject ->
+	[
+		":spaghetti-core",
+		":gradle-spaghetti-plugin",
+		":gradle-spaghetti-haxe-plugin",
+		":gradle-spaghetti-typescript-plugin",
+	].each {
+		def subproject = parent.project(it)
 		source += [subproject.sourceSets.main.allJava]
 		classpath += [subproject.sourceSets.main.compileClasspath]
 	}

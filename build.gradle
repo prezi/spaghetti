@@ -189,7 +189,6 @@ subprojects {
 
 	def excludes = [
 		"**/internal/*",
-		"**/com/prezi/spaghetti/gradle/incubating/*"
 	]
 
 	tasks.withType(Javadoc) {
