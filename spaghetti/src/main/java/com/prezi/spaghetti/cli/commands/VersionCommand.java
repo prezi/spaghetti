@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.cli.commands;
 
-import com.prezi.spaghetti.Version;
+import com.prezi.spaghetti.internal.Version;
 import io.airlift.command.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

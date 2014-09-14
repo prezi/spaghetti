@@ -1,4 +1,4 @@
-package com.prezi.spaghetti;
+package com.prezi.spaghetti.internal;
 
 import java.io.IOException;
 import java.io.InputStream;

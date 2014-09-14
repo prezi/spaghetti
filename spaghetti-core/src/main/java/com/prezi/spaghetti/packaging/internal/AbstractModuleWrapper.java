@@ -3,7 +3,7 @@ package com.prezi.spaghetti.packaging.internal;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import com.prezi.spaghetti.Version;
+import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
