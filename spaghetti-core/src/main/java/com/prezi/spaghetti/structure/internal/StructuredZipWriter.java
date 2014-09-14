@@ -1,8 +1,5 @@
 package com.prezi.spaghetti.structure.internal;
 
-import com.prezi.spaghetti.structure.IOAction;
-import com.prezi.spaghetti.structure.StructuredProcessor;
-import com.prezi.spaghetti.structure.StructuredWriter;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

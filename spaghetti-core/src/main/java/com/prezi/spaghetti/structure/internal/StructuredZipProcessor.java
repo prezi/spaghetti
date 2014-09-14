@@ -2,9 +2,6 @@ package com.prezi.spaghetti.structure.internal;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
-import com.prezi.spaghetti.structure.FileProcessor;
-import com.prezi.spaghetti.structure.IOCallable;
-import com.prezi.spaghetti.structure.StructuredProcessor;
 
 import java.io.File;
 import java.io.IOException;

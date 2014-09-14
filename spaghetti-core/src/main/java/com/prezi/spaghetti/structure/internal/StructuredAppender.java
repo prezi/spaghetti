@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.structure;
+package com.prezi.spaghetti.structure.internal;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,8 +1,6 @@
 package com.prezi.spaghetti.structure.internal;
 
 import com.google.common.base.Charsets;
-import com.prezi.spaghetti.structure.IOAction;
-import com.prezi.spaghetti.structure.StructuredAppender;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;

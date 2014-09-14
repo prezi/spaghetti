@@ -6,7 +6,7 @@ import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationPackager;
-import com.prezi.spaghetti.structure.StructuredWriter;
+import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
 import com.prezi.spaghetti.structure.internal.StructuredZipWriter;
 

@@ -2,7 +2,7 @@ package com.prezi.spaghetti.bundle.internal;
 
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
-import com.prezi.spaghetti.structure.StructuredAppender;
+import com.prezi.spaghetti.structure.internal.StructuredAppender;
 
 import java.io.IOException;
 import java.util.EnumSet;

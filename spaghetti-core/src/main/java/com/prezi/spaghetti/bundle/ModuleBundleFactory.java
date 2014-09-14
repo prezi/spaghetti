@@ -3,7 +3,7 @@ package com.prezi.spaghetti.bundle;
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.structure.OutputType;
-import com.prezi.spaghetti.structure.StructuredProcessor;
+import com.prezi.spaghetti.structure.internal.StructuredProcessor;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryProcessor;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
 import com.prezi.spaghetti.structure.internal.StructuredZipProcessor;

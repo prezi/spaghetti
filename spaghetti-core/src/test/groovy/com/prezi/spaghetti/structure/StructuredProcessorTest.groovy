@@ -1,6 +1,9 @@
 package com.prezi.spaghetti.structure
 
+import com.prezi.spaghetti.structure.internal.FileProcessor
+import com.prezi.spaghetti.structure.internal.IOCallable
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryProcessor
+import com.prezi.spaghetti.structure.internal.StructuredProcessor
 import com.prezi.spaghetti.structure.internal.StructuredZipProcessor
 import spock.lang.Specification
 

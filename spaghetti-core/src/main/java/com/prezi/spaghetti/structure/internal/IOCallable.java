@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.structure;
+package com.prezi.spaghetti.structure.internal;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;

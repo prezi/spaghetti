@@ -2,11 +2,11 @@ package com.prezi.spaghetti.bundle
 
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle
 import com.prezi.spaghetti.internal.Version
-import com.prezi.spaghetti.structure.FileProcessor
-import com.prezi.spaghetti.structure.IOAction
-import com.prezi.spaghetti.structure.IOCallable
-import com.prezi.spaghetti.structure.StructuredProcessor
-import com.prezi.spaghetti.structure.StructuredWriter
+import com.prezi.spaghetti.structure.internal.FileProcessor
+import com.prezi.spaghetti.structure.internal.IOAction
+import com.prezi.spaghetti.structure.internal.IOCallable
+import com.prezi.spaghetti.structure.internal.StructuredProcessor
+import com.prezi.spaghetti.structure.internal.StructuredWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification

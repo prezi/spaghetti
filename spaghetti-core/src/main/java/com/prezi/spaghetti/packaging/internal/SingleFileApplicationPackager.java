@@ -12,9 +12,9 @@ import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
-import com.prezi.spaghetti.structure.IOAction;
-import com.prezi.spaghetti.structure.StructuredAppender;
-import com.prezi.spaghetti.structure.StructuredWriter;
+import com.prezi.spaghetti.structure.internal.IOAction;
+import com.prezi.spaghetti.structure.internal.StructuredAppender;
+import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
