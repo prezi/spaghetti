@@ -1,5 +1,8 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.gradle.internal.AbstractLanguageAwareSpaghettiTask;
+import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
+import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

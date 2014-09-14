@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.packaging.ModulePackageParameters;
 import com.prezi.spaghetti.packaging.ModuleType;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -22,7 +23,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.concurrent.Callable;
 
-import static com.prezi.spaghetti.gradle.TextFileUtils.getText;
+import static com.prezi.spaghetti.gradle.internal.TextFileUtils.getText;
 
 @SuppressWarnings("UnusedDeclaration")
 public class PackageModule extends ConventionTask {

@@ -1,13 +1,14 @@
 package com.prezi.spaghetti.typescript.gradle;
 
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
-import com.prezi.spaghetti.gradle.SpaghettiExtension;
-import com.prezi.spaghetti.gradle.SpaghettiGeneratedSourceSet;
-import com.prezi.spaghetti.gradle.SpaghettiModule;
-import com.prezi.spaghetti.gradle.SpaghettiModuleData;
-import com.prezi.spaghetti.gradle.SpaghettiModuleFactory;
+import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
+import com.prezi.spaghetti.gradle.internal.SpaghettiGeneratedSourceSet;
+import com.prezi.spaghetti.gradle.internal.SpaghettiModule;
+import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
+import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
-import com.prezi.spaghetti.gradle.incubating.BinaryNamingScheme;
+import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
+import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
 import com.prezi.typescript.gradle.TypeScriptBinary;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
 import com.prezi.typescript.gradle.TypeScriptExtension;

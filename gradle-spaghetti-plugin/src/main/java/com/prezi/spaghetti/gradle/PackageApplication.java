@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
+import com.prezi.spaghetti.gradle.internal.ModuleBundleLookupResult;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationType;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -13,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-import static com.prezi.spaghetti.gradle.TextFileUtils.getText;
+import static com.prezi.spaghetti.gradle.internal.TextFileUtils.getText;
 
 public class PackageApplication extends AbstractSpaghettiTask {
 	private final ConfigurableFileCollection prefixes = getProject().files();

@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
+
 import java.io.File;
 import java.util.concurrent.Callable;
 
