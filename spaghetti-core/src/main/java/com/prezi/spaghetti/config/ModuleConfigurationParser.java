@@ -15,13 +15,24 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
-public class ModuleConfigurationParser {
-	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> dependentModuleSources, Collection<ModuleDefinitionSource> transitiveModuleSources) {
+/**
+ * Parses module definitions for a module.
+ */
+public final class ModuleConfigurationParser {
+	/**
+	 * Parses module definitions for a module.
+	 *
+	 * @param localModuleSource                the source of the local module.
+	 * @param directDependentModuleSources     the sources of direct dependent modules.
+	 * @param transitiveDependentModuleSources the sources of transitive dependent modules.
+	 * @return the loaded module configuration.
+	 */
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> directDependentModuleSources, Collection<ModuleDefinitionSource> transitiveDependentModuleSources) {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
 		DefaultModuleConfiguration configNode = new DefaultModuleConfiguration();
 
-		Collection<ModuleParser> transitiveParsers = createParsersFor(transitiveModuleSources);
-		Collection<ModuleParser> directParsers = createParsersFor(dependentModuleSources);
+		Collection<ModuleParser> transitiveParsers = createParsersFor(transitiveDependentModuleSources);
+		Collection<ModuleParser> directParsers = createParsersFor(directDependentModuleSources);
 		Collection<ModuleParser> localParsers = createParsersFor(Collections.singleton(localModuleSource));
 
 		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParsers, transitiveParsers));
