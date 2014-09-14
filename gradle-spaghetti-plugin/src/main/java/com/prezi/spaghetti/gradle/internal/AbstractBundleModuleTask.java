@@ -9,7 +9,6 @@ import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.config.ModuleConfiguration;
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
@@ -158,17 +157,8 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException {
-		final FileCollection moduleDefinitions = getDefinitions();
-		if (moduleDefinitions.isEmpty()) {
-			throw new IllegalArgumentException("No module definition present");
-		}
-
-		if (moduleDefinitions.getFiles().size() > 1) {
-			throw new IllegalArgumentException("Too many module definitions present: " + String.valueOf(moduleDefinitions));
-		}
-
-		ModuleConfiguration config = readConfig(moduleDefinitions);
-		ModuleNode module = config.getLocalModules().iterator().next();
+		ModuleConfiguration config = readConfig(getDefinition());
+		ModuleNode module = config.getLocalModule();
 
 		String inputContents = "";
 		for (File prefixFile : getPrefixes()) {

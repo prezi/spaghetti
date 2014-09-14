@@ -3,8 +3,6 @@ package com.prezi.spaghetti.gradle.internal;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.bundle.ModuleBundle;
@@ -104,26 +102,22 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		return ModuleBundleLookup.lookup(directDependencies, transitiveDependencies);
 	}
 
-	public ModuleConfiguration readConfig(final Iterable<File> files) throws IOException {
-		Iterable<ModuleDefinitionSource> localDefinitions = Iterables.transform(files, new Function<File, ModuleDefinitionSource>() {
-			@Override
-			public ModuleDefinitionSource apply(File file) {
-				try {
-					String contents = Files.asCharSource(file, Charsets.UTF_8).read();
-					return new ModuleDefinitionSource(file.getPath(), contents);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
-		return readConfigInternal(Lists.newArrayList(localDefinitions));
+	public ModuleConfiguration readConfig(File definition) throws IOException {
+		ModuleDefinitionSource definitionSource;
+		try {
+			String contents = Files.asCharSource(definition, Charsets.UTF_8).read();
+			definitionSource = new ModuleDefinitionSource(definition.getPath(), contents);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return readConfigInternal(definitionSource);
 	}
 
-	private ModuleConfiguration readConfigInternal(Collection<ModuleDefinitionSource> localDefinitions) throws IOException {
+	private ModuleConfiguration readConfigInternal(ModuleDefinitionSource localDefinition) throws IOException {
 		ModuleBundleLookupResult bundles = lookupBundles();
 		Collection<ModuleDefinitionSource> directSources = makeModuleSources(bundles.getDirectBundles());
 		Collection<ModuleDefinitionSource> transitiveSources = makeModuleSources(bundles.getTransitiveBundles());
-		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinitions, directSources, transitiveSources);
+		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, directSources, transitiveSources);
 		getLogger().info("Loaded configuration: {}", config);
 		return config;
 	}

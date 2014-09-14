@@ -38,8 +38,8 @@ public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 
 	@TaskAction
 	public void generate() throws IOException {
-		ModuleConfiguration config = readConfig(getDefinitions());
-		getLogger().info("Generating module headers for {}", config.getLocalModules());
+		ModuleConfiguration config = readConfig(getDefinition());
+		getLogger().info("Generating module headers for {}", config.getLocalModule());
 		File directory = getOutputDirectory();
 		FileUtils.deleteQuietly(directory);
 		FileUtils.forceMkdir(directory);

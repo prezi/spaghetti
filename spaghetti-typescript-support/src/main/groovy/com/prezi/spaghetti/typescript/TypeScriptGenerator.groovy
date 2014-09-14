@@ -27,10 +27,8 @@ class TypeScriptGenerator extends AbstractGenerator {
 
 	@Override
 	void generateHeaders(File outputDirectory) {
-		config.localModules.each { module ->
-			copySpaghettiClass(outputDirectory)
-			generateLocalModule(module, outputDirectory, header)
-		}
+		copySpaghettiClass(outputDirectory)
+		generateLocalModule(config.localModule, outputDirectory, header)
 		config.directDependentModules.each { dependentModule ->
 			generateDependentModule(dependentModule, outputDirectory, header, true)
 		}

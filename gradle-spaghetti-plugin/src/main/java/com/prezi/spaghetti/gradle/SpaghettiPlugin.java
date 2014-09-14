@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.gradle;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.generator.GeneratorFactory;
 import com.prezi.spaghetti.generator.Languages;
@@ -24,7 +25,6 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.tasks.bundling.Zip;
@@ -92,10 +92,10 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		project.getTasks().withType(AbstractDefinitionAwareSpaghettiTask.class).all(new Action<AbstractDefinitionAwareSpaghettiTask>() {
 			@Override
 			public void execute(AbstractDefinitionAwareSpaghettiTask task) {
-				task.getConventionMapping().map("definitions", new Callable<FileCollection>() {
+				task.getConventionMapping().map("definition", new Callable<File>() {
 					@Override
-					public FileCollection call() throws Exception {
-						return findDefinitions(project);
+					public File call() throws Exception {
+						return findDefinition(project);
 					}
 
 				});
@@ -294,7 +294,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		return zipTask;
 	}
 
-	public static FileCollection findDefinitions(Project project) {
+	private static File findDefinition(Project project) {
 		Set<SpaghettiSourceSet> sources = project.getExtensions().getByType(SpaghettiExtension.class).getSources().getByName("main").withType(SpaghettiSourceSet.class);
 		Set<File> definitions = Sets.newLinkedHashSet();
 		for (SpaghettiSourceSet sourceSet : sources) {
@@ -311,7 +311,12 @@ public class SpaghettiPlugin implements Plugin<Project> {
 				}
 			}
 		}
-
-		return project.files(definitions);
+		if (definitions.isEmpty()) {
+			return null;
+		} else if (definitions.size() == 1) {
+			return Iterables.getOnlyElement(definitions);
+		} else {
+			throw new IllegalStateException("More than one definition found: " + definitions);
+		}
 	}
 }

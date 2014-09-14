@@ -38,7 +38,7 @@ public class GenerateStubs extends AbstractDefinitionAwareSpaghettiTask {
 
 	@TaskAction
 	public void generate() throws IOException {
-		ModuleConfiguration config = readConfig(getDefinitions());
+		ModuleConfiguration config = readConfig(getDefinition());
 		getLogger().info("Generating module stubs for {}", config.getAllModules());
 		File directory = getOutputDirectory();
 		FileUtils.deleteQuietly(directory);

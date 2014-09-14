@@ -1,23 +1,22 @@
 package com.prezi.spaghetti.gradle.internal;
 
-import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.InputFile;
+
+import java.io.File;
 
 public class AbstractDefinitionAwareSpaghettiTask extends AbstractLanguageAwareSpaghettiTask {
-	private ConfigurableFileCollection definitions = getProject().files();
+	private File definition;
 
-	public void definition(Object... definitions) {
-		this.definitions.from(definitions);
+	@InputFile
+	public File getDefinition() {
+		return definition;
 	}
 
-	@InputFiles
-	public FileCollection getDefinitions() {
-		return getProject().files(this.definitions);
+	public void setDefinition(Object definition) {
+		this.definition = getProject().file(definition);
 	}
 
-	@SuppressWarnings("UnusedDeclaration")
-	public void setDefinitions(ConfigurableFileCollection definitions) {
-		this.definitions = definitions;
+	public void definition(Object definition) {
+		setDefinition(definition);
 	}
 }

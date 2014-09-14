@@ -12,7 +12,6 @@ import io.airlift.command.Option;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 
 public abstract class AbstractDefinitionAwareCommand extends AbstractSpaghettiCommand {
 	@Option(name = {"-m", "--definition"},
@@ -25,10 +24,10 @@ public abstract class AbstractDefinitionAwareCommand extends AbstractSpaghettiCo
 	protected String transitiveDependencyPath;
 
 	protected ModuleConfiguration parseConfig() throws IOException {
-		Collection<ModuleDefinitionSource> localSources  = Collections.singleton(parseDefinition(definition));
+		ModuleDefinitionSource localSource  = parseDefinition(definition);
 		Collection<ModuleDefinitionSource> dependentSources = parseDefinitionSources(directDependencyPath);
 		Collection<ModuleDefinitionSource> transitiveSources = parseDefinitionSources(transitiveDependencyPath);
-		return ModuleConfigurationParser.parse(localSources, dependentSources, transitiveSources);
+		return ModuleConfigurationParser.parse(localSource, dependentSources, transitiveSources);
 	}
 
 	private static Collection<ModuleDefinitionSource> parseDefinitionSources(String path) throws IOException {

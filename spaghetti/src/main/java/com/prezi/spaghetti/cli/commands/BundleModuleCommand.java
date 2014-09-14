@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.prezi.spaghetti.structure.OutputType;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
@@ -14,6 +13,7 @@ import com.prezi.spaghetti.generator.Languages;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import com.prezi.spaghetti.obfuscation.ObfuscationResult;
+import com.prezi.spaghetti.structure.OutputType;
 import io.airlift.command.Command;
 import io.airlift.command.Option;
 
@@ -81,7 +81,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		OutputType type = OutputType.fromString(this.type, output);
 
 		ModuleConfiguration config = parseConfig();
-		ModuleNode moduleNode = config.getLocalModules().first();
+		ModuleNode moduleNode = config.getLocalModule();
 
 		String sourceMap;
 		if (sourceMapFile != null) {
@@ -144,7 +144,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		ModuleObfuscator obfuscator = new ModuleObfuscator(Languages.getProtectedSymbols(language));
 		return obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
-				config.getLocalModules().first(),
+				config.getLocalModule(),
 				javaScript,
 				sourceMap,
 				null,

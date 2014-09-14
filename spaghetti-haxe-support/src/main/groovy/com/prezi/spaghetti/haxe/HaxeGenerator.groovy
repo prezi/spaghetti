@@ -28,12 +28,10 @@ class HaxeGenerator extends AbstractGenerator {
 
 	@Override
 	void generateHeaders(File outputDirectory) {
-		config.localModules.each { module ->
-			copySpaghettiClass(outputDirectory)
-			generateModuleInitializer(module, outputDirectory, header)
-			generateModuleStaticProxy(module, outputDirectory, header)
-			generateModuleTypes(module, outputDirectory, header)
-		}
+		copySpaghettiClass(outputDirectory)
+		generateModuleInitializer(config.localModule, outputDirectory, header)
+		generateModuleStaticProxy(config.localModule, outputDirectory, header)
+		generateModuleTypes(config.localModule, outputDirectory, header)
 		config.allDependentModules.each { dependentModule ->
 			generateModuleTypes(dependentModule, outputDirectory, header)
 		}

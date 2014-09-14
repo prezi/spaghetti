@@ -12,22 +12,31 @@ import com.prezi.spaghetti.config.internal.DefaultModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 public class ModuleConfigurationParser {
-	public static ModuleConfiguration parse(Collection<ModuleDefinitionSource> localModuleSources, Collection<ModuleDefinitionSource> dependentModuleSources, Collection<ModuleDefinitionSource> transitiveModuleSources) {
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> dependentModuleSources, Collection<ModuleDefinitionSource> transitiveModuleSources) {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
 		DefaultModuleConfiguration configNode = new DefaultModuleConfiguration();
 
 		Collection<ModuleParser> transitiveParsers = createParsersFor(transitiveModuleSources);
 		Collection<ModuleParser> directParsers = createParsersFor(dependentModuleSources);
-		Collection<ModuleParser> localParsers = createParsersFor(localModuleSources);
+		Collection<ModuleParser> localParsers = createParsersFor(Collections.singleton(localModuleSource));
 
 		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParsers, transitiveParsers));
 
+		Set<ModuleNode> localModules = Sets.newLinkedHashSet();
 		parsedModules(resolver, transitiveParsers, configNode.getTransitiveDependentModules(), parsedModules);
 		parsedModules(resolver, directParsers, configNode.getDirectDependentModules(), parsedModules);
-		parsedModules(resolver, localParsers, configNode.getLocalModules(), parsedModules);
+		parsedModules(resolver, localParsers, localModules, parsedModules);
+		if (localModules.isEmpty()) {
+			throw new IllegalStateException("No local module found");
+		}
+		if (localModules.size() > 1) {
+			throw new IllegalStateException("More than one local module found: " + localModules);
+		}
+		configNode.setLocalModule(Iterables.getOnlyElement(localModules));
 
 		return configNode;
 	}
