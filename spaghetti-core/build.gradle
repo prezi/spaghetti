@@ -31,18 +31,8 @@ task generateGrammar(type: JavaExec) {
 }
 
 processResources {
-	inputs.property "version", project.version
-	def build = project.version
-	def versionMatcher = project.version =~ /^(\d+(?:[\.]\d+)+)(?:-.*)?$/
-	def version
-	if (versionMatcher) {
-		version = versionMatcher[0][1]
-	} else {
-		logger.warn "Cannot figure out Spaghetti version from \"${version}\", setting to \"unknown\""
-		version = "unknown"
-	}
+	inputs.property "version", version
 	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-			build: build,
 			version: version
 	])
 }

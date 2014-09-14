@@ -20,5 +20,4 @@ public final class Version {
 	}
 
 	public static String SPAGHETTI_VERSION = props.getProperty("version");
-	public static String SPAGHETTI_BUILD = props.getProperty("build");
 }

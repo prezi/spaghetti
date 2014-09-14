@@ -13,7 +13,7 @@ public class VersionCommand implements Callable<Integer> {
 
 	@Override
 	public Integer call() throws Exception {
-		log.info("Spaghetti version " + Version.SPAGHETTI_BUILD);
+		log.info("Spaghetti version " + Version.SPAGHETTI_VERSION);
 		return 0;
 	}
 }

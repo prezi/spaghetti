@@ -16,7 +16,7 @@ class CommonJsModuleWrapperTest extends WrapperTestBase {
 							'return init.call({},(function(){',
 								'var baseUrl=__dirname;',
 								'return{',
-									'getSpaghettiVersion:function(){return "' + Version.SPAGHETTI_BUILD + '";},',
+									'getSpaghettiVersion:function(){return "' + Version.SPAGHETTI_VERSION + '";},',
 									'getName:function(){',
 										'return "com.example.test";',
 									'},',
@@ -39,7 +39,7 @@ class CommonJsModuleWrapperTest extends WrapperTestBase {
 					'return{',
 						'"module":module(function(Spaghetti){}),',
 						'"version":"1.0",',
-						'"spaghettiVersion":"' + Version.SPAGHETTI_BUILD + '"',
+						'"spaghettiVersion":"' + Version.SPAGHETTI_VERSION + '"',
 					'};',
 				'})();'
 		].join("")

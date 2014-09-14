@@ -38,7 +38,6 @@ import java.util.jar.Manifest;
 public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
-	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_BUILD = new Attributes.Name("Spaghetti-Build");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
@@ -79,7 +78,6 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			final Manifest manifest = new Manifest();
 			manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_SPAGHETTI_VERSION, Version.SPAGHETTI_VERSION);
-			manifest.getMainAttributes().put(MANIFEST_ATTR_SPAGHETTI_BUILD, Version.SPAGHETTI_BUILD);
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_NAME, params.name);
 			String version = params.version;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_VERSION, version != null ? version : "");

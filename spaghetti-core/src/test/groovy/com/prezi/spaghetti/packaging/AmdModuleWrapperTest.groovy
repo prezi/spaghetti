@@ -17,7 +17,7 @@ class AmdModuleWrapperTest extends WrapperTestBase {
 								'var moduleUrl=dependencies[0]["toUrl"]("com.example.test.js");',
 								'var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf("/"));',
 								'return{',
-									'getSpaghettiVersion:function(){return "' + Version.SPAGHETTI_BUILD + '";},',
+									'getSpaghettiVersion:function(){return "' + Version.SPAGHETTI_VERSION + '";},',
 									'getName:function(){',
 										'return "com.example.test";',
 									'},',
@@ -41,7 +41,7 @@ class AmdModuleWrapperTest extends WrapperTestBase {
 					'return{',
 						'"module":module(function(Spaghetti){}),',
 						'"version":"1.0",',
-						'"spaghettiVersion":"' + Version.SPAGHETTI_BUILD + '"',
+						'"spaghettiVersion":"' + Version.SPAGHETTI_VERSION + '"',
 					'};',
 				'});'
 		].join("")

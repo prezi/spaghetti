@@ -33,7 +33,7 @@ public abstract class AbstractModuleWrapper implements ModuleWrapper {
 					builder.append(baseUrlDeclaration);
 					builder.append("return{");
 						builder.append(GET_SPAGHETTI_VERSION).append(":function(){");
-							builder.append("return \"").append(Version.SPAGHETTI_BUILD).append("\";");
+							builder.append("return \"").append(Version.SPAGHETTI_VERSION).append("\";");
 						builder.append("},");
 						builder.append(GET_NAME_FUNCTION).append(":function(){");
 							builder.append("return \"").append(moduleName).append("\";");
@@ -57,7 +57,7 @@ public abstract class AbstractModuleWrapper implements ModuleWrapper {
 		appendAfterInitialComment(builder, "return{\"module\":", params.bundle.getJavaScript());
 		builder.append(",");
 		builder.append("\"version\":\"").append(params.bundle.getVersion()).append("\",");
-		builder.append("\"spaghettiVersion\":\"").append(Version.SPAGHETTI_BUILD).append("\"");
+		builder.append("\"spaghettiVersion\":\"").append(Version.SPAGHETTI_VERSION).append("\"");
 		builder.append("};");
 	}
 }
