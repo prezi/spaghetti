@@ -44,6 +44,8 @@ Based on this abstract definition, Spaghetti ensures type safety on both sides o
 
 If you make a typo in `sayHello`, or try to pass a `number`, the TypeScript compiler throws an error.
 
+For a detailed explanation of the steps to building a Spaghetti application, see [Workflow on the wiki](../../wiki/Workflow).
+
 ## Try It
 
 If you want to get to know Spaghetti, you have options to
