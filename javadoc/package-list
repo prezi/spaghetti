@@ -6,7 +6,6 @@ com.prezi.spaghetti.definition
 com.prezi.spaghetti.generator
 com.prezi.spaghetti.gradle
 com.prezi.spaghetti.haxe.gradle
-com.prezi.spaghetti.javascript
 com.prezi.spaghetti.obfuscation
 com.prezi.spaghetti.packaging
 com.prezi.spaghetti.structure
