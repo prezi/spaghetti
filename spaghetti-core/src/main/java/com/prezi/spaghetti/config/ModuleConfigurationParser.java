@@ -3,11 +3,12 @@ package com.prezi.spaghetti.config;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.ast.parser.AstParserException;
-import com.prezi.spaghetti.ast.parser.MissingTypeResolver;
-import com.prezi.spaghetti.ast.parser.ModuleParser;
-import com.prezi.spaghetti.ast.parser.ModuleTypeResolver;
-import com.prezi.spaghetti.ast.parser.TypeResolver;
+import com.prezi.spaghetti.ast.internal.parser.AstParserException;
+import com.prezi.spaghetti.ast.internal.parser.MissingTypeResolver;
+import com.prezi.spaghetti.ast.internal.parser.ModuleParser;
+import com.prezi.spaghetti.ast.internal.parser.ModuleTypeResolver;
+import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
+import com.prezi.spaghetti.config.internal.DefaultModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.util.Collection;

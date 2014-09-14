@@ -3,10 +3,10 @@ package com.prezi.spaghetti.javascript;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharSink;
 import com.google.common.io.Files;
-import com.prezi.spaghetti.AbstractGenerator;
-import com.prezi.spaghetti.GeneratorUtils;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.generator.AbstractGenerator;
+import com.prezi.spaghetti.generator.internal.GeneratorUtils;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

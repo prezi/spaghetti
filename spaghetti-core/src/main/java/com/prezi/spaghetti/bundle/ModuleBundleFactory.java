@@ -1,7 +1,11 @@
 package com.prezi.spaghetti.bundle;
 
+import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle;
 import com.prezi.spaghetti.structure.StructuredReader;
-import com.prezi.spaghetti.structure.StructuredWriter;
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryReader;
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
+import com.prezi.spaghetti.structure.internal.StructuredZipReader;
+import com.prezi.spaghetti.structure.internal.StructuredZipWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,11 +18,11 @@ public class ModuleBundleFactory {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleFactory.class);
 
 	public static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) throws IOException {
-		return DefaultModuleBundle.create(new StructuredWriter.Zip(outputFile), params);
+		return DefaultModuleBundle.create(new StructuredZipWriter(outputFile), params);
 	}
 
 	public static ModuleBundle createDirectory(File outputDirectory, ModuleBundleParameters params) throws IOException {
-		return DefaultModuleBundle.create(new StructuredWriter.Directory(outputDirectory), params);
+		return DefaultModuleBundle.create(new StructuredDirectoryWriter(outputDirectory), params);
 	}
 
 	public static ModuleBundle load(final File inputFile) throws IOException {
@@ -29,10 +33,10 @@ public class ModuleBundleFactory {
 		StructuredReader source;
 		if (inputFile.isFile()) {
 			logger.debug("{} is a file, trying to load as ZIP", inputFile);
-			source = new StructuredReader.Zip(inputFile);
+			source = new StructuredZipReader(inputFile);
 		} else if (inputFile.isDirectory()) {
 			logger.debug("{} is a directory, trying to load as exploded", inputFile);
-			source = new StructuredReader.Directory(inputFile);
+			source = new StructuredDirectoryReader(inputFile);
 		} else {
 			throw new RuntimeException("Unknown module format: " + inputFile);
 		}
@@ -56,7 +60,7 @@ public class ModuleBundleFactory {
 	}
 
 	public static void extract(ModuleBundle bundle, File outputDirectory, EnumSet<ModuleBundleElement> elements) throws IOException {
-		StructuredWriter.Directory output = new StructuredWriter.Directory(outputDirectory);
+		StructuredDirectoryWriter output = new StructuredDirectoryWriter(outputDirectory);
 		output.init();
 		try {
 			bundle.extract(output, elements);

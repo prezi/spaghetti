@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.packaging
 
-import com.prezi.spaghetti.internal.DependencyTreeResolver
+import com.prezi.spaghetti.packaging.internal.DependencyTreeResolver
 import spock.lang.Specification
 
 class DependencyTreeResolverTest extends Specification {

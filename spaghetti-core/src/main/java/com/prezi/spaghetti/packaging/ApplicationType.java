@@ -1,5 +1,9 @@
 package com.prezi.spaghetti.packaging;
 
+import com.prezi.spaghetti.packaging.internal.AmdApplicationPackager;
+import com.prezi.spaghetti.packaging.internal.CommonJsApplicationPackager;
+import com.prezi.spaghetti.packaging.internal.SingleFileApplicationPackager;
+
 public enum ApplicationType {
 	AMD("AMD", new AmdApplicationPackager()),
 	COMMON_JS("Common JS", new CommonJsApplicationPackager()),

@@ -5,9 +5,9 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.DEPENDENCIES
-import static com.prezi.spaghetti.ReservedWords.MODULE
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS
+import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES
+import static com.prezi.spaghetti.generator.ReservedWords.MODULE
+import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 	private final ModuleNode module

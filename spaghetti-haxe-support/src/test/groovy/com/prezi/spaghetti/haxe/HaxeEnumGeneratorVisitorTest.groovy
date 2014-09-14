@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.haxe
 
 import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.parser.EnumParser
+import com.prezi.spaghetti.ast.internal.parser.EnumParser
 import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 

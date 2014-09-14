@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.gradle.internal;
 
-import com.prezi.spaghetti.Generator;
-import com.prezi.spaghetti.Languages;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.generator.Generator;
+import com.prezi.spaghetti.generator.Languages;
 import org.gradle.api.tasks.Input;
 
 public class AbstractLanguageAwareSpaghettiTask extends AbstractSpaghettiTask {

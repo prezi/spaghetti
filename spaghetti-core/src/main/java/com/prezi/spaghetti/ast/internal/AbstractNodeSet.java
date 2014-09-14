@@ -2,7 +2,7 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.NodeSet;
-import com.prezi.spaghetti.ast.parser.InternalAstParserException;
+import com.prezi.spaghetti.ast.internal.parser.InternalAstParserException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.TerminalNode;

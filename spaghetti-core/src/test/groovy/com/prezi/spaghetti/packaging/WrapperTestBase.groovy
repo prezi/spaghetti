@@ -10,6 +10,6 @@ class WrapperTestBase extends Specification {
 		mockBundle.version >> version
 		mockBundle.dependentModules >> dependencies
 		mockBundle.javaScript >> javaScript
-		return new ModuleWrappingParameters(mockBundle)
+		return new ModuleWrapperParameters(mockBundle)
 	}
 }

@@ -1,8 +1,9 @@
 package com.prezi.spaghetti.obfuscation
 
-import com.prezi.spaghetti.ast.parser.ModuleParser
-import com.prezi.spaghetti.ast.parser.TypeResolver
+import com.prezi.spaghetti.ast.internal.parser.ModuleParser
+import com.prezi.spaghetti.ast.internal.parser.TypeResolver
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.obfuscation.internal.SymbolCollectVisitor
 import spock.lang.Specification
 
 class SymbolCollectVisitorTest extends Specification {

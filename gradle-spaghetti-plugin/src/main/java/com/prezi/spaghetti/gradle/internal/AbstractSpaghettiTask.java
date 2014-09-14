@@ -11,8 +11,6 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.config.ModuleConfiguration;
 import com.prezi.spaghetti.config.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
-import com.prezi.spaghetti.gradle.internal.ModuleBundleLookup;
-import com.prezi.spaghetti.gradle.internal.ModuleBundleLookupResult;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedDependency;

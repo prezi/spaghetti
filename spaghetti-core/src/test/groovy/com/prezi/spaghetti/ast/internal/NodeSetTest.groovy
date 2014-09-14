@@ -4,7 +4,7 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.QualifiedNode
-import com.prezi.spaghetti.ast.parser.InternalAstParserException
+import com.prezi.spaghetti.ast.internal.parser.InternalAstParserException
 import spock.lang.Specification
 import spock.lang.Unroll
 

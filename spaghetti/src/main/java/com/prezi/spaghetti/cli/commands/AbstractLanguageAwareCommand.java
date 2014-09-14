@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.cli.commands;
 
-import com.prezi.spaghetti.Generator;
-import com.prezi.spaghetti.Languages;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.generator.Generator;
+import com.prezi.spaghetti.generator.Languages;
 import io.airlift.command.Option;
 
 import java.io.IOException;

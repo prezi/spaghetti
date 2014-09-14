@@ -1,9 +1,11 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.google.common.collect.ImmutableSet;
-import com.prezi.spaghetti.SourceMap;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
+import com.prezi.spaghetti.obfuscation.internal.SourceMap;
+import com.prezi.spaghetti.obfuscation.internal.SymbolCollectVisitor;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

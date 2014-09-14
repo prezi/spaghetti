@@ -5,7 +5,7 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.TypeParameterNode
-import com.prezi.spaghetti.ast.parser.InterfaceParser
+import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
 import com.prezi.spaghetti.definition.ModuleDefinitionParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 

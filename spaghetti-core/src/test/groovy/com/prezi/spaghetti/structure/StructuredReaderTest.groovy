@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.structure
 
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryReader
+import com.prezi.spaghetti.structure.internal.StructuredZipReader
 import spock.lang.Specification
 
 import java.util.zip.ZipEntry
@@ -65,7 +67,7 @@ class StructuredReaderTest extends Specification {
 		new File(dir, "lajos") << "Hello"
 		new File(dir, "bela").mkdirs()
 		new File(dir, "bela/bela") << "Hi"
-		def source = new StructuredReader.Directory(dir)
+		def source = new StructuredDirectoryReader(dir)
 		source.init()
 		return source
 	}
@@ -79,7 +81,7 @@ class StructuredReaderTest extends Specification {
 		zipStream.putNextEntry(new ZipEntry("bela/bela"))
 		zipStream << "Hi"
 		zipStream.close()
-		def source = new StructuredReader.Zip(zip)
+		def source = new StructuredZipReader(zip)
 		source.init()
 		return source
 	}

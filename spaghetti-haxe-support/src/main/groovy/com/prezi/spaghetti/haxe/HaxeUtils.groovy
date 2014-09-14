@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.GeneratorUtils
+import com.prezi.spaghetti.generator.internal.GeneratorUtils
 
 final class HaxeUtils {
 	public static File createHaxeSourceFile(String namespace, String name, File outputDirectory, String contents) {

@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.haxe.access
 
 import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.parser.ModuleParser
+import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class HaxeModuleAccessorGeneratorVisitorTest extends AstTestBase {

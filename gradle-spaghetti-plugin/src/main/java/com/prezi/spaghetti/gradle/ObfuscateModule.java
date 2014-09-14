@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.gradle;
 
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.Languages;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.config.ModuleConfiguration;
+import com.prezi.spaghetti.generator.Languages;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;

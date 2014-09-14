@@ -1,15 +1,15 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
+import com.prezi.spaghetti.generator.AbstractGenerator
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS
+import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class TypeScriptGenerator extends AbstractGenerator {
 

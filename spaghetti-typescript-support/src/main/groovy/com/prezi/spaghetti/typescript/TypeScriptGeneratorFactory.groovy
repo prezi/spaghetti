@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.AbstractGeneratorFactory
-import com.prezi.spaghetti.Generator
 import com.prezi.spaghetti.config.ModuleConfiguration
+import com.prezi.spaghetti.generator.AbstractGeneratorFactory
+import com.prezi.spaghetti.generator.Generator
 
 public class TypeScriptGeneratorFactory extends AbstractGeneratorFactory {
 

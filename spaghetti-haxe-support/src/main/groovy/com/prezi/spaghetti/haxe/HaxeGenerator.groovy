@@ -1,15 +1,15 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.AbstractGenerator
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.config.ModuleConfiguration
+import com.prezi.spaghetti.generator.AbstractGenerator
 import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.haxe.stub.HaxeInterfaceStubGeneratorVisitor
 
-import static com.prezi.spaghetti.ReservedWords.SPAGHETTI_CLASS
+import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class HaxeGenerator extends AbstractGenerator {
 

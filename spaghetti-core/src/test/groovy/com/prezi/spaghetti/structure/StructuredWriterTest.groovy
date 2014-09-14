@@ -1,5 +1,9 @@
 package com.prezi.spaghetti.structure
 
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryReader
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter
+import com.prezi.spaghetti.structure.internal.StructuredZipReader
+import com.prezi.spaghetti.structure.internal.StructuredZipWriter
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
@@ -13,7 +17,7 @@ class StructuredWriterTest extends Specification {
 	def "directory created even if there was a file in its place"() {
 		def dir = tempDir.newFolder()
 		dir.createNewFile()
-		def builder = new StructuredWriter.Directory(dir)
+		def builder = new StructuredDirectoryWriter(dir)
 		builder.init()
 
 		expect:
@@ -22,7 +26,7 @@ class StructuredWriterTest extends Specification {
 
 	def "directory"() {
 		def dir = tempDir.newFolder()
-		def builder = new StructuredWriter.Directory(dir)
+		def builder = new StructuredDirectoryWriter(dir)
 		builder.init()
 		builder.appendFile("lajos", "Hello")
 		def source = builder.create()
@@ -31,14 +35,14 @@ class StructuredWriterTest extends Specification {
 		def lajos = new File(dir, "lajos")
 		lajos.file
 		lajos.text == "Hello"
-		source instanceof StructuredReader.Directory
-		((StructuredReader.Directory) source).sourceDirectory == dir
+		source instanceof StructuredDirectoryReader
+		((StructuredDirectoryReader) source).sourceDirectory == dir
 	}
 
 	def "zip is created even if there was a directory in its place"() {
 		def zip = tempDir.newFile()
 		zip.mkdirs()
-		def builder = new StructuredWriter.Zip(zip)
+		def builder = new StructuredZipWriter(zip)
 		builder.init()
 
 		expect:
@@ -47,7 +51,7 @@ class StructuredWriterTest extends Specification {
 
 	def "zip"() {
 		def zip = tempDir.newFile()
-		def builder = new StructuredWriter.Zip(zip)
+		def builder = new StructuredZipWriter(zip)
 		builder.init()
 		builder.appendFile("lajos", "Hello")
 		def source = builder.create()
@@ -56,7 +60,7 @@ class StructuredWriterTest extends Specification {
 
 		expect:
 		zipFile.getInputStream(zipFile.getEntry("lajos")).text == "Hello"
-		source instanceof StructuredReader.Zip
-		((StructuredReader.Zip) source).zip == zip
+		source instanceof StructuredZipReader
+		((StructuredZipReader) source).zip == zip
 	}
 }

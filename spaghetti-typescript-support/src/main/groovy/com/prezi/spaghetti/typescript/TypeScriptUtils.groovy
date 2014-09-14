@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.GeneratorUtils
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.generator.internal.GeneratorUtils
 
 final class TypeScriptUtils {
 	public static File createSourceFile(ModuleNode module, String name, File outputDirectory, String contents) {

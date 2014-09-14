@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.ast
 
-import com.prezi.spaghetti.ast.parser.TypeResolutionContext
-import com.prezi.spaghetti.ast.parser.TypeResolver
+import com.prezi.spaghetti.ast.internal.parser.TypeResolutionContext
+import com.prezi.spaghetti.ast.internal.parser.TypeResolver
 import spock.lang.Specification
 
 class AstTestBase extends Specification {

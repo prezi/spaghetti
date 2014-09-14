@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.haxe.stub
 
 import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.parser.AstTestUtils
-import com.prezi.spaghetti.ast.parser.InterfaceParser
+import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
+import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
 
 class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {

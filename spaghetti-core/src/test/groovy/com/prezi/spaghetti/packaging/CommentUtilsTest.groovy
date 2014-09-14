@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.packaging
 
+import com.prezi.spaghetti.packaging.internal.CommentUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 

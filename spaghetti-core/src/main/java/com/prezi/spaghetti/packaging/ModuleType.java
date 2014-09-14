@@ -1,5 +1,8 @@
 package com.prezi.spaghetti.packaging;
 
+import com.prezi.spaghetti.packaging.internal.AmdModulePackager;
+import com.prezi.spaghetti.packaging.internal.CommonJsModulePackager;
+
 public enum ModuleType {
 	AMD("AMD", new AmdModulePackager()),
 	COMMON_JS("Common JS", new CommonJsModulePackager());

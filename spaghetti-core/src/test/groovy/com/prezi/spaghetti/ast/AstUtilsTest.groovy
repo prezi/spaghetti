@@ -5,10 +5,10 @@ import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference
 
 import static com.prezi.spaghetti.ast.AstUtils.resolveTypeParameters
-import static com.prezi.spaghetti.ast.parser.AstTestUtils.parser
-import static com.prezi.spaghetti.ast.parser.AstTestUtils.resolver
-import static com.prezi.spaghetti.ast.parser.TypeParsers.parseType
-import static com.prezi.spaghetti.ast.parser.TypeParsers.parseTypeChain
+import static com.prezi.spaghetti.ast.internal.parser.AstTestUtils.parser
+import static com.prezi.spaghetti.ast.internal.parser.AstTestUtils.resolver
+import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseType
+import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseTypeChain
 
 class AstUtilsTest extends AstTestBase {
 	def "resolveTypeParameters simple"() {

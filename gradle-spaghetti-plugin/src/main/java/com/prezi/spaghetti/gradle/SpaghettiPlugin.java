@@ -2,8 +2,8 @@ package com.prezi.spaghetti.gradle;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.GeneratorFactory;
-import com.prezi.spaghetti.Languages;
+import com.prezi.spaghetti.generator.GeneratorFactory;
+import com.prezi.spaghetti.generator.Languages;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiGeneratedSourceSet;

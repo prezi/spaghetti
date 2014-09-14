@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.definition;
 
+import com.prezi.spaghetti.definition.internal.ParserErrorListener;
 import com.prezi.spaghetti.grammar.ModuleLexer;
 import com.prezi.spaghetti.grammar.ModuleParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
