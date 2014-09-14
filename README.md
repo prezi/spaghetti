@@ -22,7 +22,7 @@ interface Greeter {
 Greeter createGreeter()
 ```
 
-Based on this abstract definition, Spaghetti ensures type safety on both sides of the communiaction:
+Based on this abstract definition, Spaghetti ensures type safety on both the implementor and the caller side of an API:
 
 * **checking if a module implements its Spaghetti API properly** is done via generated interfaces that the module must implement. This way the compiler can check if you've made a mistake or have forgotten something. From the above example, the generated code for the `Greeter` Spaghetti interface in a TypeScript module looks like this:
 
