@@ -4,7 +4,7 @@ import com.prezi.spaghetti.Version
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle
 import com.prezi.spaghetti.structure.IOAction
 import com.prezi.spaghetti.structure.IOCallable
-import com.prezi.spaghetti.structure.StructuredReader
+import com.prezi.spaghetti.structure.StructuredProcessor
 import com.prezi.spaghetti.structure.StructuredWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -52,7 +52,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "load bundle without any files"() {
-		def source = Mock(StructuredReader)
+		def source = Mock(StructuredProcessor)
 
 		when:
 		DefaultModuleBundle.loadInternal(source)
@@ -66,7 +66,7 @@ class ModuleBundleTest extends Specification {
 
 	@SuppressWarnings("GroovyAssignabilityCheck")
 	def "load bundle with all files present"() {
-		def source = Mock(StructuredReader)
+		def source = Mock(StructuredProcessor)
 
 		when:
 		def bundle = DefaultModuleBundle.loadInternal(source)
@@ -77,8 +77,8 @@ class ModuleBundleTest extends Specification {
 		_ * source.close()
 		//noinspection GroovyAssignabilityCheck
 		1 * source.processFiles({
-			StructuredReader.FileHandler handler = it
-			handler.handleFile("META-INF/MANIFEST.MF", content(
+			StructuredProcessor.FileProcessor handler = it
+			handler.processFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
 					"Spaghetti-Version: 2.5",
 					"Module-Name: com.example.test",
@@ -97,7 +97,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "definition from module"() {
-		def source = Mock(StructuredReader)
+		def source = Mock(StructuredProcessor)
 		def bundle = fakeModule(source)
 		when:
 		def definition = bundle.definition
@@ -106,7 +106,7 @@ class ModuleBundleTest extends Specification {
 		1 * source.init()
 		1 * source.hasFile("module.def") >> true
 		//noinspection GroovyAssignabilityCheck
-		_ * source.processFile("module.def", { it.handleFile("module.def", content(
+		_ * source.processFile("module.def", { it.processFile("module.def", content(
 				"module com.example.test as Test"
 		)); true })
 		1 * source.close()
@@ -115,7 +115,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "javascript from module"() {
-		def source = Mock(StructuredReader)
+		def source = Mock(StructuredProcessor)
 		def bundle = fakeModule(source)
 		when:
 		def javaScript = bundle.javaScript
@@ -124,7 +124,7 @@ class ModuleBundleTest extends Specification {
 		1 * source.init()
 		1 * source.hasFile("module.js") >> true
 		//noinspection GroovyAssignabilityCheck
-		1 * source.processFile("module.js", { it.handleFile("module.js", content(
+		1 * source.processFile("module.js", { it.processFile("module.js", content(
 				"console.log('hello');"
 		)); true })
 		1 * source.close()
@@ -133,7 +133,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	def "source map from module"() {
-		def source = Mock(StructuredReader)
+		def source = Mock(StructuredProcessor)
 		def bundle = fakeModule(source)
 		when:
 		def sourceMap = bundle.sourceMap
@@ -142,7 +142,7 @@ class ModuleBundleTest extends Specification {
 		1 * source.init()
 		1 * source.hasFile("module.map") >> true
 		//noinspection GroovyAssignabilityCheck
-		1 * source.processFile("module.map", { it.handleFile("module.map", content(
+		1 * source.processFile("module.map", { it.processFile("module.map", content(
 				"sourcemap"
 		)); true })
 		1 * source.close()
@@ -150,7 +150,7 @@ class ModuleBundleTest extends Specification {
 		sourceMap == "sourcemap"
 	}
 
-	private static ModuleBundle fakeModule(StructuredReader source) {
+	private static ModuleBundle fakeModule(StructuredProcessor source) {
 		return new DefaultModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
 	}
 

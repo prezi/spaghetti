@@ -4,7 +4,14 @@ import com.prezi.spaghetti.packaging.internal.AmdModulePackager;
 import com.prezi.spaghetti.packaging.internal.CommonJsModulePackager;
 
 public enum ModuleType {
+	/**
+	 * AMD module type, used for RequireJS applications.
+	 */
 	AMD("AMD", new AmdModulePackager()),
+
+	/**
+	 * CommonJS module type, used for NodeJS applications.
+	 */
 	COMMON_JS("Common JS", new CommonJsModulePackager());
 
 	private final String description;

@@ -13,7 +13,7 @@ import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.structure.IOAction;
 import com.prezi.spaghetti.structure.IOCallable;
 import com.prezi.spaghetti.structure.StructuredAppender;
-import com.prezi.spaghetti.structure.StructuredReader;
+import com.prezi.spaghetti.structure.StructuredProcessor;
 import com.prezi.spaghetti.structure.StructuredWriter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -42,9 +42,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies");
-	protected final StructuredReader source;
+	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredReader source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
 		super(name, version, sourceBaseUrl, dependentModules, resourcePaths);
 		this.source = source;
 	}
@@ -114,14 +114,14 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 				}
 			}
 
-			StructuredReader source = builder.create();
+			StructuredProcessor source = builder.create();
 			return new DefaultModuleBundle(source, params.name, params.version, params.sourceBaseUrl, params.dependentModules, Collections.unmodifiableSet(resourcePaths));
 		} finally {
 			builder.close();
 		}
 	}
 
-	public static DefaultModuleBundle loadInternal(final StructuredReader source) throws IOException {
+	public static DefaultModuleBundle loadInternal(final StructuredProcessor source) throws IOException {
 		if (!source.hasFile(MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source);
 		}
@@ -137,9 +137,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		final AtomicReference<Manifest> manifest = new AtomicReference<Manifest>(null);
 		final Set<String> resourcePaths = Sets.newLinkedHashSet();
-		source.processFiles(new StructuredReader.FileHandler() {
+		source.processFiles(new StructuredProcessor.FileProcessor() {
 			@Override
-			public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
+			public void processFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
 				if (MANIFEST_MF_PATH.equals(path)) {
 					try {
 						manifest.set(new Manifest(contents.call()));
@@ -186,9 +186,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			final AtomicReference<String> text = new AtomicReference<String>(null);
-			source.processFile(path, new StructuredReader.FileHandler() {
+			source.processFile(path, new StructuredProcessor.FileProcessor() {
 				@Override
-				public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
+				public void processFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
 					text.set(IOUtils.toString(contents.call(), Charsets.UTF_8));
 				}
 			});
@@ -208,10 +208,10 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 	}
 
-	protected static void extract(final String name, StructuredReader source, final StructuredAppender output, final EnumSet<ModuleBundleElement> elements) throws IOException {
-		source.processFiles(new StructuredReader.FileHandler() {
+	protected static void extract(final String name, StructuredProcessor source, final StructuredAppender output, final EnumSet<ModuleBundleElement> elements) throws IOException {
+		source.processFiles(new StructuredProcessor.FileProcessor() {
 			@Override
-			public void handleFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
+			public void processFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
 				if (path.equals(MANIFEST_MF_PATH)) {
 					if (elements.contains(ModuleBundleElement.MANIFEST)) {
 						output.subAppender("META-INF").appendFile("MANIFEST.MF", contents.call());

@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.structure.internal;
 
 import com.prezi.spaghetti.structure.IOCallable;
-import com.prezi.spaghetti.structure.StructuredReader;
+import com.prezi.spaghetti.structure.StructuredProcessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 
@@ -10,10 +10,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class StructuredDirectoryReader implements StructuredReader {
+public class StructuredDirectoryProcessor implements StructuredProcessor {
 	private final File sourceDirectory;
 
-	public StructuredDirectoryReader(File sourceDirectory) {
+	public StructuredDirectoryProcessor(File sourceDirectory) {
 		this.sourceDirectory = sourceDirectory;
 	}
 
@@ -27,29 +27,29 @@ public class StructuredDirectoryReader implements StructuredReader {
 	}
 
 	@Override
-	public void processFile(String path, FileHandler handler) throws IOException {
+	public void processFile(String path, FileProcessor processor) throws IOException {
 		final File file = new File(sourceDirectory, path);
 		if (!file.isFile()) {
 			throw new IllegalArgumentException("Could not find file in bundle: " + file);
 		}
 
-		handleFile(handler, path, file);
+		handleFile(processor, path, file);
 	}
 
 	@Override
-	public void processFiles(final FileHandler handler) throws IOException {
+	public void processFiles(final FileProcessor processor) throws IOException {
 		if (!sourceDirectory.exists()) {
 			throw new IllegalArgumentException("Could not find module bundle directory: " + String.valueOf(sourceDirectory));
 		}
 
 		for (File file : FileUtils.listFiles(sourceDirectory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
 			String path = sourceDirectory.toURI().relativize(file.toURI()).toString();
-			handleFile(handler, path, file);
+			handleFile(processor, path, file);
 		}
 	}
 
-	private static void handleFile(FileHandler handler, String path, final File file) throws IOException {
-		handler.handleFile(path, new IOCallable<InputStream>() {
+	private static void handleFile(FileProcessor handler, String path, final File file) throws IOException {
+		handler.processFile(path, new IOCallable<InputStream>() {
 			@Override
 			public InputStream call() throws IOException {
 				return new FileInputStream(file);

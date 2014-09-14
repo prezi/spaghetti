@@ -3,10 +3,10 @@ package com.prezi.spaghetti.bundle;
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.structure.OutputType;
-import com.prezi.spaghetti.structure.StructuredReader;
-import com.prezi.spaghetti.structure.internal.StructuredDirectoryReader;
+import com.prezi.spaghetti.structure.StructuredProcessor;
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryProcessor;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
-import com.prezi.spaghetti.structure.internal.StructuredZipReader;
+import com.prezi.spaghetti.structure.internal.StructuredZipProcessor;
 import com.prezi.spaghetti.structure.internal.StructuredZipWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,13 +74,13 @@ public final class ModuleBundleFactory {
 			throw new IllegalArgumentException("Module not found: " + String.valueOf(input));
 		}
 
-		StructuredReader source;
+		StructuredProcessor source;
 		if (input.isFile()) {
 			logger.debug("{} is a file, trying to load as ZIP", input);
-			source = new StructuredZipReader(input);
+			source = new StructuredZipProcessor(input);
 		} else if (input.isDirectory()) {
 			logger.debug("{} is a directory, trying to load as exploded", input);
-			source = new StructuredDirectoryReader(input);
+			source = new StructuredDirectoryProcessor(input);
 		} else {
 			throw new RuntimeException("Unknown module format: " + input);
 		}

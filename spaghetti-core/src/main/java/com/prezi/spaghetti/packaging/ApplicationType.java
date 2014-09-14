@@ -4,9 +4,26 @@ import com.prezi.spaghetti.packaging.internal.AmdApplicationPackager;
 import com.prezi.spaghetti.packaging.internal.CommonJsApplicationPackager;
 import com.prezi.spaghetti.packaging.internal.SingleFileApplicationPackager;
 
+/**
+ * Application type.
+ */
 public enum ApplicationType {
+	/**
+	 * AMD packaging type, used for RequireJS applications. Each module has its own
+	 * directory under {@code modules/&lt;module_name&gt;}.
+	 */
 	AMD("AMD", new AmdApplicationPackager()),
+
+	/**
+	 * CommonJS packaging type, used for NodeJS applications. Each module has its own
+	 * directory under {@code node_modules/&lt;module_name&gt;}.
+	 */
 	COMMON_JS("Common JS", new CommonJsApplicationPackager()),
+
+	/**
+	 * Single file packaging type, used for NodeJS applications. The application is concatenated
+	 * into a single JavaScript file. Resources are stored in external files next to the application.
+	 */
 	SINGLE_FILE("single file", new SingleFileApplicationPackager());
 
 	private final String description;

@@ -57,8 +57,8 @@ public abstract class AbstractStructuredAppender implements StructuredAppender {
 		}
 
 		@Override
-		public void appendFile(String path, IOAction<OutputStream> writeContents) throws IOException {
-			parent.appendFile(subPath + "/" + path, writeContents);
+		public void appendFile(String path, IOAction<OutputStream> contents) throws IOException {
+			parent.appendFile(subPath + "/" + path, contents);
 		}
 
 		@Override

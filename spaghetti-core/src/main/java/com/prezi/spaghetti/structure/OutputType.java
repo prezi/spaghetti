@@ -4,8 +4,19 @@ import com.google.common.base.Strings;
 
 import java.io.File;
 
+/**
+ * Type of the structured output: ZIP file or exploded directory.
+ */
 public enum OutputType {
-	DIRECTORY, ZIP;
+	/**
+	 * Output the structure into an exploded directory.
+	 */
+	DIRECTORY,
+
+	/**
+	 * Output the structure into a ZIP file.
+	 */
+	ZIP;
 
 	public static OutputType fromString(String type, File output) {
 		if (Strings.isNullOrEmpty(type)) {

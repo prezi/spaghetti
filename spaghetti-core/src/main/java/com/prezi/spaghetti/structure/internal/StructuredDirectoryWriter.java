@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.structure.internal;
 
 import com.prezi.spaghetti.structure.IOAction;
-import com.prezi.spaghetti.structure.StructuredReader;
+import com.prezi.spaghetti.structure.StructuredProcessor;
 import com.prezi.spaghetti.structure.StructuredWriter;
 import org.apache.commons.io.FileUtils;
 
@@ -22,20 +22,20 @@ public class StructuredDirectoryWriter extends AbstractStructuredAppender implem
 	}
 
 	@Override
-	public void appendFile(String path, IOAction<OutputStream> writeContents) throws IOException {
+	public void appendFile(String path, IOAction<OutputStream> contents) throws IOException {
 		File file = new File(directory, path);
 		FileUtils.forceMkdir(file.getParentFile());
 		FileOutputStream out = new FileOutputStream(file);
 		try {
-			writeContents.execute(out);
+			contents.execute(out);
 		} finally {
 			out.close();
 		}
 	}
 
 	@Override
-	public StructuredReader create() {
-		return new StructuredDirectoryReader(directory);
+	public StructuredProcessor create() {
+		return new StructuredDirectoryProcessor(directory);
 	}
 
 	@Override

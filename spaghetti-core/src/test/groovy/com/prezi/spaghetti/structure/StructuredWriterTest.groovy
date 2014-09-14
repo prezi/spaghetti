@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.structure
 
-import com.prezi.spaghetti.structure.internal.StructuredDirectoryReader
+import com.prezi.spaghetti.structure.internal.StructuredDirectoryProcessor
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter
-import com.prezi.spaghetti.structure.internal.StructuredZipReader
+import com.prezi.spaghetti.structure.internal.StructuredZipProcessor
 import com.prezi.spaghetti.structure.internal.StructuredZipWriter
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -35,8 +35,8 @@ class StructuredWriterTest extends Specification {
 		def lajos = new File(dir, "lajos")
 		lajos.file
 		lajos.text == "Hello"
-		source instanceof StructuredDirectoryReader
-		((StructuredDirectoryReader) source).sourceDirectory == dir
+		source instanceof StructuredDirectoryProcessor
+		((StructuredDirectoryProcessor) source).sourceDirectory == dir
 	}
 
 	def "zip is created even if there was a directory in its place"() {
@@ -60,7 +60,7 @@ class StructuredWriterTest extends Specification {
 
 		expect:
 		zipFile.getInputStream(zipFile.getEntry("lajos")).text == "Hello"
-		source instanceof StructuredZipReader
-		((StructuredZipReader) source).zip == zip
+		source instanceof StructuredZipProcessor
+		((StructuredZipProcessor) source).zip == zip
 	}
 }

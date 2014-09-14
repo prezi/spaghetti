@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.structure.internal;
 
 import com.prezi.spaghetti.structure.IOAction;
-import com.prezi.spaghetti.structure.StructuredReader;
+import com.prezi.spaghetti.structure.StructuredProcessor;
 import com.prezi.spaghetti.structure.StructuredWriter;
 import org.apache.commons.io.FileUtils;
 
@@ -28,15 +28,15 @@ public final class StructuredZipWriter extends AbstractStructuredAppender implem
 	}
 
 	@Override
-	public void appendFile(String path, IOAction<OutputStream> writeContents) throws IOException {
+	public void appendFile(String path, IOAction<OutputStream> contents) throws IOException {
 		zipStream.putNextEntry(new ZipEntry(path));
-		writeContents.execute(zipStream);
+		contents.execute(zipStream);
 	}
 
 	@Override
-	public StructuredReader create() throws IOException {
+	public StructuredProcessor create() throws IOException {
 		close();
-		return new StructuredZipReader(zipFile);
+		return new StructuredZipProcessor(zipFile);
 	}
 
 	@Override

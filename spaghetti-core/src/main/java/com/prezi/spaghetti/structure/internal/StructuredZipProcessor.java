@@ -3,7 +3,7 @@ package com.prezi.spaghetti.structure.internal;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.UnmodifiableIterator;
 import com.prezi.spaghetti.structure.IOCallable;
-import com.prezi.spaghetti.structure.StructuredReader;
+import com.prezi.spaghetti.structure.StructuredProcessor;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +11,11 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class StructuredZipReader implements StructuredReader {
+public class StructuredZipProcessor implements StructuredProcessor {
 	private final File zip;
 	private ZipFile zipFile;
 
-	public StructuredZipReader(File zip) {
+	public StructuredZipProcessor(File zip) {
 		this.zip = zip;
 	}
 
@@ -30,28 +30,28 @@ public class StructuredZipReader implements StructuredReader {
 	}
 
 	@Override
-	public void processFile(final String path, FileHandler handler) throws IOException {
+	public void processFile(final String path, FileProcessor processor) throws IOException {
 		ZipEntry entry = zipFile.getEntry(path);
 		if (entry == null) {
 			throw new IllegalArgumentException("Could not find file \"" + path + "\" in bundle: " + zip);
 		}
 
-		handleEntry(handler, entry);
+		handleEntry(processor, entry);
 	}
 
 	@Override
-	public void processFiles(FileHandler handler) throws IOException {
+	public void processFiles(FileProcessor processor) throws IOException {
 		UnmodifiableIterator<? extends ZipEntry> entries = Iterators.forEnumeration(zipFile.entries());
 		while (entries.hasNext()) {
 			ZipEntry entry = entries.next();
 			if (!entry.isDirectory()) {
-				handleEntry(handler, entry);
+				handleEntry(processor, entry);
 			}
 		}
 	}
 
-	private void handleEntry(FileHandler handler, final ZipEntry entry) throws IOException {
-		handler.handleFile(entry.getName(), new IOCallable<InputStream>() {
+	private void handleEntry(FileProcessor handler, final ZipEntry entry) throws IOException {
+		handler.processFile(entry.getName(), new IOCallable<InputStream>() {
 			@Override
 			public InputStream call() throws IOException {
 				return zipFile.getInputStream(entry);
