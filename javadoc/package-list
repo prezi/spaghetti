@@ -1,7 +1,5 @@
-com.prezi.spaghetti
 com.prezi.spaghetti.ast
 com.prezi.spaghetti.bundle
-com.prezi.spaghetti.config
 com.prezi.spaghetti.definition
 com.prezi.spaghetti.generator
 com.prezi.spaghetti.gradle
