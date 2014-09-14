@@ -6,10 +6,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
+import com.prezi.spaghetti.internal.Version;
+import com.prezi.spaghetti.structure.FileProcessor;
 import com.prezi.spaghetti.structure.IOAction;
 import com.prezi.spaghetti.structure.IOCallable;
 import com.prezi.spaghetti.structure.StructuredAppender;
@@ -137,7 +138,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		final AtomicReference<Manifest> manifest = new AtomicReference<Manifest>(null);
 		final Set<String> resourcePaths = Sets.newLinkedHashSet();
-		source.processFiles(new StructuredProcessor.FileProcessor() {
+		source.processFiles(new FileProcessor() {
 			@Override
 			public void processFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
 				if (MANIFEST_MF_PATH.equals(path)) {
@@ -186,7 +187,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			final AtomicReference<String> text = new AtomicReference<String>(null);
-			source.processFile(path, new StructuredProcessor.FileProcessor() {
+			source.processFile(path, new FileProcessor() {
 				@Override
 				public void processFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
 					text.set(IOUtils.toString(contents.call(), Charsets.UTF_8));
@@ -209,7 +210,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	}
 
 	protected static void extract(final String name, StructuredProcessor source, final StructuredAppender output, final EnumSet<ModuleBundleElement> elements) throws IOException {
-		source.processFiles(new StructuredProcessor.FileProcessor() {
+		source.processFiles(new FileProcessor() {
 			@Override
 			public void processFile(String path, IOCallable<? extends InputStream> contents) throws IOException {
 				if (path.equals(MANIFEST_MF_PATH)) {

@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.structure.internal;
 
+import com.prezi.spaghetti.structure.FileProcessor;
 import com.prezi.spaghetti.structure.IOCallable;
 import com.prezi.spaghetti.structure.StructuredProcessor;
 import org.apache.commons.io.FileUtils;

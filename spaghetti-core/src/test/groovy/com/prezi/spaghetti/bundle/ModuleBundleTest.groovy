@@ -1,7 +1,8 @@
 package com.prezi.spaghetti.bundle
 
-import com.prezi.spaghetti.internal.Version
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle
+import com.prezi.spaghetti.internal.Version
+import com.prezi.spaghetti.structure.FileProcessor
 import com.prezi.spaghetti.structure.IOAction
 import com.prezi.spaghetti.structure.IOCallable
 import com.prezi.spaghetti.structure.StructuredProcessor
@@ -77,7 +78,7 @@ class ModuleBundleTest extends Specification {
 		_ * source.close()
 		//noinspection GroovyAssignabilityCheck
 		1 * source.processFiles({
-			StructuredProcessor.FileProcessor handler = it
+			FileProcessor handler = it
 			handler.processFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
 					"Spaghetti-Version: 2.5",

@@ -28,7 +28,7 @@ class StructuredProcessorTest extends Specification {
 	}
 
 	def "read through"() {
-		def handler = Mock(StructuredProcessor.FileProcessor)
+		def handler = Mock(FileProcessor)
 
 		when:
 		source.processFiles(handler)
@@ -45,7 +45,7 @@ class StructuredProcessorTest extends Specification {
 	}
 
 	def "read one"() {
-		def handler = Mock(StructuredProcessor.FileProcessor)
+		def handler = Mock(FileProcessor)
 
 		when:
 		source.processFile("lajos", handler)
