@@ -2,6 +2,9 @@ package com.prezi.spaghetti.generator;
 
 import java.util.Set;
 
+/**
+ * Creates generators for a language.
+ */
 public interface GeneratorFactory {
 	/**
 	 * Returns name of supported language.

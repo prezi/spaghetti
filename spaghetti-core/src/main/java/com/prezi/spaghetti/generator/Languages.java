@@ -16,6 +16,11 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+/**
+ * Global repository of supported languages and their generator factories.
+ * <p>Uses {@link java.util.ServiceLoader} to find implementations of
+ * {@link com.prezi.spaghetti.generator.GeneratorFactory} on the classpath.</p>
+ */
 public class Languages {
 	private static final Logger logger = LoggerFactory.getLogger(Languages.class);
 	private static final Map<String, GeneratorFactory> generatorFactories = initGeneratorFactories();
@@ -31,10 +36,19 @@ public class Languages {
 		return genFactories;
 	}
 
+	/**
+	 * Returns a set of available generator factories.
+	 */
 	public static Set<GeneratorFactory> getGeneratorFactories() {
 		return ImmutableSet.copyOf(generatorFactories.values());
 	}
 
+	/**
+	 * Creates a generator for a given language.
+	 *
+	 * @param language the target language for the generator.
+	 * @param config   the module configuration to use with the generator.
+	 */
 	public static Generator createGeneratorForLanguage(String language, ModuleConfiguration config) {
 		GeneratorFactory generatorFactory = getGeneratorFactory(language);
 		return generatorFactory.createGenerator(
@@ -42,6 +56,10 @@ public class Languages {
 		);
 	}
 
+	/**
+	 * Returns the protected symbols of a given language. These symbols should be protected during obfuscation.
+	 * @param language the language.
+	 */
 	public static Set<String> getProtectedSymbols(String language) {
 		GeneratorFactory generatorFactory = getGeneratorFactory(language);
 		return generatorFactory.getProtectedSymbols();

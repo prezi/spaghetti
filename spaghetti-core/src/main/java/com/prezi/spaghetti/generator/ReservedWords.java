@@ -1,5 +1,8 @@
 package com.prezi.spaghetti.generator;
 
+/**
+ * Reserved words used by Spaghetti.
+ */
 public class ReservedWords {
 	public static final String MODULE_WRAPPER_FUNCTION = "module";
 	public static final String SPAGHETTI_CLASS = "Spaghetti";

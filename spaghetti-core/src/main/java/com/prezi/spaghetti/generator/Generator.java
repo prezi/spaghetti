@@ -5,6 +5,9 @@ import com.prezi.spaghetti.ast.ModuleNode;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Generates sources for a language.
+ */
 public interface Generator {
 	/**
 	 * Generate headers.
@@ -25,10 +28,10 @@ public interface Generator {
 	 * Needs to provide a function call to <code>spaghetti()</code> that returns a module object.
 	 *
 	 * <pre>
-	 *     function(Spaghetti) {
+	 *     module(function(Spaghetti) {
 	 *         // original code
 	 *         return module;
-	 *     }
+	 *     })
 	 * </pre>
 	 *
 	 * @param module     the module the JavaScript is being processed for.
@@ -36,12 +39,4 @@ public interface Generator {
 	 * @return the processed JavaScript for the module.
 	 */
 	String processModuleJavaScript(ModuleNode module, String javaScript);
-
-	/**
-	 * Process the JavaScript code of an application before wrapping it into a Require JS wrapper.
-	 *
-	 * @param javaScript the actual JavaScript.
-	 * @return the processed JavaScript for the application.
-	 */
-	String processApplicationJavaScript(String javaScript);
 }
