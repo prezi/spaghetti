@@ -2,7 +2,7 @@ declare class Spaghetti {
     /**
      * Returns the module version.
      */
-    public static getVersion():string;
+    public static getModuleVersion():string;
 
     /**
      * Returns the Spaghetti version used to build the module.
@@ -12,7 +12,7 @@ declare class Spaghetti {
     /**
    	 * Returns the name of the module.
    	 */
-    public static getName():string;
+    public static getModuleName():string;
 
     /**
    	 * Returns a URL pointing to this module's given resource.

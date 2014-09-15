@@ -2,7 +2,7 @@ extern class Spaghetti {
 	/**
 	 * Returns the module version.
 	 */
-	public static function getVersion():String;
+	public static function getModuleVersion():String;
 
 	/**
 	 * Returns the Spaghetti version used to build the module.
@@ -12,7 +12,7 @@ extern class Spaghetti {
 	/**
 	 * Returns the name of the module.
 	 */
-	public static function getName():String;
+	public static function getModuleName():String;
 
 	/**
 	 * Returns a URL pointing to this module's given resource.

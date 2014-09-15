@@ -2,8 +2,8 @@ module prezi.graphics.text.render {
 
 export class RenderModule {
 	static createRenderer(prefix:string, suffix:string):Renderer {
-		console.log("Text renderer name: " + Spaghetti.getName());
-		console.log("Text renderer version: " + Spaghetti.getVersion());
+		console.log("Text renderer name: " + Spaghetti.getModuleName());
+		console.log("Text renderer version: " + Spaghetti.getModuleVersion());
 		console.log("Text renderer built by Spaghetti version " + Spaghetti.getSpaghettiVersion());
 		console.log("Core stuff: " + prezi.graphics.core.Core.giveMeANumber());
 		return new RendererImpl(prefix, suffix);
