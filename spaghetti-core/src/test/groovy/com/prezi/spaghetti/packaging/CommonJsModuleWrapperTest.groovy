@@ -55,7 +55,8 @@ class CommonJsModuleWrapperTest extends WrapperTestBase {
 
 		expect:
 		result == [
-				'require("com.example.test")["module"]["main"]();\n',
+				'var mainModule=require("com.example.test")["module"];',
+				'mainModule["main"]();\n',
 		].join("")
 	}
 }

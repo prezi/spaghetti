@@ -55,7 +55,8 @@ class SingleFileModuleWrapperTest extends WrapperTestBase {
 
 		expect:
 		result == [
-				'modules["com.example.test"]["module"]["main"]();'
+				'var mainModule=modules["com.example.test"]["module"];',
+				'mainModule["main"]();'
 		].join("")
 	}
 }

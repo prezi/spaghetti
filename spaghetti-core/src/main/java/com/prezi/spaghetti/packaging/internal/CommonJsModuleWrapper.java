@@ -29,8 +29,11 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 	@Override
 	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
 		StringBuilder result = new StringBuilder();
-		if (mainModule != null && execute) {
-			result.append("require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"][\"main\"]();\n");
+		if (mainModule != null) {
+			result.append("var mainModule=require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"];");
+			if (execute) {
+				result.append("mainModule[\"main\"]();\n");
+			}
 		}
 
 		return result.toString();

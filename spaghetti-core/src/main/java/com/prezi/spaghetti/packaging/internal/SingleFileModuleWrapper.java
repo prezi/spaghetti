@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.packaging.internal;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
@@ -30,8 +31,11 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 	@Override
 	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
 		StringBuilder result = new StringBuilder();
-		if (execute) {
-			result.append("modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"][\"main\"]();");
+		if (!Strings.isNullOrEmpty(mainModule)) {
+			result.append("var mainModule=modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"];");
+			if (execute) {
+				result.append("mainModule[\"main\"]();");
+			}
 		}
 
 		return result.toString();
