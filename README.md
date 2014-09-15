@@ -68,3 +68,6 @@ Spaghetti is a Java-based tool, and requires Java 7 or newer. It has multiple in
 
 The documentation is [available on the wiki](/../../wiki).
 
+## Mailing List
+
+Get in touch with Spaghetti developers at: [spaghetti-dev@googlegroups.com](https://groups.google.com/forum/#!forum/spaghetti-dev).
