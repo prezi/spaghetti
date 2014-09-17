@@ -11,6 +11,7 @@ import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleNode;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser;
+import com.prezi.spaghetti.generator.ReservedWords;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang.StringUtils;
 
@@ -20,7 +21,7 @@ import java.util.Set;
 
 public class ModuleParser {
 	private static final Set<QualifiedTypeNode> DEFAULT_EXTERNS = ImmutableSet.<QualifiedTypeNode> builder()
-			.add(new DefaultExternInterfaceNode(FQName.fromString("SpaghettiParameters")))
+			.add(new DefaultExternInterfaceNode(FQName.fromString(ReservedWords.SPAGHETTI_PARAMETERS_CLASS)))
 			.build();
 
 	private final List<AbstractModuleTypeParser> typeParsers;
