@@ -1,8 +1,11 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ModuleNode;
+import com.prezi.spaghetti.ast.QualifiedTypeNode;
+import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceNode;
 import com.prezi.spaghetti.ast.internal.DefaultImportNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleNode;
@@ -13,8 +16,13 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 public class ModuleParser {
+	private static final Set<QualifiedTypeNode> DEFAULT_EXTERNS = ImmutableSet.<QualifiedTypeNode> builder()
+			.add(new DefaultExternInterfaceNode(FQName.fromString("SpaghettiParameters")))
+			.build();
+
 	private final List<AbstractModuleTypeParser> typeParsers;
 	private final List<com.prezi.spaghetti.internal.grammar.ModuleParser.MethodDefinitionContext> moduleMethodsToParse;
 	private final DefaultModuleNode module;
@@ -43,6 +51,9 @@ public class ModuleParser {
 			moduleAlias = StringUtils.capitalize(nameParts.get(nameParts.size() - 1)) + "Module";
 		}
 		this.module = new DefaultModuleNode(moduleName, moduleAlias, source);
+		//noinspection deprecation
+		module.getExternTypes().addAll(DEFAULT_EXTERNS);
+
 		AnnotationsParser.parseAnnotations(moduleCtx.annotations(), module);
 		DocumentationParser.parseDocumentation(moduleCtx.documentation, module);
 

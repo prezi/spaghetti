@@ -51,12 +51,18 @@ class CommonJsModuleWrapperTest extends WrapperTestBase {
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new CommonJsModuleWrapper().makeApplication(dependencyTree, "com.example.test", true)
+		def result = new CommonJsModuleWrapper().makeApplication(dependencyTree, "com.example.test", true, [alma: "bela"])
 
 		expect:
 		result == [
 				'var mainModule=require("com.example.test")["module"];',
-				'mainModule["main"]();\n',
+				'mainModule["main"]({',
+					'"getParameter":function(name){',
+						'return({',
+							'"alma":"bela"',
+						'})[name];',
+					'}',
+				'});\n',
 		].join("")
 	}
 }

@@ -53,7 +53,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 					IOUtils.write(prefix, out, Charsets.UTF_8);
 				}
 
-				String wrappedApplication = wrapper.makeApplication(dependencyTree, params.mainModule, params.execute);
+				String wrappedApplication = wrapper.makeApplication(dependencyTree, params.mainModule, params.execute, params.parameters);
 
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 				for (String suffix : params.suffixes) {

@@ -23,6 +23,8 @@ struct MyStruct {
 
 interface Lajos extends Iterable<string> {
 }
+
+void main(SpaghettiParameters params)
 """
 
 		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
@@ -39,11 +41,15 @@ interface Lajos extends Iterable<string> {
 				"com.example.test.MyStruct",
 				"com.example.test.Lajos",
 		]
-		module.externTypes*.qualifiedName*.toString().asList() == [
+		module.externTypes*.qualifiedName*.toString().asList().sort() == [
 				"JSON",
-				"Iterable"
-		]
+				"Iterable",
+				"SpaghettiParameters"
+		].sort()
 		0 * _
+		module.methods*.name == [
+		        "main"
+		]
 	}
 
 	def "parse import"() {

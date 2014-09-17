@@ -11,6 +11,7 @@ import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
+import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_PARAMETERS_CLASS
 
 class TypeScriptGenerator extends AbstractGenerator {
 
@@ -63,6 +64,7 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
 		new File(outputDirectory, "${SPAGHETTI_CLASS}.ts") << TypeScriptGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.ts")
+		new File(outputDirectory, "${SPAGHETTI_PARAMETERS_CLASS}.ts") << TypeScriptGenerator.class.getResourceAsStream("/${SPAGHETTI_PARAMETERS_CLASS}.ts")
 	}
 
 	/**

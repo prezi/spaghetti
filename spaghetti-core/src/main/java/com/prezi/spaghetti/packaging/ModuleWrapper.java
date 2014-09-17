@@ -6,6 +6,5 @@ import java.util.Set;
 
 public interface ModuleWrapper {
 	String wrap(ModuleWrapperParameters params) throws IOException;
-
-	String makeApplication(Map<String, Set<String>> dependencyTree, String mainModule, boolean execute);
+	String makeApplication(Map<String, Set<String>> dependencyTree, String mainModule, boolean execute, Map<String, String> parameters);
 }

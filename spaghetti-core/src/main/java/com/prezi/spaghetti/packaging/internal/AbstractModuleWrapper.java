@@ -3,18 +3,21 @@ package com.prezi.spaghetti.packaging.internal;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_NAME;
+import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_VERSION;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_RESOURCE_URL;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_SPAGHETTI_VERSION;
-import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_VERSION;
 import static com.prezi.spaghetti.packaging.internal.CommentUtils.appendAfterInitialComment;
 
 public abstract class AbstractModuleWrapper implements ModuleWrapper {
@@ -59,5 +62,19 @@ public abstract class AbstractModuleWrapper implements ModuleWrapper {
 		builder.append("\"version\":\"").append(params.bundle.getVersion()).append("\",");
 		builder.append("\"spaghettiVersion\":\"").append(Version.SPAGHETTI_VERSION).append("\"");
 		builder.append("};");
+	}
+
+	protected static void makeParameters(StringBuilder builder, Map<String, String> parameters) {
+		List<String> entries = Lists.newArrayList();
+		for (Map.Entry<String, String> entry : parameters.entrySet()) {
+			entries.add("\"" + StringEscapeUtils.escapeJavaScript(entry.getKey()) + "\":\"" + StringEscapeUtils.escapeJavaScript(entry.getValue()) + "\"");
+		}
+		builder.append("{");
+			builder.append("\"getParameter\":function(name){");
+				builder.append("return({");
+					builder.append(Joiner.on(",").join(entries));
+				builder.append("})[name];");
+			builder.append("}");
+		builder.append("}");
 	}
 }

@@ -51,12 +51,18 @@ class SingleFileModuleWrapperTest extends WrapperTestBase {
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new SingleFileModuleWrapper().makeApplication(dependencyTree, "com.example.test", true)
+		def result = new SingleFileModuleWrapper().makeApplication(dependencyTree, "com.example.test", true, [alma: "bela"])
 
 		expect:
 		result == [
 				'var mainModule=modules["com.example.test"]["module"];',
-				'mainModule["main"]();'
+				'mainModule["main"]({',
+					'"getParameter":function(name){',
+						'return({',
+							'"alma":"bela"',
+						'})[name];',
+					'}',
+				'});',
 		].join("")
 	}
 }

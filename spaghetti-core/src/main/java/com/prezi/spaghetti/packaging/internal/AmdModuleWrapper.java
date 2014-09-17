@@ -38,13 +38,15 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
+	public String makeApplication(Map<String, Set<String>> dependencyTree, String mainModule, boolean execute, Map<String, String> parameters) {
 		StringBuilder result = new StringBuilder();
 		result.append(makeConfig(getModulesDirectory(), Sets.newTreeSet(dependencyTree.keySet())));
 		if (mainModule != null) {
 			result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 			if (execute) {
-				result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
+				result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"](");
+					makeParameters(result, parameters);
+				result.append(");");
 			}
 
 			result.append("});\n");

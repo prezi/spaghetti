@@ -39,36 +39,28 @@ def bundleTask = hasProperty("obfuscated") ? obfuscateJsModule : bundleJsModule
 def config = hasProperty("obfuscated") ? configurations.modulesObf : configurations.modules
 
 task packageAmdApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
-	dependsOn bundleTask
-	dependentModules config
-	additionalDirectDependentModule bundleTask.outputDirectory
-	mainModule "prezi.test.client"
 	outputDirectory "${buildDir}/applications/web"
-	prefix "src/main/spaghetti/prefix.js"
-	suffix "src/main/spaghetti/suffix.js"
 	type "requirejs"
 }
 
 task packageNodeApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
-	dependsOn bundleTask
-	dependentModules config
-	additionalDirectDependentModule bundleTask.outputDirectory
-	mainModule "prezi.test.client"
 	outputDirectory "${buildDir}/applications/node"
-	prefix "src/main/spaghetti/prefix.js"
-	suffix "src/main/spaghetti/suffix.js"
 	type "node"
 }
 
 task packageSingleFileApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
+	outputDirectory "${buildDir}/applications/single"
+	type "single"
+}
+
+tasks.withType(com.prezi.spaghetti.gradle.PackageApplication) {
 	dependsOn bundleTask
 	dependentModules config
 	additionalDirectDependentModule bundleTask.outputDirectory
-	mainModule "prezi.test.client"
-	outputDirectory "${buildDir}/applications/single"
+	parameters version: project.version + "-app"
 	prefix "src/main/spaghetti/prefix.js"
 	suffix "src/main/spaghetti/suffix.js"
-	type "single"
+	mainModule "prezi.test.client"
 }
 
 def testWebappDir = file("${buildDir}/webapp")

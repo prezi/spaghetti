@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.ModuleBundleLookupResult;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static com.prezi.spaghetti.gradle.internal.TextFileUtils.getText;
@@ -25,6 +27,36 @@ public class PackageApplication extends AbstractSpaghettiTask {
 	private ApplicationType type = ApplicationType.COMMON_JS;
 	private Boolean execute = null;
 	private File outputDirectory;
+	private Map<String, String> parameters = Maps.newLinkedHashMap();
+
+	public PackageApplication() {
+		this.getConventionMapping().map("outputDirectory", new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return new File(getProject().getBuildDir(), "spaghetti/application");
+			}
+
+		});
+		if ((execute == Boolean.TRUE) && (mainModule == null)) {
+			throw new IllegalArgumentException("You need to set mainModule as well when execute is true");
+		}
+	}
+
+	@TaskAction
+	@SuppressWarnings("UnusedDeclaration")
+	public void makeBundle() throws IOException {
+		ModuleBundleLookupResult bundles = lookupBundles();
+		getLogger().info("Creating {} application in {}", getType().getDescription(), getOutputDirectory());
+		getType().getPackager().packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
+				bundles.getAllBundles(),
+				getApplicationName(),
+				getMainModule(),
+				getExecute(),
+				getParameters(),
+				getText(getPrefixes()),
+				getText(getSuffixes())
+		));
+	}
 
 	@Input
 	@Optional
@@ -128,31 +160,14 @@ public class PackageApplication extends AbstractSpaghettiTask {
 		return new File(getOutputDirectory(), getApplicationName());
 	}
 
-	public PackageApplication() {
-		this.getConventionMapping().map("outputDirectory", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return new File(getProject().getBuildDir(), "spaghetti/application");
-			}
-
-		});
-		if ((execute == Boolean.TRUE) && (mainModule == null)) {
-			throw new IllegalArgumentException("You need to set mainModule as well when execute is true");
-		}
+	@Input
+	public Map<String, String> getParameters() {
+		return parameters;
 	}
 
-	@TaskAction
-	@SuppressWarnings("UnusedDeclaration")
-	public void makeBundle() throws IOException {
-		ModuleBundleLookupResult bundles = lookupBundles();
-		getLogger().info("Creating {} application in {}", getType().getDescription(), getOutputDirectory());
-		getType().getPackager().packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
-				bundles.getAllBundles(),
-				getApplicationName(),
-				getMainModule(),
-				getExecute(),
-				getText(getPrefixes()),
-				getText(getSuffixes())
-		));
+	public void parameters(Map<?, ?> parameters) {
+		for (Map.Entry<?, ?> entry : parameters.entrySet()) {
+			this.parameters.put(String.valueOf(entry.getKey()), String.valueOf(entry.getValue()));
+		}
 	}
 }

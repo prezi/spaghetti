@@ -51,6 +51,7 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 				name != null ? name + ".js" : "application.js",
 				mainModule,
 				execute != null ? execute : mainModule != null,
+				Collections.<String, String> emptyMap(),
 				Collections.<String> emptySet(),
 				Collections.<String> emptySet()
 		);

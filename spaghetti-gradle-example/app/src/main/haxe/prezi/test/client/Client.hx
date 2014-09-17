@@ -7,9 +7,10 @@ import prezi.graphics.text.Values;
 import prezi.graphics.text.render.RenderModule;
 
 class Client {
-	public static function main() {
+	public static function main(params:SpaghettiParameters) {
 		trace("App name: " + Spaghetti.getModuleName());
-		trace("App version: " + Spaghetti.getModuleVersion());
+		trace("App module version: " + Spaghetti.getModuleVersion());
+		trace("App version: " + params.getParameter("version"));
 		trace("App built by Spaghetti version " + Spaghetti.getSpaghettiVersion());
 		var text = prezi.graphics.text.Layout.createText();
 		var style:prezi.graphics.text.CharacterStyle = { type: CharacterStyleType.FONT_WEIGHT, value: "bold" };

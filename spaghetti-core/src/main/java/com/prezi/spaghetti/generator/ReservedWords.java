@@ -12,6 +12,7 @@ public class ReservedWords {
 	public static final String MODULE_WRAPPER_FUNCTION = "module";
 
 	public static final String SPAGHETTI_CLASS = "Spaghetti";
+	public static final String SPAGHETTI_PARAMETERS_CLASS = "SpaghettiParameters";
 
 	@ProtectedWord
 	public static final String GET_MODULE_VERSION = "getModuleVersion";
@@ -24,6 +25,9 @@ public class ReservedWords {
 
 	@ProtectedWord
 	public static final String GET_MODULE_NAME = "getModuleName";
+
+	@ProtectedWord
+	public static final String GET_PARAMETER = "getParameter";
 
 	public static final String MODULE = "module";
 
