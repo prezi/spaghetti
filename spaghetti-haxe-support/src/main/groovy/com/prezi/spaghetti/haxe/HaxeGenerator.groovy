@@ -34,8 +34,6 @@ class HaxeGenerator extends AbstractGenerator {
 		generateModuleTypes(config.localModule, outputDirectory, header)
 		config.allDependentModules.each { dependentModule ->
 			generateModuleTypes(dependentModule, outputDirectory, header)
-		}
-		config.directDependentModules.each { dependentModule ->
 			generateModuleAccessor(dependentModule, outputDirectory, header)
 		}
 	}

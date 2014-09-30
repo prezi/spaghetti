@@ -29,11 +29,8 @@ class TypeScriptGenerator extends AbstractGenerator {
 	void generateHeaders(File outputDirectory) {
 		copySpaghettiClass(outputDirectory)
 		generateLocalModule(config.localModule, outputDirectory, header)
-		config.directDependentModules.each { dependentModule ->
-			generateDependentModule(dependentModule, outputDirectory, header, true)
-		}
-		config.transitiveDependentModules.each { dependentModule ->
-			generateDependentModule(dependentModule, outputDirectory, header, false)
+		config.allDependentModules.each { dependentModule ->
+			generateDependentModule(dependentModule, outputDirectory, header)
 		}
 	}
 
@@ -77,11 +74,9 @@ return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
 
-	private static void generateDependentModule(ModuleNode module, File outputDirectory, String header, boolean directDependency) {
+	private static void generateDependentModule(ModuleNode module, File outputDirectory, String header) {
 		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
-		if (directDependency) {
-			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).visit(module)
-		}
+		contents += new TypeScriptModuleAccessorGeneratorVisitor(module).visit(module)
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
