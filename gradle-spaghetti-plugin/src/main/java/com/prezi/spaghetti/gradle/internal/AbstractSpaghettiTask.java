@@ -2,14 +2,11 @@ package com.prezi.spaghetti.gradle.internal;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvedArtifact;
-import org.gradle.api.artifacts.ResolvedDependency;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.InputFiles;
@@ -72,16 +69,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	protected Set<ModuleBundle> lookupBundles() throws IOException {
-		Set<File> dependencies = Sets.newLinkedHashSet();
-		for (ResolvedDependency dependency : getDependentModules().getResolvedConfiguration().getFirstLevelModuleDependencies()) {
-			for (ResolvedArtifact artifact : dependency.getModuleArtifacts()) {
-				dependencies.add(artifact.getFile());
-			}
-		}
-
-		dependencies.addAll(getAdditionalDependentModules().getFiles());
-
-		return ModuleBundleLookup.lookup(dependencies);
+		return ModuleBundleLookup.lookup(getDependentModules().getFiles());
 	}
 
 	public ModuleConfiguration readConfig(File definition) throws IOException {
