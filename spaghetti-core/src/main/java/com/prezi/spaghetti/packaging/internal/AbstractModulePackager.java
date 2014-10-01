@@ -9,8 +9,8 @@ import com.prezi.spaghetti.packaging.ModulePackager;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 import com.prezi.spaghetti.structure.internal.IOAction;
-import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
+import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import com.prezi.spaghetti.structure.internal.StructuredZipWriter;
 import org.apache.commons.io.IOUtils;
 

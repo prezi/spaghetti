@@ -12,9 +12,9 @@ import java.util.Map;
 
 import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_NAME;
+import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_VERSION;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_RESOURCE_URL;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_SPAGHETTI_VERSION;
-import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_VERSION;
 import static com.prezi.spaghetti.packaging.internal.CommentUtils.appendAfterInitialComment;
 
 public abstract class AbstractModuleWrapper implements ModuleWrapper {

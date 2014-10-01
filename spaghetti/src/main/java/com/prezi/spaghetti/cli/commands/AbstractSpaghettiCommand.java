@@ -12,8 +12,8 @@ import java.util.Set;
 
 public abstract class AbstractSpaghettiCommand extends AbstractCommand {
 	@Option(name = {"-d", "--dependency-path"},
-			description = "List of directly dependent module bundles separated by colon (':')")
-	protected String directDependencyPath;
+			description = "List of dependent module bundles separated by colon (':')")
+	protected String dependencyPath;
 
 	protected static Set<ModuleBundle> parseBundles(String path) throws IOException {
 		Set<ModuleBundle> bundles = Sets.newLinkedHashSet();

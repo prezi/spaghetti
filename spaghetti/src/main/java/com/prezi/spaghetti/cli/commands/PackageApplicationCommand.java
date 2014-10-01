@@ -44,7 +44,7 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 		OutputType type = OutputType.fromString(this.type, output);
 		ApplicationType wrapper = ApplicationType.fromString(this.wrapper);
 
-		Set<ModuleBundle> bundles = parseBundles(directDependencyPath);
+		Set<ModuleBundle> bundles = parseBundles(dependencyPath);
 
 		ApplicationPackageParameters params = new ApplicationPackageParameters(
 				bundles,

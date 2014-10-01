@@ -65,11 +65,8 @@ task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateHeaders) {
     // The configuration holding any dependent modules
     dependentModules <configuration>
 
-    // Additional directly dependent modules
-    additionalDirectDependentModules <Set<File>>
-
-    // Additional transitive dependent modules
-    additionalTransitiveDependentModules <Set<File>>
+    // Additional dependent modules
+    additionalDependentModules <Set<File>>
 
     // The location to generate headers into
     outputDirectory <directory>
@@ -94,11 +91,8 @@ task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
     // The configuration holding any dependent modules
     dependentModules <configuration>
 
-    // Additional directly dependent modules
-    additionalDirectDependentModules <Set<File>>
-
-    // Additional transitive dependent modules
-    additionalTransitiveDependentModules <Set<File>>
+    // Additional dependent modules
+    additionalDependentModules <Set<File>>
 
     // The location to create the bundle in
     outputDirectory <directory>
@@ -131,12 +125,9 @@ task packageApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
     // The configuration holding the application's modules
     dependentModules <configuration>
 
-    // Additional directly dependent modules
-    additionalDirectDependentModules <Set<File>>
+    // Additional dependent modules
+    additionalDependentModules <Set<File>>
 
-    // Additional transitive dependent modules
-    additionalTransitiveDependentModules <Set<File>>
-    
     // Name of the main module of the application
     mainModule <name>
     

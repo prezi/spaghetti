@@ -94,7 +94,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		String processedJavaScript = createGenerator(config).processModuleJavaScript(moduleNode, javaScript);
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();
-		for (ModuleNode dependentModule : config.getDirectDependentModules()) {
+		for (ModuleNode dependentModule : config.getDependentModules()) {
 			dependentModules.add(dependentModule.getName());
 		}
 

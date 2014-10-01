@@ -21,24 +21,21 @@ public final class ModuleConfigurationParser {
 	/**
 	 * Parses module definitions for a module.
 	 *
-	 * @param localModuleSource                the source of the local module.
-	 * @param directDependentModuleSources     the sources of direct dependent modules.
-	 * @param transitiveDependentModuleSources the sources of transitive dependent modules.
+	 * @param localModuleSource      the source of the local module.
+	 * @param dependentModuleSources the sources of dependent modules.
 	 * @return the loaded module configuration.
 	 */
-	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> directDependentModuleSources, Collection<ModuleDefinitionSource> transitiveDependentModuleSources) {
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> dependentModuleSources) {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
 		DefaultModuleConfiguration configNode = new DefaultModuleConfiguration();
 
-		Collection<ModuleParser> transitiveParsers = createParsersFor(transitiveDependentModuleSources);
-		Collection<ModuleParser> directParsers = createParsersFor(directDependentModuleSources);
+		Collection<ModuleParser> dependentParsers = createParsersFor(dependentModuleSources);
 		Collection<ModuleParser> localParsers = createParsersFor(Collections.singleton(localModuleSource));
 
-		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParsers, transitiveParsers));
+		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, dependentParsers));
 
 		Set<ModuleNode> localModules = Sets.newLinkedHashSet();
-		parsedModules(resolver, transitiveParsers, configNode.getTransitiveDependentModules(), parsedModules);
-		parsedModules(resolver, directParsers, configNode.getDirectDependentModules(), parsedModules);
+		parsedModules(resolver, dependentParsers, configNode.getDependentModules(), parsedModules);
 		parsedModules(resolver, localParsers, localModules, parsedModules);
 		if (localModules.isEmpty()) {
 			throw new IllegalStateException("No local module found");

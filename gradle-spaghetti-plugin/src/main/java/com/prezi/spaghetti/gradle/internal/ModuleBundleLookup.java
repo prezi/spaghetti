@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.gradle.internal;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
@@ -11,40 +10,26 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static ModuleBundleLookupResult lookup(Collection<File> directDependencies, Collection<File> potentialTransitiveDependencies) throws IOException {
+	public static Set<ModuleBundle> lookup(Collection<File> dependencies) throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up modules:");
-			logger.debug("\tDirect dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(directDependencies));
-			logger.debug("\tPotential transitive dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(potentialTransitiveDependencies));
+			logger.debug("\tDependencies:\n\t\t{}", Joiner.on("\n\t\t").join(dependencies));
 		}
 
-		Map<String, ModuleBundle> moduleLookup = Maps.newHashMap();
-		Set<ModuleBundle> directBundles = Sets.newTreeSet();
-		for (File file : directDependencies) {
+		Set<ModuleBundle> bundles = Sets.newTreeSet();
+		for (File file : dependencies) {
 			ModuleBundle bundle = tryLoadBundle(file);
 			if (bundle != null) {
-				moduleLookup.put(bundle.getName(), bundle);
-				directBundles.add(bundle);
+				bundles.add(bundle);
 			}
 		}
 
-		Set<ModuleBundle> transitiveBundles = Sets.newTreeSet();
-		Set<File> transitiveDependencies = Sets.newLinkedHashSet(potentialTransitiveDependencies);
-		transitiveDependencies.removeAll(directDependencies);
-		for (File file : transitiveDependencies) {
-			ModuleBundle bundle = tryLoadBundle(file);
-			if (bundle != null && !moduleLookup.containsKey(bundle.getName())) {
-				transitiveBundles.add(bundle);
-			}
-		}
-
-		return new ModuleBundleLookupResult(directBundles, transitiveBundles);
+		return bundles;
 	}
 
 	private static ModuleBundle tryLoadBundle(File file) throws IOException {
@@ -60,6 +45,5 @@ public class ModuleBundleLookup {
 			logger.trace("Exception", ex);
 			return null;
 		}
-
 	}
 }

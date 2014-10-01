@@ -180,9 +180,9 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, File resourceDir) throws IOException {
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);
-		TreeSet<String> directDependentModuleNames = Sets.newTreeSet();
-		for (ModuleNode moduleNode : config.getDirectDependentModules()) {
-			directDependentModuleNames.add(moduleNode.getName());
+		TreeSet<String> dependentModuleNames = Sets.newTreeSet();
+		for (ModuleNode moduleNode : config.getDependentModules()) {
+			dependentModuleNames.add(moduleNode.getName());
 		}
 
 		return ModuleBundleFactory.createDirectory(getOutputDirectory(), new ModuleBundleParameters(
@@ -192,7 +192,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 				getSourceBaseUrl(),
 				javaScript,
 				sourceMap,
-				directDependentModuleNames,
+				dependentModuleNames,
 				resourceDir
 		));
 	}

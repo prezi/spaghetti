@@ -10,7 +10,6 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		ModuleConfigurationParser.parse(
 				ModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test"),
-				[],
 				[ModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test")]
 		)
 
@@ -19,13 +18,12 @@ class ModuleConfigurationParserTest extends Specification {
 		ex.message == "Parse error in C:\\test1.module: module loaded multiple times: com.example.test"
 	}
 
-	// See https://github.com/prezi/spaghetti/issues/109
-	def "Dependency accessed both directly and transitively"() {
+	def "Dependency accessed from another dependency"() {
 		when:
 		ModuleConfigurationParser.parse(
 				ModuleDefinitionSource.fromString("A", "module com.example.testA"),
-				[ModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }")],
-				[ModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
+				[ModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }"),
+				ModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
 		)
 		then:
 		notThrown AstParserException

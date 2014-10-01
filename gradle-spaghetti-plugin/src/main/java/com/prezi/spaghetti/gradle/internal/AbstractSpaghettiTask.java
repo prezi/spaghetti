@@ -21,12 +21,16 @@ import java.util.Set;
 
 public class AbstractSpaghettiTask extends ConventionTask {
 	private Configuration dependentModules;
-	private ConfigurableFileCollection additionalDirectDependentModulesInternal = getProject().files();
-	private ConfigurableFileCollection additionalTransitiveDependentModulesInternal = getProject().files();
+	private ConfigurableFileCollection additionalDependentModulesInternal = getProject().files();
 
 	@InputFiles
 	public Configuration getDependentModules() {
 		return dependentModules;
+	}
+
+	@InputFiles
+	public ConfigurableFileCollection getAdditionalDependentModules() {
+		return getProject().files(this.getAdditionalDependentModulesInternal());
 	}
 
 	public void setDependentModules(Configuration dependentModules) {
@@ -38,66 +42,46 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		setDependentModules(dependentModules);
 	}
 
-	public ConfigurableFileCollection getAdditionalDirectDependentModulesInternal() {
-		return additionalDirectDependentModulesInternal;
+	public ConfigurableFileCollection getAdditionalDependentModulesInternal() {
+		return additionalDependentModulesInternal;
 	}
 
-	public void additionalDirectDependentModules(Object... additionalDirectDependentModules) {
-		this.getAdditionalDirectDependentModulesInternal().from(additionalDirectDependentModules);
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void additionalDirectDependentModule(Object... additionalDirectDependentModules) {
-		this.additionalDirectDependentModules(additionalDirectDependentModules);
+	public void additionalDependentModules(Object... additionalDependentModules) {
+		this.getAdditionalDependentModulesInternal().from(additionalDependentModules);
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void additionalDependentModules(Object... modules) {
-		additionalDirectDependentModules(modules);
+	public void additionalDependentModule(Object... additionalDependentModules) {
+		this.additionalDependentModules(additionalDependentModules);
 	}
 
+	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
-	public void additionalDependentModule(Object... modules) {
-		additionalDirectDependentModules(modules);
-	}
-
-	@InputFiles
 	public ConfigurableFileCollection getAdditionalDirectDependentModules() {
-		return getProject().files(this.getAdditionalDirectDependentModulesInternal());
+		return getAdditionalDependentModules();
 	}
-
-	public ConfigurableFileCollection getAdditionalTransitiveDependentModulesInternal() {
-		return additionalTransitiveDependentModulesInternal;
-	}
-
-	public void additionalTransitiveDependentModules(Object... additionalTransitiveDependentModules) {
-		this.getAdditionalTransitiveDependentModulesInternal().from(additionalTransitiveDependentModules);
-	}
-
+	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
-	public void additionalTransitiveDependentModule(Object... additionalTransitiveDependentModules) {
-		this.additionalTransitiveDependentModules(additionalTransitiveDependentModules);
+	public void additionalDirectDependentModules(Object... additionalDependentModules) {
+		additionalDependentModules(additionalDependentModules);
+	}
+	@Deprecated
+	@SuppressWarnings("UnusedDeclaration")
+	public void additionalDirectDependentModule(Object... additionalDependentModules) {
+		additionalDependentModule(additionalDependentModules);
 	}
 
-	@InputFiles
-	public ConfigurableFileCollection getAdditionalTransitiveDependentModules() {
-		return getProject().files(this.getAdditionalTransitiveDependentModulesInternal());
-	}
-
-	protected ModuleBundleLookupResult lookupBundles() throws IOException {
-		Set<File> directDependencies = Sets.newLinkedHashSet();
+	protected Set<ModuleBundle> lookupBundles() throws IOException {
+		Set<File> dependencies = Sets.newLinkedHashSet();
 		for (ResolvedDependency dependency : getDependentModules().getResolvedConfiguration().getFirstLevelModuleDependencies()) {
 			for (ResolvedArtifact artifact : dependency.getModuleArtifacts()) {
-				directDependencies.add(artifact.getFile());
+				dependencies.add(artifact.getFile());
 			}
 		}
 
-		directDependencies.addAll(getAdditionalDirectDependentModules().getFiles());
+		dependencies.addAll(getAdditionalDependentModules().getFiles());
 
-		Set<File> transitiveDependencies = Sets.newLinkedHashSet(getDependentModules().getFiles());
-		transitiveDependencies.addAll(getAdditionalTransitiveDependentModules().getFiles());
-
-		return ModuleBundleLookup.lookup(directDependencies, transitiveDependencies);
+		return ModuleBundleLookup.lookup(dependencies);
 	}
 
 	public ModuleConfiguration readConfig(File definition) throws IOException {
@@ -111,10 +95,8 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	private ModuleConfiguration readConfigInternal(ModuleDefinitionSource localDefinition) throws IOException {
-		ModuleBundleLookupResult bundles = lookupBundles();
-		Collection<ModuleDefinitionSource> directSources = makeModuleSources(bundles.getDirectBundles());
-		Collection<ModuleDefinitionSource> transitiveSources = makeModuleSources(bundles.getTransitiveBundles());
-		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, directSources, transitiveSources);
+		Collection<ModuleDefinitionSource> sources = makeModuleSources(lookupBundles());
+		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, sources);
 		getLogger().info("Loaded configuration: {}", config);
 		return config;
 	}

@@ -11,17 +11,11 @@ import java.util.TreeSet;
 
 public class DefaultModuleConfiguration implements ModuleConfiguration {
 	private ModuleNode localModule;
-	private final SortedSet<ModuleNode> directDependentModules = new TreeSet<ModuleNode>();
-	private final SortedSet<ModuleNode> transitiveDependentModules = new TreeSet<ModuleNode>();
-
-	@Override
-	public SortedSet<ModuleNode> getAllDependentModules() {
-		return Sets.newTreeSet(Iterables.concat(directDependentModules, transitiveDependentModules));
-	}
+	private final SortedSet<ModuleNode> dependentModules = new TreeSet<ModuleNode>();
 
 	@Override
 	public SortedSet<ModuleNode> getAllModules() {
-		return Sets.newTreeSet(Iterables.concat(Collections.singleton(localModule), directDependentModules, transitiveDependentModules));
+		return Sets.newTreeSet(Iterables.concat(Collections.singleton(localModule), dependentModules));
 	}
 
 	@Override
@@ -34,12 +28,7 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
 	}
 
 	@Override
-	public SortedSet<ModuleNode> getDirectDependentModules() {
-		return directDependentModules;
-	}
-
-	@Override
-	public SortedSet<ModuleNode> getTransitiveDependentModules() {
-		return transitiveDependentModules;
+	public SortedSet<ModuleNode> getDependentModules() {
+		return dependentModules;
 	}
 }

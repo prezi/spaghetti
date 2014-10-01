@@ -99,7 +99,7 @@ public class ResolveStack extends AbstractSpaghettiTask {
 	}
 
 	private Map<String, ModuleBundle> gatherBundles() throws IOException {
-		return Maps.uniqueIndex(lookupBundles().getAllBundles(), new Function<ModuleBundle, String>() {
+		return Maps.uniqueIndex(lookupBundles(), new Function<ModuleBundle, String>() {
 			@Override
 			public String apply(ModuleBundle bundle) {
 				return bundle.getName();

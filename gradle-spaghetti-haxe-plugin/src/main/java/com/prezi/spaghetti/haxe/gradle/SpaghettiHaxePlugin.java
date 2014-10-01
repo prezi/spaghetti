@@ -147,7 +147,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 						return project.file(project.getBuildDir() + "/spaghetti/tests/" + testBinary.getName());
 					}
 				});
-				appBundleTask.getConventionMapping().map("additionalDirectDependentModulesInternal", new Callable<FileCollection>() {
+				appBundleTask.getConventionMapping().map("additionalDependentModulesInternal", new Callable<FileCollection>() {
 					@Override
 					public FileCollection call() throws Exception {
 						return project.files(moduleBinary.getBundleTask().getOutputDirectory());

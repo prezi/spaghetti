@@ -14,22 +14,12 @@ public interface ModuleConfiguration {
 	ModuleNode getLocalModule();
 
 	/**
-	 * Returns all direct dependencies of the local module.
+	 * Returns dependencies of the local module.
 	 */
-	SortedSet<ModuleNode> getDirectDependentModules();
+	SortedSet<ModuleNode> getDependentModules();
 
 	/**
-	 * Returns all transitive dependencies of the local module.
-	 */
-	SortedSet<ModuleNode> getTransitiveDependentModules();
-
-	/**
-	 * Returns all dependencies of the local module, including both direct and transitive dependencies.
-	 */
-	SortedSet<ModuleNode> getAllDependentModules();
-
-	/**
-	 * Returns all modules in the configuration, including the local module, and its direct and transitive dependencies.
+	 * Returns all modules in the configuration, including the local module and its dependencies.
 	 */
 	SortedSet<ModuleNode> getAllModules();
 }

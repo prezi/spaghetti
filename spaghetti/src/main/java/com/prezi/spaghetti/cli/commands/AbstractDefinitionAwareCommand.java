@@ -17,15 +17,10 @@ public abstract class AbstractDefinitionAwareCommand extends AbstractSpaghettiCo
 			required = true)
 	protected File definition;
 
-	@Option(name = {"-t", "--transitive-dependency-path"},
-			description = "List of transitively dependent module bundles separated by colon (':')")
-	protected String transitiveDependencyPath;
-
 	protected ModuleConfiguration parseConfig() throws IOException {
 		ModuleDefinitionSource localSource  = parseDefinition(definition);
-		Collection<ModuleDefinitionSource> dependentSources = parseDefinitionSources(directDependencyPath);
-		Collection<ModuleDefinitionSource> transitiveSources = parseDefinitionSources(transitiveDependencyPath);
-		return ModuleConfigurationParser.parse(localSource, dependentSources, transitiveSources);
+		Collection<ModuleDefinitionSource> dependentSources = parseDefinitionSources(dependencyPath);
+		return ModuleConfigurationParser.parse(localSource, dependentSources);
 	}
 
 	private static Collection<ModuleDefinitionSource> parseDefinitionSources(String path) throws IOException {
