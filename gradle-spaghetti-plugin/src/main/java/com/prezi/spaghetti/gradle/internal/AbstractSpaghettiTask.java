@@ -6,7 +6,6 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.InputFiles;
@@ -17,59 +16,50 @@ import java.util.Collection;
 import java.util.Set;
 
 public class AbstractSpaghettiTask extends ConventionTask {
-	private Configuration dependentModules;
-	private ConfigurableFileCollection additionalDependentModulesInternal = getProject().files();
+	private ConfigurableFileCollection dependentModules = getProject().files();
 
 	@InputFiles
-	public Configuration getDependentModules() {
+	public ConfigurableFileCollection getDependentModules() {
 		return dependentModules;
 	}
 
-	@InputFiles
-	public ConfigurableFileCollection getAdditionalDependentModules() {
-		return getProject().files(this.getAdditionalDependentModulesInternal());
-	}
-
-	public void setDependentModules(Configuration dependentModules) {
+	public void setDependentModules(ConfigurableFileCollection dependentModules) {
 		this.dependentModules = dependentModules;
 	}
 
-	@SuppressWarnings("UnusedDeclaration")
-	public void dependentModules(Configuration dependentModules) {
+	public void dependentModules(Object... additionalDependentModules) {
+		ConfigurableFileCollection dependentModules = getDependentModules();
+		dependentModules.from(additionalDependentModules);
 		setDependentModules(dependentModules);
 	}
 
-	public ConfigurableFileCollection getAdditionalDependentModulesInternal() {
-		return additionalDependentModulesInternal;
-	}
-
-	public void additionalDependentModules(Object... additionalDependentModules) {
-		this.getAdditionalDependentModulesInternal().from(additionalDependentModules);
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void additionalDependentModule(Object... additionalDependentModules) {
-		this.additionalDependentModules(additionalDependentModules);
+	public void dependentModule(Object... dependentModules) {
+		dependentModules(dependentModules);
 	}
 
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
-	public ConfigurableFileCollection getAdditionalDirectDependentModules() {
-		return getAdditionalDependentModules();
+	public void additionalDependentModules(Object... additionalDependentModules) {
+		dependentModules(additionalDependentModules);
+	}
+	@Deprecated
+	@SuppressWarnings("UnusedDeclaration")
+	public void additionalDependentModule(Object... additionalDependentModules) {
+		dependentModules(additionalDependentModules);
 	}
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDirectDependentModules(Object... additionalDependentModules) {
-		additionalDependentModules(additionalDependentModules);
+		dependentModules(additionalDependentModules);
 	}
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDirectDependentModule(Object... additionalDependentModules) {
-		additionalDependentModule(additionalDependentModules);
+		dependentModule(additionalDependentModules);
 	}
 
 	protected Set<ModuleBundle> lookupBundles() throws IOException {
-		return ModuleBundleLookup.lookup(getDependentModules().getFiles());
+		return ModuleBundleLookup.lookup(getDependentModules());
 	}
 
 	public ModuleConfiguration readConfig(File definition) throws IOException {

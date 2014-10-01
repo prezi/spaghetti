@@ -9,13 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Set;
 
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static Set<ModuleBundle> lookup(Collection<File> dependencies) throws IOException {
+	public static Set<ModuleBundle> lookup(Iterable<File> dependencies) throws IOException {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking up modules:");
 			logger.debug("\tDependencies:\n\t\t{}", Joiner.on("\n\t\t").join(dependencies));

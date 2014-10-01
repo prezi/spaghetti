@@ -62,11 +62,9 @@ task generateHeaders(type: com.prezi.spaghetti.gradle.GenerateHeaders) {
     // The language to generate headers in
     language <language>
 
-    // The configuration holding any dependent modules
-    dependentModules <configuration>
-
-    // Additional dependent modules
-    additionalDependentModules <Set<File>>
+    // Dependent module bundles
+    // Accepts all parameters as project.files()
+    dependentModules <files...>
 
     // The location to generate headers into
     outputDirectory <directory>
@@ -88,11 +86,9 @@ task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
     // The compiled JavaScript code of the module
     inputFile <file>
 
-    // The configuration holding any dependent modules
-    dependentModules <configuration>
-
-    // Additional dependent modules
-    additionalDependentModules <Set<File>>
+    // Dependent module bundles
+    // Accepts all parameters as project.files()
+    dependentModules <files...>
 
     // The location to create the bundle in
     outputDirectory <directory>
@@ -122,11 +118,9 @@ Read more here about [why and how externs can be useful](https://developers.goog
 
 ```groovy
 task packageApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
-    // The configuration holding the application's modules
-    dependentModules <configuration>
-
-    // Additional dependent modules
-    additionalDependentModules <Set<File>>
+    // Dependent module bundles
+    // Accepts all parameters as project.files()
+    dependentModules <files...>
 
     // Name of the main module of the application
     mainModule <name>

@@ -7,6 +7,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.internal.reflect.Instantiator;
 
 import javax.inject.Inject;
@@ -24,7 +25,7 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	}
 
 	@Override
-	public void apply(Project project) {
+	public void apply(final Project project) {
 		Configuration defaultConfiguration = project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
 		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
 
@@ -32,10 +33,10 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 		project.getTasks().withType(AbstractSpaghettiTask.class).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			public void execute(AbstractSpaghettiTask task) {
-				task.getConventionMapping().map("dependentModules", new Callable<Configuration>() {
+				task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
 					@Override
-					public Configuration call() throws Exception {
-						return extension.getConfiguration();
+					public ConfigurableFileCollection call() throws Exception {
+						return project.files(extension.getConfiguration());
 					}
 				});
 			}
