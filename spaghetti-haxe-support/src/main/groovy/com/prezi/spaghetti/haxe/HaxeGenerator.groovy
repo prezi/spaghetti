@@ -32,7 +32,7 @@ class HaxeGenerator extends AbstractGenerator {
 		generateModuleInitializer(config.localModule, outputDirectory, header)
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
-		config.allDependentModules.each { dependentModule ->
+		config.dependentModules.each { dependentModule ->
 			generateModuleTypes(dependentModule, outputDirectory, header)
 			generateModuleAccessor(dependentModule, outputDirectory, header)
 		}
