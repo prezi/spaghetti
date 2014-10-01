@@ -6,6 +6,7 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.internal.DeprecationNagger;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.InputFiles;
@@ -40,21 +41,25 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDependentModules(Object... additionalDependentModules) {
+		DeprecationNagger.nagUserOfReplacedMethod("additionalDependentModules", "dependentModules");
 		dependentModules(additionalDependentModules);
 	}
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDependentModule(Object... additionalDependentModules) {
+		DeprecationNagger.nagUserOfReplacedMethod("additionalDependentModule", "dependentModule");
 		dependentModules(additionalDependentModules);
 	}
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDirectDependentModules(Object... additionalDependentModules) {
+		DeprecationNagger.nagUserOfReplacedMethod("additionalDirectDependentModules", "dependentModules");
 		dependentModules(additionalDependentModules);
 	}
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDirectDependentModule(Object... additionalDependentModules) {
+		DeprecationNagger.nagUserOfReplacedMethod("additionalDirectDependentModule", "dependentModule");
 		dependentModule(additionalDependentModules);
 	}
 

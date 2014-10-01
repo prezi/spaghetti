@@ -41,7 +41,7 @@ def config = hasProperty("obfuscated") ? configurations.modulesObf : configurati
 task packageAmdApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
 	dependsOn bundleTask
 	dependentModules config
-	dependentModule bundleTask.outputDirectory
+	additionalDependentModule bundleTask.outputDirectory
 	mainModule "prezi.test.client"
 	outputDirectory "${buildDir}/applications/web"
 	prefix "src/main/spaghetti/prefix.js"
