@@ -132,6 +132,10 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	sourceCompatibility = "1.6"
 	targetCompatibility = "1.6"
 
+	tasks.withType(AbstractCompile) {
+		options.encoding = "UTF-8"
+	}
+
 	dependencies {
 		testCompile "junit:junit:4.11"
 		testCompile "org.mockito:mockito-all:1.9.5"
