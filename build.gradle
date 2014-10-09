@@ -330,7 +330,7 @@ project(":gradle-spaghetti-haxe-plugin") {
 
 project(":gradle-spaghetti-typescript-plugin") {
 	dependencies {
-		compile "com.prezi.typescript:gradle-typescript-plugin:2.2.1"
+		compile "com.prezi.typescript:gradle-typescript-plugin:2.2.2"
 	}
 }
 

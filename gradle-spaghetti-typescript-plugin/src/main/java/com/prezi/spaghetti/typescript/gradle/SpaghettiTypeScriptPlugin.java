@@ -9,6 +9,7 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
+import com.prezi.typescript.gradle.TypeScriptBasePlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
 import com.prezi.typescript.gradle.TypeScriptExtension;
@@ -51,7 +52,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		spaghettiExtension.setLanguage("typescript");
 
-		project.getPlugins().apply(TypeScriptPlugin.class);
+		project.getPlugins().apply(TypeScriptBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
 
 		final TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
@@ -84,6 +85,8 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				registerSpaghettiModule(project, testBinary, true);
 			}
 		});
+
+		project.getPlugins().apply(TypeScriptPlugin.class);
 	}
 
 	private <T extends TypeScriptBinaryBase> void addSpaghettiSourceSet(final Project project, TypeScriptExtension typeScriptExtension, final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet, Class<T> binaryType, String sourceSetName) {
