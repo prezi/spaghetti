@@ -52,4 +52,24 @@ public class DefaultTypeChain extends AbstractArrayedTypeReference implements Ty
 	public List<TypeReference> getElements() {
 		return elements;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof DefaultTypeChain)) return false;
+		if (!super.equals(o)) return false;
+
+		DefaultTypeChain that = (DefaultTypeChain) o;
+
+		if (!elements.equals(that.elements)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + elements.hashCode();
+		return result;
+	}
 }

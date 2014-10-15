@@ -21,4 +21,24 @@ public abstract class AbstractTypeNodeReference<T extends ReferableTypeNode> ext
 	public final T getType() {
 		return type;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof AbstractTypeNodeReference)) return false;
+		if (!super.equals(o)) return false;
+
+		AbstractTypeNodeReference that = (AbstractTypeNodeReference) o;
+
+		if (!type.equals(that.type)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + type.hashCode();
+		return result;
+	}
 }

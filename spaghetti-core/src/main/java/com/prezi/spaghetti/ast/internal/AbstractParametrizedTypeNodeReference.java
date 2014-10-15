@@ -25,4 +25,24 @@ public abstract class AbstractParametrizedTypeNodeReference<T extends Parametriz
 	public List<TypeReference> getArguments() {
 		return arguments;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof AbstractParametrizedTypeNodeReference)) return false;
+		if (!super.equals(o)) return false;
+
+		AbstractParametrizedTypeNodeReference that = (AbstractParametrizedTypeNodeReference) o;
+
+		if (!arguments.equals(that.arguments)) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = super.hashCode();
+		result = 31 * result + arguments.hashCode();
+		return result;
+	}
 }
