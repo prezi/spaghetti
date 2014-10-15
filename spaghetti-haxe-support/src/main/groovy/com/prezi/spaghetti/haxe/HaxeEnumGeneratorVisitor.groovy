@@ -31,7 +31,7 @@ ${values.join("\n")}
 
 	@:from public static function fromValue(value:Int) {
 		if (value < 0 || value >= _values.length) {
-			throw ("Invalid value for ${enumName}: " + value);
+			throw "Invalid value for ${enumName}: " + value;
 		}
 		var result = _values[value];
 		return result;
@@ -45,7 +45,7 @@ ${values.join("\n")}
 		return switch(name)
 		{
 ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
-			default: throw ("Invalid name for ${enumName}: " + name);
+			default: throw "Invalid name for ${enumName}: " + name;
 		};
 	}
 

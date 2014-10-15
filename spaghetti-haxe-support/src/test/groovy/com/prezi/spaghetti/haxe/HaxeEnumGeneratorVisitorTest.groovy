@@ -45,7 +45,7 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 
 	@:from public static function fromValue(value:Int) {
 		if (value < 0 || value >= _values.length) {
-			throw ("Invalid value for MyEnum: " + value);
+			throw "Invalid value for MyEnum: " + value;
 		}
 		var result = _values[value];
 		return result;
@@ -61,7 +61,7 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 			case "ALMA": ALMA;
 			case "BELA": BELA;
 			case "GEZA": GEZA;
-			default: throw ("Invalid name for MyEnum: " + name);
+			default: throw "Invalid name for MyEnum: " + name;
 		};
 	}
 
