@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.prezi.spaghetti.ast.ReferableTypeNode;
 import com.prezi.spaghetti.ast.TypeNodeReference;
 
-public abstract class AbstractTypeNodeReference<T extends ReferableTypeNode> extends AbstractArrayedTypeReference implements TypeNodeReference<T> {
+public abstract class AbstractTypeNodeReference<T extends ReferableTypeNode> extends AbstractTypeReference implements TypeNodeReference<T> {
 	private final T type;
 
 	public AbstractTypeNodeReference(T type, int arrayDimensions) {

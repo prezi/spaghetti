@@ -12,7 +12,7 @@ import com.prezi.spaghetti.ast.VoidTypeReference;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultTypeChain extends AbstractArrayedTypeReference implements TypeChain {
+public class DefaultTypeChain extends AbstractTypeReference implements TypeChain {
 	private final List<TypeReference> elements = Lists.newArrayList();
 
 	public DefaultTypeChain(int arrayDimensions) {
@@ -31,6 +31,13 @@ public class DefaultTypeChain extends AbstractArrayedTypeReference implements Ty
 	@Override
 	public TypeReference getReturnType() {
 		return elements.get(elements.size() - 1);
+	}
+
+	@Override
+	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+		DefaultTypeChain chain = new DefaultTypeChain(getArrayDimensions() + extraDimensions);
+		chain.getElements().addAll(elements);
+		return chain;
 	}
 
 	@Override

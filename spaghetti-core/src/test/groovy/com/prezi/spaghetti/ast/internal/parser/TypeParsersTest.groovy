@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.ArrayedTypeReference
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
@@ -43,7 +42,7 @@ class TypeParsersTest extends AstTestBase {
 		definition                     | elements                   | chainDimensions | dimensions
 		"int->int"                     | [INT, INT]                 | 0               | [0, 0]
 		"(int->string)[]"              | [INT, STRING]              | 1               | [0, 0]
-		"int->(int[]->void)->string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, -1], 1]
+		"int->(int[]->void)->string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, 0], 1]
 	}
 
 	def collectElements(TypeChain chain) {
@@ -56,11 +55,8 @@ class TypeParsersTest extends AstTestBase {
 		return chain.elements.collect {
 			if (it instanceof TypeChain) {
 				return collectDimensions(it)
-			} else if (it instanceof ArrayedTypeReference) {
-				return it.arrayDimensions
-			} else {
-				return -1
 			}
+			return it.arrayDimensions
 		}
 	}
 
