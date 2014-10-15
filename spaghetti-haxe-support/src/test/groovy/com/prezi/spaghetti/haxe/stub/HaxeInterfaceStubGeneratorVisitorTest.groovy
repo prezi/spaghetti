@@ -8,6 +8,7 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def definitionTibor = """interface Tibor<T> {
 	T getSomeT()
+	com.example.test.MyInterface<T[]> multiply(int max, ?int min)
 }
 """
 		def definition = """interface MyInterface<X> extends com.example.test.Tibor<X> {
@@ -26,9 +27,9 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 }
 """
 		def tibor = new InterfaceParser(AstTestUtils.parser(definitionTibor).interfaceDefinition(), "com.example.test")
-		tibor.parse(AstTestUtils.resolver())
 		def parser = new InterfaceParser(AstTestUtils.parser(definition).interfaceDefinition(), "com.example.test")
-		parser.parse(AstTestUtils.resolver(tibor.node))
+		tibor.parse(AstTestUtils.resolver(tibor.node, parser.node))
+		parser.parse(AstTestUtils.resolver(tibor.node, parser.node))
 		def iface = parser.node
 		def visitor = new HaxeInterfaceStubGeneratorVisitor()
 
@@ -60,6 +61,9 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 		return null;
 	}
 	public function getSomeT():X {
+		return null;
+	}
+	public function multiply(max:Int, ?min:Int):com.example.test.MyInterface<Array<X>> {
 		return null;
 	}
 

@@ -66,11 +66,15 @@ public class AstUtils {
 			return result;
 		} else if (node instanceof TypeParameterReference) {
 			TypeParameterReference paramRef = (TypeParameterReference) node;
-			TypeReference resolvedReference = bindings.get(paramRef.getType());
-			if (resolvedReference == null) {
+			if (!bindings.containsKey(paramRef.getType())) {
 				return paramRef;
 			} else {
-				return resolveTypeParameters(resolvedReference, bindings);
+				TypeReference resolvedReference = resolveTypeParameters(bindings.get(paramRef.getType()), bindings);
+				if (paramRef.getArrayDimensions() == 0) {
+					return resolvedReference;
+				} else {
+					return resolvedReference.withAdditionalArrayDimensions(paramRef.getArrayDimensions());
+				}
 			}
 		} else {
 			throw new AssertionError("Unknown type: " + node.getClass());

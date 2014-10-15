@@ -52,7 +52,29 @@ class AstUtilsTest extends AstTestBase {
 		expect:
 		result.type == iface
 		result.arguments == [
-		        PrimitiveTypeReference.STRING
+				PrimitiveTypeReference.STRING
+		]
+	}
+
+	// See https://github.com/prezi/spaghetti/issues/143
+	def "resolveTypeParameters with array"() {
+		// T[] -> U[]
+		def paramT = new DefaultTypeParameterNode("T")
+		def paramU = new DefaultTypeParameterNode("U")
+		def iface = new DefaultInterfaceNode(FQName.fromString("com.example.test.Iface"))
+		//noinspection GrDeprecatedAPIUsage
+		iface.getTypeParameters().add(paramT);
+		def bindings = [
+				(paramT): new DefaultTypeParameterReference(paramU, 0)
+		]
+
+		def type = parseType(resolver(paramT, iface), parser("com.example.test.Iface<T[]>").type())
+		InterfaceReference result = (InterfaceReference) resolveTypeParameters(type, bindings)
+
+		expect:
+		result.type == iface
+		result.arguments == [
+				new DefaultTypeParameterReference(paramU, 1)
 		]
 	}
 
