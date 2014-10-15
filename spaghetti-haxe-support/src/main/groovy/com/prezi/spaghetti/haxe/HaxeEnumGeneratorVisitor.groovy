@@ -20,7 +20,6 @@ ${values.join("\n")}
 
 	static var _values:Array<${enumName}> = [ ${node.values.join(", ")} ];
 	static var _names:Array<String> =  [ ${node.values.collect { "\"${it}\"" }.join(", ")} ];
-	static var _namesToValues = { ${node.values.collect { "\"${it}\": ${it}" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
@@ -32,7 +31,7 @@ ${values.join("\n")}
 
 	@:from public static function fromValue(value:Int) {
 		if (value < 0 || value >= _values.length) {
-			throw untyped Error("Invalid value for ${enumName}: " + value);
+			throw ("Invalid value for ${enumName}: " + value);
 		}
 		var result = _values[value];
 		return result;
@@ -43,11 +42,11 @@ ${values.join("\n")}
 	}
 
 	@:from public static inline function valueOf(name:String) {
-		var value = untyped _namesToValues[name];
-		if (value == null) {
-			throw untyped Error("Invalid name for ${enumName}: " + name);
-		}
-		return value;
+		return switch(name)
+		{
+${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
+			default: throw ("Invalid name for ${enumName}: " + name);
+		};
 	}
 
 	public static function values():Array<${enumName}> {
