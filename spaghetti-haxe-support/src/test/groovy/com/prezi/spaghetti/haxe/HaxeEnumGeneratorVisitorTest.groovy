@@ -34,7 +34,6 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 
 	static var _values:Array<MyEnum> = [ ALMA, BELA, GEZA ];
 	static var _names:Array<String> =  [ "ALMA", "BELA", "GEZA" ];
-	static var _namesToValues = { "ALMA": ALMA, "BELA": BELA, "GEZA": GEZA };
 
 	inline function new(value:Int) {
 		this = value;
@@ -46,7 +45,7 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 
 	@:from public static function fromValue(value:Int) {
 		if (value < 0 || value >= _values.length) {
-			throw untyped Error("Invalid value for MyEnum: " + value);
+			throw "Invalid value for MyEnum: " + value;
 		}
 		var result = _values[value];
 		return result;
@@ -57,11 +56,13 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 	}
 
 	@:from public static inline function valueOf(name:String) {
-		var value = untyped _namesToValues[name];
-		if (value == null) {
-			throw untyped Error("Invalid name for MyEnum: " + name);
-		}
-		return value;
+		return switch(name)
+		{
+			case "ALMA": ALMA;
+			case "BELA": BELA;
+			case "GEZA": GEZA;
+			default: throw "Invalid name for MyEnum: " + name;
+		};
 	}
 
 	public static function values():Array<MyEnum> {
