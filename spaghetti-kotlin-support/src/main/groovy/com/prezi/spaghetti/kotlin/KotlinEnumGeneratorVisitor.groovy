@@ -2,9 +2,8 @@ package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
-import com.prezi.spaghetti.ast.StringModuleVisitorBase
 
-class KotlinEnumGeneratorVisitor extends StringModuleVisitorBase {
+class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 	@Override
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name

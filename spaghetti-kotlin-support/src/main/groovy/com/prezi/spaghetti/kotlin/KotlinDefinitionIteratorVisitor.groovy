@@ -44,7 +44,7 @@ class KotlinDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	@Override
 	Void visitConstNode(ConstNode node) {
-//		createSourceFile(node, new KotlinConstGeneratorVisitor())
+		createSourceFile(node, new KotlinConstGeneratorVisitor())
 		return null
 	}
 }
