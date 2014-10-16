@@ -24,17 +24,14 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 			(PrimitiveType.INT): "Int",
 			(PrimitiveType.FLOAT): "Float",
 			(PrimitiveType.STRING): "String",
-			(PrimitiveType.ANY): "Dynamic"
+			(PrimitiveType.ANY): "Any"
 	]
 
 	@Override
 	String visitTypeChain(TypeChain node) {
-		def result = node.elements*.accept(this).join("->")
-		if (hasAncestor(TypeChain, 1)) {
-			// This is a sub-type-chain
-			result = "($result)"
-		}
-		return result
+		def parameters = node.parameters
+		def retType = node.returnType.accept(this)
+		return "(${parameters*.accept(this).join(",")})->${retType}"
 	}
 
 	@Override
@@ -86,7 +83,7 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 	}
 
 	static protected String wrapNullableTypeReference(String name, boolean nullable) {
-		return nullable ? "Null<" + name + ">" : name
+		return nullable ? name + "?" : name
 	}
 
 	static protected String wrapSingleTypeReference(String name, int arrayDimensions) {
@@ -99,7 +96,7 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 
 	@Override
 	String visitVoidTypeReference(VoidTypeReference reference) {
-		return "Void"
+		return "Unit"
 	}
 
 	@Override
