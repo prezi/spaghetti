@@ -57,7 +57,7 @@ return ${KOTLIN_MODULE_VAR};
 	}
 
 	/**
-	 * Copies Spaghetti.hx to the generated source directory.
+	 * Copies Spaghetti.kt to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
 		new File(outputDirectory, "${SPAGHETTI_CLASS}.kt") << KotlinGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.kt")
