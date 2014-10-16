@@ -19,7 +19,7 @@ struct MyStruct<T> {
 	?string b
 	@nullable string c
 	@nullable ?string d
-	T t
+	@mutable T t
 	T convert(T value)
 }
 """
@@ -33,15 +33,15 @@ struct MyStruct<T> {
  * Hey this is my struct!
  */
 trait MyStruct<T> {
-	a: Int
+	val a: Int
 	/**
 	 * This is field b.
 	 */
 	[deprecated("struct")]
-	b: String? = null
-	c: String?
-	d: String? = null
-	t: T
+	val b: String? = null
+	val c: String?
+	val d: String? = null
+	var t: T
 	fun convert(value:T):T
 
 }

@@ -20,12 +20,14 @@ ${visitChildren(node)}
 	@Override
 	String visitPropertyNode(PropertyNode node) {
 		def isOptional = node.optional
+		def isMutable = node.annotations.contains("mutable")
 		def isNullable = node.annotations.contains("nullable")
 		def optional = (isOptional || isNullable) ? "?" : ""
 		if (isOptional) {
 			optional += " = null"
 		}
-"""	${node.name}: ${node.type.accept(this)}${optional}
+		def decl = isMutable ? "var" : "val"
+"""	${decl} ${node.name}: ${node.type.accept(this)}${optional}
 """
 	}
 }
