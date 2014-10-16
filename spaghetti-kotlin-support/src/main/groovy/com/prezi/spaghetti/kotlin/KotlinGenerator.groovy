@@ -6,6 +6,7 @@ import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.kotlin.impl.KotlinModuleInitializerGeneratorVisitor
+import com.prezi.spaghetti.kotlin.impl.KotlinModuleProxyGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
@@ -68,7 +69,7 @@ return ${KOTLIN_MODULE_VAR};
 	 */
 	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory, String header)
 	{
-		def contents = "" // new KotlinModuleProxyGeneratorVisitor(module).visit(module)
+		def contents = new KotlinModuleProxyGeneratorVisitor(module).visit(module)
 		KotlinUtils.createKotlinSourceFile(header, module.name, "__${module.alias}Proxy", outputDirectory, contents)
 	}
 
