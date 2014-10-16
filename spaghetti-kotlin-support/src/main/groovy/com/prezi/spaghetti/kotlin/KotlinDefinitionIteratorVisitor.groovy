@@ -26,7 +26,7 @@ class KotlinDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	@Override
 	Void visitInterfaceNode(InterfaceNode node) {
-//		createSourceFile(node, new KotlinInterfaceGeneratorVisitor())
+		createSourceFile(node, new KotlinInterfaceGeneratorVisitor())
 		return null
 	}
 
@@ -38,7 +38,7 @@ class KotlinDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	@Override
 	Void visitStructNode(StructNode node) {
-//		createSourceFile(node, new KotlinStructGeneratorVisitor())
+		createSourceFile(node, new KotlinStructGeneratorVisitor())
 		return null
 	}
 
