@@ -47,7 +47,7 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 
 	@Override
 	String visitEnumReference(EnumReference reference) {
-		return wrapSingleTypeReference(reference.type.qualifiedName.toString(), reference.arrayDimensions)
+		return wrapSingleTypeReference("Int", reference.arrayDimensions)
 	}
 
 	@Override
