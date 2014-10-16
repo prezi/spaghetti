@@ -13,8 +13,10 @@ int doStatic(int x)
 		def visitor = new KotlinModuleInitializerGeneratorVisitor()
 
 		expect:
-		visitor.visit(module) == """fun main(__args:Array<String>) {
-	__kotlinModule = new __TestModuleProxy()
+		visitor.visit(module) == """native public var __kotlinModule:Any = noImpl
+
+fun main(__args:Array<String>) {
+	__kotlinModule = __TestModuleProxy()
 }
 """
 	}

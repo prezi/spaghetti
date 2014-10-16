@@ -9,8 +9,10 @@ class KotlinModuleInitializerGeneratorVisitor extends AbstractKotlinGeneratorVis
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
-"""fun main(__args:Array<String>) {
-	${KOTLIN_MODULE_VAR} = new __${node.alias}Proxy()
+"""native public var ${KOTLIN_MODULE_VAR}:Any = noImpl
+
+fun main(__args:Array<String>) {
+	${KOTLIN_MODULE_VAR} = __${node.alias}Proxy()
 }
 """
 	}
