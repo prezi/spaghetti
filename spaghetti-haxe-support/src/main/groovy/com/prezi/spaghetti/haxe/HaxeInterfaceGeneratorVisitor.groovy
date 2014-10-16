@@ -20,7 +20,7 @@ ${methodDefinitions}
 """
 	}
 
-	private static String defineType(String typeName, Collection<String> superTypes) {
+	private static String defineType(String typeName, Collection<?> superTypes) {
 		def declaration = "interface ${typeName}"
 		superTypes.each { superType ->
 			declaration += " extends ${superType}"
