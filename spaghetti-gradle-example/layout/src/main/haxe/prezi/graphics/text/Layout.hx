@@ -1,6 +1,7 @@
 package prezi.graphics.text;
 
 import prezi.graphics.core.Core;
+import prezi.graphics.core.JsEnum;
 
 class Layout {
 	public static function createText(text:String = ""):Text {
@@ -24,5 +25,9 @@ class Layout {
 	public static function getResource():String
 	{
 		return Spaghetti.getResourceUrl("sample.txt");
+	}
+
+	public static function getEnumValue(value:JsEnum):String {
+		return value.name();
 	}
 }

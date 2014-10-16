@@ -11,6 +11,9 @@ export class RenderModule {
 	static getResource():string {
 		return Spaghetti.getResourceUrl("some-resource.txt");
 	}
+	static getEnumValue(value:number):string {
+		return "enum: " + value;
+	}
 }
 
 export class RendererImpl implements Renderer {

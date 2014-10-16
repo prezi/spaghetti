@@ -20,12 +20,12 @@ enum MyEnum {
 		def visitor = new TypeScriptEnumGeneratorVisitor()
 
 		expect:
-		visitor.visit(module) == """export enum MyEnum {
+		visitor.visit(module) == """export class MyEnum {
 	/**
 	 * Alma.
 	 */
-	ALMA = 0,
-	BELA = 1
+	static ALMA:number = 0;
+	static BELA:number = 1;
 }
 """
 	}

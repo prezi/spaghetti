@@ -3,6 +3,7 @@
  */
 module prezi.graphics.text.render
 
+import prezi.graphics.core.JsEnum
 import prezi.graphics.text.Text as Texty
 
 interface Renderer {
@@ -24,3 +25,4 @@ const Values {
 }
 
 string getResource()
+string getEnumValue(JsEnum value)

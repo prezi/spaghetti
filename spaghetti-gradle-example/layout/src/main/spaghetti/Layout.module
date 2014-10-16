@@ -3,6 +3,8 @@
  */
 module prezi.graphics.text as Layout
 
+import prezi.graphics.core.JsEnum
+
 /**
  * Different types of character styles.
  */
@@ -123,3 +125,4 @@ Text createText(?string text)
 TestStuff<string, string> createTestStuff()
 string getResource()
 <T> TestStuff<T, string> createTestStuffWithStringKey()
+string getEnumValue(JsEnum value)
