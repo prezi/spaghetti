@@ -26,7 +26,7 @@ class KotlinGenerator extends AbstractGenerator {
 
 	@Override
 	void generateHeaders(File outputDirectory) {
-		copySpaghettiClass(outputDirectory)
+		copySpaghettiClass(config.localModule, outputDirectory)
 		generateModuleInitializer(config.localModule, outputDirectory, header)
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
@@ -61,8 +61,9 @@ return ${KOTLIN_MODULE_VAR};
 	/**
 	 * Copies Spaghetti.kt to the generated source directory.
 	 */
-	private static void copySpaghettiClass(File outputDirectory) {
-		new File(outputDirectory, "${SPAGHETTI_CLASS}.kt") << KotlinGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.kt")
+	private void copySpaghettiClass(ModuleNode module, File outputDirectory) {
+		def contents = KotlinGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.kt").text
+		KotlinUtils.createKotlinSourceFile(header, module.name, SPAGHETTI_CLASS, outputDirectory, contents)
 	}
 
 	/**
