@@ -15,43 +15,8 @@ class KotlinEnumGeneratorVisitor extends StringModuleVisitorBase {
 		}
 
 		return \
-"""abstract ${enumName}(Int) {
+"""object ${enumName} {
 ${values.join("\n")}
-
-	static var _values:Array<${enumName}> = [ ${node.values.join(", ")} ];
-	static var _names:Array<String> =  [ ${node.values.collect { "\"${it}\"" }.join(", ")} ];
-
-	inline function new(value:Int) {
-		this = value;
-	}
-
-	@:to public function value():Int {
-		return this;
-	}
-
-	@:from public static function fromValue(value:Int) {
-		if (value < 0 || value >= _values.length) {
-			throw "Invalid value for ${enumName}: " + value;
-		}
-		var result = _values[value];
-		return result;
-	}
-
-	@:to public inline function name():String {
-		return _names[this];
-	}
-
-	@:from public static inline function valueOf(name:String) {
-		return switch(name)
-		{
-${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
-			default: throw "Invalid name for ${enumName}: " + name;
-		};
-	}
-
-	public static function values():Array<${enumName}> {
-		return _values.copy();
-	}
 }
 """
 	}
@@ -67,7 +32,7 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tpublic static var ${node.name} = new ${enumName}(${index});"
+			return "\tval ${node.name} = ${index}"
 		}
 	}
 }

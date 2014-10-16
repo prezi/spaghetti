@@ -123,13 +123,13 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 		String prefix = (result =~ /^([ \t]*).*/)[0][1]
 
 		if (deprecation) {
-			def deprecationResult = new StringBuilder(prefix).append("@:deprecated")
+			def deprecationResult = new StringBuilder(prefix).append("[deprecated")
 			if (deprecation.hasDefaultParameter()) {
 				def message = String.valueOf(deprecation.defaultParameter)
 				message = StringEscapeUtils.escapeJava(message)
 				deprecationResult.append("(\"").append(message).append("\")")
 			}
-			deprecationResult.append("\n")
+			deprecationResult.append("]\n")
 			result = deprecationResult + result
 		}
 
