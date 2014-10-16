@@ -5,6 +5,7 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
+import com.prezi.spaghetti.kotlin.access.KotlinModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.kotlin.impl.KotlinModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.kotlin.impl.KotlinModuleProxyGeneratorVisitor
 
@@ -88,7 +89,7 @@ return ${KOTLIN_MODULE_VAR};
 	 */
 	private static void generateModuleAccessor(ModuleNode module, File outputDirectory, String header)
 	{
-		def contents = "" // new KotlinModuleAccessorGeneratorVisitor(module).visit(module)
+		def contents = new KotlinModuleAccessorGeneratorVisitor(module).visit(module)
 		KotlinUtils.createKotlinSourceFile(header, module.name, module.alias, outputDirectory, contents)
 	}
 
