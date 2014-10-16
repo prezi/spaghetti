@@ -67,8 +67,8 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitExternInterfaceReference(ExternInterfaceReference reference) {
 		def type = reference.type.qualifiedName.toString()
-		if (HaxeGeneratorFactory.EXTERNS.containsKey(type)) {
-			type = HaxeGeneratorFactory.EXTERNS.get(type)
+		if (KotlinGeneratorFactory.EXTERNS.containsKey(type)) {
+			type = KotlinGeneratorFactory.EXTERNS.get(type)
 		}
 		return wrapParametrizedTypeReference(type, reference)
 	}
