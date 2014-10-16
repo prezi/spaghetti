@@ -33,14 +33,15 @@ class KotlinConstGeneratorVisitorTest extends AstTestBase {
  */
 [deprecated]
 object MyConstants {
-	val alma = 0
+	val alma:Int = 1
 	/**
 	 * Bela is -123.
 	 */
 	[deprecated("lajos")]
-	val bela = 1
-	val geza = 2
-	val tibor = 3
+	val bela:Int = -123
+	val geza:Float = -1.23
+	val tibor:String = "tibor"
+
 }
 """
     }
