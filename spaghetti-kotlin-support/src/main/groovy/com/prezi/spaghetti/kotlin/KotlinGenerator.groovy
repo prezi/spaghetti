@@ -5,10 +5,13 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.generator.AbstractGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
+import com.prezi.spaghetti.kotlin.impl.KotlinModuleInitializerGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class KotlinGenerator extends AbstractGenerator {
+
+	public static final String KOTLIN_MODULE_VAR = "__kotlinModule"
 
 	private final String header
 	private final ModuleConfiguration config
@@ -46,7 +49,11 @@ class KotlinGenerator extends AbstractGenerator {
 	@Override
 	protected String processModuleJavaScriptInternal(ModuleNode module, String javaScript)
 	{
-		return javaScript
+"""
+var ${KOTLIN_MODULE_VAR};
+${javaScript}
+return ${KOTLIN_MODULE_VAR};
+"""
 	}
 
 	/**
@@ -71,7 +78,7 @@ class KotlinGenerator extends AbstractGenerator {
 	private static void generateModuleInitializer(ModuleNode module, File outputDirectory, String header)
 	{
 		def initializerName = "__" + module.alias + "Init"
-		def initializerContents = "" // new KotlinModuleInitializerGeneratorVisitor().visit(module)
+		def initializerContents = new KotlinModuleInitializerGeneratorVisitor().visit(module)
 		KotlinUtils.createKotlinSourceFile(header, module.name, initializerName, outputDirectory, initializerContents)
 	}
 
