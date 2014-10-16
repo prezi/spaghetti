@@ -6,13 +6,13 @@ spaghetti {
 
 task bundleModule(type: com.prezi.spaghetti.gradle.BundleModule) {
 	dependsOn generateHeaders
-	prefix generateHeaders.outputDirectory.listFiles()
+	prefix { generateHeaders.outputDirectory.listFiles() }
 	inputFile "src/main/js/core.js"
 }
 
 task obfuscateModule(type: com.prezi.spaghetti.gradle.ObfuscateModule) {
 	dependsOn generateHeaders
-	prefix generateHeaders.outputDirectory.listFiles()
+	prefix { generateHeaders.outputDirectory.listFiles() }
 	inputFile "src/main/js/core.js"
 }
 
