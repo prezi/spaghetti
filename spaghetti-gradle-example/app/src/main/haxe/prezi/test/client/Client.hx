@@ -1,6 +1,7 @@
 package prezi.test.client;
 
 import prezi.graphics.core.Core;
+import prezi.graphics.core.JsEnum;
 import prezi.graphics.text.CharacterStyleType;
 import prezi.graphics.text.Layout;
 import prezi.graphics.text.Values;
@@ -36,6 +37,8 @@ class Client {
 
 		trace("Haxe resource: " + prezi.graphics.text.Layout.getResource());
 		trace("TypeScript resource: " + RenderModule.getResource());
+		trace("JsEnum via Haxe: " + Layout.getEnumValue(JsEnum.ALMA));
+		trace("JsEnum via TypeScript: " + RenderModule.getEnumValue(JsEnum.ALMA));
 	}
 
 	static function callback(name:String, converter:Int->String)

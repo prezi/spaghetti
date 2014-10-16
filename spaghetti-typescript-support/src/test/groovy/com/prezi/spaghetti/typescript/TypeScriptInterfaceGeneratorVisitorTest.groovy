@@ -11,11 +11,16 @@ class TypeScriptInterfaceGeneratorVisitorTest extends AstTestBase {
 interface Parent<T> {
 }
 
+enum Fruit {
+	ALMA
+	BELA
+}
+
 interface MyInterface<X> extends Parent<X> {
 	/**
 	 * Does something.
 	 */
-	void doSomething()
+	void doSomething(Fruit[] value)
 
 	string[] doSomethingElse(int a, ?int b)
 	<T, U> T[] hello(X->(void->int)->U f)
@@ -33,7 +38,7 @@ export interface MyInterface<X> extends com.example.test.Parent<X> {
 	/**
 	 * Does something.
 	 */
-	doSomething():void;
+	doSomething(value:Array<number>):void;
 	doSomethingElse(a:number, b?:number):Array<string>;
 	hello<T, U>(f:(arg0: X, arg1: () => number) => U):Array<T>;
 

@@ -11,8 +11,8 @@ class TypeScriptEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor 
 		node.values.eachWithIndex{ value, index ->
 			valueLines += value.accept(new TypeScriptEnumValueGeneratorVisitor(index))
 		}
-"""export enum ${node.name} {
-${valueLines.join(",\n")}
+"""export class ${node.name} {
+${valueLines.join("\n")}
 }
 """
 	}
@@ -26,7 +26,7 @@ ${valueLines.join(",\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\t${node.name} = ${valueIndex}"
+			return "\tstatic ${node.name}:number = ${valueIndex};"
 		}
 	}
 }
