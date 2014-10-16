@@ -39,7 +39,7 @@ object MyConstants {
 	 */
 	[deprecated("lajos")]
 	val bela:Int = -123
-	val geza:Float = -1.23
+	val geza:Double = -1.23
 	val tibor:String = "tibor"
 
 }
