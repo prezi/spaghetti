@@ -55,13 +55,13 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		project.getPlugins().apply(TypeScriptBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
 
-		final TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
+		TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
 
 		// Add Spaghetti generated sources to compile and source tasks
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				addSpaghettiSourceSet(project, typeScriptExtension, spaghettiGeneratedSourceSet, TypeScriptBinaryBase.class, "spaghetti");
+				addSpaghettiSourceSet(project, spaghettiGeneratedSourceSet, TypeScriptBinaryBase.class, "spaghetti");
 			}
 		});
 
@@ -69,7 +69,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		spaghettiExtension.getSources().getByName("test").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				addSpaghettiSourceSet(project, typeScriptExtension, spaghettiGeneratedSourceSet, TypeScriptTestBinary.class, "spaghetti-test");
+				addSpaghettiSourceSet(project, spaghettiGeneratedSourceSet, TypeScriptTestBinary.class, "spaghetti-test");
 			}
 		});
 
@@ -89,8 +89,9 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		project.getPlugins().apply(TypeScriptPlugin.class);
 	}
 
-	private <T extends TypeScriptBinaryBase> void addSpaghettiSourceSet(final Project project, TypeScriptExtension typeScriptExtension, final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet, Class<T> binaryType, String sourceSetName) {
+	private <T extends TypeScriptBinaryBase> void addSpaghettiSourceSet(final Project project, final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet, Class<T> binaryType, String sourceSetName) {
 		logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
+		TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
 		FunctionalSourceSet spaghetti = typeScriptExtension.getSources().maybeCreate(sourceSetName);
 		final TypeScriptSourceSet typescriptSourceSet = instantiator.newInstance(TypeScriptSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, fileResolver);
 		typescriptSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
