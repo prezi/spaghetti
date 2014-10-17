@@ -1,8 +1,8 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.InterfaceNode
 
-class HaxeInterfaceGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
+class KotlinInterfaceGeneratorVisitor extends AbstractKotlinMethodGeneratorVisitor {
 
 	@Override
 	String visitInterfaceNode(InterfaceNode node) {
@@ -21,9 +21,9 @@ ${methodDefinitions}
 	}
 
 	private static String defineType(String typeName, Collection<?> superTypes) {
-		def declaration = "interface ${typeName}"
-		superTypes.each { superType ->
-			declaration += " extends ${superType}"
+		def declaration = "trait ${typeName}"
+		if (!superTypes.empty) {
+			declaration += ': ' + superTypes.join(", ")
 		}
 		return declaration + " {"
 	}

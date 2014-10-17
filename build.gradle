@@ -123,7 +123,7 @@ subprojects { subproject ->
 ext.codeProjects = subprojects.findAll {
 			it.name == "spaghetti-core" || it.name ==~ /gradle-.*/ || it.name ==~ /spaghetti-.*-support/
 		}
-ext.groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-typescript-support") ]
+ext.groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-kotlin-support"), project(":spaghetti-typescript-support") ]
 ext.javaProjects = codeProjects - groovyProjects
 
 configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
