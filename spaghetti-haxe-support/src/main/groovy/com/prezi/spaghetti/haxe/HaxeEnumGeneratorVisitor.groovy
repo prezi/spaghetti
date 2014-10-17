@@ -15,7 +15,7 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 		}
 
 		return \
-"""abstract ${enumName}(Int) {
+"""abstract ${enumName}(Null<Int>) {
 ${values.join("\n")}
 
 	static var _values:Array<${enumName}> = [ ${node.values.join(", ")} ];

@@ -23,7 +23,7 @@ class HaxeEnumGeneratorVisitorTest extends AstTestBase {
 		def visitor = new HaxeEnumGeneratorVisitor()
 
 		expect:
-		visitor.visit(parser.node) == """abstract MyEnum(Int) {
+		visitor.visit(parser.node) == """abstract MyEnum(Null<Int>) {
 	/**
 	 * Alma.
 	 */
