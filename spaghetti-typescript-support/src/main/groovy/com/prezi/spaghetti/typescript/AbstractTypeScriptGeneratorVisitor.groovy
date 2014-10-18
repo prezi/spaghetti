@@ -52,7 +52,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 
 	@Override
 	String visitEnumReference(EnumReference reference) {
-		return wrapSingleTypeReference("number", reference.arrayDimensions)
+		return wrapSingleTypeReference(reference.type.qualifiedName.toString(), reference.arrayDimensions)
 	}
 
 	@Override

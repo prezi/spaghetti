@@ -24,8 +24,8 @@ enum MyEnum {
 	/**
 	 * Alma.
 	 */
-	static ALMA:number = 0;
-	static BELA:number = 1;
+	static ALMA:MyEnum = 0;
+	static BELA:MyEnum = 1;
 }
 """
 	}

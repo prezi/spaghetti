@@ -9,7 +9,7 @@ class TypeScriptEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor 
 	String visitEnumNode(EnumNode node) {
 		def valueLines = []
 		node.values.eachWithIndex{ value, index ->
-			valueLines += value.accept(new TypeScriptEnumValueGeneratorVisitor(index))
+			valueLines += value.accept(new TypeScriptEnumValueGeneratorVisitor(node.name, index))
 		}
 """export class ${node.name} {
 ${valueLines.join("\n")}
@@ -18,15 +18,17 @@ ${valueLines.join("\n")}
 	}
 
 	private static class TypeScriptEnumValueGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
+		private final String enumName
 		private final int valueIndex
 
-		TypeScriptEnumValueGeneratorVisitor(int valueIndex) {
+		TypeScriptEnumValueGeneratorVisitor(String enumName, int valueIndex) {
+			this.enumName = enumName
 			this.valueIndex = valueIndex
 		}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tstatic ${node.name}:number = ${valueIndex};"
+			return "\tstatic ${node.name}:${enumName} = ${valueIndex};"
 		}
 	}
 }

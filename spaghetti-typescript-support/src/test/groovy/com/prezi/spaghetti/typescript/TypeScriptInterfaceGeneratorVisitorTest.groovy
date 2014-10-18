@@ -38,7 +38,7 @@ export interface MyInterface<X> extends com.example.test.Parent<X> {
 	/**
 	 * Does something.
 	 */
-	doSomething(value:Array<number>):void;
+	doSomething(value:Array<com.example.test.Fruit>):void;
 	doSomethingElse(a:number, b?:number):Array<string>;
 	hello<T, U>(f:(arg0: X, arg1: () => number) => U):Array<T>;
 
