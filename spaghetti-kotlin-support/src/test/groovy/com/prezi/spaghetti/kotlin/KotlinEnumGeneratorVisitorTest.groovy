@@ -23,14 +23,16 @@ class KotlinEnumGeneratorVisitorTest extends AstTestBase {
 		def visitor = new KotlinEnumGeneratorVisitor()
 
 		expect:
-		visitor.visit(parser.node) == """object MyEnum {
-	/**
-	 * Alma.
-	 */
-	val ALMA = 0
-	[deprecated("escape \\"this\\"!")]
-	val BELA = 1
-	val GEZA = 2
+		visitor.visit(parser.node) == """class MyEnum {
+	class object {
+		/**
+		 * Alma.
+		 */
+		val ALMA = 0 as MyEnum
+		[deprecated("escape \\"this\\"!")]
+		val BELA = 1 as MyEnum
+		val GEZA = 2 as MyEnum
+	}
 }
 """
 	}

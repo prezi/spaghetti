@@ -14,8 +14,10 @@ class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 		}
 
 		return \
-"""object ${enumName} {
+"""class ${enumName} {
+	class object {
 ${values.join("\n")}
+	}
 }
 """
 	}
@@ -31,7 +33,7 @@ ${values.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tval ${node.name} = ${index}"
+			return "\t\tval ${node.name} = ${index} as ${enumName}"
 		}
 	}
 }
