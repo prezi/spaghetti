@@ -38,11 +38,11 @@ enum MyEnum {
 		return MyEnum._values.slice(0);
 	}
 
-	static name(value:MyEnum) {
+	static getName(value:MyEnum) {
 		return MyEnum._names[<number> value];
 	}
 
-	static value(value:MyEnum):number {
+	static getValue(value:MyEnum):number {
 		return <number> value;
 	}
 

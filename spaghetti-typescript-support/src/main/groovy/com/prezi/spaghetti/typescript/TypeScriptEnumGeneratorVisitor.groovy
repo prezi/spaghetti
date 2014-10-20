@@ -26,11 +26,11 @@ ${valueLines.join("\n")}
 		return ${enumName}._values.slice(0);
 	}
 
-	static name(value:${enumName}) {
+	static getName(value:${enumName}) {
 		return ${enumName}._names[<number> value];
 	}
 
-	static value(value:${enumName}):number {
+	static getValue(value:${enumName}):number {
 		return <number> value;
 	}
 
