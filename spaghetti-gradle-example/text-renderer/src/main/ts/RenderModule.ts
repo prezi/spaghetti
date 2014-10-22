@@ -11,7 +11,7 @@ export class RenderModule {
 	static getResource():string {
 		return Spaghetti.getResourceUrl("some-resource.txt");
 	}
-	static getEnumValue(value:number):string {
+	static getEnumValue(value:prezi.graphics.core.JsEnum):string {
 		return "enum: " + value;
 	}
 }
