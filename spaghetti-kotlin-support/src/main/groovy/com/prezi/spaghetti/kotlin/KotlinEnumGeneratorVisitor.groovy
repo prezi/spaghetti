@@ -20,21 +20,13 @@ ${values.join("\n")}
 		private val _values = arrayListOf(${node.values.join(", ")})
 		private val _names = arrayListOf(${node.values.collect { "\"${it}\"" }.join(", ")})
 
-		fun names():Array<String> {
-			return _names.copyToArray()
-		}
+		fun names():Array<String> = _names.copyToArray()
 
-		fun values():Array<${enumName}> {
-			return _values.copyToArray()
-		}
+		fun values():Array<${enumName}> = _values.copyToArray()
 
-		fun getName(value:${enumName}):String {
-			return _names.get(value as Int)
-		}
+		fun getName(value:${enumName}):String = _names.get(value as Int)
 
-		fun getValue(value:${enumName}):Int {
-			return value as Int
-		}
+		fun getValue(value:${enumName}):Int = value as Int
 
 		fun fromValue(value:Int):${enumName} {
 			if (value < 0 || value >= _values.size) {
