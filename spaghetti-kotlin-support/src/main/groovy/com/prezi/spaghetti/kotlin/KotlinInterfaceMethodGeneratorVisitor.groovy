@@ -28,8 +28,7 @@ class KotlinInterfaceMethodGeneratorVisitor extends AbstractKotlinMethodGenerato
     @Override
     boolean isOverridden(MethodNode node) {
         // Members of kotlin.Any
-        if (node.name == "equals" ||
-            node.name == "hashCode" ||
+        if (node.name == "hashCode" ||
             node.name == "toString")
             return true
 
