@@ -36,7 +36,7 @@ ${values.join("\n")}
 		}
 
 		fun valueOf(name:String):${enumName} {
-			var result:MyEnum
+			var result:${enumName}
 			when(name)
 			{
 ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
