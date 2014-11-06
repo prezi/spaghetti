@@ -8,8 +8,6 @@ class KotlinInterfaceGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 	String visitInterfaceNode(InterfaceNode node) {
 		def typeName = node.name
 
-        println("Visiting ${typeName}")
-
 		if (node.typeParameters) {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
