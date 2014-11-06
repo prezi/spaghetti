@@ -6,7 +6,7 @@ Spaghetti provides type-safe communication between JavaScript modules.
 [![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
 [![Analytics](https://ga-beacon.appspot.com/UA-54695510-1/github.com/prezi/spaghetti)](https://github.com/igrigorik/ga-beacon)
 
-Modularizing a large, evolving JavaScript applications is hard, because the untyped nature of the modules makes it difficult to keep track of changing APIs. Spaghetti uses compilers to check communication between modules, transforming run-time API compatibility problems into compile errors.
+Modularizing large, evolving JavaScript applications is hard, because the untyped nature of the modules makes it difficult to keep track of changing APIs. Spaghetti uses compilers to check communication between modules, transforming run-time API compatibility problems into compile errors, so we can easily catch these errors. 
 
 ## How Does it Work?
 
@@ -48,21 +48,19 @@ If you make a typo in `sayHello`, or try to pass a number as its parameter, the 
 
 For a detailed explanation of the steps to building a Spaghetti application, see [Workflow on the wiki](../../wiki/Workflow).
 
-## Try It
-
-If you want to get to know Spaghetti, you have options to
-
-* check the [demo application](http://prezi.github.io/spaghetti/demo),
-* follow [the tutorial](/../../wiki/Tutorial) for a step-by-step introduction to Spaghetti, or
-* see the [code behind the demo](spaghetti-gradle-example), which uses the Gradle integration.
-
 ## How to Use It?
 
-Spaghetti is a Java-based tool, and requires Java 7 or newer. It has multiple interfaces:
+Spaghetti is a [Java](http://java.oracle.com)-based tool, and requires Java 7 or newer. It has multiple interfaces:
 
-* the [command-line tool](spaghetti) is the quickest way to get working with Spaghetti
-* the [Gradle plugins](gradle-spaghetti-plugin/README.md) make it easy to integrate Spaghetti into your workflow
-* Maven and other build system support is planned but no deadline has been set yet.
+* The [command-line tool](spaghetti) is the quickest way to get working with Spaghetti.
+* [Gradle plugins](gradle-spaghetti-plugin/README.md) make it easy to integrate Spaghetti into your workflow.
+* Maven and other build system support has been planned, but no deadline has been set yet.
+
+## Try It
+
+* Follow [the tutorial](/../../wiki/Tutorial) for a step-by-step introduction to Spaghetti.
+* Check the [demo application](http://prezi.github.io/spaghetti/demo).
+* See the [code behind the demo](spaghetti-gradle-example), which uses Gradle integration.
 
 ## Documentation
 
