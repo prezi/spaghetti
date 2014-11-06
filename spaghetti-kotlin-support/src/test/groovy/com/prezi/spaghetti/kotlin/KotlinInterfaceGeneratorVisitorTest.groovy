@@ -36,9 +36,9 @@ class KotlinInterfaceGeneratorVisitorTest extends AstTestBase {
 	/**
 	 * Does something.
 	 */
-	fun doSomething():Unit
-	fun doSomethingElse(a:Int?, b:Int? = null):Array<String>?
-	fun <T, U> hello(f:(X,()->Int)->U):Array<T>
+	native fun doSomething():Unit
+	native fun doSomethingElse(a:Int?, b:Int? = null):Array<String>?
+	native fun <T, U> hello(f:(X,()->Int)->U):Array<T>
 
 }
 """

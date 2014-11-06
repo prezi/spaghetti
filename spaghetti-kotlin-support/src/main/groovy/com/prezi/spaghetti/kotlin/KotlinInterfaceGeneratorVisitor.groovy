@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.MethodNode
 
 class KotlinInterfaceGeneratorVisitor extends AbstractKotlinMethodGeneratorVisitor {
 
@@ -17,6 +18,18 @@ class KotlinInterfaceGeneratorVisitor extends AbstractKotlinMethodGeneratorVisit
   """${defineType(typeName, superTypes)}
 ${methodDefinitions}
 }
+"""
+	}
+
+	@Override
+	String visitMethodNode(MethodNode node) {
+		def returnType = node.returnType.accept(this)
+		returnType = wrapNullableTypeReference(returnType, node)
+		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + "> " : ""
+		def params = node.parameters*.accept(this).join(", ")
+
+		return \
+"""	native fun ${typeParams}${node.name}(${params}):${returnType}
 """
 	}
 
