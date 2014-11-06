@@ -14,8 +14,8 @@ class KotlinInterfaceMethodGeneratorVisitor extends AbstractKotlinMethodGenerato
 
     private Set<InterfaceReferenceBase> collect(Set<InterfaceReferenceBase> superInterfaces) {
         Set<InterfaceReferenceBase> result = new HashSet<>()
-        for (InterfaceReferenceBase iface : superInterfaces) {
-            result.addAll(collect(iface.superInterfaces))
+        for (InterfaceReferenceBase ifaceRef : superInterfaces) {
+            result.addAll(collect(ifaceRef.type.superInterfaces))
         }
         return result
     }
