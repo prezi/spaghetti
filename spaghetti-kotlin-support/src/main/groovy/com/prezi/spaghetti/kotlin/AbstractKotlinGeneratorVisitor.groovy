@@ -94,6 +94,14 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 		return result
 	}
 
+    static protected String safeKotlinName(String name) {
+        if (name == "object") {
+            return "`${name}`"
+        } else {
+            return name
+        }
+    }
+
 	@Override
 	String visitVoidTypeReference(VoidTypeReference reference) {
 		return "Unit"
