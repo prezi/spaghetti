@@ -1,0 +1,1 @@
+require["config"]({"baseUrl":".","paths":{"todos.storage": "modules/todos.storage/todos.storage","todos.ui": "modules/todos.ui/todos.ui"}});require(["todos.ui"],function(__mainModule){__mainModule["module"]["main"]();});
