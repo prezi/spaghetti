@@ -28,10 +28,10 @@ class KotlinEnumGeneratorVisitorTest extends AstTestBase {
 		/**
 		 * Alma.
 		 */
-		val ALMA = 0 as MyEnum
+		val ALMA = MyEnum()
 		[deprecated("escape \\"this\\"!")]
-		val BELA = 1 as MyEnum
-		val GEZA = 2 as MyEnum
+		val BELA = MyEnum()
+		val GEZA = MyEnum()
 		private val _values = arrayListOf(ALMA, BELA, GEZA)
 		private val _names = arrayListOf("ALMA", "BELA", "GEZA")
 
