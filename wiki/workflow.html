@@ -102,7 +102,7 @@
 
                 <h4>Header Generation</h4>
 
-                The first step in creating a module is to define its API in the Spaghetti Interface Definition Language. Spaghetti then translates the module definition into the implementation language's concepts: classes, interfaces etc. We'll refer to these generated sources as "headers," from C/C++ parlance.
+                The first step in creating a module is to define its API in the <a href="syntax.html" class="colorful">Spaghetti Interface Definition Language</a>. Spaghetti then translates the module definition into the implementation language's concepts: classes, interfaces etc. We'll refer to these generated sources as "headers," from C/C++ parlance.
 
                 <h4>Module Bundles</h4>
 
@@ -116,7 +116,7 @@
 
                 A module by itself is no true module at all: it needs to access other modules to get its job done. When generating headers, you can supply additional module bundles to Spaghetti. Additional source files will be generated for these dependent modules in your module's implementation language, so your module's code can access them in a type-safe way.
 
-                Dependencies
+                <img src="https://camo.githubusercontent.com/d4269eae7e7033ff836d4b8d3e38ea43f9062045/687474703a2f2f7072657a692e6769746875622e696f2f7370616768657474692f696d616765732f576f726b666c6f772d446570656e64656e636965732e706e67" alt="Dependencies" data-canonical-src="http://prezi.github.io/spaghetti/images/Workflow-Dependencies.png">
 
                 It doesn't matter what language the dependent modules were written in: by using the definition from their bundles, Spaghetti can generate headers (i.e. proxies) in the implementation language of your module. This way your Haxe module can happily talk to another module written in TypeScript. The calls between them will be type-checked by the compiler.
 
@@ -126,7 +126,7 @@
 
                 Packaging
 
-                For more info about how the module's JavaScript gets wrapped into multiple layers of functions to become an AMD or CommonJS module, see the wrapping page.
+                For more info about how the module's JavaScript gets wrapped into multiple layers of functions to become an AMD or CommonJS module, see the <a href="wrapping.html" class="colorful">wrapping page</a>.
             </div>
         </div>
     </div>
