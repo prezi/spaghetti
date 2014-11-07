@@ -6,7 +6,7 @@ Spaghetti provides type-safe communication between JavaScript modules.
 [![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
 [![Analytics](https://ga-beacon.appspot.com/UA-54695510-1/github.com/prezi/spaghetti)](https://github.com/igrigorik/ga-beacon)
 
-Modularizing large, evolving JavaScript applications is hard, because the untyped nature of the modules makes it difficult to keep track of changing APIs. Spaghetti uses compilers to check communication between modules, transforming run-time API compatibility problems into compile errors, so we can easily catch these errors. 
+Because of the untyped nature of JavaScript, modularizing large, evolving JavaScript applications is difficult. To help keep track of changing APIs, Spaghetti uses compilers to check communication between modules, transforming run-time API compatibility problems into more manageable compile errors.
 
 ## How Does it Work?
 
