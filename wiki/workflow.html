@@ -16,6 +16,7 @@
 
     <!-- Custom CSS -->
     <link href="../css/clean-blog.min.css" rel="stylesheet">
+    <link href="../css/custom.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -44,26 +45,23 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="../index.html">Spaghetti</a>
+                <a class="navbar-brand" href="index.html">Spaghetti</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="../index.html">Home</a>
+                        <a href="/spaghetti/">Home</a>
                     </li>
                     <li>
-                        <a href="post.html">Demo</a>
+                        <a href="tutorials.html">Tutorials</a>
                     </li>
                     <li>
-                        <a href="post.html">Tutorials</a>
+                        <a href="wiki.html">Wiki</a>
                     </li>
                     <li>
-                        <a href="post.html">Wiki</a>
-                    </li>
-                    <li>
-                        <a href="post.html">GitHub</a>
+                        <a href="https://github.com/prezi/spaghetti">GitHub</a>
                     </li>
                     <li>
                         <a href="contact.html">Contact</a>
@@ -74,6 +72,7 @@
         </div>
         <!-- /.container -->
     </nav>
+
 
     <!-- Page Header -->
     <!-- Set your background image for this header on the line below. -->
@@ -96,6 +95,38 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <h2>Workflow</h2>
+                Spaghetti is all about modules, and the type-safe interfaces between them. Working with Spaghetti involves creating modules, using modules from other modules, and packaging them into executable applications.
+                <h3>Creating a Module</h3>
+
+                Before creating a module, you need to decide on its implementation language. This will be the language you write the actual code of the module in. Spaghetti supports Haxe and TypeScript out of the box, and adding support for other languages is fairly simple.
+
+                <h4>Header Generation</h4>
+
+                The first step in creating a module is to define its API in the Spaghetti Interface Definition Language. Spaghetti then translates the module definition into the implementation language's concepts: classes, interfaces etc. We'll refer to these generated sources as "headers," from C/C++ parlance.
+
+                <h4>Module Bundles</h4>
+
+                Once you have the language-specific headers generated, you can write the actual code of the module in the chosen language. Through the generated headers the compiler will ensure that the resulting JavaScript code satisfies the API contract specified in the module's Spaghetti definition. Once the compiled JavaScript is ready, it needs to be packaged into a distributable format called the "module bundle."
+
+                <img src="https://camo.githubusercontent.com/99adf893e2879c921c0dd7356e61ac1fc6e6af2d/687474703a2f2f7072657a692e6769746875622e696f2f7370616768657474692f696d616765732f576f726b666c6f772d42756e646c696e672e706e67" alt="Bundling" data-canonical-src="http://prezi.github.io/spaghetti/images/Workflow-Bundling.png">
+
+                The bundle is a ZIP file that contains the compiled JavaScript code, the module's Spaghetti definition, some metadata, and optionally some resources like images or CSS files.
+
+                <h3>Handling Dependencies</h3>
+
+                A module by itself is no true module at all: it needs to access other modules to get its job done. When generating headers, you can supply additional module bundles to Spaghetti. Additional source files will be generated for these dependent modules in your module's implementation language, so your module's code can access them in a type-safe way.
+
+                Dependencies
+
+                It doesn't matter what language the dependent modules were written in: by using the definition from their bundles, Spaghetti can generate headers (i.e. proxies) in the implementation language of your module. This way your Haxe module can happily talk to another module written in TypeScript. The calls between them will be type-checked by the compiler.
+
+                <h3>Packaging Applications</h3>
+
+                Spaghetti modules are like libraries: they are not very useful without an executable application to use them. Spaghetti can generate AMD (RequireJS) and CommonJS (NodeJS) applications using your modules. Each module is first wrapped in a packaging-specific wrapper, copied to a shared directory, and then a separate executable JavaScript file (the application) is generated.
+
+                Packaging
+
+                For more info about how the module's JavaScript gets wrapped into multiple layers of functions to become an AMD or CommonJS module, see the wrapping page.
             </div>
         </div>
     </div>
@@ -124,13 +155,13 @@
     </footer>
 
     <!-- jQuery -->
-    <script src="js/jquery.js"></script>
+    <script src="../js/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
 
     <!-- Custom Theme JavaScript -->
-    <script src="js/clean-blog.min.js"></script>
+    <script src="../js/clean-blog.min.js"></script>
 
 </body>
 
