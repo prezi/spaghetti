@@ -32,7 +32,7 @@ class KotlinInterfaceMethodGeneratorVisitor extends AbstractKotlinMethodGenerato
         for (InterfaceReferenceBase ifaceRef : superInterfaces) {
             def iface = ifaceRef.type
 
-            if (iface.methods.contains(node.name)) {
+            if (iface?.methods?.contains(node.name)) {
                 return true
             }
         }
