@@ -39,9 +39,9 @@ class KotlinEnumGeneratorVisitorTest extends AstTestBase {
 
 		fun values():Array<MyEnum> = _values.copyToArray()
 
-		fun getName(value:MyEnum):String = _names.get(value as Int)
+		fun getName(value:MyEnum):String = _names.get(getValue(value))
 
-		fun getValue(value:MyEnum):Int = value as Int
+		fun getValue(value:MyEnum):Int = _values.indexOf(value)
 
 		fun fromValue(value:Int):MyEnum {
 			if (value < 0 || value >= _values.size) {

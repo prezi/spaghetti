@@ -24,9 +24,9 @@ ${values.join("\n")}
 
 		fun values():Array<${enumName}> = _values.copyToArray()
 
-		fun getName(value:${enumName}):String = _names.get(value as Int)
+		fun getName(value:${enumName}):String = _names.get(getValue(value))
 
-		fun getValue(value:${enumName}):Int = value as Int
+		fun getValue(value:${enumName}):Int = _values.indexOf(value)
 
 		fun fromValue(value:Int):${enumName} {
 			if (value < 0 || value >= _values.size) {
