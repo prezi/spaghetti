@@ -8,8 +8,8 @@ import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 class KotlinStructGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
 		def definition = """/**
-* Hey this is my struct!
-*/
+ * Hey this is my struct!
+ */
 struct MyStruct<T> {
 	int a
 	/**

@@ -30,7 +30,7 @@ abstract class AbstractKotlinMethodGeneratorVisitor extends AbstractKotlinGenera
 		return result
 	}
 
-    boolean isOverridden(MethodNode node) {
-        return false
-    }
+	boolean isOverridden(MethodNode node) {
+		return false
+	}
 }

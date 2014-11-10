@@ -12,7 +12,7 @@ class KotlinInterfaceGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
 		def superTypes = node.superInterfaces*.accept(this)
-        def methodVisitor = new KotlinInterfaceMethodGeneratorVisitor(typeName, node.superInterfaces)
+		def methodVisitor = new KotlinInterfaceMethodGeneratorVisitor(typeName, node.superInterfaces)
 		def methodDefinitions = node.methods*.accept(methodVisitor).join("")
 
 		return   \
