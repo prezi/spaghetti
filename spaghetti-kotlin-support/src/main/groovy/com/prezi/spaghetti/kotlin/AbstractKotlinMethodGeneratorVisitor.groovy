@@ -12,7 +12,7 @@ abstract class AbstractKotlinMethodGeneratorVisitor extends AbstractKotlinGenera
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + "> " : ""
 		def params = node.parameters*.accept(this).join(", ")
 
-        def fundef = isOverridden(node) ? "override fun" : "fun"
+		def fundef = isOverridden(node) ? "override fun" : "fun"
 
 		return \
 """	${fundef} ${typeParams}${node.name}(${params}):${returnType}
