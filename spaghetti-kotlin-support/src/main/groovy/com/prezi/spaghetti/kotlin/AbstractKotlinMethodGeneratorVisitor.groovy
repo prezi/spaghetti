@@ -12,8 +12,10 @@ abstract class AbstractKotlinMethodGeneratorVisitor extends AbstractKotlinGenera
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + "> " : ""
 		def params = node.parameters*.accept(this).join(", ")
 
+        def fundef = isOverridden(node) ? "override fun" : "fun"
+
 		return \
-"""	fun ${typeParams}${node.name}(${params}):${returnType}
+"""	${fundef} ${typeParams}${node.name}(${params}):${returnType}
 """
 	}
 
@@ -21,10 +23,14 @@ abstract class AbstractKotlinMethodGeneratorVisitor extends AbstractKotlinGenera
 	String visitMethodParameterNode(MethodParameterNode node) {
 		def type = node.type.accept(this)
 		type = wrapNullableTypeReference(type, node)
-		def result = node.name + ':' + type
+		def result = safeKotlinName(node.name) + ':' + type
 		if (node.isOptional()) {
 			result = result + "? = null"
 		}
 		return result
 	}
+
+    boolean isOverridden(MethodNode node) {
+        return false
+    }
 }

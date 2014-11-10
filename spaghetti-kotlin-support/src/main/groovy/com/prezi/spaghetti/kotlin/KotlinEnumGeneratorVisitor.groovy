@@ -60,7 +60,7 @@ ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "		val ${node.name} = ${index} as ${enumName}"
+			return "		val ${node.name} = ${enumName}()"
 		}
 	}
 }

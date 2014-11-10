@@ -3,16 +3,18 @@ package com.prezi.spaghetti.kotlin
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.MethodNode
 
-class KotlinInterfaceGeneratorVisitor extends AbstractKotlinMethodGeneratorVisitor {
+class KotlinInterfaceGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 
 	@Override
 	String visitInterfaceNode(InterfaceNode node) {
 		def typeName = node.name
+
 		if (node.typeParameters) {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
 		def superTypes = node.superInterfaces*.accept(this)
-		def methodDefinitions = node.methods*.accept(this).join("")
+        def methodVisitor = new KotlinInterfaceMethodGeneratorVisitor(typeName, node.superInterfaces)
+		def methodDefinitions = node.methods*.accept(methodVisitor).join("")
 
 		return   \
   """${defineType(typeName, superTypes)}

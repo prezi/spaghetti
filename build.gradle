@@ -334,6 +334,13 @@ project(":gradle-spaghetti-typescript-plugin") {
 	}
 }
 
+project(":gradle-spaghetti-kotlin-plugin") {
+	dependencies {
+		compile "org.jetbrains.kotlin:kotlin-gradle-plugin:0.9.66"
+		compile "org.jetbrains.kotlin:kotlin-gradle-plugin-core:0.9.66"
+	}
+}
+
 task wrapper(type: Wrapper) {
 	gradleVersion = gradleVer
 }

@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringEscapeUtils
 
 abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 	protected static final EnumMap<PrimitiveType, String> PRIMITIVE_TYPES = [
-			(PrimitiveType.BOOL): "Bool",
+			(PrimitiveType.BOOL): "Boolean",
 			(PrimitiveType.INT): "Int",
 			(PrimitiveType.FLOAT): "Double",
 			(PrimitiveType.STRING): "String",
@@ -93,6 +93,14 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 		}
 		return result
 	}
+
+    static protected String safeKotlinName(String name) {
+        if (name == "object") {
+            return "`${name}`"
+        } else {
+            return name
+        }
+    }
 
 	@Override
 	String visitVoidTypeReference(VoidTypeReference reference) {
