@@ -27,7 +27,7 @@ ${visitChildren(node)}
 			optional += " = null"
 		}
 		def decl = isMutable ? "var" : "val"
-"""	${decl} ${node.name}: ${node.type.accept(this)}${optional}
+"""	${decl} ${safeKotlinName(node.name)}: ${node.type.accept(this)}${optional}
 """
 	}
 }

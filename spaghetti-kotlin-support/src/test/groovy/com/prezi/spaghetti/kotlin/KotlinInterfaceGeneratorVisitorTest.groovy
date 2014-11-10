@@ -15,6 +15,8 @@ class KotlinInterfaceGeneratorVisitorTest extends AstTestBase {
 
 	@nullable string[] doSomethingElse(@nullable int a, ?int b)
 	<T, U> T[] hello(X->(void->int)->U f)
+
+	void keywordEscaping(int object)
 }
 """
 		def context = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition)).parser.interfaceDefinition()
@@ -39,6 +41,7 @@ class KotlinInterfaceGeneratorVisitorTest extends AstTestBase {
 	fun doSomething():Unit
 	fun doSomethingElse(a:Int?, b:Int? = null):Array<String>?
 	fun <T, U> hello(f:(X,()->Int)->U):Array<T>
+\tfun keywordEscaping(`object`:Int):Unit
 
 }
 """

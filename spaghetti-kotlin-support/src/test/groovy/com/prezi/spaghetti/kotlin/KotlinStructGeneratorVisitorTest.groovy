@@ -19,6 +19,7 @@ struct MyStruct<T> {
 	?string b
 	@nullable string c
 	@nullable ?string d
+	string fun
 	@mutable T t
 	T convert(T value)
 }
@@ -41,6 +42,7 @@ trait MyStruct<T> {
 	val b: String? = null
 	val c: String?
 	val d: String? = null
+	val `fun`: String
 	var t: T
 	fun convert(value:T):T
 

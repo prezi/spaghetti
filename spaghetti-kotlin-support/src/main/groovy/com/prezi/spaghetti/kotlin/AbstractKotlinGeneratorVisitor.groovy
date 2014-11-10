@@ -94,8 +94,49 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 		return result
 	}
 
+    static private def keywords = [
+            "namespace",
+            "import",
+            "package",
+            "fun",
+            "if",
+            "then",
+            "else",
+            "while",
+            "for",
+            "do",
+            "type",
+            "val",
+            "var",
+            "return",
+            "true",
+            "false",
+            "null",
+            "this",
+            "super",
+            "abstract",
+            "final",
+            "enum",
+            "open",
+            "attribute",
+            "public",
+            "private",
+            "protected",
+            "abstract",
+            "final",
+            "open",
+            "override",
+            "throw",
+            "try",
+            "catch",
+            "finally",
+            "class",
+            "trait",
+            "object"
+    ] as Set
+
     static protected String safeKotlinName(String name) {
-        if (name == "object") {
+        if (keywords.contains(name)) {
             return "`${name}`"
         } else {
             return name
