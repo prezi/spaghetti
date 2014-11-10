@@ -41,7 +41,7 @@ class KotlinInterfaceGeneratorVisitorTest extends AstTestBase {
 	fun doSomething():Unit
 	fun doSomethingElse(a:Int?, b:Int? = null):Array<String>?
 	fun <T, U> hello(f:(X,()->Int)->U):Array<T>
-\tfun keywordEscaping(`object`:Int):Unit
+	fun keywordEscaping(`object`:Int):Unit
 
 }
 """
