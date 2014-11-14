@@ -11,7 +11,7 @@
 
   :cljsbuild {
     :builds [{:id "casserole"
-              :source-paths ["src"]
+              :source-paths ["src/cljs"]
               :compiler {
                 :output-to "out/casserole.js"
                 :output-dir "out"
