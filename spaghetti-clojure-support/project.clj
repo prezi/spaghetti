@@ -9,12 +9,14 @@
 
   :source-paths ["src"]
 
+
   :cljsbuild {
     :builds [{:id "casserole"
-              :source-paths ["src/cljs"]
+              :source-paths ["src"]
+              :test-paths ["test"]
               :compiler {
                 :output-to "out/casserole.js"
                 :output-dir "out"
-                :externs ["src/resources/external.js"]
+                :externs ["resources/external.js"]
                 :optimizations :none
                 :source-map true}}]})
