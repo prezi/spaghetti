@@ -13,7 +13,7 @@
     :builds [{:id "casserole"
               :source-paths ["src"]
               :compiler {
-                :output-to "target/casserole.js"
-                :output-dir "target"
+                :output-to "out/casserole.js"
+                :output-dir "out"
                 :optimizations :none
                 :source-map true}}]})
