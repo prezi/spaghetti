@@ -15,5 +15,6 @@
               :compiler {
                 :output-to "out/casserole.js"
                 :output-dir "out"
+                :externs ["src/resources/external.js"]
                 :optimizations :none
                 :source-map true}}]})
