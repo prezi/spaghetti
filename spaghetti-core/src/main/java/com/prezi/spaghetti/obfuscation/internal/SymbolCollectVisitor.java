@@ -2,6 +2,7 @@ package com.prezi.spaghetti.obfuscation.internal;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ConstNode;
@@ -46,7 +47,9 @@ public class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> 
 
 	@Override
 	public Collection<String> visitStructNode(StructNode node) {
-		return extractNames(node.getProperties());
+		Collection<String> properties = extractNames(node.getProperties());
+		Collection<String> methods = extractNames(node.getMethods());
+		return ImmutableList.<String>builder().addAll(properties).addAll(methods).build();
 	}
 
 	@Override
@@ -62,8 +65,8 @@ public class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> 
 	private static Collection<String> extractNames(Collection<? extends NamedNode> nodes) {
 		return Collections2.transform(nodes, new Function<NamedNode, String>() {
 			@Override
-			public String apply(NamedNode method) {
-				return method.getName();
+			public String apply(NamedNode node) {
+				return node.getName();
 			}
 		});
 	}

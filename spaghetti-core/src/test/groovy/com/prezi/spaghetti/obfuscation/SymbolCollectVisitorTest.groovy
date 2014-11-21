@@ -36,15 +36,16 @@ int add(int a, int b)
 		result == ["add", "sub"]
 	}
 
-	def "struct properties are found"() {
+	def "struct properties and methods are found"() {
 		def result = visit """module prezi.test.tibor as Tibor
 struct Struct {
 	int alpha
 	int beta
+	int add(int a, int b)
 }
 """
 		expect:
-		result == ["alpha", "beta"]
+		result == ["add", "alpha", "beta"]
 	}
 
 	def "constants are found"() {
