@@ -19,6 +19,8 @@ import com.prezi.spaghetti.ast.VoidTypeReference
 import org.apache.commons.lang.StringEscapeUtils
 
 abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
+	private static def EXTERNS = [:].asImmutable()
+
 	protected static final EnumMap<PrimitiveType, String> PRIMITIVE_TYPES = [
 			(PrimitiveType.BOOL): "Boolean",
 			(PrimitiveType.INT): "Int",
@@ -64,8 +66,8 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitExternInterfaceReference(ExternInterfaceReference reference) {
 		def type = reference.type.qualifiedName.toString()
-		if (KotlinGeneratorFactory.EXTERNS.containsKey(type)) {
-			type = KotlinGeneratorFactory.EXTERNS.get(type)
+		if (EXTERNS.containsKey(type)) {
+			type = EXTERNS.get(type)
 		}
 		return wrapParametrizedTypeReference(type, reference)
 	}

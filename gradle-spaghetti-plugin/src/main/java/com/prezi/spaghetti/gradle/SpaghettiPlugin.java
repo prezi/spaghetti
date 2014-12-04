@@ -1,10 +1,7 @@
 package com.prezi.spaghetti.gradle;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.generator.GeneratorFactory;
-import com.prezi.spaghetti.generator.Languages;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiGeneratedSourceSet;
@@ -24,7 +21,6 @@ import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.tasks.bundling.Zip;
@@ -59,8 +55,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	@Override
 	public void apply(final Project project) {
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
-
-		createLanguagesTask(project);
 
 		final SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
 
@@ -173,36 +167,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 			}
 		});
 		spaghettiStubs.builtBy(generateStubsTask);
-	}
-
-	private static void createLanguagesTask(Project project) {
-		if (project.getTasks().findByName("spaghetti-languages") != null) {
-			return;
-		}
-
-		Task languagesTask = project.getTasks().create("spaghetti-languages");
-		languagesTask.setGroup("help");
-		languagesTask.setDescription("Show supported Spaghetti languages.");
-		languagesTask.doLast(new Action<Task>() {
-			@Override
-			public void execute(Task task) {
-				Set<GeneratorFactory> factories = Languages.getGeneratorFactories();
-				if (factories.isEmpty()) {
-					System.out.println("No language support for Spaghetti is found");
-				} else {
-					System.out.println("Spaghetti supports the following languages:\n");
-					int length = 0;
-					for (GeneratorFactory factory : factories) {
-						length = Math.max(length, factory.getLanguage().length());
-					}
-
-					for (GeneratorFactory factory : factories) {
-						System.out.println("  " + Strings.padEnd(factory.getLanguage(), length, ' ') + " - " + factory.getDescription());
-					}
-				}
-			}
-
-		});
 	}
 
 	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {

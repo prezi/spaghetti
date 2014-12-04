@@ -4,28 +4,23 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharSink;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.AbstractGenerator;
+import com.prezi.spaghetti.generator.AbstractHeaderGenerator;
 import com.prezi.spaghetti.generator.GeneratorParameters;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 
-public class JavaScriptGenerator extends AbstractGenerator {
-	private final String header;
-	private final ModuleConfiguration config;
-
-	public JavaScriptGenerator(GeneratorParameters params) {
-		super(params);
-		this.header = params.getHeader();
-		this.config = params.getModuleConfiguration();
+public class JavaScriptHeaderGenerator extends AbstractHeaderGenerator {
+	public JavaScriptHeaderGenerator() {
+		super("js");
 	}
 
 	@Override
-	public void generateHeaders(File outputDirectory) throws IOException {
+	public void generateHeaders(GeneratorParameters params, File outputDirectory) throws IOException {
+		String header = params.getHeader();
 		String contents = "";
-		for (ModuleNode moduleNode : config.getAllModules()) {
+		for (ModuleNode moduleNode : params.getModuleConfiguration().getAllModules()) {
 			// TODO Generate the package structure once per module, and put everything in the module under that single structure
 			contents += moduleNode.accept(new JavaScriptConstGeneratorVisitor());
 			contents += moduleNode.accept(new JavaScriptEnumGeneratorVisitor());
@@ -33,12 +28,7 @@ public class JavaScriptGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override
-	protected String processModuleJavaScriptInternal(ModuleNode module, String javaScript) {
-		return javaScript;
-	}
-
-	public static File createSourceFile(String header, String name, File outputDirectory, String contents) throws IOException {
+	private static File createSourceFile(String header, String name, File outputDirectory, String contents) throws IOException {
 		File file = new File(outputDirectory, name + ".js");
 		FileUtils.deleteQuietly(file);
 		CharSink out = Files.asCharSink(file, Charsets.UTF_8);

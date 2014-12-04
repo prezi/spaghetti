@@ -1,32 +1,24 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.generator.AbstractGenerator
+import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
-import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
-class TypeScriptGenerator extends AbstractGenerator {
+class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 
-	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
-
-	private final String header
-	private final ModuleConfiguration config
-
-	TypeScriptGenerator(GeneratorParameters params) {
-		super(params)
-		this.header = params.header
-		this.config = params.moduleConfiguration
+	TypeScriptHeaderGenerator() {
+		super("typescript")
 	}
 
 	@Override
-	void generateHeaders(File outputDirectory) {
+	void generateHeaders(GeneratorParameters params, File outputDirectory) throws IOException {
+		def config = params.moduleConfiguration
+		def header = params.header
 		copySpaghettiClass(outputDirectory)
 		generateLocalModule(config.localModule, outputDirectory, header)
 		config.dependentModules.each { dependentModule ->
@@ -34,32 +26,11 @@ class TypeScriptGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override
-	void generateStubs(File outputDirectory) throws IOException {
-		config.allModules.each { module ->
-			def contents = ""
-			for (type in module.types) {
-				if (type instanceof InterfaceNode) {
-					contents += new TypeScriptInterfaceStubGeneratorVisitor().visit(type)
-				}
-			}
-			TypeScriptUtils.createSourceFile(header, module, module.alias + "Stubs", outputDirectory, contents)
-		}
-	}
-
-	@Override
-	protected String processModuleJavaScriptInternal(ModuleNode module, String javaScript)
-	{
-"""${javaScript}
-return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
-"""
-	}
-
 	/**
 	 * Copies Spaghetti.hx to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
-		new File(outputDirectory, "${SPAGHETTI_CLASS}.ts") << TypeScriptGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.ts")
+		new File(outputDirectory, "${SPAGHETTI_CLASS}.ts") << TypeScriptHeaderGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.ts")
 	}
 
 	/**

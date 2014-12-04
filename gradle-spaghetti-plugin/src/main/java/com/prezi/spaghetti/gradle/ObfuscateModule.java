@@ -4,7 +4,8 @@ import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.Languages;
+import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
@@ -44,7 +45,8 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 
 	@Override
 	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, File resourceDir) throws IOException {
-		ModuleObfuscator obfuscator = new ModuleObfuscator(Languages.getProtectedSymbols(getLanguage()));
+		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
+		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
 		ObfuscationResult result = obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
 				module,

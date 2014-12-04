@@ -1,9 +1,7 @@
 package com.prezi.spaghetti.kotlin
 
-import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.generator.AbstractGenerator
+import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.kotlin.access.KotlinModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.kotlin.impl.KotlinModuleInitializerGeneratorVisitor
@@ -11,22 +9,17 @@ import com.prezi.spaghetti.kotlin.impl.KotlinModuleProxyGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
-class KotlinGenerator extends AbstractGenerator {
+class KotlinHeaderGenerator extends AbstractHeaderGenerator {
 
-	public static final String KOTLIN_MODULE_VAR = "__kotlinModule"
-
-	private final String header
-	private final ModuleConfiguration config
-
-	KotlinGenerator(GeneratorParameters params) {
-		super(params)
-		this.header = params.header
-		this.config = params.moduleConfiguration
+	KotlinHeaderGenerator() {
+		super("kotlin")
 	}
 
 	@Override
-	void generateHeaders(File outputDirectory) {
-		copySpaghettiClass(config.localModule, outputDirectory)
+	void generateHeaders(GeneratorParameters params, File outputDirectory) throws IOException {
+		def config = params.moduleConfiguration
+		def header = params.header
+		copySpaghettiClass(config.localModule, outputDirectory, header)
 		generateModuleInitializer(config.localModule, outputDirectory, header)
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
@@ -36,33 +29,11 @@ class KotlinGenerator extends AbstractGenerator {
 		}
 	}
 
-	@Override
-	public void generateStubs(File outputDirectory) throws IOException {
-		config.allModules.each { module ->
-			for (type in module.types) {
-				if (type instanceof InterfaceNode) {
-					def contents = "" // new KotlinInterfaceStubGeneratorVisitor().visit(type)
-					KotlinUtils.createKotlinSourceFile(header, module.name, type.name + "Stub", outputDirectory, contents)
-				}
-			}
-		}
-	}
-
-	@Override
-	protected String processModuleJavaScriptInternal(ModuleNode module, String javaScript)
-	{
-"""
-var ${KOTLIN_MODULE_VAR};
-${javaScript}
-return ${KOTLIN_MODULE_VAR};
-"""
-	}
-
 	/**
 	 * Copies Spaghetti.kt to the generated source directory.
 	 */
-	private void copySpaghettiClass(ModuleNode module, File outputDirectory) {
-		def contents = KotlinGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.kt").text
+	private static void copySpaghettiClass(ModuleNode module, File outputDirectory, String header) {
+		def contents = KotlinHeaderGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.kt").text
 		KotlinUtils.createKotlinSourceFile(header, module.name, SPAGHETTI_CLASS, outputDirectory, contents)
 	}
 

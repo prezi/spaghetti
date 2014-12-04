@@ -1,0 +1,3 @@
+com.prezi.spaghetti.kotlin.KotlinHeaderGenerator
+com.prezi.spaghetti.kotlin.KotlinStubGenerator
+com.prezi.spaghetti.kotlin.KotlinJavaScriptBundleProcessor

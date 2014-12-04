@@ -1,0 +1,3 @@
+com.prezi.spaghetti.haxe.HaxeHeaderGenerator
+com.prezi.spaghetti.haxe.HaxeStubGenerator
+com.prezi.spaghetti.haxe.HaxeJavaScriptBundleProcessor

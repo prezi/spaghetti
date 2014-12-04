@@ -3,7 +3,7 @@ package com.prezi.spaghetti.kotlin.impl
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.kotlin.AbstractKotlinGeneratorVisitor
 
-import static com.prezi.spaghetti.kotlin.KotlinGenerator.KOTLIN_MODULE_VAR
+import static com.prezi.spaghetti.kotlin.KotlinJavaScriptBundleProcessor.KOTLIN_MODULE_VAR
 
 class KotlinModuleInitializerGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 

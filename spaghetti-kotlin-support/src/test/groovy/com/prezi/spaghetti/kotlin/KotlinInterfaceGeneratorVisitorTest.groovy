@@ -1,6 +1,10 @@
 package com.prezi.spaghetti.kotlin
 
-import com.prezi.spaghetti.ast.*
+import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.FQName
+import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.NodeSets
+import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
