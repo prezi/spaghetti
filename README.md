@@ -16,7 +16,7 @@ Spaghetti modules are written in compile-to-JS languages like [TypeScript](http:
 module com.example.greeter
 
 interface Greeter {
-    string sayHello(string guest)
+    string sayHello(string user)
 }
 
 Greeter createGreeter()
