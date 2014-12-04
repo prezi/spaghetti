@@ -3,7 +3,7 @@ package com.prezi.spaghetti.haxe.impl
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 
-import static com.prezi.spaghetti.haxe.HaxeGenerator.HAXE_MODULE_VAR
+import static com.prezi.spaghetti.haxe.HaxeJavaScriptBundleProcessor.HAXE_MODULE_VAR
 
 class HaxeModuleInitializerGeneratorVisitor extends StringModuleVisitorBase {
 

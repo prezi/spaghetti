@@ -1,6 +1,10 @@
 package com.prezi.spaghetti.gradle;
 
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.StubGenerator;
+import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
+import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.tasks.OutputDirectory;
@@ -43,6 +47,8 @@ public class GenerateStubs extends AbstractDefinitionAwareSpaghettiTask {
 		File directory = getOutputDirectory();
 		FileUtils.deleteQuietly(directory);
 		FileUtils.forceMkdir(directory);
-		createGenerator(config).generateStubs(directory);
+		StubGenerator generator = Generators.getService(StubGenerator.class, getLanguage());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		generator.generateStubs(generatorParams, directory);
 	}
 }

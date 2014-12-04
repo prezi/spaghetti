@@ -8,6 +8,10 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
+import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters;
+import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -169,7 +173,9 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 			inputContents += Files.asCharSource(suffixFile, Charsets.UTF_8).read();
 		}
 
-		String processedJavaScript = createGenerator(config).processModuleJavaScript(module, inputContents);
+		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
+		DefaultJavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
+		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, inputContents));
 
 		File sourceMap = getSourceMap();
 		String sourceMapText = sourceMap != null ? Files.asCharSource(sourceMap, Charsets.UTF_8).read() : null;

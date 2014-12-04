@@ -19,6 +19,12 @@ import com.prezi.spaghetti.ast.VoidTypeReference
 import org.apache.commons.lang.StringEscapeUtils
 
 abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
+
+	private static def DEFAULT_EXTERNS = [
+	        JSON: "haxe.Json",
+	]
+	private static def EXTERNS = (DEFAULT_EXTERNS + HaxeJsHtmlExterns.EXTERNS).asImmutable()
+
 	protected static final EnumMap<PrimitiveType, String> PRIMITIVE_TYPES = [
 			(PrimitiveType.BOOL): "Bool",
 			(PrimitiveType.INT): "Int",
@@ -67,8 +73,8 @@ abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitExternInterfaceReference(ExternInterfaceReference reference) {
 		def type = reference.type.qualifiedName.toString()
-		if (HaxeGeneratorFactory.EXTERNS.containsKey(type)) {
-			type = HaxeGeneratorFactory.EXTERNS.get(type)
+		if (EXTERNS.containsKey(type)) {
+			type = EXTERNS.get(type)
 		}
 		return wrapParametrizedTypeReference(type, reference)
 	}

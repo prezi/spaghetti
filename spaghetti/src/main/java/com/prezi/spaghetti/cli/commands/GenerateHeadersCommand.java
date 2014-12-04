@@ -2,7 +2,10 @@ package com.prezi.spaghetti.cli.commands;
 
 import com.prezi.spaghetti.cli.SpaghettiCliException;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.Generator;
+import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.HeaderGenerator;
+import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
+import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import io.airlift.command.Command;
 import io.airlift.command.Option;
 import org.apache.commons.io.FileUtils;
@@ -28,10 +31,11 @@ public class GenerateHeadersCommand extends AbstractLanguageAwareCommand {
 		}
 
 		ModuleConfiguration config = parseConfig();
-		Generator generator = createGenerator(config);
 		FileUtils.deleteDirectory(outputDirectory);
 		FileUtils.forceMkdir(outputDirectory);
-		generator.generateHeaders(outputDirectory);
+		HeaderGenerator generator = Generators.getService(HeaderGenerator.class, language);
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		generator.generateHeaders(generatorParams, outputDirectory);
 		return 0;
 	}
 }

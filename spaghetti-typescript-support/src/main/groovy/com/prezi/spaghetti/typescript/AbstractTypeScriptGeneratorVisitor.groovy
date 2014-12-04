@@ -16,6 +16,8 @@ import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.VoidTypeReference
 
 abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBase {
+	private static def EXTERNS = [:].asImmutable()
+
 	protected static final EnumMap<PrimitiveType, String> PRIMITIVE_TYPES = [
 			(PrimitiveType.BOOL): "boolean",
 			(PrimitiveType.INT): "number",
@@ -69,8 +71,8 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 	@Override
 	String visitExternInterfaceReference(ExternInterfaceReference reference) {
 		def type = reference.type.qualifiedName.toString()
-		if (TypeScriptGeneratorFactory.EXTERNS.containsKey(type)) {
-			type = TypeScriptGeneratorFactory.EXTERNS.get(type)
+		if (EXTERNS.containsKey(type)) {
+			type = EXTERNS.get(type)
 		}
 		return wrapParametrizedTypeReference(type, reference)
 	}

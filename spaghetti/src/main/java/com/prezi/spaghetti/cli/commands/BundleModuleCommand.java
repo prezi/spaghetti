@@ -9,7 +9,11 @@ import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.cli.SpaghettiCliException;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.Languages;
+import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
+import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters;
+import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters;
+import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import com.prezi.spaghetti.obfuscation.ObfuscationResult;
@@ -91,7 +95,9 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		}
 
 		String javaScript = Files.asCharSource(sourceFile, Charsets.UTF_8).read();
-		String processedJavaScript = createGenerator(config).processModuleJavaScript(moduleNode, javaScript);
+		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, language);
+		JavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
+		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript));
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();
 		for (ModuleNode dependentModule : config.getDependentModules()) {
@@ -141,7 +147,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 			additionalSymbolsSet = Collections.emptySet();
 		}
 
-		ModuleObfuscator obfuscator = new ModuleObfuscator(Languages.getProtectedSymbols(language));
+		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, language);
+		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
 		return obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
 				config.getLocalModule(),

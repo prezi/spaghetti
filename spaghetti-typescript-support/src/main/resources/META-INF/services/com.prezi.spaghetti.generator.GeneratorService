@@ -1,0 +1,3 @@
+com.prezi.spaghetti.typescript.TypeScriptHeaderGenerator
+com.prezi.spaghetti.typescript.TypeScriptStubGenerator
+com.prezi.spaghetti.typescript.TypeScriptJavaScriptBundleProcessor
