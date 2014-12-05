@@ -182,6 +182,7 @@ final class HaxeJsHtmlExterns {
 			HTMLDetailsElement: "js.html.DetailsElement",
 			HTMLDirectoryElement: "js.html.DirectoryElement",
 			HTMLDivElement: "js.html.DivElement",
+			HTMLElement: "js.html.HtmlElement",
 			HTMLEmbedElement: "js.html.EmbedElement",
 			HTMLFieldSetElement: "js.html.FieldSetElement",
 			HTMLFontElement: "js.html.FontElement",
