@@ -5,7 +5,7 @@ import com.prezi.spaghetti.definition.ModuleConfiguration;
 /**
  * Parameters for source code generation.
  */
-public interface GeneratorParameters {
+public interface GeneratorParameters extends ParametersBase {
 	/**
 	 * The module configuration to generate sources for.
 	 */

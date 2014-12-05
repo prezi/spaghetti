@@ -34,7 +34,7 @@ public class GenerateStubsCommand extends AbstractLanguageAwareCommand {
 		FileUtils.deleteDirectory(outputDirectory);
 		FileUtils.forceMkdir(outputDirectory);
 		StubGenerator generator = Generators.getService(StubGenerator.class, language);
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(), getParsedOptions());
 		generator.generateStubs(generatorParams, outputDirectory);
 		return 0;
 	}

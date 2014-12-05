@@ -174,7 +174,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		}
 
 		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
-		DefaultJavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
+		DefaultJavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config, getOptions());
 		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, inputContents));
 
 		File sourceMap = getSourceMap();

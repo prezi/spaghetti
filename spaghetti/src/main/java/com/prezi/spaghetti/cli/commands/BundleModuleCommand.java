@@ -96,7 +96,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 
 		String javaScript = Files.asCharSource(sourceFile, Charsets.UTF_8).read();
 		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, language);
-		JavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
+		JavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config, getParsedOptions());
 		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript));
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();

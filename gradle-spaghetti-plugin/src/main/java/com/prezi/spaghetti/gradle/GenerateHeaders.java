@@ -48,7 +48,7 @@ public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 		FileUtils.deleteQuietly(directory);
 		FileUtils.forceMkdir(directory);
 		HeaderGenerator generator = Generators.getService(HeaderGenerator.class, getLanguage());
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(), getOptions());
 		generator.generateHeaders(generatorParams, directory);
 	}
 }
