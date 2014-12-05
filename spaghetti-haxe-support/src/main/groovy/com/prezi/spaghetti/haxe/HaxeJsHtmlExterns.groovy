@@ -32,11 +32,13 @@ while (<>) {
 	}
 	close $file;
 }
-
 foreach my $undef (@undefs) {
 	# print "Problematic $undef"
 }
- */
+
+print 'Add if missing: HTMLElement: "js.html.Element",'
+
+*/
 final class HaxeJsHtmlExterns {
 	public static final def EXTERNS = [
 			AbstractWorker: "js.html.AbstractWorker",
@@ -182,7 +184,7 @@ final class HaxeJsHtmlExterns {
 			HTMLDetailsElement: "js.html.DetailsElement",
 			HTMLDirectoryElement: "js.html.DirectoryElement",
 			HTMLDivElement: "js.html.DivElement",
-			HTMLElement: "js.html.HtmlElement",
+			HTMLElement: "js.html.Element",
 			HTMLEmbedElement: "js.html.EmbedElement",
 			HTMLFieldSetElement: "js.html.FieldSetElement",
 			HTMLFontElement: "js.html.FontElement",
