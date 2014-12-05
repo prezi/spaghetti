@@ -32,23 +32,27 @@ JSON[] doSomething()
 		expect:
 		visitor.visit(module) == """@:final class TestModule {
 
-	static var module:Dynamic = untyped __js__('Spaghetti["dependencies"]["com.example.test"]["module"]');
+	static var __module:Dynamic = untyped __js__('Spaghetti["dependencies"]["com.example.test"]["module"]');
 
 	/**
 	 * Initializes module.
 	 */
 	@:deprecated("use doSomething() instead")
-	@:extern public static inline function initModule(a:Int, ?b:Int):Void {
-		TestModule.module.initModule(a, b);
+	#if !spaghetti_noinline @:extern inline #end
+	public static function initModule(a:Int, ?b:Int):Void {
+		TestModule.__module.initModule(a, b);
 	}
-	@:extern public static inline function doSomething():Array<haxe.Json> {
-		return TestModule.module.doSomething();
+	#if !spaghetti_noinline @:extern inline #end
+	public static function doSomething():Array<haxe.Json> {
+		return TestModule.__module.doSomething();
 	}
-	@:extern public static inline function doStatic(a:Null<Int>, b:Int):Null<Int> {
-		return TestModule.module.doStatic(a, b);
+	#if !spaghetti_noinline @:extern inline #end
+	public static function doStatic(a:Null<Int>, b:Int):Null<Int> {
+		return TestModule.__module.doStatic(a, b);
 	}
-	@:extern public static inline function returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return TestModule.module.returnT(t);
+	#if !spaghetti_noinline @:extern inline #end
+	public static function returnT<T>(t:T):com.example.test.MyInterface<T> {
+		return TestModule.__module.returnT(t);
 	}
 
 }

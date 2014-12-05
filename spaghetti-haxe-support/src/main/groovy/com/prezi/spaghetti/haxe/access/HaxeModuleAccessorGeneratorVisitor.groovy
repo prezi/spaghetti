@@ -21,7 +21,7 @@ class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeMethodGeneratorVisi
 		return \
 """@:final class ${node.alias} {
 
-	static var module:Dynamic = untyped __js__('${SPAGHETTI_CLASS}[\"${DEPENDENCIES}\"][\"${node.name}\"][\"${MODULE}\"]');
+	static var __module:Dynamic = untyped __js__('${SPAGHETTI_CLASS}[\"${DEPENDENCIES}\"][\"${node.name}\"][\"${MODULE}\"]');
 
 ${node.methods*.accept(this).join("")}
 }
@@ -37,8 +37,9 @@ ${node.methods*.accept(this).join("")}
 		def paramNames = node.parameters*.name.join(", ")
 
 		return \
-"""	@:extern public static inline function ${node.name}${typeParams}(${params}):${returnType} {
-		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.alias}.module.${node.name}(${paramNames});
+"""	#if !spaghetti_noinline @:extern inline #end
+	public static function ${node.name}${typeParams}(${params}):${returnType} {
+		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.alias}.__module.${node.name}(${paramNames});
 	}
 """
 	}
