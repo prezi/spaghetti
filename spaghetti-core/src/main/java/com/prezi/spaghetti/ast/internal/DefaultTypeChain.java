@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.AstNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.TypeChain;
 import com.prezi.spaghetti.ast.TypeReference;
@@ -15,8 +16,8 @@ import java.util.List;
 public class DefaultTypeChain extends AbstractTypeReference implements TypeChain {
 	private final List<TypeReference> elements = Lists.newArrayList();
 
-	public DefaultTypeChain(int arrayDimensions) {
-		super(arrayDimensions);
+	public DefaultTypeChain(Location location, int arrayDimensions) {
+		super(location, arrayDimensions);
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
-		DefaultTypeChain chain = new DefaultTypeChain(getArrayDimensions() + extraDimensions);
+		DefaultTypeChain chain = new DefaultTypeChain(getLocation(), getArrayDimensions() + extraDimensions);
 		chain.getElements().addAll(elements);
 		return chain;
 	}

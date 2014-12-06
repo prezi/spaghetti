@@ -7,23 +7,23 @@ import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, EnumNode> {
-	public EnumParser(ModuleParser.EnumDefinitionContext context, String moduleName) {
-		super(context, createNode(context, moduleName));
+	public EnumParser(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
+		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static EnumNode createNode(ModuleParser.EnumDefinitionContext context, String moduleName) {
-		DefaultEnumNode node = new DefaultEnumNode(FQName.fromString(moduleName, context.Name().getText()));
-		AnnotationsParser.parseAnnotations(context.annotations(), node);
-		DocumentationParser.parseDocumentation(context.documentation, node);
+	private static EnumNode createNode(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
+		DefaultEnumNode node = new DefaultEnumNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
+		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 		return node;
 	}
 
 	@Override
 	public void parse(TypeResolver resolver) {
 		for (ModuleParser.EnumValueContext valueCtx : getContext().enumValue()) {
-			DefaultEnumValueNode valueNode = new DefaultEnumValueNode(valueCtx.Name().getText());
-			AnnotationsParser.parseAnnotations(valueCtx.annotations(), valueNode);
-			DocumentationParser.parseDocumentation(valueCtx.documentation, valueNode);
+			DefaultEnumValueNode valueNode = new DefaultEnumValueNode(locator.locate(valueCtx.Name()), valueCtx.Name().getText());
+			AnnotationsParser.parseAnnotations(locator, valueCtx.annotations(), valueNode);
+			DocumentationParser.parseDocumentation(locator, valueCtx.documentation, valueNode);
 			getNode().getValues().add(valueNode, valueCtx);
 		}
 	}

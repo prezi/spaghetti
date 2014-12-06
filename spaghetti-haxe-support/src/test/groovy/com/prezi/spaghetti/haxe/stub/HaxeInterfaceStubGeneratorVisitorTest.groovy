@@ -11,6 +11,7 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	com.example.test.MyInterface<T[]> multiply(int max, ?int min)
 }
 """
+		def locatorTibor = mockLocator(definitionTibor)
 		def definition = """interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
@@ -26,8 +27,9 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def tibor = new InterfaceParser(AstTestUtils.parser(definitionTibor).interfaceDefinition(), "com.example.test")
-		def parser = new InterfaceParser(AstTestUtils.parser(definition).interfaceDefinition(), "com.example.test")
+		def locator = mockLocator(definition)
+		def tibor = new InterfaceParser(locatorTibor, AstTestUtils.parser(locatorTibor).interfaceDefinition(), "com.example.test")
+		def parser = new InterfaceParser(locator, AstTestUtils.parser(locator).interfaceDefinition(), "com.example.test")
 		tibor.parse(AstTestUtils.resolver(tibor.node, parser.node))
 		parser.parse(AstTestUtils.resolver(tibor.node, parser.node))
 		def iface = parser.node

@@ -3,6 +3,7 @@ package com.prezi.spaghetti.ast.internal;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
@@ -11,8 +12,8 @@ public class DefaultEnumValueNode extends AbstractNamedNode implements EnumValue
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 
-	public DefaultEnumValueNode(String name) {
-		super(name);
+	public DefaultEnumValueNode(Location location, String name) {
+		super(location, name);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.prezi.spaghetti.ast.internal;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.ConstEntryNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
@@ -13,8 +14,8 @@ public class DefaultConstEntryNode extends AbstractTypeNamePairNode<PrimitiveTyp
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final Object value;
 
-	public DefaultConstEntryNode(String name, PrimitiveTypeReference type, Object value) {
-		super(name, type);
+	public DefaultConstEntryNode(Location location, String name, PrimitiveTypeReference type, Object value) {
+		super(location, name, type);
 		this.value = value;
 	}
 

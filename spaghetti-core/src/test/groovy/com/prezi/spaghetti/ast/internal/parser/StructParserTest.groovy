@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.ast.internal.parser
 
+import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterReference
-import spock.lang.Specification
 
 import static com.prezi.spaghetti.ast.PrimitiveType.ANY
 import static com.prezi.spaghetti.ast.PrimitiveType.BOOL
@@ -10,9 +10,9 @@ import static com.prezi.spaghetti.ast.PrimitiveType.FLOAT
 import static com.prezi.spaghetti.ast.PrimitiveType.INT
 import static com.prezi.spaghetti.ast.PrimitiveType.STRING
 
-class StructParserTest extends Specification {
+class StructParserTest extends AstTestBase {
 	def "parse primitives"() {
-		def context = AstTestUtils.parser("""
+		def locator = mockLocator("""
 struct MyStruct<T> {
 	bool boolValue
 	int intValue
@@ -21,8 +21,9 @@ struct MyStruct<T> {
 	any anyValue
 	T genericValue
 }
-""").structDefinition()
-		def parser = new StructParser(context, "com.example.test")
+""")
+		def context = AstTestUtils.parser(locator).structDefinition()
+		def parser = new StructParser(locator, context, "com.example.test")
 
 		when:
 		parser.parse(Mock(TypeResolver))
@@ -59,14 +60,15 @@ struct MyStruct<T> {
 	}
 
 	def "parse local reference"() {
-		def context = AstTestUtils.parser("""
+		def locator = mockLocator("""
 struct StructB {
 	StructA structA
 }
-""").structDefinition()
+""")
+		def context = AstTestUtils.parser(locator).structDefinition()
 		def mockStructA = Mock(StructNode)
 		def resolver = Mock(TypeResolver)
-		def parser = new StructParser(context, "com.example.test")
+		def parser = new StructParser(locator, context, "com.example.test")
 
 		when:
 		parser.parse(resolver)
@@ -90,12 +92,13 @@ struct StructB {
 	}
 
 	def "parse method"() {
-		def context = AstTestUtils.parser("""
+		def locator = mockLocator("""
 struct MyStruct<T> {
 	T convertToRelative(T absolute)
 }
-""").structDefinition()
-		def parser = new StructParser(context, "com.example.test")
+""")
+		def context = AstTestUtils.parser(locator).structDefinition()
+		def parser = new StructParser(locator, context, "com.example.test")
 
 		when:
 		parser.parse(Mock(TypeResolver))

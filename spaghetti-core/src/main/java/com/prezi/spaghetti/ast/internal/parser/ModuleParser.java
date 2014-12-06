@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class ModuleParser {
+public class ModuleParser extends AbstractParser {
 	private final List<AbstractModuleTypeParser> typeParsers;
 	private final List<com.prezi.spaghetti.internal.grammar.ModuleParser.MethodDefinitionContext> moduleMethodsToParse;
 	private final DefaultModuleNode module;
@@ -22,7 +22,7 @@ public class ModuleParser {
 	public static ModuleParser create(ModuleDefinitionSource source) {
 		com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext context = ModuleDefinitionParser.parse(source);
 		try {
-			return new ModuleParser(source, context);
+			return new ModuleParser(new Locator(source), context);
 		} catch (InternalAstParserException ex) {
 			throw new AstParserException(source, ex.getMessage(), ex);
 		} catch (Exception ex) {
@@ -30,7 +30,8 @@ public class ModuleParser {
 		}
 	}
 
-	protected ModuleParser(ModuleDefinitionSource source, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
+	protected ModuleParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
+		super(locator);
 		this.typeParsers = Lists.newArrayList();
 		this.moduleMethodsToParse = Lists.newArrayList();
 
@@ -42,16 +43,16 @@ public class ModuleParser {
 		} else {
 			moduleAlias = StringUtils.capitalize(nameParts.get(nameParts.size() - 1)) + "Module";
 		}
-		this.module = new DefaultModuleNode(moduleName, moduleAlias, source);
-		AnnotationsParser.parseAnnotations(moduleCtx.annotations(), module);
-		DocumentationParser.parseDocumentation(moduleCtx.documentation, module);
+		this.module = new DefaultModuleNode(locate(moduleCtx.qualifiedName()), moduleName, moduleAlias);
+		AnnotationsParser.parseAnnotations(locator, moduleCtx.annotations(), module);
+		DocumentationParser.parseDocumentation(locator, moduleCtx.documentation, module);
 
 		for (com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleElementContext elementCtx : moduleCtx.moduleElement()) {
 			if (elementCtx.importDeclaration() != null) {
 				FQName importedName = FQName.fromContext(elementCtx.importDeclaration().qualifiedName());
 				TerminalNode aliasDecl = elementCtx.importDeclaration().Name();
 				String importAlias = aliasDecl != null ? aliasDecl.getText() : importedName.localName;
-				DefaultImportNode importNode = new DefaultImportNode(importedName, importAlias);
+				DefaultImportNode importNode = new DefaultImportNode(locate(elementCtx.importDeclaration().qualifiedName()), importedName, importAlias);
 				module.getImports().put(FQName.fromString(null, importAlias), importNode);
 			} else if (elementCtx.externTypeDefinition() != null) {
 				com.prezi.spaghetti.internal.grammar.ModuleParser.ExternTypeDefinitionContext context = elementCtx.externTypeDefinition();
@@ -92,30 +93,30 @@ public class ModuleParser {
 
 		// Parse module methods
 		for (com.prezi.spaghetti.internal.grammar.ModuleParser.MethodDefinitionContext methodCtx : moduleMethodsToParse) {
-			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(resolver, methodCtx);
+			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(locator, resolver, methodCtx);
 			module.getMethods().add(methodNode, methodCtx.Name());
 		}
 
 		return module;
 	}
 
-	protected static AbstractModuleTypeParser createTypeDef(com.prezi.spaghetti.internal.grammar.ModuleParser.TypeDefinitionContext typeCtx, String moduleName) {
+	protected AbstractModuleTypeParser createTypeDef(com.prezi.spaghetti.internal.grammar.ModuleParser.TypeDefinitionContext typeCtx, String moduleName) {
 		if (typeCtx.constDefinition() != null) {
-			return new ConstParser(typeCtx.constDefinition(), moduleName);
+			return new ConstParser(locator, typeCtx.constDefinition(), moduleName);
 		} else if (typeCtx.enumDefinition() != null) {
-			return new EnumParser(typeCtx.enumDefinition(), moduleName);
+			return new EnumParser(locator, typeCtx.enumDefinition(), moduleName);
 		} else if (typeCtx.structDefinition() != null) {
-			return new StructParser(typeCtx.structDefinition(), moduleName);
+			return new StructParser(locator, typeCtx.structDefinition(), moduleName);
 		} else if (typeCtx.interfaceDefinition() != null) {
-			return new InterfaceParser(typeCtx.interfaceDefinition(), moduleName);
+			return new InterfaceParser(locator, typeCtx.interfaceDefinition(), moduleName);
 		} else {
 			throw new InternalAstParserException(typeCtx, "Unknown module element");
 		}
 	}
 
-	protected static AbstractModuleTypeParser createExternTypeDef(com.prezi.spaghetti.internal.grammar.ModuleParser.ExternTypeDefinitionContext typeCtx) {
+	protected AbstractModuleTypeParser createExternTypeDef(com.prezi.spaghetti.internal.grammar.ModuleParser.ExternTypeDefinitionContext typeCtx) {
 		if (typeCtx.externInterfaceDefinition() != null) {
-			return new ExternInterfaceParser(typeCtx.externInterfaceDefinition());
+			return new ExternInterfaceParser(locator, typeCtx.externInterfaceDefinition());
 		} else {
 			throw new InternalAstParserException(typeCtx, "Unknown module element");
 		}

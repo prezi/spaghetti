@@ -11,19 +11,19 @@ import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDefinitionContext, StructNode> {
-	public StructParser(ModuleParser.StructDefinitionContext context, String moduleName) {
-		super(context, createNode(context, moduleName));
+	public StructParser(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
+		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static StructNode createNode(ModuleParser.StructDefinitionContext context, String moduleName) {
-		DefaultStructNode node = new DefaultStructNode(FQName.fromString(moduleName, context.Name().getText()));
-		AnnotationsParser.parseAnnotations(context.annotations(), node);
-		DocumentationParser.parseDocumentation(context.documentation, node);
+	private static StructNode createNode(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
+		DefaultStructNode node = new DefaultStructNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
+		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 
 		ModuleParser.TypeParametersContext typeParameters = context.typeParameters();
 		if (typeParameters != null) {
 			for (TerminalNode name : typeParameters.Name()) {
-				node.getTypeParameters().add(new DefaultTypeParameterNode(name.getText()), context);
+				node.getTypeParameters().add(new DefaultTypeParameterNode(locator.locate(name), name.getText()), context);
 			}
 		}
 
@@ -40,16 +40,16 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 				ModuleParser.PropertyDefinitionContext propCtx = elemCtx.propertyDefinition();
 				ModuleParser.TypeNamePairContext pairCtx = propCtx.typeNamePair();
 				String name = pairCtx.Name().getText();
-				TypeReference type = TypeParsers.parseComplexType(resolver, pairCtx.complexType());
+				TypeReference type = TypeParsers.parseComplexType(locator, resolver, pairCtx.complexType());
 				boolean optional = propCtx.optional != null;
 
-				DefaultPropertyNode propertyNode = new DefaultPropertyNode(name, type, optional);
-				AnnotationsParser.parseAnnotations(propCtx.annotations(), propertyNode);
-				DocumentationParser.parseDocumentation(propCtx.documentation, propertyNode);
+				DefaultPropertyNode propertyNode = new DefaultPropertyNode(locator.locate(pairCtx.Name()), name, type, optional);
+				AnnotationsParser.parseAnnotations(locator, propCtx.annotations(), propertyNode);
+				DocumentationParser.parseDocumentation(locator, propCtx.documentation, propertyNode);
 				getNode().getProperties().add(propertyNode, propCtx);
 			} else if (elemCtx.methodDefinition() != null) {
 				ModuleParser.MethodDefinitionContext methodCtx = elemCtx.methodDefinition();
-				DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(resolver, methodCtx);
+				DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(locator, resolver, methodCtx);
 				getNode().getMethods().add(methodNode, methodCtx.Name());
 			}
 		}

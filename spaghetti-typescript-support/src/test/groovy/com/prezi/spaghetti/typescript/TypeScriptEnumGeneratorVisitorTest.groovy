@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class TypeScriptEnumGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -16,7 +15,8 @@ enum MyEnum {
 	BELA
 }
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
+		def locator = mockLocator(definition)
+		def module = ModuleParser.create(locator.source).parse(mockResolver())
 		def visitor = new TypeScriptEnumGeneratorVisitor()
 
 		expect:

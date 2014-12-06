@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ImportNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
 public class DefaultImportNode extends AbstractNode implements ImportNode {
@@ -9,7 +10,8 @@ public class DefaultImportNode extends AbstractNode implements ImportNode {
 	private final FQName qualifiedName;
 	private final String alias;
 
-	public DefaultImportNode(FQName qualifiedName, String alias) {
+	public DefaultImportNode(Location location, FQName qualifiedName, String alias) {
+		super(location);
 		this.qualifiedName = qualifiedName;
 		this.alias = alias;
 	}

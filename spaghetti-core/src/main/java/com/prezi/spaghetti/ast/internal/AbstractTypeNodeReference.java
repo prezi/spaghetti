@@ -1,14 +1,15 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Strings;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ReferableTypeNode;
 import com.prezi.spaghetti.ast.TypeNodeReference;
 
 public abstract class AbstractTypeNodeReference<T extends ReferableTypeNode> extends AbstractTypeReference implements TypeNodeReference<T> {
 	private final T type;
 
-	public AbstractTypeNodeReference(T type, int arrayDimensions) {
-		super(arrayDimensions);
+	public AbstractTypeNodeReference(Location location, T type, int arrayDimensions) {
+		super(location, arrayDimensions);
 		this.type = type;
 	}
 

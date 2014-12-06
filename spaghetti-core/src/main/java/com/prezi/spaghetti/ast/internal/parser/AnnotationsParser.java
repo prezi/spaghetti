@@ -10,15 +10,15 @@ import java.util.Collections;
 import java.util.Map;
 
 public class AnnotationsParser {
-	public static void parseAnnotations(ModuleParser.AnnotationsContext context, AnnotatedNode node) {
+	public static void parseAnnotations(Locator locator, ModuleParser.AnnotationsContext context, AnnotatedNode node) {
 		if (context != null) {
 			for (ModuleParser.AnnotationContext annotationCtx : context.annotation()) {
-				node.getAnnotations().add(fromContext(annotationCtx), annotationCtx);
+				node.getAnnotations().add(fromContext(locator, annotationCtx), annotationCtx);
 			}
 		}
 	}
 
-	protected static AnnotationNode fromContext(ModuleParser.AnnotationContext context) {
+	static AnnotationNode fromContext(Locator locator, ModuleParser.AnnotationContext context) {
 		ModuleParser.AnnotationParametersContext parametersContext = context.annotationParameters();
 		Map<String, Object> parameters;
 		if (parametersContext != null) {
@@ -37,10 +37,10 @@ public class AnnotationsParser {
 			parameters = Collections.emptyMap();
 		}
 
-		return new DefaultAnnotationNode(context.Name().getText(), parameters);
+		return new DefaultAnnotationNode(locator.locate(context.Name()), context.Name().getText(), parameters);
 	}
 
-	protected static Object parseAnnotationValue(ModuleParser.AnnotationValueContext context) {
+	static Object parseAnnotationValue(ModuleParser.AnnotationValueContext context) {
 		Object value;
 		if (context.Null() != null) {
 			value = null;

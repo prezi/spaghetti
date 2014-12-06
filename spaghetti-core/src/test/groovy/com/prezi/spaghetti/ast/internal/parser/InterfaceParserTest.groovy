@@ -1,20 +1,20 @@
 package com.prezi.spaghetti.ast.internal.parser
 
 import com.google.common.collect.Iterables
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
 
 import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
 
-class InterfaceParserTest extends Specification {
+class InterfaceParserTest extends AstTestBase {
 	def "parse"() {
-		def context = AstTestUtils.parser("""
+		def locator = mockLocator("""
 interface MyInterface {
 	int add(int a, @nullable int b)
 }
-""").interfaceDefinition()
-
+""")
+		def context = AstTestUtils.parser(locator).interfaceDefinition()
 		def resolver = Mock(TypeResolver)
-		def parser = new InterfaceParser(context, "com.example.test")
+		def parser = new InterfaceParser(locator, context, "com.example.test")
 
 		when:
 		parser.parse(resolver)
@@ -23,11 +23,17 @@ interface MyInterface {
 		then:
 		node.name == "MyInterface"
 		node.methods*.name == ["add"]
+		node.methods*.location*.toString() == ["test:3:5"]
 		node.methods*.parameters*.name == [
 				["a", "b"],
 		]
+		node.methods[0].parameters[0].location.toString() == "test:3:13"
+		node.methods[0].parameters[1].location.toString() == "test:3:30"
 		node.methods*.returnType == [
 				INT,
+		]
+		node.methods*.returnType*.location*.toString() == [
+		        "test:3:1"
 		]
 		node.methods*.parameters*.type == [
 				[INT, INT],

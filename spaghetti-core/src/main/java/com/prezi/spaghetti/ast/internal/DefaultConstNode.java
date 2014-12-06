@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.ConstEntryNode;
 import com.prezi.spaghetti.ast.ConstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
@@ -16,8 +17,8 @@ public class DefaultConstNode extends AbstractTypeNode implements ConstNode, Mut
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final NamedNodeSet<ConstEntryNode> entries = NodeSets.newNamedNodeSet("entry");
 
-	public DefaultConstNode(FQName qualifiedName) {
-		super(qualifiedName);
+	public DefaultConstNode(Location location, FQName qualifiedName) {
+		super(location, qualifiedName);
 	}
 
 	@Override

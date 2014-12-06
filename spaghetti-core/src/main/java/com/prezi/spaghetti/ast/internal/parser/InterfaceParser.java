@@ -13,19 +13,19 @@ import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.InterfaceDefinitionContext, InterfaceNode> {
-	public InterfaceParser(ModuleParser.InterfaceDefinitionContext context, String moduleName) {
-		super(context, createNode(context, moduleName));
+	public InterfaceParser(Locator locator, ModuleParser.InterfaceDefinitionContext context, String moduleName) {
+		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static InterfaceNode createNode(ModuleParser.InterfaceDefinitionContext context, String moduleName) {
-		DefaultInterfaceNode node = new DefaultInterfaceNode(FQName.fromString(moduleName, context.Name().getText()));
-		AnnotationsParser.parseAnnotations(context.annotations(), node);
-		DocumentationParser.parseDocumentation(context.documentation, node);
+	private static InterfaceNode createNode(Locator locator, ModuleParser.InterfaceDefinitionContext context, String moduleName) {
+		DefaultInterfaceNode node = new DefaultInterfaceNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
+		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 
 		ModuleParser.TypeParametersContext typeParameters = context.typeParameters();
 		if (typeParameters != null) {
 			for (TerminalNode name : typeParameters.Name()) {
-				node.getTypeParameters().add(new DefaultTypeParameterNode(name.getText()), context);
+				node.getTypeParameters().add(new DefaultTypeParameterNode(locator.locate(name), name.getText()), context);
 			}
 		}
 
@@ -38,25 +38,25 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
 
 		for (ModuleParser.SuperInterfaceDefinitionContext superCtx : getContext().superInterfaceDefinition()) {
-			getNode().getSuperInterfaces().add(parseSuperInterface(resolver, superCtx));
+			getNode().getSuperInterfaces().add(parseSuperInterface(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.MethodDefinitionContext methodCtx : getContext().methodDefinition()) {
-			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(resolver, methodCtx);
+			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(locator, resolver, methodCtx);
 			getNode().getMethods().add(methodNode, methodCtx.Name());
 		}
 	}
 
-	protected static InterfaceReferenceBase parseSuperInterface(TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
+	private InterfaceReferenceBase parseSuperInterface(Locator locator, TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
 		TypeNode superType = resolver.resolveType(TypeResolutionContext.create(superCtx.qualifiedName()));
 		if (!(superType instanceof InterfaceNodeBase)) {
 			throw new InternalAstParserException(superCtx, "Only interfaces can be super interfaces");
 		}
 
 		if (superType instanceof InterfaceNode) {
-			return TypeParsers.parseInterfaceReference(resolver, superCtx, superCtx.typeArguments(), (InterfaceNode) superType, 0);
+			return TypeParsers.parseInterfaceReference(locator, resolver, superCtx, superCtx.typeArguments(), (InterfaceNode) superType, 0);
 		} else if (superType instanceof ExternInterfaceNode) {
-			return TypeParsers.parseExternInterfaceReference(resolver, superCtx, superCtx.typeArguments(), (ExternInterfaceNode) superType, 0);
+			return TypeParsers.parseExternInterfaceReference(locator, resolver, superCtx, superCtx.typeArguments(), (ExternInterfaceNode) superType, 0);
 		} else {
 			throw new AssertionError();
 		}

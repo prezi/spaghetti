@@ -1,10 +1,18 @@
 package com.prezi.spaghetti.ast
 
+import com.prezi.spaghetti.ast.internal.parser.Locator
 import com.prezi.spaghetti.ast.internal.parser.TypeResolutionContext
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import spock.lang.Specification
 
 class AstTestBase extends Specification {
+	protected static Location mockLoc = new Location(ModuleDefinitionSource.fromString("mock", ""), -1, -1)
+
+	protected static Locator mockLocator(String definition) {
+		return new Locator(ModuleDefinitionSource.fromString("test", definition))
+	}
+
 	protected TypeResolver mockResolver(Map<String, Closure<TypeNode>> mocker = [:]) {
 		def resolver = Mock(TypeResolver)
 		resolver.resolveType(_) >> { args ->

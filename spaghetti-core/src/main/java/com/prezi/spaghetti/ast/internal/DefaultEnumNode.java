@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
@@ -16,8 +17,8 @@ public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, Mutab
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final NamedNodeSet<EnumValueNode> values = NodeSets.newNamedNodeSet("enum value");
 
-	public DefaultEnumNode(FQName qualifiedName) {
-		super(qualifiedName);
+	public DefaultEnumNode(Location location, FQName qualifiedName) {
+		super(location, qualifiedName);
 	}
 
 	@Override

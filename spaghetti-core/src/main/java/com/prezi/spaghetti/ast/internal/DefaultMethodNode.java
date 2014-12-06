@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodParameterNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
@@ -20,8 +21,8 @@ public class DefaultMethodNode extends AbstractNamedNode implements MutableMetho
 	private TypeReference returnType;
 	private final NamedNodeSet<MethodParameterNode> parameters = NodeSets.newNamedNodeSet("parameter");
 
-	public DefaultMethodNode(String name) {
-		super(name);
+	public DefaultMethodNode(Location location, String name) {
+		super(location, name);
 	}
 
 	@Override

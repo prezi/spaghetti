@@ -2,7 +2,6 @@ package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class KotlinConstGeneratorVisitorTest extends AstTestBase {
     def "generate"() {
@@ -23,7 +22,8 @@ class KotlinConstGeneratorVisitorTest extends AstTestBase {
             tibor = "tibor"
         }
         """
-        def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
+        def locator = mockLocator(definition)
+        def parser = ModuleParser.create(locator.source)
         def module = parser.parse(mockResolver())
         def visitor = new KotlinConstGeneratorVisitor()
 

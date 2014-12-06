@@ -1,12 +1,14 @@
 package com.prezi.spaghetti.ast.internal;
 
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.TypeReference;
 
 public abstract class AbstractTypeReference extends AbstractNode implements TypeReference {
 
 	private final int arrayDimensions;
 
-	public AbstractTypeReference(int arrayDimensions) {
+	public AbstractTypeReference(Location location, int arrayDimensions) {
+		super(location);
 		this.arrayDimensions = arrayDimensions;
 	}
 

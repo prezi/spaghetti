@@ -84,8 +84,6 @@ public final class ModuleDefinitionSource {
 
 	@Override
 	public String toString() {
-		return "ModuleDefinitionSource{" +
-				"location='" + location + '\'' +
-				'}';
+		return location;
 	}
 }

@@ -1,15 +1,15 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
-import spock.lang.Specification
 import spock.lang.Unroll
 
-class AnnotationParserTest extends Specification {
+class AnnotationParserTest extends AstTestBase {
 	@Unroll
 	def "FromContext: #annotationDecl"() {
-		def parserContext = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", annotationDecl))
-		def annotation = AnnotationsParser.fromContext(parserContext.parser.annotation())
+		def locator = mockLocator(annotationDecl)
+		def parserContext = ModuleDefinitionParser.createParser(locator.source)
+		def annotation = AnnotationsParser.fromContext(locator, parserContext.parser.annotation())
 
 		expect:
 		!parserContext.listener.inError
@@ -20,6 +20,7 @@ class AnnotationParserTest extends Specification {
 		}
 		annotation.parameters.sort() == params.sort()
 		annotation.parameters.collectEntries { name, value -> [name, value?.class] }.sort() == types.sort()
+		annotation.location.toString() == "test:1:1"
 
 		where:
 		annotationDecl                        | name    | defaultParam | params                     | types

@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class TypeScriptInterfaceGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -26,8 +25,8 @@ interface MyInterface<X> extends Parent<X> {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
-		def module = parser.parse(mockResolver())
+		def locator = mockLocator(definition)
+		def module = ModuleParser.create(locator.source).parse(mockResolver())
 		def visitor = new TypeScriptInterfaceGeneratorVisitor()
 
 		expect:

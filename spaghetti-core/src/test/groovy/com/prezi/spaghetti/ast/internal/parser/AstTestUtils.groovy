@@ -10,6 +10,10 @@ class AstTestUtils {
 		ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", data)).parser
 	}
 
+	static ModuleParser parser(Locator locator) {
+		ModuleDefinitionParser.createParser(locator.source).parser
+	}
+
 	static TypeResolver resolver(QualifiedTypeNode... nodes) {
 		return new SimpleNamedTypeResolver(MissingTypeResolver.INSTANCE, Arrays.asList(nodes))
 	}
