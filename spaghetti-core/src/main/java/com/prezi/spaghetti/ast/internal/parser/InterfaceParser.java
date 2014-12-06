@@ -47,7 +47,7 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 		}
 	}
 
-	private InterfaceReferenceBase parseSuperInterface(Locator locator, TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
+	private InterfaceReferenceBase<? extends InterfaceNodeBase> parseSuperInterface(Locator locator, TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
 		TypeNode superType = resolver.resolveType(TypeResolutionContext.create(superCtx.qualifiedName()));
 		if (!(superType instanceof InterfaceNodeBase)) {
 			throw new InternalAstParserException(superCtx, "Only interfaces can be super interfaces");
