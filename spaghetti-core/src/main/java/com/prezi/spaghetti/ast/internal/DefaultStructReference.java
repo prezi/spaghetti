@@ -13,7 +13,9 @@ public class DefaultStructReference extends AbstractParametrizedTypeNodeReferenc
 
 	@Override
 	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
-		return new DefaultStructReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
+		DefaultStructReference node = new DefaultStructReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
+		node.getArguments().addAll(getArguments());
+		return node;
 	}
 
 	@Override
