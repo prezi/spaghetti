@@ -1,11 +1,13 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.InterfaceNode;
+import com.prezi.spaghetti.ast.InterfaceNodeBase;
 import com.prezi.spaghetti.ast.InterfaceReferenceBase;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
@@ -13,13 +15,12 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implements InterfaceNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final Set<InterfaceReferenceBase> superInterfaces = new LinkedHashSet<InterfaceReferenceBase>();
+	private final Set<InterfaceReferenceBase<? extends InterfaceNodeBase>> superInterfaces = Sets.newLinkedHashSet();
 	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultInterfaceNode(Location location, FQName qualifiedName) {
@@ -52,7 +53,7 @@ public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implement
 	}
 
 	@Override
-	public Set<InterfaceReferenceBase> getSuperInterfaces() {
+	public Set<InterfaceReferenceBase<? extends InterfaceNodeBase>> getSuperInterfaces() {
 		return superInterfaces;
 	}
 
