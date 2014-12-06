@@ -5,7 +5,6 @@ import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.TypeChain
 import com.prezi.spaghetti.ast.TypeReference
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import spock.lang.Unroll
 
@@ -61,10 +60,11 @@ class TypeParsersTest extends AstTestBase {
 	}
 
 	protected <T extends TypeReference> T parse(Class<T> type, String definition) {
-		def parserContext = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition))
+		def locator = mockLocator(definition)
+		def parserContext = ModuleDefinitionParser.createParser(locator.source)
 		def context = parserContext.parser.returnType()
 		assert !parserContext.listener.inError
-		def returnType = TypeParsers.parseReturnType(mockResolver(), context)
+		def returnType = TypeParsers.parseReturnType(locator, mockResolver(), context)
 		assert type.isAssignableFrom(returnType.class)
 		return (T) returnType
 	}

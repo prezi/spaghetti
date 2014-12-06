@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.ast.AstNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode;
 import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference;
 import com.prezi.spaghetti.ast.TypeReference;
@@ -12,8 +13,8 @@ import java.util.List;
 public abstract class AbstractParametrizedTypeNodeReference<T extends ParametrizedReferableTypeNode> extends AbstractTypeNodeReference<T> implements ParametrizedTypeNodeReference<T> {
 	private final List<TypeReference> arguments = new ArrayList<TypeReference>();
 
-	public AbstractParametrizedTypeNodeReference(T type, int arrayDimensions) {
-		super(type, arrayDimensions);
+	public AbstractParametrizedTypeNodeReference(Location location, T type, int arrayDimensions) {
+		super(location, type, arrayDimensions);
 	}
 
 	@Override

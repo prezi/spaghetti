@@ -1,12 +1,13 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.TypeParameterNode;
 
 public class DefaultTypeParameterNode extends AbstractTypeNode implements TypeParameterNode {
-	public DefaultTypeParameterNode(String name) {
-		super(FQName.fromString(name));
+	public DefaultTypeParameterNode(Location location, String name) {
+		super(location, FQName.fromString(name));
 	}
 
 	@Override

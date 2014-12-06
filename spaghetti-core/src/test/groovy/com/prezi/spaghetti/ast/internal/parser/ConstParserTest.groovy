@@ -1,15 +1,15 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
 
 import static com.prezi.spaghetti.ast.PrimitiveType.BOOL
 import static com.prezi.spaghetti.ast.PrimitiveType.FLOAT
 import static com.prezi.spaghetti.ast.PrimitiveType.INT
 import static com.prezi.spaghetti.ast.PrimitiveType.STRING
 
-class ConstParserTest extends Specification {
+class ConstParserTest extends AstTestBase {
 	def "parse"() {
-		def context = AstTestUtils.parser("""
+		def locator = mockLocator("""
 const Values {
 	boolValue = false
 	bool explicitBoolValue = true
@@ -20,10 +20,10 @@ const Values {
 	stringValue = "bela"
 	string explicitStringValue = "lajos"
 }
-""").constDefinition()
-
+""")
+		def context = AstTestUtils.parser(locator).constDefinition()
 		def resolver = Mock(TypeResolver)
-		def parser = new ConstParser(context, "com.example.test")
+		def parser = new ConstParser(locator, context, "com.example.test")
 
 		when:
 		parser.parse(resolver)
@@ -31,11 +31,22 @@ const Values {
 
 		then:
 		node.name == "Values"
+		node.location.toString() == "test:2:6"
 		node.entries*.name == [
 				"boolValue", "explicitBoolValue",
 				"intValue", "explicitIntValue",
 				"floatValue", "explicitFloatValue",
 				"stringValue", "explicitStringValue",
+		]
+		node.entries*.location*.toString() == [
+				"test:3:1",
+				"test:4:6",
+				"test:5:1",
+				"test:6:5",
+				"test:7:1",
+				"test:8:7",
+				"test:9:1",
+				"test:10:8",
 		]
 		node.entries*.value == [
 				false, true,

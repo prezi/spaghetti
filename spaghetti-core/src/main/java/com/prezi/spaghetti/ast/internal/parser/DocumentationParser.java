@@ -9,7 +9,7 @@ import org.antlr.v4.runtime.Token;
 import java.util.List;
 
 public class DocumentationParser {
-	public static void parseDocumentation(Token documentation, MutableDocumentedNode node) {
+	public static void parseDocumentation(Locator locator, Token documentation, MutableDocumentedNode node) {
 		if (documentation != null) {
 			String text = documentation.getText();
 			List<String> lines = Lists.newArrayList(text.substring(3, text.length() - 3).trim().split("\\r?\\n?\\s*\\*\\s?"));
@@ -21,7 +21,7 @@ public class DocumentationParser {
 				lines.remove(lines.size() - 1);
 			}
 
-			node.setDocumentation(new DefaultDocumentationNode(lines));
+			node.setDocumentation(new DefaultDocumentationNode(locator.locate(documentation), lines));
 		}
 	}
 }

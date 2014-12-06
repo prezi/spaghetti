@@ -93,7 +93,7 @@ class NodeSetTest extends Specification {
 
 	private static class TestNode extends AbstractNamedNode {
 		TestNode(String name) {
-			super(name)
+			super(null, name)
 		}
 
 		@Override
@@ -107,7 +107,7 @@ class NodeSetTest extends Specification {
 		final FQName qualifiedName
 
 		TestQNode(FQName qualifiedName) {
-			super(qualifiedName.localName)
+			super(null, qualifiedName.localName)
 			this.qualifiedName = qualifiedName
 		}
 

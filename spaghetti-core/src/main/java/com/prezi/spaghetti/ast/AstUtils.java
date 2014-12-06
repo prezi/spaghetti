@@ -37,7 +37,7 @@ public class AstUtils {
 			return node;
 		} else if (node instanceof TypeChain) {
 			TypeChain typeChain = (TypeChain) node;
-			DefaultTypeChain result = new DefaultTypeChain(typeChain.getArrayDimensions());
+			DefaultTypeChain result = new DefaultTypeChain(typeChain.getLocation(), typeChain.getArrayDimensions());
 			for (TypeReference elem : typeChain.getElements()) {
 				result.getElements().add(resolveTypeParameters(elem, bindings));
 			}
@@ -50,13 +50,13 @@ public class AstUtils {
 			ParametrizedTypeNodeReference<?> result;
 			if (node instanceof StructReference) {
 				StructReference structRef = (StructReference) node;
-				result = new DefaultStructReference(structRef.getType(), structRef.getArrayDimensions());
+				result = new DefaultStructReference(structRef.getLocation(), structRef.getType(), structRef.getArrayDimensions());
 			} else if(node instanceof InterfaceReference) {
 				InterfaceReference ifaceRef = (InterfaceReference) node;
-				result = new DefaultInterfaceReference(ifaceRef.getType(), ifaceRef.getArrayDimensions());
+				result = new DefaultInterfaceReference(ifaceRef.getLocation(), ifaceRef.getType(), ifaceRef.getArrayDimensions());
 			} else if (node instanceof ExternInterfaceReference) {
 				ExternInterfaceReference externRef = (ExternInterfaceReference) node;
-				result = new DefaultExternInterfaceReference(externRef.getType(), externRef.getArrayDimensions());
+				result = new DefaultExternInterfaceReference(externRef.getLocation(), externRef.getType(), externRef.getArrayDimensions());
 			} else {
 				throw new AssertionError("Unknown parametrized type: " + node.getClass());
 			}
@@ -84,14 +84,14 @@ public class AstUtils {
 	@SuppressWarnings("deprecation")
 	public static MethodNode resolveTypeParameters(MethodNode methodNode, Map<TypeParameterNode, TypeReference> bindings) {
 		TypeReference returnType = resolveTypeParameters(methodNode.getReturnType(), bindings);
-		DefaultMethodNode result = new DefaultMethodNode(methodNode.getName());
+		DefaultMethodNode result = new DefaultMethodNode(methodNode.getLocation(), methodNode.getName());
 		result.setDocumentation(methodNode.getDocumentation());
 		result.getAnnotations().addAll(methodNode.getAnnotations());
 		result.getTypeParameters().addAll(methodNode.getTypeParameters());
 		result.setReturnType(returnType);
 		for (MethodParameterNode param : methodNode.getParameters()) {
 			TypeReference type = resolveTypeParameters(param.getType(), bindings);
-			DefaultMethodParameterNode resultParam = new DefaultMethodParameterNode(param.getName(), type, param.isOptional());
+			DefaultMethodParameterNode resultParam = new DefaultMethodParameterNode(param.getLocation(), param.getName(), type, param.isOptional());
 			resultParam.getAnnotations().addAll(param.getAnnotations());
 			result.getParameters().add(resultParam);
 		}

@@ -1,9 +1,8 @@
 package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
 import com.prezi.spaghetti.ast.internal.parser.EnumParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
-import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 
 class KotlinEnumGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -17,8 +16,9 @@ class KotlinEnumGeneratorVisitorTest extends AstTestBase {
 	GEZA
 }
 """
-		def context = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition)).parser.enumDefinition()
-		def parser = new EnumParser(context, "com.example.test")
+		def locator = mockLocator(definition)
+		def context = AstTestUtils.parser(locator).enumDefinition()
+		def parser = new EnumParser(locator, context, "com.example.test")
 		parser.parse(mockResolver())
 		def visitor = new KotlinEnumGeneratorVisitor()
 

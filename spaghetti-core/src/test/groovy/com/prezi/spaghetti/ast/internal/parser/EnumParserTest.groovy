@@ -1,18 +1,18 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import spock.lang.Specification
+import com.prezi.spaghetti.ast.AstTestBase
 
-class EnumParserTest extends Specification {
+class EnumParserTest extends AstTestBase {
 	def "parse"() {
-		def context = AstTestUtils.parser("""
+		def locator = mockLocator("""
 enum MyEnum {
 	alma
 	bela
 }
-""").enumDefinition()
-
+""")
+		def context = AstTestUtils.parser(locator).enumDefinition()
 		def resolver = Mock(TypeResolver)
-		def parser = new EnumParser(context, "com.example.test")
+		def parser = new EnumParser(locator, context, "com.example.test")
 
 		when:
 		parser.parse(resolver)

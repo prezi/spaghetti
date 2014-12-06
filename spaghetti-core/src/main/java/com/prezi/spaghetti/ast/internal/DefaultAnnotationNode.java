@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Joiner;
 import com.prezi.spaghetti.ast.AnnotationNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
 import java.util.Map;
@@ -9,8 +10,8 @@ import java.util.Map;
 public class DefaultAnnotationNode extends AbstractNamedNode implements AnnotationNode {
 	private final Map<String, Object> parameters;
 
-	public DefaultAnnotationNode(String name, Map<String, Object> parameters) {
-		super(name);
+	public DefaultAnnotationNode(Location location, String name, Map<String, Object> parameters) {
+		super(location, name);
 		this.parameters = parameters;
 	}
 

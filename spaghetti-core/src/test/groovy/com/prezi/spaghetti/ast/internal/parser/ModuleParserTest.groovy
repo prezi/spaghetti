@@ -3,7 +3,6 @@ package com.prezi.spaghetti.ast.internal.parser
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.StructNode
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class ModuleParserTest extends AstTestBase {
 	def "parse single"() {
@@ -24,8 +23,8 @@ struct MyStruct {
 interface Lajos extends Iterable<string> {
 }
 """
-
-		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
+		def locator = mockLocator(definition)
+		def parser = ModuleParser.create(locator.source)
 
 		when:
 		parser.parse(mockResolver())
@@ -47,12 +46,12 @@ interface Lajos extends Iterable<string> {
 	}
 
 	def "parse import"() {
-		def moduleADef = """module test.a
+		def locatorA = mockLocator("""module test.a
 enum A1 {}
 struct A2 {}
 interface A3 {}
-"""
-		def moduleBDef = """module test.b
+""")
+		def locatorB = mockLocator("""module test.b
 import test.a.A1
 import test.a.A2 as AX
 
@@ -61,11 +60,11 @@ struct MyStruct {
 	AX a2
 	test.a.A3 a3
 }
-"""
+""")
 		def resolver = mockResolver()
-		def moduleA = ModuleParser.create(ModuleDefinitionSource.fromString("test", moduleADef)).parse(resolver)
+		def moduleA = ModuleParser.create(locatorA.source).parse(resolver)
 		resolver = new ModuleTypeResolver(resolver, moduleA)
-		def moduleB = ModuleParser.create(ModuleDefinitionSource.fromString("test", moduleBDef)).parse(resolver)
+		def moduleB = ModuleParser.create(locatorB.source).parse(resolver)
 		StructNode struct = moduleB.types.get(FQName.fromString("test.b.MyStruct")) as StructNode
 
 		expect:

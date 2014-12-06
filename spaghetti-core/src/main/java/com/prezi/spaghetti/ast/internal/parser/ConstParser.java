@@ -8,14 +8,14 @@ import com.prezi.spaghetti.ast.internal.DefaultConstNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefinitionContext, ConstNode> {
-	public ConstParser(ModuleParser.ConstDefinitionContext context, String moduleName) {
-		super(context, createNode(context, moduleName));
+	public ConstParser(Locator locator, ModuleParser.ConstDefinitionContext context, String moduleName) {
+		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static ConstNode createNode(ModuleParser.ConstDefinitionContext context, String moduleName) {
-		DefaultConstNode node = new DefaultConstNode(FQName.fromString(moduleName, context.Name().getText()));
-		AnnotationsParser.parseAnnotations(context.annotations(), node);
-		DocumentationParser.parseDocumentation(context.documentation, node);
+	private static ConstNode createNode(Locator locator, ModuleParser.ConstDefinitionContext context, String moduleName) {
+		DefaultConstNode node = new DefaultConstNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
+		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 		return node;
 	}
 
@@ -44,9 +44,9 @@ public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefi
 				throw new InternalAstParserException(entryDeclCtx, "Unknown primitive type");
 			}
 
-			DefaultConstEntryNode entry = new DefaultConstEntryNode(name, type, value);
-			AnnotationsParser.parseAnnotations(entryCtx.annotations(), entry);
-			DocumentationParser.parseDocumentation(entryCtx.documentation, entry);
+			DefaultConstEntryNode entry = new DefaultConstEntryNode(locator.locate(entryDeclCtx.Name()), name, type, value);
+			AnnotationsParser.parseAnnotations(locator, entryCtx.annotations(), entry);
+			DocumentationParser.parseDocumentation(locator, entryCtx.documentation, entry);
 			getNode().getEntries().add(entry, entryCtx);
 		}
 	}

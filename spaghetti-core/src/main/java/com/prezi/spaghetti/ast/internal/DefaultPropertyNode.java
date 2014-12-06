@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
@@ -13,8 +14,8 @@ public class DefaultPropertyNode extends AbstractTypeNamePairNode<TypeReference>
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final boolean optional;
 
-	public DefaultPropertyNode(String name, TypeReference type, boolean optional) {
-		super(name, type);
+	public DefaultPropertyNode(Location location, String name, TypeReference type, boolean optional) {
+		super(location, name, type);
 		this.optional = optional;
 	}
 

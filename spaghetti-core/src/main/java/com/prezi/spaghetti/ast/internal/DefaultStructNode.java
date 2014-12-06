@@ -5,6 +5,7 @@ import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
@@ -18,8 +19,8 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
 	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
-	public DefaultStructNode(FQName qualifiedName) {
-		super(qualifiedName);
+	public DefaultStructNode(Location location, FQName qualifiedName) {
+		super(location, qualifiedName);
 	}
 
 	@Override

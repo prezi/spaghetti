@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceReferenceBase;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
@@ -21,8 +22,8 @@ public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implement
 	private final Set<InterfaceReferenceBase> superInterfaces = new LinkedHashSet<InterfaceReferenceBase>();
 	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
-	public DefaultInterfaceNode(FQName qualifiedName) {
-		super(qualifiedName);
+	public DefaultInterfaceNode(Location location, FQName qualifiedName) {
+		super(location, qualifiedName);
 	}
 
 	@Override

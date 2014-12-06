@@ -16,7 +16,8 @@ enum MyEnum {
 	BELA
 }
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
+		def locator = mockLocator(definition)
+		def module = ModuleParser.create(locator.source).parse(mockResolver())
 		def visitor = new TypeScriptEnumGeneratorVisitor()
 
 		expect:

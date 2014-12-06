@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.DocumentationNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.List;
 public class DefaultDocumentationNode extends AbstractNode implements DocumentationNode {
 	private final List<String> documentation;
 
-	public DefaultDocumentationNode(List<String> documentation) {
+	public DefaultDocumentationNode(Location location, List<String> documentation) {
+		super(location);
 		this.documentation = documentation;
 	}
 

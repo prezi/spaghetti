@@ -5,9 +5,8 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.TypeParameterNode
+import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
 import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
-import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 
 class KotlinInterfaceGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -21,8 +20,9 @@ class KotlinInterfaceGeneratorVisitorTest extends AstTestBase {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def context = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition)).parser.interfaceDefinition()
-		def parser = new InterfaceParser(context, "com.example.test")
+		def locator = mockLocator(definition)
+		def context = AstTestUtils.parser(locator).interfaceDefinition()
+		def parser = new InterfaceParser(locator, context, "com.example.test")
 		parser.parse(mockResolver([
 		        "Tibor": {
 					def superIface = Mock(InterfaceNode)

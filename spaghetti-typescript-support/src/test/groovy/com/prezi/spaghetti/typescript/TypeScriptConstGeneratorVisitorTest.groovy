@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
 class TypeScriptConstGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -21,7 +20,8 @@ const MyConstants {
 	tibor = "tibor"
 }
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
+		def locator = mockLocator(definition)
+		def module = ModuleParser.create(locator.source).parse(mockResolver())
 		def visitor = new TypeScriptConstGeneratorVisitor()
 
 		expect:

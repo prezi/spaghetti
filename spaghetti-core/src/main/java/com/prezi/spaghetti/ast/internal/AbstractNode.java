@@ -4,11 +4,18 @@ import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.AnnotatedNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentedNode;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
 import java.util.ArrayList;
 
 public abstract class AbstractNode implements AstNode {
+	private final Location location;
+
+	protected AbstractNode(Location location) {
+		this.location = location;
+	}
+
 	@Override
 	public <T> T accept(ModuleVisitor<T> visitor) {
 		T result = visitor.beforeVisit(this);
@@ -34,6 +41,11 @@ public abstract class AbstractNode implements AstNode {
 		}
 
 		return children;
+	}
+
+	@Override
+	public Location getLocation() {
+		return location;
 	}
 
 	protected abstract <T> T acceptInternal(ModuleVisitor<? extends T> visitor);

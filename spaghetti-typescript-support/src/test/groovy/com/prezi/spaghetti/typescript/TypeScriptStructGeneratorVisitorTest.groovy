@@ -1,9 +1,8 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
 import com.prezi.spaghetti.ast.internal.parser.StructParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
-import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 
 class TypeScriptStructGeneratorVisitorTest extends AstTestBase {
 	def "generate"() {
@@ -21,8 +20,9 @@ struct MyStruct<T> {
 	T convert(T value)
 }
 """
-		def context = ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", definition)).parser.structDefinition()
-		def parser = new StructParser(context, "com.example.test")
+		def locator = mockLocator(definition)
+		def context = AstTestUtils.parser(locator).structDefinition()
+		def parser = new StructParser(locator, context, "com.example.test")
 		parser.parse(mockResolver())
 		def visitor = new TypeScriptStructGeneratorVisitor()
 

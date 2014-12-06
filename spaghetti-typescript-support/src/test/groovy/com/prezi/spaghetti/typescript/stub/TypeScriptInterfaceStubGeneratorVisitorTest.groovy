@@ -10,6 +10,7 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	T getSomeT()
 }
 """
+		def locatorTibor = mockLocator(definitionTibor)
 		def definition = """interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
@@ -25,9 +26,10 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def tibor = new InterfaceParser(AstTestUtils.parser(definitionTibor).interfaceDefinition(), "com.example.test")
+		def locator = mockLocator(definition)
+		def tibor = new InterfaceParser(locatorTibor, AstTestUtils.parser(definitionTibor).interfaceDefinition(), "com.example.test")
 		tibor.parse(AstTestUtils.resolver())
-		def parser = new InterfaceParser(AstTestUtils.parser(definition).interfaceDefinition(), "com.example.test")
+		def parser = new InterfaceParser(locator, AstTestUtils.parser(definition).interfaceDefinition(), "com.example.test")
 		parser.parse(AstTestUtils.resolver(tibor.node))
 		def iface = parser.node
 		def visitor = new TypeScriptInterfaceStubGeneratorVisitor()

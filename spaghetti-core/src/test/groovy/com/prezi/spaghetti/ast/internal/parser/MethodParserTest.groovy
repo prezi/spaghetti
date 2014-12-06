@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.ast.internal.parser
 
+import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.MethodParameterNode
@@ -10,17 +11,17 @@ import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.ast.internal.MutableMethodNode
-import spock.lang.Specification
 
-class MethodParserTest extends Specification {
+class MethodParserTest extends AstTestBase {
 	def "parse simple"() {
-		def context = AstTestUtils.parser("int add(int a, int b)").methodDefinition()
+		def locator = mockLocator("int add(int a, int b)")
+		def context = AstTestUtils.parser(locator).methodDefinition()
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MutableMethodNode)
 		def params = Mock(NamedNodeSet)
 
 		when:
-		MethodParser.parseMethodDefinition(resolver, context, method)
+		MethodParser.parseMethodDefinition(locator, resolver, context, method)
 
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
@@ -32,7 +33,8 @@ class MethodParserTest extends Specification {
 	}
 
 	def "parse struct and interface"() {
-		def context = AstTestUtils.parser("StructA method(MyInterface i)").methodDefinition()
+		def locator = mockLocator("StructA method(MyInterface i)")
+		def context = AstTestUtils.parser(locator).methodDefinition()
 		def mockStructA = Mock(StructNode)
 		def mockIfaceI = Mock(InterfaceNode)
 		def resolver = Mock(TypeResolver)
@@ -40,7 +42,7 @@ class MethodParserTest extends Specification {
 		def params = Mock(NamedNodeSet)
 
 		when:
-		MethodParser.parseMethodDefinition(resolver, context, method)
+		MethodParser.parseMethodDefinition(locator, resolver, context, method)
 
 		then:
 		_ * resolver.resolveType(_) >> { TypeResolutionContext ctx ->
@@ -61,14 +63,15 @@ class MethodParserTest extends Specification {
 	}
 
 	def "parse generic"() {
-		def context = AstTestUtils.parser("T method(T t)").methodDefinition()
+		def locator = mockLocator("T method(T t)")
+		def context = AstTestUtils.parser(locator).methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MutableMethodNode)
 		def params = Mock(NamedNodeSet)
 
 		when:
-		MethodParser.parseMethodDefinition(resolver, context, method)
+		MethodParser.parseMethodDefinition(locator, resolver, context, method)
 
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameter", [ typeParam ].toSet())
@@ -80,13 +83,14 @@ class MethodParserTest extends Specification {
 	}
 
 	def "parse optional"() {
-		def context = AstTestUtils.parser("void method(string a, ?int b, ?string c)").methodDefinition()
+		def locator = mockLocator("void method(string a, ?int b, ?string c)")
+		def context = AstTestUtils.parser(locator).methodDefinition()
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MutableMethodNode)
 		def params = Mock(NamedNodeSet)
 
 		when:
-		MethodParser.parseMethodDefinition(resolver, context, method)
+		MethodParser.parseMethodDefinition(locator, resolver, context, method)
 
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
@@ -111,14 +115,15 @@ class MethodParserTest extends Specification {
 	}
 
 	def "parse wrong optional"() {
-		def context = AstTestUtils.parser("void method(?int a, int b, ?int c)").methodDefinition()
+		def locator = mockLocator("void method(?int a, int b, ?int c)")
+		def context = AstTestUtils.parser(locator).methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MutableMethodNode)
 		def params = Mock(NamedNodeSet)
 
 		when:
-		MethodParser.parseMethodDefinition(resolver, context, method)
+		MethodParser.parseMethodDefinition(locator, resolver, context, method)
 
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
