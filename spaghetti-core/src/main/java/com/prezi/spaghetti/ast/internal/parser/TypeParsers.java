@@ -10,6 +10,7 @@ import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode;
 import com.prezi.spaghetti.ast.PrimitiveType;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.StructNode;
+import com.prezi.spaghetti.ast.StructReference;
 import com.prezi.spaghetti.ast.TypeChain;
 import com.prezi.spaghetti.ast.TypeNode;
 import com.prezi.spaghetti.ast.TypeNodeReference;
@@ -116,8 +117,7 @@ public class TypeParsers {
 		} else if (type instanceof ExternInterfaceNode) {
 			result = parseExternInterfaceReference(locator, resolver, context, context.typeArguments(), (ExternInterfaceNode) type, dimensions);
 		} else if (type instanceof StructNode) {
-			checkTypeArguments(context.typeArguments(), "Struct");
-			result = new DefaultStructReference(locator.locate(context.qualifiedName()), (StructNode) type, dimensions);
+			result = parseStructReference(locator, resolver, context, context.typeArguments(), (StructNode) type, dimensions);
 		} else if (type instanceof EnumNode) {
 			checkTypeArguments(context.typeArguments(), "Enum");
 			result = new DefaultEnumReference(locator.locate(context.qualifiedName()), (EnumNode) type, dimensions);
@@ -135,6 +135,11 @@ public class TypeParsers {
 		if (context != null && context.returnType() != null) {
 			throw new InternalAstParserException(context, what + " cannot accept type arguments");
 		}
+	}
+
+	protected static StructReference parseStructReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, StructNode type, int arrayDimensions) {
+		DefaultStructReference ifaceRef = new DefaultStructReference(locator.locate(typeCtx), type, arrayDimensions);
+		return parseParametrizedTypeNodeReference(locator, ifaceRef, resolver, typeCtx, argsCtx, type);
 	}
 
 	protected static InterfaceReference parseInterfaceReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, InterfaceNode type, int arrayDimensions) {

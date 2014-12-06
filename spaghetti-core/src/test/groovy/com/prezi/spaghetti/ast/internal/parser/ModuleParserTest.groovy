@@ -15,13 +15,16 @@ enum MyEnum {
 	bela
 }
 
-struct MyStruct {
+struct MyStruct<T> {
 	MyEnum en
 	JSON str
+	T value
 }
 
 interface Lajos extends Iterable<string> {
 }
+
+MyStruct<string> createStruct()
 """
 		def locator = mockLocator(definition)
 		def parser = ModuleParser.create(locator.source)
@@ -41,6 +44,9 @@ interface Lajos extends Iterable<string> {
 		module.externTypes*.qualifiedName*.toString().asList() == [
 				"JSON",
 				"Iterable"
+		]
+		module.methods*.name == [
+		        "createStruct"
 		]
 		0 * _
 	}
