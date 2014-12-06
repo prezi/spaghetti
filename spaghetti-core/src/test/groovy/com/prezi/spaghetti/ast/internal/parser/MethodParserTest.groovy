@@ -55,6 +55,7 @@ class MethodParserTest extends AstTestBase {
 			throw new UnsupportedOperationException()
 		}
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
+		_ * mockStructA.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
 		_ * mockIfaceI.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		1 * method.setReturnType({ it.type == mockStructA })

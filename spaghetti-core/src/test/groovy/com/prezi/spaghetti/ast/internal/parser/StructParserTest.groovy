@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.internal.parser
 
 import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterReference
 
@@ -75,6 +76,7 @@ struct StructB {
 		def node = parser.node
 
 		then:
+		_ * mockStructA.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		1 * resolver.resolveType(_) >> { TypeResolutionContext ctx ->
 			if (ctx.name.fullyQualifiedName == "StructA") {
 				return mockStructA
