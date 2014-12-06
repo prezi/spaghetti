@@ -20,7 +20,13 @@ enum MyEnum {
 
 		then:
 		node.name == "MyEnum"
-		node.values*.name.toList() == ["alma", "bela"]
+		node.values*.name.toList() == [
+				"alma", "bela"
+		]
+		node.values*.location*.toString() == [
+				"test:3:1",
+				"test:4:1"
+		]
 		0 * _
 	}
 }

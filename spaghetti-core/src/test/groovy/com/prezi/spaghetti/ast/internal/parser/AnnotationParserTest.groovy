@@ -20,6 +20,7 @@ class AnnotationParserTest extends AstTestBase {
 		}
 		annotation.parameters.sort() == params.sort()
 		annotation.parameters.collectEntries { name, value -> [name, value?.class] }.sort() == types.sort()
+		annotation.location.toString() == "test:1:1"
 
 		where:
 		annotationDecl                        | name    | defaultParam | params                     | types
