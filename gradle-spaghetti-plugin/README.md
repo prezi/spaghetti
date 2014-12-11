@@ -117,7 +117,7 @@ Read more here about [why and how externs can be useful](https://developers.goog
 ### Packaging applications
 
 ```groovy
-task packageApplication(type: com.prezi.spaghetti.gradle.BundleApplication) {
+task packageApplication(type: com.prezi.spaghetti.gradle.PackageApplication) {
     // Dependent module bundles
     // Accepts all parameters as project.files()
     dependentModules <files...>
