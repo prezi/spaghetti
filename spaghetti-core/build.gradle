@@ -73,4 +73,5 @@ task run(type: Exec) {
 
 artifacts {
 	testCompile(testJar)
+	archives(testJar)
 }
