@@ -69,10 +69,6 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		// We'll be needing a "js" platform
 		haxeExtension.getTargetPlatforms().maybeCreate("js");
 
-		// Tests should always depend on modules
-		Configuration testConfiguration = project.getConfigurations().getByName("test");
-		testConfiguration.extendsFrom(spaghettiExtension.getConfiguration());
-
 		// Add Spaghetti generated sources to compile and source tasks
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
