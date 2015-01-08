@@ -3,11 +3,11 @@ package com.prezi.spaghetti.gradle;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
-import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiGeneratedSourceSet;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiResourceSet;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiSourceSet;
+import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModule;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
@@ -83,9 +83,9 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		resourcesTask.dependsOn(spaghettiResourceSet);
 		resourcesTask.from(spaghettiResourceSet.getSource());
 
-		project.getTasks().withType(AbstractDefinitionAwareSpaghettiTask.class).all(new Action<AbstractDefinitionAwareSpaghettiTask>() {
+		project.getTasks().withType(DefinitionAwareSpaghettiTask.class).all(new Action<DefinitionAwareSpaghettiTask>() {
 			@Override
-			public void execute(AbstractDefinitionAwareSpaghettiTask task) {
+			public void execute(DefinitionAwareSpaghettiTask task) {
 				task.getConventionMapping().map("definition", new Callable<File>() {
 					@Override
 					public File call() throws Exception {
@@ -94,7 +94,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 				});
 			}
-
 		});
 		project.getTasks().withType(AbstractBundleModuleTask.class).all(new Action<AbstractBundleModuleTask>() {
 			@Override

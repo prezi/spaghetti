@@ -4,7 +4,7 @@ import org.gradle.api.tasks.InputFile;
 
 import java.io.File;
 
-public class AbstractDefinitionAwareSpaghettiTask extends AbstractLanguageAwareSpaghettiTask {
+public class AbstractDefinitionAwareSpaghettiTask extends AbstractLanguageAwareSpaghettiTask implements DefinitionAwareSpaghettiTask {
 	private File definition;
 
 	@InputFile
