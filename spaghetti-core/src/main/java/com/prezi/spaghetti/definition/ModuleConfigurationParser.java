@@ -1,5 +1,8 @@
 package com.prezi.spaghetti.definition;
 
+import com.google.common.base.Function;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
@@ -8,8 +11,11 @@ import com.prezi.spaghetti.ast.internal.parser.MissingTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser;
 import com.prezi.spaghetti.ast.internal.parser.ModuleTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
+import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.internal.DefaultModuleConfiguration;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -21,31 +27,59 @@ public final class ModuleConfigurationParser {
 	/**
 	 * Parses module definitions for a module.
 	 *
-	 * @param localModuleSource      the source of the local module.
-	 * @param dependentModuleSources the sources of dependent modules.
-	 * @return the loaded module configuration.
+	 * @param localModuleSource the source of the local module.
+	 * @param dependencies      the loaded bundles.
+	 * @return the parsed module configuration.
 	 */
-	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> dependentModuleSources) {
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, ModuleBundleSet dependencies) {
+		Collection<ModuleDefinitionSource> directSources = makeModuleSources(dependencies.getDirectBundles());
+		Collection<ModuleDefinitionSource> transitiveSources = makeModuleSources(dependencies.getTransitiveBundles());
+		return parse(localModuleSource, directSources, transitiveSources);
+	}
+
+	private static Collection<ModuleDefinitionSource> makeModuleSources(Set<ModuleBundle> bundles) {
+		return Collections2.transform(bundles, new Function<ModuleBundle, ModuleDefinitionSource>() {
+			@Override
+			public ModuleDefinitionSource apply(ModuleBundle bundle) {
+				try {
+					return ModuleDefinitionSource.fromBundle(bundle);
+				} catch (IOException e) {
+					throw Throwables.propagate(e);
+				}
+			}
+		});
+	}
+
+	/**
+	 * Parses module definitions for a module.
+	 *
+	 * @param localModuleSource       the source of the local module.
+	 * @param directModuleSources     the sources of directly dependent modules.
+	 * @param transitiveModuleSources the sources of transitively dependent modules.
+	 * @return the parsed module configuration.
+	 */
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, Collection<ModuleDefinitionSource> directModuleSources, Collection<ModuleDefinitionSource> transitiveModuleSources) {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
-		DefaultModuleConfiguration configNode = new DefaultModuleConfiguration();
 
-		Collection<ModuleParser> dependentParsers = createParsersFor(dependentModuleSources);
 		Collection<ModuleParser> localParsers = createParsersFor(Collections.singleton(localModuleSource));
+		Collection<ModuleParser> directParsers = createParsersFor(directModuleSources);
+		Collection<ModuleParser> transitiveParsers = createParsersFor(transitiveModuleSources);
 
-		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, dependentParsers));
+		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParsers, transitiveParsers));
 
 		Set<ModuleNode> localModules = Sets.newLinkedHashSet();
-		parsedModules(resolver, dependentParsers, configNode.getDependentModules(), parsedModules);
-		parsedModules(resolver, localParsers, localModules, parsedModules);
+		Set<ModuleNode> directDependentModules = Sets.newLinkedHashSet();
+		Set<ModuleNode> transitiveDependentModules = Sets.newLinkedHashSet();
+		parseModules(resolver, transitiveParsers, transitiveDependentModules, parsedModules);
+		parseModules(resolver, directParsers, directDependentModules, parsedModules);
+		parseModules(resolver, localParsers, localModules, parsedModules);
 		if (localModules.isEmpty()) {
 			throw new IllegalStateException("No local module found");
 		}
 		if (localModules.size() > 1) {
 			throw new IllegalStateException("More than one local module found: " + localModules);
 		}
-		configNode.setLocalModule(Iterables.getOnlyElement(localModules));
-
-		return configNode;
+		return new DefaultModuleConfiguration(Iterables.getOnlyElement(localModules), directDependentModules, transitiveDependentModules);
 	}
 
 	private static Collection<ModuleParser> createParsersFor(Collection<ModuleDefinitionSource> sources) {
@@ -64,7 +98,7 @@ public final class ModuleConfigurationParser {
 		return resolver;
 	}
 
-	private static void parsedModules(TypeResolver resolver, Collection<ModuleParser> parsers, Collection<ModuleNode> moduleNodes, Set<String> allModuleNames) {
+	private static void parseModules(TypeResolver resolver, Collection<ModuleParser> parsers, Collection<ModuleNode> moduleNodes, Set<String> allModuleNames) {
 		for (ModuleParser parser : parsers) {
 			ModuleNode module = parser.parse(resolver);
 			if (allModuleNames.contains(module.getName())) {

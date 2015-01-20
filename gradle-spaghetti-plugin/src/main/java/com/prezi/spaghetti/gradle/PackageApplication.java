@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
-import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationType;
@@ -13,7 +13,6 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import static com.prezi.spaghetti.gradle.internal.TextFileUtils.getText;
@@ -145,7 +144,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 	@TaskAction
 	@SuppressWarnings("UnusedDeclaration")
 	public void makeBundle() throws IOException {
-		Set<ModuleBundle> bundles = lookupBundles();
+		ModuleBundleSet bundles = lookupBundles();
 		getLogger().info("Creating {} application in {}", getType().getDescription(), getOutputDirectory());
 		getType().getPackager().packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles,

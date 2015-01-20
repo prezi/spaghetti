@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.cli.commands;
 
-import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationType;
 import com.prezi.spaghetti.structure.OutputType;
@@ -9,7 +9,6 @@ import io.airlift.command.Option;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.Set;
 
 @Command(name = "package", description = "Package an application")
 public class PackageApplicationCommand extends AbstractSpaghettiCommand {
@@ -44,7 +43,7 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 		OutputType type = OutputType.fromString(this.type, output);
 		ApplicationType wrapper = ApplicationType.fromString(this.wrapper);
 
-		Set<ModuleBundle> bundles = parseBundles(dependencyPath);
+		ModuleBundleSet bundles = lookupBundles();
 
 		ApplicationPackageParameters params = new ApplicationPackageParameters(
 				bundles,

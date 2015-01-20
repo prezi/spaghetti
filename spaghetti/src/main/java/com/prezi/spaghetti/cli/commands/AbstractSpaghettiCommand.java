@@ -1,29 +1,24 @@
 package com.prezi.spaghetti.cli.commands;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.google.common.collect.Lists;
+import com.prezi.spaghetti.bundle.ModuleBundleLoader;
+import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import io.airlift.command.Option;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 public abstract class AbstractSpaghettiCommand extends AbstractCommand {
-	@Option(name = {"-d", "--dependency-path"},
-			description = "List of dependent module bundles separated by colon (':')")
-	protected String dependencyPath;
+	@Option(name = {"-d", "--dependent-module", "--direct-dependent-module"},
+			description = "Specifies a (directly) dependent module bundle file")
+	protected List<File> directDependencies = Lists.newArrayList();
 
-	protected static Set<ModuleBundle> parseBundles(String path) throws IOException {
-		Set<ModuleBundle> bundles = Sets.newLinkedHashSet();
-		if (!Strings.isNullOrEmpty(path)) {
-			for (String bundlePath : path.split(":")) {
-				File bundleFile = new File(bundlePath);
-				ModuleBundle bundle = ModuleBundleFactory.load(bundleFile);
-				bundles.add(bundle);
-			}
-		}
-		return bundles;
+	@Option(name = {"-t", "--transitive-dependent-module"},
+			description = "Specifies a (transitively) dependent module bundle file")
+	protected List<File> transitiveDependencies = Lists.newArrayList();
+
+	protected ModuleBundleSet lookupBundles() throws IOException {
+		return ModuleBundleLoader.loadBundles(directDependencies, transitiveDependencies);
 	}
 }

@@ -10,13 +10,31 @@ import java.util.SortedSet;
 public interface ModuleConfiguration {
 	/**
 	 * Returns the local module.
+	 *
+	 * @return the local module.
 	 */
 	ModuleNode getLocalModule();
 
 	/**
-	 * Returns dependencies of the local module.
+	 * Returns direct dependencies of the local module.
+	 *
+	 * @return direct dependencies of the local module.
 	 */
-	SortedSet<ModuleNode> getDependentModules();
+	SortedSet<ModuleNode> getDirectDependentModules();
+
+	/**
+	 * Returns transitive dependencies of the local module.
+	 *
+	 * @return transitive dependencies of the local module.
+	 */
+	SortedSet<ModuleNode> getTransitiveDependentModules();
+
+	/**
+	 * Returns all dependencies of the local module, including both direct and transitive dependencies.
+	 *
+	 * @return all dependencies of the local module.
+	 */
+	SortedSet<ModuleNode> getAllDependentModules();
 
 	/**
 	 * Returns all modules in the configuration, including the local module and its dependencies.

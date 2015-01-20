@@ -1,8 +1,6 @@
 package com.prezi.spaghetti.gradle.internal;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
@@ -13,8 +11,6 @@ import org.gradle.api.tasks.InputFiles;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Set;
 
 public class AbstractSpaghettiTask extends ConventionTask {
 	private ConfigurableFileCollection dependentModules = getProject().files();
@@ -63,8 +59,8 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		dependentModule(additionalDependentModules);
 	}
 
-	protected Set<ModuleBundle> lookupBundles() throws IOException {
-		return ModuleBundleLookup.lookup(getDependentModules());
+	protected ModuleBundleSet lookupBundles() throws IOException {
+		return ModuleBundleLookup.lookup(getProject(), getDependentModules());
 	}
 
 	public ModuleConfiguration readConfig(File definition) throws IOException {
@@ -78,22 +74,9 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	private ModuleConfiguration readConfigInternal(ModuleDefinitionSource localDefinition) throws IOException {
-		Collection<ModuleDefinitionSource> sources = makeModuleSources(lookupBundles());
-		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, sources);
+		ModuleBundleSet bundles = lookupBundles();
+		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, bundles);
 		getLogger().info("Loaded configuration: {}", config);
 		return config;
-	}
-
-	private static Collection<ModuleDefinitionSource> makeModuleSources(Set<ModuleBundle> bundles) {
-		return Collections2.transform(bundles, new Function<ModuleBundle, ModuleDefinitionSource>() {
-			@Override
-			public ModuleDefinitionSource apply(ModuleBundle bundle) {
-				try {
-					return ModuleDefinitionSource.fromBundle(bundle);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
 	}
 }
