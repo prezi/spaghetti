@@ -61,7 +61,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				addSpaghettiSourceSet(project, spaghettiGeneratedSourceSet, TypeScriptBinaryBase.class, "spaghetti");
+				addSpaghettiSourceSet(project, spaghettiGeneratedSourceSet, TypeScriptBinary.class, "spaghetti");
 			}
 		});
 

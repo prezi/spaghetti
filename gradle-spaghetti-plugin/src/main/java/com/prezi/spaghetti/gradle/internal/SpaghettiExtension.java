@@ -17,14 +17,18 @@ public class SpaghettiExtension {
 
 	private String language;
 	private Configuration configuration;
+	private Configuration testConfiguration;
 	private Configuration obfuscatedConfiguration;
+	private Configuration testObfuscatedConfiguration;
 	private String sourceBaseUrl;
 
-	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultObfuscatedConfiguration) {
+	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
 		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator);
 		this.configuration = defaultConfiguration;
 		this.obfuscatedConfiguration = defaultObfuscatedConfiguration;
+		this.testConfiguration = defaultTestConfiguration;
+		this.testObfuscatedConfiguration = defaultTestObfuscatedConfiguration;
 
 		binaries.withType(BinaryInternal.class).all(new Action<BinaryInternal>() {
 			public void execute(BinaryInternal binary) {
@@ -76,6 +80,18 @@ public class SpaghettiExtension {
 		setConfiguration(configuration);
 	}
 
+	public Configuration getTestConfiguration() {
+		return testConfiguration;
+	}
+
+	public void setTestConfiguration(Configuration testConfiguration) {
+		this.testConfiguration = testConfiguration;
+	}
+
+	public void testConfiguration(Configuration testConfiguration) {
+		setTestConfiguration(testConfiguration);
+	}
+
 	public Configuration getObfuscatedConfiguration() {
 		return obfuscatedConfiguration;
 	}
@@ -86,6 +102,18 @@ public class SpaghettiExtension {
 
 	public void obfuscatedConfiguration(Configuration obfuscatedConfiguration) {
 		setObfuscatedConfiguration(obfuscatedConfiguration);
+	}
+
+	public Configuration getTestObfuscatedConfiguration() {
+		return testObfuscatedConfiguration;
+	}
+
+	public void setTestObfuscatedConfiguration(Configuration testObfuscatedConfiguration) {
+		this.testObfuscatedConfiguration = testObfuscatedConfiguration;
+	}
+
+	public void testObfuscatedConfiguration(Configuration testObfuscatedConfiguration) {
+		setTestObfuscatedConfiguration(testObfuscatedConfiguration);
 	}
 
 	public String getSourceBaseUrl() {
