@@ -62,4 +62,13 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
 	public SortedSet<ModuleNode> getAllModules() {
 		return allModules;
 	}
+
+	@Override
+	public String toString() {
+		return "DefaultModuleConfiguration("
+				+ "local module: " + localModule
+				+ ", direct dependencies: " + directDependentModules
+				+ ", transitive dependencies: " + transitiveDependentModules
+				+ ")";
+	}
 }

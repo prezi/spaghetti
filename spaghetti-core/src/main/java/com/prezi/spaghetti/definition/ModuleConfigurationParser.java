@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.definition;
 
 import com.google.common.base.Function;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -43,7 +44,7 @@ public final class ModuleConfigurationParser {
 				try {
 					return ModuleDefinitionSource.fromBundle(bundle);
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					throw Throwables.propagate(e);
 				}
 			}
 		});
