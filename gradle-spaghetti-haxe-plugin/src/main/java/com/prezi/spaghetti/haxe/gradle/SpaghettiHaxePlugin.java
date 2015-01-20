@@ -73,7 +73,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				addSpaghettiSourceSet(project, haxeExtension, spaghettiGeneratedSourceSet, HaxeBinaryBase.class, "spaghetti");
+				addSpaghettiSourceSet(project, haxeExtension, spaghettiGeneratedSourceSet, HaxeBinary.class, "spaghetti");
 			}
 		});
 
@@ -81,7 +81,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		spaghettiExtension.getSources().getByName("test").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
 			@Override
 			public void execute(final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet) {
-				addSpaghettiSourceSet(project, haxeExtension, spaghettiGeneratedSourceSet, HaxeBinaryBase.class, "spaghetti");
+				addSpaghettiSourceSet(project, haxeExtension, spaghettiGeneratedSourceSet, HaxeTestBinary.class, "spaghetti");
 			}
 		});
 
@@ -109,7 +109,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 			@Override
 			public void execute(final HaxeSpaghettiModule moduleBinary) {
 				HaxeBinaryBase<?> binary = moduleBinary.getOriginal();
-				if (binary instanceof HaxeTestBinary) {
+				if (moduleBinary.isUsedForTesting() && binary instanceof HaxeTestBinary) {
 					HaxeTestBinary testBinary = (HaxeTestBinary) binary;
 					final PackageApplication appTask = createTestApplication(moduleBinary, testBinary);
 

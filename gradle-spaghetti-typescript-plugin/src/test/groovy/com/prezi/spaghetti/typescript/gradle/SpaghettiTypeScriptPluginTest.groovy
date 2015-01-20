@@ -20,6 +20,7 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"compileTestJs",
 				"generateHeaders",
 				"generateStubs",
+				"generateTestHeaders",
 				"js",
 				"jsModule",
 				"obfuscateJsModule",

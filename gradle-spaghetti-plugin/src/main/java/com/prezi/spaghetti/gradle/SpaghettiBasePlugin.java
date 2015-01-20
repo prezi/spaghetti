@@ -15,7 +15,9 @@ import java.util.concurrent.Callable;
 
 public class SpaghettiBasePlugin implements Plugin<Project> {
 	public static final String CONFIGURATION_NAME = "modules";
+	public static final String TEST_CONFIGURATION_NAME = "testModules";
 	public static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
+	public static final String TEST_OBFUSCATED_CONFIGURATION_NAME = "testModulesObf";
 
 	private final Instantiator instantiator;
 
@@ -27,18 +29,21 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	@Override
 	public void apply(final Project project) {
 		Configuration defaultConfiguration = project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
+		Configuration defaultTestConfiguration = project.getConfigurations().maybeCreate(TEST_CONFIGURATION_NAME);
+		defaultTestConfiguration.extendsFrom(defaultConfiguration);
 		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
+		Configuration defaultTestObfuscatedConfiguration = project.getConfigurations().maybeCreate(TEST_OBFUSCATED_CONFIGURATION_NAME);
+		defaultTestObfuscatedConfiguration.extendsFrom(defaultObfuscatedConfiguration);
 
-		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, project, instantiator, defaultConfiguration, defaultObfuscatedConfiguration);
+		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, project, instantiator,
+				defaultConfiguration,
+				defaultTestConfiguration,
+				defaultObfuscatedConfiguration,
+				defaultTestObfuscatedConfiguration);
 		project.getTasks().withType(AbstractSpaghettiTask.class).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			public void execute(AbstractSpaghettiTask task) {
-				task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
-					@Override
-					public ConfigurableFileCollection call() throws Exception {
-						return project.files(extension.getConfiguration());
-					}
-				});
+				withDefaultConfiguration(project, task);
 			}
 		});
 		project.getTasks().withType(AbstractLanguageAwareSpaghettiTask.class).all(new Action<AbstractLanguageAwareSpaghettiTask>() {
@@ -50,6 +55,30 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 						return extension.getLanguage();
 					}
 				});
+			}
+		});
+	}
+
+	/**
+	 * Override fallback configuration with the main configuration.
+ 	 */
+	public static void withDefaultConfiguration(final Project project, AbstractSpaghettiTask task) {
+		task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
+			@Override
+			public ConfigurableFileCollection call() throws Exception {
+				return project.files(project.getExtensions().getByType(SpaghettiExtension.class).getConfiguration());
+			}
+		});
+	}
+
+	/**
+	 * Override fallback configuration with the test configuration.
+ 	 */
+	public static void withDefaultTestConfiguration(final Project project, AbstractSpaghettiTask task) {
+		task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
+			@Override
+			public ConfigurableFileCollection call() throws Exception {
+				return project.files(project.getExtensions().getByType(SpaghettiExtension.class).getTestConfiguration());
 			}
 		});
 	}

@@ -12,7 +12,6 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 	private File outputDirectory;
@@ -28,16 +27,6 @@ public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 
 	public void outputDirectory(Object directory) {
 		setOutputDirectory(directory);
-	}
-
-	public GenerateHeaders() {
-		this.getConventionMapping().map("outputDirectory", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return new File(getProject().getBuildDir(), "spaghetti/generated-headers");
-			}
-
-		});
 	}
 
 	@TaskAction

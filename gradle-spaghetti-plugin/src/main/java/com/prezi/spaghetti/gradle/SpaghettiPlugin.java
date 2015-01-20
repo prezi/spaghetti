@@ -21,6 +21,7 @@ import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.tasks.bundling.Zip;
@@ -39,7 +40,6 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiPlugin.class);
 
 	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
-	public static final String SPAGHETTI_GENERATED_TEST_SOURCE_SET = "spaghetti-generated-test";
 
 	private static final Pattern MODULE_FILE_PATTERN = Pattern.compile(".+\\.module");
 
@@ -118,15 +118,27 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		});
 
 		// Automatically generate module headers
-		addGenerateHeadersTask(project, mainSources);
+		GenerateHeaders generateHeaders = addGenerateHeadersTask(project, "generateHeaders", "generated-headers", mainSources);
+		generateHeaders.setDescription("Generates Spaghetti headers.");
+
+		// Automatically generate test headers
+		GenerateHeaders generateTestHeaders = addGenerateHeadersTask(project, "generateTestHeaders", "generated-test-headers", testSources);
+		generateTestHeaders.setDescription("Generates Spaghetti test headers.");
+		SpaghettiBasePlugin.withDefaultTestConfiguration(project, generateTestHeaders);
 
 		// Add task for generating stubs
 		addGenerateStubsTask(project, testSources);
 	}
 
-	private void addGenerateHeadersTask(Project project, FunctionalSourceSet functionalSourceSet) {
-		final GenerateHeaders generateHeadersTask = project.getTasks().create("generateHeaders", GenerateHeaders.class);
-		generateHeadersTask.setDescription("Generates Spaghetti headers.");
+	private GenerateHeaders addGenerateHeadersTask(final Project project, String name, final String directoryName, FunctionalSourceSet functionalSourceSet) {
+		final GenerateHeaders generateHeadersTask = project.getTasks().create(name, GenerateHeaders.class);
+		generateHeadersTask.getConventionMapping().map("outputDirectory", new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return new File(project.getBuildDir(), "spaghetti/" + directoryName);
+			}
+
+		});
 		logger.debug("Created {}", generateHeadersTask);
 
 		// Create source set
@@ -144,17 +156,21 @@ public class SpaghettiPlugin implements Plugin<Project> {
 			}
 		});
 		spaghettiHeaders.builtBy(generateHeadersTask);
+
+		return generateHeadersTask;
 	}
 
-	private void addGenerateStubsTask(Project project, FunctionalSourceSet functionalSourceSet) {
+	private void addGenerateStubsTask(final Project project, FunctionalSourceSet functionalSourceSet) {
 		final GenerateStubs generateStubsTask = project.getTasks().create("generateStubs", GenerateStubs.class);
 		generateStubsTask.setDescription("Generates Spaghetti stubs.");
 		logger.debug("Created {}", generateStubsTask);
 
+		SpaghettiBasePlugin.withDefaultTestConfiguration(project, generateStubsTask);
+
 		// Create source set
-		LanguageSourceSet spaghettiStubs = functionalSourceSet.findByName(SPAGHETTI_GENERATED_TEST_SOURCE_SET);
+		LanguageSourceSet spaghettiStubs = functionalSourceSet.findByName(SPAGHETTI_GENERATED_SOURCE_SET);
 		if (spaghettiStubs == null) {
-			spaghettiStubs = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_TEST_SOURCE_SET, functionalSourceSet, fileResolver);
+			spaghettiStubs = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_SOURCE_SET, functionalSourceSet, fileResolver);
 			functionalSourceSet.add(spaghettiStubs);
 			logger.debug("Added {}", spaghettiStubs);
 		}
@@ -189,18 +205,26 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		}
 
 		if (!moduleBinary.isUsedForTesting()) {
-			project.getArtifacts().add(spaghettiExtension.getConfiguration().getName(), zipModule);
-			project.getArtifacts().add(spaghettiExtension.getObfuscatedConfiguration().getName(), zipObfuscated, new Closure(project) {
-				@Override
-				public Object call(Object... arguments) {
-					ArchivePublishArtifact artifact = (ArchivePublishArtifact) this.getDelegate();
-					artifact.setClassifier("obfuscated");
-					return artifact;
-				}
-			});
+			addBundleArtifact(project, spaghettiExtension.getConfiguration(), zipModule, "");
+			addBundleArtifact(project, spaghettiExtension.getObfuscatedConfiguration(), zipObfuscated, "obfuscated");
+		} else {
+			addBundleArtifact(project, spaghettiExtension.getTestConfiguration(), zipModule, "test");
+			addBundleArtifact(project, spaghettiExtension.getTestObfuscatedConfiguration(), zipObfuscated, "test-obfuscated");
+			SpaghettiBasePlugin.withDefaultTestConfiguration(project, bundleTask);
 		}
 
 		spaghettiExtension.getBinaries().add(moduleBinary);
+	}
+
+	private static void addBundleArtifact(Project project, Configuration configuration, Zip task, final String name) {
+		project.getArtifacts().add(configuration.getName(), task, new Closure(project) {
+			@Override
+			public Object call(Object... arguments) {
+				ArchivePublishArtifact artifact = (ArchivePublishArtifact) this.getDelegate();
+				artifact.setClassifier(name);
+				return artifact;
+			}
+		});
 	}
 
 	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies) {
