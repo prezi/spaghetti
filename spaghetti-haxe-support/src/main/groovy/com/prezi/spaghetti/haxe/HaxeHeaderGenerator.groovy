@@ -22,7 +22,7 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 		generateModuleInitializer(config.localModule, outputDirectory, header)
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
-		config.dependentModules.each { dependentModule ->
+		config.allDependentModules.each { dependentModule ->
 			generateModuleTypes(dependentModule, outputDirectory, header)
 			generateModuleAccessor(dependentModule, outputDirectory, header)
 		}

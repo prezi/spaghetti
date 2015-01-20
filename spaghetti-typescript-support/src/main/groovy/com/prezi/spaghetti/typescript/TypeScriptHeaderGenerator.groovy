@@ -21,7 +21,7 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 		def header = params.header
 		copySpaghettiClass(outputDirectory)
 		generateLocalModule(config.localModule, outputDirectory, header)
-		config.dependentModules.each { dependentModule ->
+		config.allDependentModules.each { dependentModule ->
 			generateDependentModule(dependentModule, outputDirectory, header)
 		}
 	}

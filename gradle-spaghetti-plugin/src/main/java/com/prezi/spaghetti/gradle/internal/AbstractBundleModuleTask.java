@@ -187,7 +187,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);
 		TreeSet<String> dependentModuleNames = Sets.newTreeSet();
-		for (ModuleNode moduleNode : config.getDependentModules()) {
+		for (ModuleNode moduleNode : config.getAllDependentModules()) {
 			dependentModuleNames.add(moduleNode.getName());
 		}
 

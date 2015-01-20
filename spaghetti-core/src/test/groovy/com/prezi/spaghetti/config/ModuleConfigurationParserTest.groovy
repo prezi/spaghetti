@@ -10,22 +10,27 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		ModuleConfigurationParser.parse(
 				ModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test"),
-				[ModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test")]
+				[ModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test")],
+				[ModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test")]
 		)
 
 		then:
 		def ex = thrown AstParserException
-		ex.message == "Parse error in C:\\test1.module: module loaded multiple times: com.example.test"
+		ex.message == "Parse error in C:\\test2.module: module loaded multiple times: com.example.test"
 	}
 
 	def "Dependency accessed from another dependency"() {
 		when:
-		ModuleConfigurationParser.parse(
+		def config = ModuleConfigurationParser.parse(
 				ModuleDefinitionSource.fromString("A", "module com.example.testA"),
-				[ModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }"),
-				ModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
+				[ModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }")],
+				[ModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
 		)
 		then:
-		notThrown AstParserException
+		config.localModule.name == "com.example.testA"
+		config.directDependentModules*.name == ["com.example.testB"]
+		config.transitiveDependentModules*.name == ["com.example.testC"]
+		config.allDependentModules*.name == ["com.example.testB", "com.example.testC"]
+		config.allModules*.name == ["com.example.testA", "com.example.testB", "com.example.testC"]
 	}
 }
