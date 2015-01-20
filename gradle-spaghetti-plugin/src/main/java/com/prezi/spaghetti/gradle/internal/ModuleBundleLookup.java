@@ -50,7 +50,7 @@ public class ModuleBundleLookup {
 			addAllFilesFrom(firstLevelDependencies, directFiles);
 			addAllFilesFromChildren(firstLevelDependencies, transitiveFiles);
 		} else if (from instanceof ConfigurableFileCollection) {
-			for (Object child : ((ConfigurableFileCollection) from)) {
+			for (Object child : ((ConfigurableFileCollection) from).getFrom()) {
 				addFiles(project, child, directFiles, transitiveFiles);
 			}
 		} else if (from instanceof FileCollection) {
