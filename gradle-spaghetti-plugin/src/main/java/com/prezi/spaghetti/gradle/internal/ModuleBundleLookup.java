@@ -10,6 +10,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedDependency;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.FileCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,21 +24,19 @@ import java.util.concurrent.Callable;
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static ModuleBundleSet lookup(Project project, ConfigurableFileCollection dependencies) throws IOException {
+	public static ModuleBundleSet lookup(Project project, Object dependencies) throws IOException {
+		Set<File> directFiles = Sets.newLinkedHashSet();
+		Set<File> transitiveFiles = Sets.newLinkedHashSet();
+
+		addFiles(project, dependencies, directFiles, transitiveFiles);
+
 		if (logger.isDebugEnabled()) {
-			logger.debug("Looking up modules:");
-			logger.debug("\tDependencies:\n\t\t{}", Joiner.on("\n\t\t").join(dependencies));
+			logger.debug("Loading modules from:");
+			logger.debug("\tDirect dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(directFiles));
+			logger.debug("\tTransitive dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(transitiveFiles));
 		}
 
-		Set<File> directBundles = Sets.newLinkedHashSet();
-		Set<File> transitiveBundles = Sets.newLinkedHashSet();
-
-		Set<Object> dependencyObjects = dependencies.getFrom();
-		for (Object from : dependencyObjects) {
-			addFiles(project, from, directBundles, transitiveBundles);
-		}
-
-		return ModuleBundleLoader.loadBundles(directBundles, transitiveBundles);
+		return ModuleBundleLoader.loadBundles(directFiles, transitiveFiles);
 	}
 
 	private static void addFiles(Project project, Object from, Set<File> directFiles, Set<File> transitiveFiles) throws IOException {
@@ -50,6 +49,12 @@ public class ModuleBundleLookup {
 			Set<ResolvedDependency> firstLevelDependencies = config.getResolvedConfiguration().getFirstLevelModuleDependencies();
 			addAllFilesFrom(firstLevelDependencies, directFiles);
 			addAllFilesFromChildren(firstLevelDependencies, transitiveFiles);
+		} else if (from instanceof ConfigurableFileCollection) {
+			for (Object child : ((ConfigurableFileCollection) from)) {
+				addFiles(project, child, directFiles, transitiveFiles);
+			}
+		} else if (from instanceof FileCollection) {
+			directFiles.addAll(((FileCollection) from).getFiles());
 		} else if (from instanceof Collection) {
 			for (Object child : ((Collection<?>) from)) {
 				addFiles(project, child, directFiles, transitiveFiles);
@@ -64,6 +69,8 @@ public class ModuleBundleLookup {
 			} catch (Exception e) {
 				throw Throwables.propagate(e);
 			}
+		} else if (from instanceof File) {
+			directFiles.add((File) from);
 		} else {
 			for (File file : project.files(from)) {
 				directFiles.add(file);
