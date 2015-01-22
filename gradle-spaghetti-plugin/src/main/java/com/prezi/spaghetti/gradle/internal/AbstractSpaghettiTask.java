@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.gradle.internal;
 
+import com.google.common.collect.Sets;
+import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleConfigurationParser;
@@ -7,20 +9,43 @@ import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.internal.DeprecationNagger;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.ConventionTask;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.SortedSet;
 
 public class AbstractSpaghettiTask extends ConventionTask {
 	private ConfigurableFileCollection dependentModules = getProject().files();
+	private ModuleBundleSet dependentBundles;
 
 	@InputFiles
 	public ConfigurableFileCollection getDependentModules() {
 		return dependentModules;
 	}
 
+	/**
+	 * Returns names of directly dependent modules. This is here so that Gradle will detect
+	 * a change in inputs even if the only change is that a previously directly dependent
+	 * module becomes transitively dependent, or vice versa.
+	 *
+	 * @return names of directly dependent modules.
+	 * @throws IOException
+	 */
+	@Input
+	@SuppressWarnings("UnusedDeclaration")
+	protected SortedSet<String> getDirectDependentBundleNames() throws IOException {
+		SortedSet<String> directBundleNames = Sets.newTreeSet();
+		for (ModuleBundle bundle : lookupBundles().getDirectBundles()) {
+			directBundleNames.add(bundle.getName());
+		}
+		getLogger().warn("Direct bundle names: {}", directBundleNames);
+		return directBundleNames;
+	}
+
 	public void setDependentModules(ConfigurableFileCollection dependentModules) {
+		this.dependentBundles = null;
 		this.dependentModules = dependentModules;
 	}
 
@@ -60,7 +85,10 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	}
 
 	protected ModuleBundleSet lookupBundles() throws IOException {
-		return ModuleBundleLookup.lookup(getProject(), getDependentModules());
+		if (dependentBundles == null) {
+			dependentBundles = ModuleBundleLookup.lookup(getProject(), getDependentModules());
+		}
+		return dependentBundles;
 	}
 
 	public ModuleConfiguration readConfig(File definition) throws IOException {
