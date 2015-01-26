@@ -40,7 +40,6 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		for (ModuleBundle bundle : lookupBundles().getDirectBundles()) {
 			directBundleNames.add(bundle.getName());
 		}
-		getLogger().warn("Direct bundle names: {}", directBundleNames);
 		return directBundleNames;
 	}
 
