@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
@@ -12,15 +11,14 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
-import com.prezi.spaghetti.ast.StructNode;
 import com.prezi.spaghetti.ast.StructReference;
 
-import java.util.Set;
+import java.util.Collections;
 
-public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNode, MutableDocumentedNode {
+public class DefaultStructNode extends AbstractParametrizedTypeNode implements MutableStructNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final Set<StructReference> superStructs = Sets.newLinkedHashSet();
+	private StructReference superStruct;
 	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
 	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
@@ -30,7 +28,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), superStructs, properties, methods);
+		return Iterables.concat(super.getChildren(), Collections.singleton(superStruct), properties, methods);
 	}
 
 	@Override
@@ -54,8 +52,13 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 	}
 
 	@Override
-	public Set<StructReference> getSuperStructs() {
-		return superStructs;
+	public StructReference getSuperStruct() {
+		return superStruct;
+	}
+
+	@Override
+	public void setSuperStruct(StructReference superStruct) {
+		this.superStruct = superStruct;
 	}
 
 	@Override

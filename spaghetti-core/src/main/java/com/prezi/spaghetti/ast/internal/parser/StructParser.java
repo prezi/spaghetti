@@ -9,15 +9,16 @@ import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultPropertyNode;
 import com.prezi.spaghetti.ast.internal.DefaultStructNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
+import com.prezi.spaghetti.ast.internal.MutableStructNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDefinitionContext, StructNode> {
+public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDefinitionContext, MutableStructNode> {
 	public StructParser(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
 		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static StructNode createNode(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
+	private static MutableStructNode createNode(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
 		DefaultStructNode node = new DefaultStructNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
@@ -37,8 +38,9 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 		// Let further processing access type parameters as defined types
 		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
 
-		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
-			getNode().getSuperStructs().add(parseSuperType(locator, resolver, superCtx));
+		ModuleParser.SuperTypeDefinitionContext superCtx = getContext().superTypeDefinition();
+		if (superCtx != null) {
+			getNode().setSuperStruct(parseSuperType(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.StructElementDefinitionContext elemCtx : getContext().structElementDefinition()) {

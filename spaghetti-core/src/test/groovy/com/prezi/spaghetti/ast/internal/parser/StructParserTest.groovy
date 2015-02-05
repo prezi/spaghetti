@@ -142,9 +142,7 @@ struct StructB extends StructA {
 			throw new UnsupportedOperationException()
 		}
 		node.name == "StructB"
-		node.superStructs*.type*.name == [
-				"StructA",
-		]
+		node.superStruct.type == mockStructA
 		0 * _
 	}
 }

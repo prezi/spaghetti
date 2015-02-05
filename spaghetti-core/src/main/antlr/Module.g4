@@ -45,7 +45,7 @@ typeParameters : '<' Name ( ',' Name )* '>'
 
 structDefinition : ( documentation = Doc )? annotations?
 	'struct' Name typeParameters?
-	( 'extends' superTypeDefinition ( ',' superTypeDefinition )* )?
+	( 'extends' superTypeDefinition )?
 	'{'
 		structElementDefinition*
 	'}'
