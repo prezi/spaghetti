@@ -16,7 +16,7 @@ buildscript {
     }
 }
 
-apply plugin: "spaghetti-haxe"
+apply plugin: "spaghetti-typescript"
 ```
 
 The plugin configures the following things on the project:
