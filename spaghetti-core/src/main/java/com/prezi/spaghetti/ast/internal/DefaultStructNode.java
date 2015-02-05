@@ -28,7 +28,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements M
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), Collections.singleton(superStruct), properties, methods);
+		return Iterables.concat(super.getChildren(), superStruct == null ? Collections.<AstNode>emptySet() : Collections.singleton(superStruct), properties, methods);
 	}
 
 	@Override
