@@ -11,11 +11,14 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
-import com.prezi.spaghetti.ast.StructNode;
+import com.prezi.spaghetti.ast.StructReference;
 
-public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNode, MutableDocumentedNode {
+import java.util.Collections;
+
+public class DefaultStructNode extends AbstractParametrizedTypeNode implements MutableStructNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
+	private StructReference superStruct;
 	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
 	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
@@ -25,7 +28,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), properties, methods);
+		return Iterables.concat(super.getChildren(), superStruct == null ? Collections.<AstNode>emptySet() : Collections.singleton(superStruct), properties, methods);
 	}
 
 	@Override
@@ -46,6 +49,16 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 	@Override
 	public void setDocumentation(DocumentationNode documentation) {
 		this.documentation = documentation;
+	}
+
+	@Override
+	public StructReference getSuperStruct() {
+		return superStruct;
+	}
+
+	@Override
+	public void setSuperStruct(StructReference superStruct) {
+		this.superStruct = superStruct;
 	}
 
 	@Override

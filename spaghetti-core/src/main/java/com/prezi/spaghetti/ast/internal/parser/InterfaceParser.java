@@ -37,8 +37,8 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 		// Let further processing access type parameters as defined types
 		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
 
-		for (ModuleParser.SuperInterfaceDefinitionContext superCtx : getContext().superInterfaceDefinition()) {
-			getNode().getSuperInterfaces().add(parseSuperInterface(locator, resolver, superCtx));
+		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
+			getNode().getSuperInterfaces().add(parseSuperType(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.MethodDefinitionContext methodCtx : getContext().methodDefinition()) {
@@ -47,7 +47,7 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 		}
 	}
 
-	private InterfaceReferenceBase<? extends InterfaceNodeBase> parseSuperInterface(Locator locator, TypeResolver resolver, ModuleParser.SuperInterfaceDefinitionContext superCtx) {
+	private InterfaceReferenceBase<? extends InterfaceNodeBase> parseSuperType(Locator locator, TypeResolver resolver, ModuleParser.SuperTypeDefinitionContext superCtx) {
 		TypeNode superType = resolver.resolveType(TypeResolutionContext.create(superCtx.qualifiedName()));
 		if (!(superType instanceof InterfaceNodeBase)) {
 			throw new InternalAstParserException(superCtx, "Only interfaces can be super interfaces");

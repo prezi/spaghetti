@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.PropertyNode
 import com.prezi.spaghetti.ast.StructNode
 
@@ -11,8 +12,10 @@ class TypeScriptStructGeneratorVisitor extends AbstractTypeScriptMethodGenerator
 		if (node.typeParameters) {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
-"""export interface ${typeName} {
-${visitChildren(node)}
+		def superStruct = node.superStruct == null ? "" : "extends " + node.superStruct.accept(this) + " "
+		def members = node.children.findAll({ it instanceof PropertyNode || it instanceof MethodNode })*.accept(this).join("")
+"""export interface ${typeName} ${superStruct}{
+${members}
 }
 """
 	}
