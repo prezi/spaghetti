@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
@@ -12,10 +13,14 @@ import com.prezi.spaghetti.ast.NamedNodeSet;
 import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.StructNode;
+import com.prezi.spaghetti.ast.StructReference;
+
+import java.util.Set;
 
 public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNode, MutableDocumentedNode {
 	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
+	private final Set<StructReference> superStructs = Sets.newLinkedHashSet();
 	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
 	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
@@ -25,7 +30,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), properties, methods);
+		return Iterables.concat(super.getChildren(), superStructs, properties, methods);
 	}
 
 	@Override
@@ -46,6 +51,11 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 	@Override
 	public void setDocumentation(DocumentationNode documentation) {
 		this.documentation = documentation;
+	}
+
+	@Override
+	public Set<StructReference> getSuperStructs() {
+		return superStructs;
 	}
 
 	@Override

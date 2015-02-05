@@ -27,13 +27,13 @@ externTypeDefinition
 
 interfaceDefinition : ( documentation = Doc )? annotations?
 	'interface' Name typeParameters?
-	( 'extends' superInterfaceDefinition ( ',' superInterfaceDefinition )* )?
+	( 'extends' superTypeDefinition ( ',' superTypeDefinition )* )?
 	'{'
 		methodDefinition*
 	'}'
 	;
 
-superInterfaceDefinition : qualifiedName typeArguments?
+superTypeDefinition : qualifiedName typeArguments?
 	;
 
 externInterfaceDefinition : ( documentation = Doc )? annotations?
@@ -44,7 +44,9 @@ typeParameters : '<' Name ( ',' Name )* '>'
 	;
 
 structDefinition : ( documentation = Doc )? annotations?
-	'struct' Name typeParameters? '{'
+	'struct' Name typeParameters?
+	( 'extends' superTypeDefinition ( ',' superTypeDefinition )* )?
+	'{'
 		structElementDefinition*
 	'}'
 	;

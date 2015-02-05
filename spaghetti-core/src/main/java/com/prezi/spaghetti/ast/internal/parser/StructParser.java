@@ -2,6 +2,8 @@ package com.prezi.spaghetti.ast.internal.parser;
 
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.StructNode;
+import com.prezi.spaghetti.ast.StructReference;
+import com.prezi.spaghetti.ast.TypeNode;
 import com.prezi.spaghetti.ast.TypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultPropertyNode;
@@ -35,6 +37,10 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 		// Let further processing access type parameters as defined types
 		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
 
+		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
+			getNode().getSuperStructs().add(parseSuperType(locator, resolver, superCtx));
+		}
+
 		for (ModuleParser.StructElementDefinitionContext elemCtx : getContext().structElementDefinition()) {
 			if (elemCtx.propertyDefinition() != null) {
 				ModuleParser.PropertyDefinitionContext propCtx = elemCtx.propertyDefinition();
@@ -53,5 +59,13 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 				getNode().getMethods().add(methodNode, methodCtx.Name());
 			}
 		}
+	}
+
+	private StructReference parseSuperType(Locator locator, TypeResolver resolver, ModuleParser.SuperTypeDefinitionContext superCtx) {
+		TypeNode superType = resolver.resolveType(TypeResolutionContext.create(superCtx.qualifiedName()));
+		if (!(superType instanceof StructNode)) {
+			throw new InternalAstParserException(superCtx, "Only structs can be super structs");
+		}
+		return TypeParsers.parseStructReference(locator, resolver, superCtx, superCtx.typeArguments(), (StructNode) superType, 0);
 	}
 }

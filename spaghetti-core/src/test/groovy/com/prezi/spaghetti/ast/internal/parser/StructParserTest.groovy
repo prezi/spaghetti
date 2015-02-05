@@ -116,4 +116,35 @@ struct MyStruct<T> {
 		]
 		0 * _
 	}
+
+	def "parse super struct"() {
+		def locator = mockLocator("""
+struct StructB extends StructA {
+}
+""")
+		def context = AstTestUtils.parser(locator).structDefinition()
+		def mockStructA = Mock(StructNode) {
+			getName() >> "StructA"
+		}
+		def resolver = Mock(TypeResolver)
+		def parser = new StructParser(locator, context, "com.example.test")
+
+		when:
+		parser.parse(resolver)
+		def node = parser.node
+
+		then:
+		_ * mockStructA.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
+		1 * resolver.resolveType(_) >> { TypeResolutionContext ctx ->
+			if (ctx.name.fullyQualifiedName == "StructA") {
+				return mockStructA
+			}
+			throw new UnsupportedOperationException()
+		}
+		node.name == "StructB"
+		node.superStructs*.type*.name == [
+				"StructA",
+		]
+		0 * _
+	}
 }
