@@ -79,9 +79,7 @@ public class DefaultMethodNode extends AbstractNamedNode implements MethodNodeIn
 		resolvedMethod.getTypeParameters().addAllInternal(getTypeParameters());
 		resolvedMethod.setReturnType(resolvedReturnType);
 		for (MethodParameterNode param : getParameters()) {
-			TypeReference type = TypeParameterResolver.resolveTypeParameters(param.getType(), bindings);
-			DefaultMethodParameterNode resultParam = new DefaultMethodParameterNode(param.getLocation(), param.getName(), type, param.isOptional());
-			resultParam.getAnnotations().addAllInternal(param.getAnnotations());
+			MethodParameterNode resultParam = param.resolveWithTypeParameters(bindings);
 			resolvedMethod.getParameters().addInternal(resultParam);
 		}
 		return resolvedMethod;

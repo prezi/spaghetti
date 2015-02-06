@@ -4,7 +4,10 @@ import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodParameterNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
+import com.prezi.spaghetti.ast.TypeParameterNode;
 import com.prezi.spaghetti.ast.TypeReference;
+
+import java.util.Map;
 
 public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeReference> implements MethodParameterNode, AnnotatedNodeInternal {
 
@@ -29,5 +32,13 @@ public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeRef
 	@Override
 	public boolean isOptional() {
 		return isOptional;
+	}
+
+	@Override
+	public MethodParameterNode resolveWithTypeParameters(Map<TypeParameterNode, TypeReference> bindings) {
+		TypeReference type = TypeParameterResolver.resolveTypeParameters(getType(), bindings);
+		DefaultMethodParameterNode resolvedParam = new DefaultMethodParameterNode(getLocation(), getName(), type, isOptional());
+		resolvedParam.getAnnotations().addAllInternal(getAnnotations());
+		return resolvedParam;
 	}
 }
