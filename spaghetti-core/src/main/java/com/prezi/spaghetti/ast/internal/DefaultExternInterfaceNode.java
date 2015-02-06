@@ -6,11 +6,9 @@ import com.prezi.spaghetti.ast.ExternInterfaceNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.NodeSets;
 
-public class DefaultExternInterfaceNode extends AbstractParametrizedTypeNode implements ExternInterfaceNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+public class DefaultExternInterfaceNode extends AbstractParametrizedTypeNode implements ExternInterfaceNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 
 	public DefaultExternInterfaceNode(Location location, FQName qualifiedName) {
@@ -23,7 +21,7 @@ public class DefaultExternInterfaceNode extends AbstractParametrizedTypeNode imp
 	}
 
 	@Override
-	public NamedNodeSet<AnnotationNode> getAnnotations() {
+	public NamedNodeSetInternal<AnnotationNode> getAnnotations() {
 		return annotations;
 	}
 

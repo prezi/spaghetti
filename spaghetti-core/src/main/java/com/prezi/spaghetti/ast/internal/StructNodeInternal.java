@@ -3,6 +3,6 @@ package com.prezi.spaghetti.ast.internal;
 import com.prezi.spaghetti.ast.StructNode;
 import com.prezi.spaghetti.ast.StructReference;
 
-public interface MutableStructNode extends StructNode {
+public interface StructNodeInternal extends StructNode, AnnotatedNodeInternal {
 	void setSuperStruct(StructReference superStruct);
 }

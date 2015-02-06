@@ -4,7 +4,7 @@ import com.prezi.spaghetti.ast.TypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodParameterNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
-import com.prezi.spaghetti.ast.internal.MutableMethodNode;
+import com.prezi.spaghetti.ast.internal.MethodNodeInternal;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -18,7 +18,7 @@ public class MethodParser {
 		return methodNode;
 	}
 
-	protected static <T extends MutableMethodNode> T parseMethodDefinition(Locator locator, TypeResolver resolver, ModuleParser.MethodDefinitionContext methodCtx, T methodNode) {
+	protected static <T extends MethodNodeInternal> T parseMethodDefinition(Locator locator, TypeResolver resolver, ModuleParser.MethodDefinitionContext methodCtx, T methodNode) {
 		ModuleParser.TypeParametersContext typeParameters = methodCtx.typeParameters();
 		if (typeParameters != null) {
 			for (TerminalNode name : typeParameters.Name()) {

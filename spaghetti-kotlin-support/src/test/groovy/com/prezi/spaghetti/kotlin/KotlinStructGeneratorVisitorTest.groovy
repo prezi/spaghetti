@@ -2,8 +2,8 @@ package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.FQName
-import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.ast.internal.NodeSets
 import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
 import com.prezi.spaghetti.ast.internal.parser.StructParser
 

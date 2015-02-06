@@ -1,35 +1,20 @@
-package com.prezi.spaghetti.ast;
+package com.prezi.spaghetti.ast.internal;
 
-import com.google.common.collect.Sets;
-import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceReference;
-import com.prezi.spaghetti.ast.internal.DefaultInterfaceReference;
-import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
-import com.prezi.spaghetti.ast.internal.DefaultMethodParameterNode;
-import com.prezi.spaghetti.ast.internal.DefaultStructReference;
-import com.prezi.spaghetti.ast.internal.DefaultTypeChain;
+import com.prezi.spaghetti.ast.EnumReference;
+import com.prezi.spaghetti.ast.ExternInterfaceReference;
+import com.prezi.spaghetti.ast.InterfaceReference;
+import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference;
+import com.prezi.spaghetti.ast.PrimitiveTypeReference;
+import com.prezi.spaghetti.ast.StructReference;
+import com.prezi.spaghetti.ast.TypeChain;
+import com.prezi.spaghetti.ast.TypeParameterNode;
+import com.prezi.spaghetti.ast.TypeParameterReference;
+import com.prezi.spaghetti.ast.TypeReference;
+import com.prezi.spaghetti.ast.VoidTypeReference;
 
 import java.util.Map;
-import java.util.Set;
 
-public class AstUtils {
-	public static Set<InterfaceNodeBase> getAllInterfaces(InterfaceNode node) {
-		Set<InterfaceNodeBase> allInterfaces = Sets.newLinkedHashSet();
-		allInterfaces.add(node);
-		addAllInterfaces(node, allInterfaces);
-		return allInterfaces;
-	}
-
-	private static void addAllInterfaces(InterfaceNode node, Set<InterfaceNodeBase> allInterfaces) {
-		for (InterfaceReferenceBase<?> superIfaceRef : node.getSuperInterfaces()) {
-			InterfaceNodeBase superIface = superIfaceRef.getType();
-			if (allInterfaces.add(superIface)) {
-				if (superIface instanceof InterfaceNode) {
-					addAllInterfaces((InterfaceNode) superIface, allInterfaces);
-				}
-			}
-		}
-	}
-
+public class TypeParameterResolver {
 	public static TypeReference resolveTypeParameters(TypeReference node, Map<TypeParameterNode, TypeReference> bindings) {
 		if (node instanceof VoidTypeReference
 				|| node instanceof PrimitiveTypeReference
@@ -79,22 +64,5 @@ public class AstUtils {
 		} else {
 			throw new AssertionError("Unknown type: " + node.getClass());
 		}
-	}
-
-	@SuppressWarnings("deprecation")
-	public static MethodNode resolveTypeParameters(MethodNode methodNode, Map<TypeParameterNode, TypeReference> bindings) {
-		TypeReference returnType = resolveTypeParameters(methodNode.getReturnType(), bindings);
-		DefaultMethodNode result = new DefaultMethodNode(methodNode.getLocation(), methodNode.getName());
-		result.setDocumentation(methodNode.getDocumentation());
-		result.getAnnotations().addAll(methodNode.getAnnotations());
-		result.getTypeParameters().addAll(methodNode.getTypeParameters());
-		result.setReturnType(returnType);
-		for (MethodParameterNode param : methodNode.getParameters()) {
-			TypeReference type = resolveTypeParameters(param.getType(), bindings);
-			DefaultMethodParameterNode resultParam = new DefaultMethodParameterNode(param.getLocation(), param.getName(), type, param.isOptional());
-			resultParam.getAnnotations().addAll(param.getAnnotations());
-			result.getParameters().add(resultParam);
-		}
-		return result;
 	}
 }

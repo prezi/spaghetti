@@ -8,19 +8,17 @@ import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PropertyNode;
 import com.prezi.spaghetti.ast.StructReference;
 
 import java.util.Collections;
 
-public class DefaultStructNode extends AbstractParametrizedTypeNode implements MutableStructNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNodeInternal, DocumentedNodeInternal {
+	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private StructReference superStruct;
-	private final NamedNodeSet<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
-	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
+	private final NamedNodeSetInternal<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
+	private final NamedNodeSetInternal<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultStructNode(Location location, FQName qualifiedName) {
 		super(location, qualifiedName);
@@ -37,7 +35,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements M
 	}
 
 	@Override
-	public NamedNodeSet<AnnotationNode> getAnnotations() {
+	public NamedNodeSetInternal<AnnotationNode> getAnnotations() {
 		return annotations;
 	}
 
@@ -62,12 +60,12 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements M
 	}
 
 	@Override
-	public NamedNodeSet<PropertyNode> getProperties() {
+	public NamedNodeSetInternal<PropertyNode> getProperties() {
 		return properties;
 	}
 
 	@Override
-	public NamedNodeSet<MethodNode> getMethods() {
+	public NamedNodeSetInternal<MethodNode> getMethods() {
 		return methods;
 	}
 }

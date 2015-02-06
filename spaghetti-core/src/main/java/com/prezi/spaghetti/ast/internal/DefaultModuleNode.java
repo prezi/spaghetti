@@ -11,22 +11,19 @@ import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.NodeSets;
-import com.prezi.spaghetti.ast.QualifiedNodeSet;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.util.Map;
 
-public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final String alias;
 	private final Map<FQName, ImportNode> imports = Maps.newLinkedHashMap();
-	private final QualifiedNodeSet<QualifiedTypeNode> types = NodeSets.newQualifiedNodeSet("type");
-	private final QualifiedNodeSet<QualifiedTypeNode> externTypes = NodeSets.newQualifiedNodeSet("externType");
-	private final NamedNodeSet<MethodNode> methods = NodeSets.newNamedNodeSet("method");
+	private final QualifiedNodeSetInternal<QualifiedTypeNode> types = NodeSets.newQualifiedNodeSet("type");
+	private final QualifiedNodeSetInternal<QualifiedTypeNode> externTypes = NodeSets.newQualifiedNodeSet("externType");
+	private final NamedNodeSetInternal<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultModuleNode(Location location, String name, String alias) {
 		super(location, name);
@@ -45,7 +42,7 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	}
 
 	@Override
-	public NamedNodeSet<AnnotationNode> getAnnotations() {
+	public NamedNodeSetInternal<AnnotationNode> getAnnotations() {
 		return annotations;
 	}
 
@@ -70,17 +67,17 @@ public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, 
 	}
 
 	@Override
-	public QualifiedNodeSet<QualifiedTypeNode> getTypes() {
+	public QualifiedNodeSetInternal<QualifiedTypeNode> getTypes() {
 		return types;
 	}
 
 	@Override
-	public QualifiedNodeSet<QualifiedTypeNode> getExternTypes() {
+	public QualifiedNodeSetInternal<QualifiedTypeNode> getExternTypes() {
 		return externTypes;
 	}
 
 	@Override
-	public NamedNodeSet<MethodNode> getMethods() {
+	public NamedNodeSetInternal<MethodNode> getMethods() {
 		return methods;
 	}
 

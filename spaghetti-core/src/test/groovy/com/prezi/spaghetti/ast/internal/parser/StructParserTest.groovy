@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.ast.internal.parser
 
 import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterReference
+import com.prezi.spaghetti.ast.internal.NodeSets
 
 import static com.prezi.spaghetti.ast.PrimitiveType.ANY
 import static com.prezi.spaghetti.ast.PrimitiveType.BOOL

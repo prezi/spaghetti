@@ -1,17 +1,16 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.internal.DefaultEnumNode;
 import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
-public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, EnumNode> {
+public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, DefaultEnumNode> {
 	public EnumParser(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
 		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static EnumNode createNode(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
+	private static DefaultEnumNode createNode(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
 		DefaultEnumNode node = new DefaultEnumNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);

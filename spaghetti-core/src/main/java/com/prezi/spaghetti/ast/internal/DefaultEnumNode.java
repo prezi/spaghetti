@@ -9,13 +9,11 @@ import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.NodeSets;
 
-public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<EnumValueNode> values = NodeSets.newNamedNodeSet("enum value");
+	private final NamedNodeSetInternal<EnumValueNode> values = NodeSets.newNamedNodeSet("enum value");
 
 	public DefaultEnumNode(Location location, FQName qualifiedName) {
 		super(location, qualifiedName);
@@ -32,7 +30,7 @@ public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, Mutab
 	}
 
 	@Override
-	public NamedNodeSet<AnnotationNode> getAnnotations() {
+	public NamedNodeSetInternal<AnnotationNode> getAnnotations() {
 		return annotations;
 	}
 
@@ -47,7 +45,7 @@ public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, Mutab
 	}
 
 	@Override
-	public NamedNodeSet<EnumValueNode> getValues() {
+	public NamedNodeSetInternal<EnumValueNode> getValues() {
 		return values;
 	}
 }

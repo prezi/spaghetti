@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript.stub
 
 import com.google.common.collect.Maps
 import com.google.common.collect.Sets
-import com.prezi.spaghetti.ast.AstUtils
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.InterfaceReference
 import com.prezi.spaghetti.ast.MethodNode
@@ -41,7 +40,7 @@ ${methodDefinitions}
 			if (!methodsGenerated.add(methodNode.name)) {
 				continue;
 			}
-			def resolvedMethod = AstUtils.resolveTypeParameters(methodNode, bindings)
+			def resolvedMethod = methodNode.resolveWithTypeParameters(bindings)
 			methodDefinitions.add resolvedMethod.accept(methodGenerator)
 		}
 

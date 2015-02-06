@@ -4,21 +4,21 @@ import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.MethodParameterNode
-import com.prezi.spaghetti.ast.NamedNodeSet
-import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.VoidTypeReference
-import com.prezi.spaghetti.ast.internal.MutableMethodNode
+import com.prezi.spaghetti.ast.internal.MethodNodeInternal
+import com.prezi.spaghetti.ast.internal.NamedNodeSetInternal
+import com.prezi.spaghetti.ast.internal.NodeSets
 
 class MethodParserTest extends AstTestBase {
 	def "parse simple"() {
 		def locator = mockLocator("int add(int a, int b)")
 		def context = AstTestUtils.parser(locator).methodDefinition()
 		def resolver = Mock(TypeResolver)
-		def method = Mock(MutableMethodNode)
-		def params = Mock(NamedNodeSet)
+		def params = Mock(NamedNodeSetInternal)
+		def method = Mock(MethodNodeInternal)
 
 		when:
 		MethodParser.parseMethodDefinition(locator, resolver, context, method)
@@ -38,8 +38,8 @@ class MethodParserTest extends AstTestBase {
 		def mockStructA = Mock(StructNode)
 		def mockIfaceI = Mock(InterfaceNode)
 		def resolver = Mock(TypeResolver)
-		def method = Mock(MutableMethodNode)
-		def params = Mock(NamedNodeSet)
+		def method = Mock(MethodNodeInternal)
+		def params = Mock(NamedNodeSetInternal)
 
 		when:
 		MethodParser.parseMethodDefinition(locator, resolver, context, method)
@@ -68,8 +68,8 @@ class MethodParserTest extends AstTestBase {
 		def context = AstTestUtils.parser(locator).methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
-		def method = Mock(MutableMethodNode)
-		def params = Mock(NamedNodeSet)
+		def method = Mock(MethodNodeInternal)
+		def params = Mock(NamedNodeSetInternal)
 
 		when:
 		MethodParser.parseMethodDefinition(locator, resolver, context, method)
@@ -87,8 +87,8 @@ class MethodParserTest extends AstTestBase {
 		def locator = mockLocator("void method(string a, ?int b, ?string c)")
 		def context = AstTestUtils.parser(locator).methodDefinition()
 		def resolver = Mock(TypeResolver)
-		def method = Mock(MutableMethodNode)
-		def params = Mock(NamedNodeSet)
+		def method = Mock(MethodNodeInternal)
+		def params = Mock(NamedNodeSetInternal)
 
 		when:
 		MethodParser.parseMethodDefinition(locator, resolver, context, method)
@@ -120,8 +120,8 @@ class MethodParserTest extends AstTestBase {
 		def context = AstTestUtils.parser(locator).methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
-		def method = Mock(MutableMethodNode)
-		def params = Mock(NamedNodeSet)
+		def method = Mock(MethodNodeInternal)
+		def params = Mock(NamedNodeSetInternal)
 
 		when:
 		MethodParser.parseMethodDefinition(locator, resolver, context, method)

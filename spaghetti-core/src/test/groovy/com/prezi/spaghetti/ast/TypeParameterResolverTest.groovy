@@ -4,13 +4,13 @@ import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference
 
-import static com.prezi.spaghetti.ast.AstUtils.resolveTypeParameters
+import static com.prezi.spaghetti.ast.internal.TypeParameterResolver.resolveTypeParameters
 import static com.prezi.spaghetti.ast.internal.parser.AstTestUtils.parser
 import static com.prezi.spaghetti.ast.internal.parser.AstTestUtils.resolver
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseType
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseTypeChain
 
-class AstUtilsTest extends AstTestBase {
+class TypeParameterResolverTest extends AstTestBase {
 	def "resolveTypeParameters simple"() {
 		def locator = mockLocator("int")
 		def type = parseType(locator, resolver(), parser(locator).type())
@@ -41,8 +41,7 @@ class AstUtilsTest extends AstTestBase {
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
 		def iface = new DefaultInterfaceNode(mockLoc, FQName.fromString("com.example.test.Iface"))
-		//noinspection GrDeprecatedAPIUsage
-		iface.getTypeParameters().add(paramT);
+		iface.getTypeParameters().addInternal(paramT);
 		def bindings = [
 				(paramT): new DefaultTypeParameterReference(mockLoc, paramU, 0),
 				(paramU): PrimitiveTypeReference.STRING,
@@ -65,8 +64,7 @@ class AstUtilsTest extends AstTestBase {
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
 		def iface = new DefaultInterfaceNode(mockLoc, FQName.fromString("com.example.test.Iface"))
-		//noinspection GrDeprecatedAPIUsage
-		iface.getTypeParameters().add(paramT);
+		iface.getTypeParameters().addInternal(paramT);
 		def bindings = [
 				(paramT): new DefaultTypeParameterReference(mockLoc, paramU, 0)
 		]
