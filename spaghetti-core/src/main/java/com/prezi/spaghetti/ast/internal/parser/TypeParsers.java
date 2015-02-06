@@ -75,14 +75,14 @@ public class TypeParsers {
 	public static TypeChain parseTypeChainElements(Locator locator, final TypeResolver resolver, ModuleParser.TypeChainElementsContext context, int dimensions) {
 		final DefaultTypeChain chain = new DefaultTypeChain(locator.locate(context), dimensions);
 		if (context.voidType() != null) {
-			chain.getElements().add(VoidTypeReference.VOID);
+			chain.getElementsInternal().add(VoidTypeReference.VOID);
 		} else {
 			for (ModuleParser.TypeChainElementContext elemCtx : context.typeChainElement()) {
-				chain.getElements().add(parseTypeChainElement(locator, resolver, elemCtx));
+				chain.getElementsInternal().add(parseTypeChainElement(locator, resolver, elemCtx));
 			}
 		}
 
-		chain.getElements().add(parseTypeChainReturnType(locator, resolver, context.typeChainReturnType()));
+		chain.getElementsInternal().add(parseTypeChainReturnType(locator, resolver, context.typeChainReturnType()));
 		return chain;
 	}
 

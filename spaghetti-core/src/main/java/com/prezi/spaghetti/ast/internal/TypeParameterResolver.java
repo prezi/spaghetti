@@ -24,7 +24,7 @@ public class TypeParameterResolver {
 			TypeChain typeChain = (TypeChain) node;
 			DefaultTypeChain result = new DefaultTypeChain(typeChain.getLocation(), typeChain.getArrayDimensions());
 			for (TypeReference elem : typeChain.getElements()) {
-				result.getElements().add(resolveTypeParameters(elem, bindings));
+				result.getElementsInternal().add(resolveTypeParameters(elem, bindings));
 			}
 			return result;
 		} else if (node instanceof ParametrizedTypeNodeReference) {
