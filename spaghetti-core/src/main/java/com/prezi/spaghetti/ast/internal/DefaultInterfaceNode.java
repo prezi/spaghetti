@@ -26,7 +26,7 @@ import java.util.Set;
 public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implements InterfaceNode, AnnotatedNodeInternal, DocumentedNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final Set<InterfaceReferenceBase<? extends InterfaceNodeBase>> superInterfaces = Sets.newLinkedHashSet();
+	private final QualifiedTypeNodeReferenceSetInternal<InterfaceReferenceBase<? extends InterfaceNodeBase>> superInterfaces = NodeSets.newQualifiedNodeReferenceSet("super interface");
 	private final NamedNodeSetInternal<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
 	public DefaultInterfaceNode(Location location, FQName qualifiedName) {
@@ -59,7 +59,7 @@ public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implement
 	}
 
 	@Override
-	public Set<InterfaceReferenceBase<? extends InterfaceNodeBase>> getSuperInterfaces() {
+	public QualifiedTypeNodeReferenceSetInternal<InterfaceReferenceBase<? extends InterfaceNodeBase>> getSuperInterfaces() {
 		return superInterfaces;
 	}
 

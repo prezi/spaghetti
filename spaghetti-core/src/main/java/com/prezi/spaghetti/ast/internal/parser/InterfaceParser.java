@@ -38,7 +38,7 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
 
 		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
-			getNode().getSuperInterfaces().add(parseSuperType(locator, resolver, superCtx));
+			getNode().getSuperInterfaces().addInternal(parseSuperType(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.MethodDefinitionContext methodCtx : getContext().methodDefinition()) {
