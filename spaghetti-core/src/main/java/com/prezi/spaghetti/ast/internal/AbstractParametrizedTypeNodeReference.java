@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode;
-import com.prezi.spaghetti.ast.ParametrizedTypeNodeReferenceInternal;
 import com.prezi.spaghetti.ast.TypeReference;
 
 import java.util.Collections;

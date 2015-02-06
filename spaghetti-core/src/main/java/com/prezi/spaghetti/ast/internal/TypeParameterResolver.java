@@ -4,7 +4,6 @@ import com.prezi.spaghetti.ast.EnumReference;
 import com.prezi.spaghetti.ast.ExternInterfaceReference;
 import com.prezi.spaghetti.ast.InterfaceReference;
 import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference;
-import com.prezi.spaghetti.ast.ParametrizedTypeNodeReferenceInternal;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.StructReference;
 import com.prezi.spaghetti.ast.TypeChain;
