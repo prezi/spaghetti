@@ -34,11 +34,10 @@ public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeRef
 		return isOptional;
 	}
 
-	@Override
-	public MethodParameterNode resolveWithTypeParameters(Map<TypeParameterNode, TypeReference> bindings) {
-		TypeReference type = TypeParameterResolver.resolveTypeParameters(getType(), bindings);
-		DefaultMethodParameterNode resolvedParam = new DefaultMethodParameterNode(getLocation(), getName(), type, isOptional());
-		resolvedParam.getAnnotations().addAllInternal(getAnnotations());
+	public static MethodParameterNode resolveWithTypeParameters(MethodParameterNode paramNode, Map<TypeParameterNode, TypeReference> bindings) {
+		TypeReference type = TypeParameterResolver.resolveTypeParameters(paramNode.getType(), bindings);
+		DefaultMethodParameterNode resolvedParam = new DefaultMethodParameterNode(paramNode.getLocation(), paramNode.getName(), type, paramNode.isOptional());
+		resolvedParam.getAnnotations().addAllInternal(paramNode.getAnnotations());
 		return resolvedParam;
 	}
 }

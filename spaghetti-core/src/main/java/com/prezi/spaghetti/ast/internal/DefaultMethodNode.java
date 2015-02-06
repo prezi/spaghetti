@@ -70,16 +70,15 @@ public class DefaultMethodNode extends AbstractNamedNode implements MethodNodeIn
 		return parameters;
 	}
 
-	@Override
-	public MethodNode resolveWithTypeParameters(Map<TypeParameterNode, TypeReference> bindings) {
-		TypeReference resolvedReturnType = TypeParameterResolver.resolveTypeParameters(getReturnType(), bindings);
-		DefaultMethodNode resolvedMethod = new DefaultMethodNode(getLocation(), getName());
-		resolvedMethod.setDocumentation(getDocumentation());
-		resolvedMethod.getAnnotations().addAllInternal(getAnnotations());
-		resolvedMethod.getTypeParameters().addAllInternal(getTypeParameters());
+	static MethodNode resolveWithTypeParameters(MethodNode methodNode, Map<TypeParameterNode, TypeReference> bindings) {
+		TypeReference resolvedReturnType = TypeParameterResolver.resolveTypeParameters(methodNode.getReturnType(), bindings);
+		DefaultMethodNode resolvedMethod = new DefaultMethodNode(methodNode.getLocation(), methodNode.getName());
+		resolvedMethod.setDocumentation(methodNode.getDocumentation());
+		resolvedMethod.getAnnotations().addAllInternal(methodNode.getAnnotations());
+		resolvedMethod.getTypeParameters().addAllInternal(methodNode.getTypeParameters());
 		resolvedMethod.setReturnType(resolvedReturnType);
-		for (MethodParameterNode param : getParameters()) {
-			MethodParameterNode resultParam = param.resolveWithTypeParameters(bindings);
+		for (MethodParameterNode param : methodNode.getParameters()) {
+			MethodParameterNode resultParam = DefaultMethodParameterNode.resolveWithTypeParameters(param, bindings);
 			resolvedMethod.getParameters().addInternal(resultParam);
 		}
 		return resolvedMethod;
