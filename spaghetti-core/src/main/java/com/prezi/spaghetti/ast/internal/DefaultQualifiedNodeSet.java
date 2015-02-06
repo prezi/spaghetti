@@ -6,17 +6,22 @@ import com.prezi.spaghetti.ast.QualifiedNode;
 import java.util.Set;
 
 public class DefaultQualifiedNodeSet<T extends QualifiedNode> extends AbstractNodeSet<FQName, T> implements QualifiedNodeSetInternal<T> {
+	private static NodeSetKeyExtractor<FQName, QualifiedNode> DEFAULT_EXTRACTOR = new NodeSetKeyExtractor<FQName, QualifiedNode>() {
+		@Override
+		public FQName key(QualifiedNode node) {
+			return node.getQualifiedName();
+		}
+	};
+
 	public DefaultQualifiedNodeSet(String type) {
-		super(type);
+		super(DEFAULT_EXTRACTOR, type);
 	}
 
 	public DefaultQualifiedNodeSet(String type, Set<T> elements) {
-		super(type, elements);
+		super(DEFAULT_EXTRACTOR, type, elements);
 	}
 
-	@Override
-	protected FQName key(T node) {
-		return node.getQualifiedName();
+	public DefaultQualifiedNodeSet(NodeSetKeyExtractor<FQName, ? super T> extractor, String type, Set<T> elements) {
+		super(extractor, type, elements);
 	}
-
 }

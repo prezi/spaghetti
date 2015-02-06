@@ -12,21 +12,7 @@ class NodeSetTest extends Specification {
 	private static FQName qn(String name) { return FQName.fromString(name) }
 
 	@Unroll
-	def "Key: #key / #value"() {
-		expect:
-		set.key(value) == key
-
-		where:
-		key              | value                           | set
-		""               | new TestNode("")                | NodeSets.<TestNode>newNamedNodeSet("test")
-		"lajos"          | new TestNode("lajos")           | NodeSets.<TestNode>newNamedNodeSet("test")
-		qn("alma.lajos") | new TestQNode(qn("alma.lajos")) | NodeSets.<TestQNode>newQualifiedNodeSet("test")
-	}
-
-	@Unroll
 	def "Contains and get: #value, #value2"() {
-		def key = set.key(value)
-		def key2 = set.key(value2)
 		assert !set.contains(key)
 		assert !set.contains(key2)
 		assert !set.contains(value)
@@ -68,10 +54,10 @@ class NodeSetTest extends Specification {
 		!iterator.hasNext()
 
 		where:
-		value                           | value2                               | set
-		new TestNode("")                | new TestNode("2")                    | NodeSets.<TestNode>newNamedNodeSet("test")
-		new TestNode("lajos")           | new TestNode("lajos2")               | NodeSets.<TestNode>newNamedNodeSet("test")
-		new TestQNode(qn("alma.lajos")) | new TestQNode(qn("alma.lajos.bela")) | NodeSets.<TestQNode>newQualifiedNodeSet("test")
+		key              | value                           | key2                  | value2                               | set
+		""               | new TestNode("")                | "2"                   | new TestNode("2")                    | NodeSets.<TestNode> newNamedNodeSet("test")
+		"lajos"          | new TestNode("lajos")           | "lajos2"              | new TestNode("lajos2")               | NodeSets.<TestNode> newNamedNodeSet("test")
+		qn("alma.lajos") | new TestQNode(qn("alma.lajos")) | qn("alma.lajos.bela") | new TestQNode(qn("alma.lajos.bela")) | NodeSets.<TestQNode> newQualifiedNodeSet("test")
 	}
 
 
@@ -87,38 +73,58 @@ class NodeSetTest extends Specification {
 		ex.message == message
 
 		where:
-		message                                              | value                           | set
+		message                                                   | value                           | set
 		"A(n) test with the same name already exists: "           | new TestNode("")                | NodeSets.newNamedNodeSet("test")
 		"A(n) test with the same name already exists: lajos"      | new TestNode("lajos")           | NodeSets.newNamedNodeSet("test")
 		"A(n) test with the same name already exists: alma.lajos" | new TestQNode(qn("alma.lajos")) | NodeSets.newQualifiedNodeSet("test")
 	}
 
-	def "public mutable api throws exception"() {
-		when: set.clear()
-		then: thrown UnsupportedOperationException
+	def "Public mutable API throws exception"() {
+		when:
+		//noinspection GrDeprecatedAPIUsage
+		set.clear()
+		then:
+		thrown UnsupportedOperationException
 
-		when: set.add(value)
-		then: thrown UnsupportedOperationException
+		when:
+		//noinspection GrDeprecatedAPIUsage
+		set.add(value)
+		then:
+		thrown UnsupportedOperationException
 
-		when: set.addAll([value])
-		then: thrown UnsupportedOperationException
+		when:
+		//noinspection GrDeprecatedAPIUsage
+		set.addAll([value])
+		then:
+		thrown UnsupportedOperationException
 
-		when: set.remove(value)
-		then: thrown UnsupportedOperationException
+		when:
+		//noinspection GrDeprecatedAPIUsage
+		set.remove(value)
+		then:
+		thrown UnsupportedOperationException
 
-		when: set.removeAll([value])
-		then: thrown UnsupportedOperationException
+		when:
+		//noinspection GrDeprecatedAPIUsage
+		set.removeAll([value])
+		then:
+		thrown UnsupportedOperationException
 
-		when: set.retainAll([value])
-		then: thrown UnsupportedOperationException
+		when:
+		//noinspection GrDeprecatedAPIUsage
+		set.retainAll([value])
+		then:
+		thrown UnsupportedOperationException
 
-		when: set.iterator().remove()
-		then: thrown UnsupportedOperationException
+		when:
+		set.iterator().remove()
+		then:
+		thrown UnsupportedOperationException
 
 		where:
 		value                           | set
-		new TestNode("lajos")           | NodeSets.<TestNode>newNamedNodeSet("test")
-		new TestQNode(qn("alma.lajos")) | NodeSets.<TestQNode>newQualifiedNodeSet("test")
+		new TestNode("lajos")           | NodeSets.<TestNode> newNamedNodeSet("test")
+		new TestQNode(qn("alma.lajos")) | NodeSets.<TestQNode> newQualifiedNodeSet("test")
 	}
 
 

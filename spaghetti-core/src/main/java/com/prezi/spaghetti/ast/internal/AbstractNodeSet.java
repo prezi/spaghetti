@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.internal.parser.InternalAstParserException;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -10,25 +11,26 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 @SuppressWarnings("NullableProblems")
 public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode> implements NodeSetInternal<K, N> {
-	private final Map<K, N> delegate;
+	private final NodeSetKeyExtractor<K, ? super N> extractor;
 	private final String type;
+	private final Map<K, N> delegate;
 
-	public AbstractNodeSet(String type) {
-		this(type, new LinkedHashMap<K, N>());
+	public AbstractNodeSet(NodeSetKeyExtractor<K, ? super N> extractor, String type) {
+		this(extractor, type, Maps.<K, N>newLinkedHashMap());
 	}
 
-	public AbstractNodeSet(String type, Set<N> elements) {
-		this(type);
+	public AbstractNodeSet(NodeSetKeyExtractor<K, ? super N> extractor, String type, Set<N> elements) {
+		this(extractor, type);
 		addAllInternal(elements);
 	}
 
-	protected AbstractNodeSet(String type, Map<K, N> delegate) {
+	protected AbstractNodeSet(NodeSetKeyExtractor<K, ? super N> extractor, String type, Map<K, N> delegate) {
+		this.extractor = extractor;
 		this.type = type;
 		this.delegate = delegate;
 	}
@@ -84,8 +86,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 		return delegate.values().containsAll(c);
 	}
 
-	protected abstract K key(N node);
-
 	@Deprecated
 	@Override
 	public boolean add(N value) {
@@ -94,7 +94,7 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 
 	@Override
 	public boolean addInternal(N value) {
-		K key = key(value);
+		K key = extractor.key(value);
 		if (delegate.containsKey(key)) {
 			throw new InternalAstParserException(duplicateMessage(key), null);
 		}
@@ -104,7 +104,7 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 
 	@Override
 	public void add(N value, ParserRuleContext ctx) {
-		K key = key(value);
+		K key = extractor.key(value);
 		if (delegate.containsKey(key)) {
 			throw new InternalAstParserException(ctx, duplicateMessage(key), null);
 		}
@@ -118,7 +118,7 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 
 	@Override
 	public void add(N value, Token token) {
-		K key = key(value);
+		K key = extractor.key(value);
 		if (delegate.containsKey(key)) {
 			throw new InternalAstParserException(token, duplicateMessage(key), null);
 		}
