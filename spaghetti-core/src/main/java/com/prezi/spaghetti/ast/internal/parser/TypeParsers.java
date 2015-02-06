@@ -168,7 +168,7 @@ public class TypeParsers {
 			throw new InternalAstParserException(typeCtx, "Type argument count doesn't match number of type parameters");
 		}
 
-		reference.getArguments().addAll(arguments);
+		reference.getArgumentsInternal().addAll(arguments);
 		return reference;
 	}
 

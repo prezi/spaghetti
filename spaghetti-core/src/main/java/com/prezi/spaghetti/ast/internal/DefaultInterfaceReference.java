@@ -14,7 +14,7 @@ public class DefaultInterfaceReference extends AbstractParametrizedTypeNodeRefer
 	@Override
 	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
 		DefaultInterfaceReference node = new DefaultInterfaceReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
-		node.getArguments().addAll(getArguments());
+		node.getArgumentsInternal().addAll(getArguments());
 		return node;
 	}
 

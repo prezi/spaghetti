@@ -14,7 +14,7 @@ class TypeArgumentWithAdditionalArrayDimensionsTest extends Specification {
 	@Unroll
 	def "type arguments are copied with withAdditionalArrayDimensions() #node"() {
 		def typeArg = Mock(TypeReference)
-		node.arguments.add(typeArg)
+		node.argumentsInternal.add(typeArg)
 		def extended = node.withAdditionalArrayDimensions(addDimensions) as StructReference
 		expect:
 		extended.arrayDimensions == expected

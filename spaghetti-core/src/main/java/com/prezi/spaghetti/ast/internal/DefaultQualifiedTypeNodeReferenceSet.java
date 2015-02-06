@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.FQName;
-import com.prezi.spaghetti.ast.QualifiedNode;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.ast.TypeNodeReference;
 

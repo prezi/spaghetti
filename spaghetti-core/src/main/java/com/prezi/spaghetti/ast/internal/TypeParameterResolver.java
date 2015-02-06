@@ -4,6 +4,7 @@ import com.prezi.spaghetti.ast.EnumReference;
 import com.prezi.spaghetti.ast.ExternInterfaceReference;
 import com.prezi.spaghetti.ast.InterfaceReference;
 import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference;
+import com.prezi.spaghetti.ast.ParametrizedTypeNodeReferenceInternal;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.StructReference;
 import com.prezi.spaghetti.ast.TypeChain;
@@ -32,7 +33,7 @@ public class TypeParameterResolver {
 			if (parametrizedRef.getArguments().isEmpty()) {
 				return parametrizedRef;
 			}
-			ParametrizedTypeNodeReference<?> result;
+			ParametrizedTypeNodeReferenceInternal<?> result;
 			if (node instanceof StructReference) {
 				StructReference structRef = (StructReference) node;
 				result = new DefaultStructReference(structRef.getLocation(), structRef.getType(), structRef.getArrayDimensions());
@@ -46,7 +47,7 @@ public class TypeParameterResolver {
 				throw new AssertionError("Unknown parametrized type: " + node.getClass());
 			}
 			for (TypeReference argument : parametrizedRef.getArguments()) {
-				result.getArguments().add(resolveTypeParameters(argument, bindings));
+				result.getArgumentsInternal().add(resolveTypeParameters(argument, bindings));
 			}
 			return result;
 		} else if (node instanceof TypeParameterReference) {
