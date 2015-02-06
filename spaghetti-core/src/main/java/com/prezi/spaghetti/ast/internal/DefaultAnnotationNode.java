@@ -1,11 +1,11 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableMap;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class DefaultAnnotationNode extends AbstractNamedNode implements AnnotationNode {
@@ -13,7 +13,7 @@ public class DefaultAnnotationNode extends AbstractNamedNode implements Annotati
 
 	public DefaultAnnotationNode(Location location, String name, Map<String, Object> parameters) {
 		super(location, name);
-		this.parameters = ImmutableMap.copyOf(parameters);
+		this.parameters = Collections.unmodifiableMap(parameters);
 	}
 
 	@Override
