@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.StructNode
 
-class ModuleParserTest extends AstTestBase {
+class ModuleParserTest extends AstSpecification {
 	def "parse single"() {
 		def definition = """module com.example.test
 extern interface JSON

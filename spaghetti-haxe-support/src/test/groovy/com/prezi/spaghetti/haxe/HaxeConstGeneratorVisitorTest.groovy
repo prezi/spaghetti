@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 
-class HaxeConstGeneratorVisitorTest extends AstTestBase {
+class HaxeConstGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definition = """module com.example.test
 

@@ -6,7 +6,7 @@ import com.prezi.spaghetti.ast.internal.parser.TypeResolver
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import spock.lang.Specification
 
-class AstTestBase extends Specification {
+class AstSpecification extends Specification {
 	protected static Location mockLoc = new Location(ModuleDefinitionSource.fromString("mock", ""), -1, -1)
 
 	protected static Locator mockLocator(String definition) {

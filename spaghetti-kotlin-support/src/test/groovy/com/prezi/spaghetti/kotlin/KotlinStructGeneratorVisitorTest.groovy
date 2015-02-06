@@ -1,13 +1,13 @@
 package com.prezi.spaghetti.kotlin
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.internal.NodeSets
-import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
+import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 import com.prezi.spaghetti.ast.internal.parser.StructParser
 
-class KotlinStructGeneratorVisitorTest extends AstTestBase {
+class KotlinStructGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definition = """/**
  * Hey this is my struct!
@@ -26,7 +26,7 @@ struct MyStruct<T> extends Parent {
 }
 """
 		def locator = mockLocator(definition)
-		def context = AstTestUtils.parser(locator).structDefinition()
+		def context = AstParserSpecification.parser(locator).structDefinition()
 		def parser = new StructParser(locator, context, "com.example.test")
 		parser.parse(mockResolver([
 				"Parent": {

@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.TypeChain
@@ -12,7 +12,7 @@ import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
 import static com.prezi.spaghetti.ast.PrimitiveTypeReference.STRING
 import static com.prezi.spaghetti.ast.VoidTypeReference.VOID
 
-class TypeParsersTest extends AstTestBase {
+class TypeParsersTest extends AstSpecification {
 	@Unroll
 	def "primitives #definition"() {
 		def type = parse PrimitiveTypeReference, definition

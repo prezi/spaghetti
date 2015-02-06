@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.haxe.stub
 
-import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
+import com.prezi.spaghetti.ast.AstSpecification
+import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
 
-class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
+class HaxeInterfaceStubGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definitionTibor = """interface Tibor<T> {
 	T getSomeT()
@@ -28,10 +28,10 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstTestBase {
 }
 """
 		def locator = mockLocator(definition)
-		def tibor = new InterfaceParser(locatorTibor, AstTestUtils.parser(locatorTibor).interfaceDefinition(), "com.example.test")
-		def parser = new InterfaceParser(locator, AstTestUtils.parser(locator).interfaceDefinition(), "com.example.test")
-		tibor.parse(AstTestUtils.resolver(tibor.node, parser.node))
-		parser.parse(AstTestUtils.resolver(tibor.node, parser.node))
+		def tibor = new InterfaceParser(locatorTibor, AstParserSpecification.parser(locatorTibor).interfaceDefinition(), "com.example.test")
+		def parser = new InterfaceParser(locator, AstParserSpecification.parser(locator).interfaceDefinition(), "com.example.test")
+		tibor.parse(AstParserSpecification.resolver(tibor.node, parser.node))
+		parser.parse(AstParserSpecification.resolver(tibor.node, parser.node))
 		def iface = parser.node
 		def visitor = new HaxeInterfaceStubGeneratorVisitor()
 

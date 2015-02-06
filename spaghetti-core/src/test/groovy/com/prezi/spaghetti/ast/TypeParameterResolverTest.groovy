@@ -3,14 +3,13 @@ package com.prezi.spaghetti.ast
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference
+import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 
 import static com.prezi.spaghetti.ast.internal.TypeParameterResolver.resolveTypeParameters
-import static com.prezi.spaghetti.ast.internal.parser.AstTestUtils.parser
-import static com.prezi.spaghetti.ast.internal.parser.AstTestUtils.resolver
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseType
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseTypeChain
 
-class TypeParameterResolverTest extends AstTestBase {
+class TypeParameterResolverTest extends AstParserSpecification {
 	def "resolveTypeParameters simple"() {
 		def locator = mockLocator("int")
 		def type = parseType(locator, resolver(), parser(locator).type())

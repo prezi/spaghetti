@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.typescript.stub
 
-import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
+import com.prezi.spaghetti.ast.AstSpecification
+import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
 
-class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
+class TypeScriptInterfaceStubGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definitionTibor = """interface Tibor<T> {
 	T getSomeT()
@@ -27,10 +27,10 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends AstTestBase {
 }
 """
 		def locator = mockLocator(definition)
-		def tibor = new InterfaceParser(locatorTibor, AstTestUtils.parser(definitionTibor).interfaceDefinition(), "com.example.test")
-		tibor.parse(AstTestUtils.resolver())
-		def parser = new InterfaceParser(locator, AstTestUtils.parser(definition).interfaceDefinition(), "com.example.test")
-		parser.parse(AstTestUtils.resolver(tibor.node))
+		def tibor = new InterfaceParser(locatorTibor, AstParserSpecification.parser(definitionTibor).interfaceDefinition(), "com.example.test")
+		tibor.parse(AstParserSpecification.resolver())
+		def parser = new InterfaceParser(locator, AstParserSpecification.parser(definition).interfaceDefinition(), "com.example.test")
+		parser.parse(AstParserSpecification.resolver(tibor.node))
 		def iface = parser.node
 		def visitor = new TypeScriptInterfaceStubGeneratorVisitor()
 

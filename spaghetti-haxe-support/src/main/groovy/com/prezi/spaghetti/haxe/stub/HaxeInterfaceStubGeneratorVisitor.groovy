@@ -47,7 +47,7 @@ ${methodDefinitions}
 		for (superIfaceRef in interfaceNode.superInterfaces) {
 			def superBindings = Maps.newLinkedHashMap(bindings)
 			if (superIfaceRef instanceof InterfaceReference) {
-				def superIface = superIfaceRef.type
+				def superIface = ((InterfaceReference) superIfaceRef).type
 				for (int i = 0; i < superIface.typeParameters.size(); i++) {
 					def param = superIface.typeParameters.getAt(i);
 					def ref = superIfaceRef.arguments.get(i);

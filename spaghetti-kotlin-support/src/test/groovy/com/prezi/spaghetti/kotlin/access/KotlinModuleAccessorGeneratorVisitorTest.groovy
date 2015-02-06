@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.kotlin.access
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-class KotlinModuleAccessorGeneratorVisitorTest extends AstTestBase {
+class KotlinModuleAccessorGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definition = """module com.example.test
 
