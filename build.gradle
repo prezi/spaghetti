@@ -265,6 +265,7 @@ configure(groovyProjects) {
 
 configure(project(":spaghetti-support-test-harness")) {
 	dependencies {
+		compile project(path: ":spaghetti-core")
 		compile project(path: ":spaghetti-core", configuration: "testCompile")
 	}
 
