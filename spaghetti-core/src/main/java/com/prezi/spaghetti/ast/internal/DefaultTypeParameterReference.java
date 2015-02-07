@@ -3,16 +3,14 @@ package com.prezi.spaghetti.ast.internal;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.TypeParameterNode;
-import com.prezi.spaghetti.ast.TypeParameterReference;
-import com.prezi.spaghetti.ast.TypeReference;
 
-public class DefaultTypeParameterReference extends AbstractTypeNodeReference<TypeParameterNode> implements TypeParameterReference {
+public class DefaultTypeParameterReference extends AbstractTypeNodeReference<TypeParameterNode> implements TypeParameterReferenceInternal {
 	public DefaultTypeParameterReference(Location location, TypeParameterNode type, int arrayDimensions) {
 		super(location, type, arrayDimensions);
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		return new DefaultTypeParameterReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
 	}
 

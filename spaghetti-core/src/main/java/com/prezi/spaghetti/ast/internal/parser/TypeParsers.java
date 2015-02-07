@@ -3,20 +3,12 @@ package com.prezi.spaghetti.ast.internal.parser;
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.ExternInterfaceNode;
-import com.prezi.spaghetti.ast.ExternInterfaceReference;
 import com.prezi.spaghetti.ast.InterfaceNode;
-import com.prezi.spaghetti.ast.InterfaceReference;
 import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode;
 import com.prezi.spaghetti.ast.PrimitiveType;
-import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.StructNode;
-import com.prezi.spaghetti.ast.StructReference;
-import com.prezi.spaghetti.ast.TypeChain;
 import com.prezi.spaghetti.ast.TypeNode;
-import com.prezi.spaghetti.ast.TypeNodeReference;
 import com.prezi.spaghetti.ast.TypeParameterNode;
-import com.prezi.spaghetti.ast.TypeReference;
-import com.prezi.spaghetti.ast.VoidTypeReference;
 import com.prezi.spaghetti.ast.internal.AbstractParametrizedTypeNodeReference;
 import com.prezi.spaghetti.ast.internal.DefaultEnumReference;
 import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceReference;
@@ -25,6 +17,14 @@ import com.prezi.spaghetti.ast.internal.DefaultPrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultStructReference;
 import com.prezi.spaghetti.ast.internal.DefaultTypeChain;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference;
+import com.prezi.spaghetti.ast.internal.ExternInterfaceReferenceInternal;
+import com.prezi.spaghetti.ast.internal.InterfaceReferenceInternal;
+import com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal;
+import com.prezi.spaghetti.ast.internal.StructReferenceInternal;
+import com.prezi.spaghetti.ast.internal.TypeChainInternal;
+import com.prezi.spaghetti.ast.internal.TypeNodeReferenceInternal;
+import com.prezi.spaghetti.ast.internal.TypeReferenceInternal;
+import com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -32,9 +32,9 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import java.util.List;
 
 public class TypeParsers {
-	public static TypeReference parseReturnType(Locator locator, TypeResolver resolver, ModuleParser.ReturnTypeContext context) {
+	public static TypeReferenceInternal parseReturnType(Locator locator, TypeResolver resolver, ModuleParser.ReturnTypeContext context) {
 		if (context.voidType() != null) {
-			return VoidTypeReference.VOID;
+			return VoidTypeReferenceInternal.VOID;
 		} else if (context.complexType() != null) {
 			return parseComplexType(locator, resolver, context.complexType());
 		} else {
@@ -42,7 +42,7 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeReference parseComplexType(Locator locator, TypeResolver resolver, ModuleParser.ComplexTypeContext context) {
+	public static TypeReferenceInternal parseComplexType(Locator locator, TypeResolver resolver, ModuleParser.ComplexTypeContext context) {
 		if (context.type() != null) {
 			return parseType(locator, resolver, context.type());
 		} else if (context.typeChain() != null) {
@@ -52,7 +52,7 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeReference parseType(Locator locator, TypeResolver resolver, ModuleParser.TypeContext context) {
+	public static TypeReferenceInternal parseType(Locator locator, TypeResolver resolver, ModuleParser.TypeContext context) {
 		Integer dimensions = context.ArrayQualifier().size();
 		if (context.primitiveType() != null) {
 			return parsePrimitiveType(locator, context.primitiveType(), dimensions);
@@ -63,7 +63,7 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeChain parseTypeChain(Locator locator, TypeResolver resolver, ModuleParser.TypeChainContext context) {
+	public static TypeChainInternal parseTypeChain(Locator locator, TypeResolver resolver, ModuleParser.TypeChainContext context) {
 		if (context.typeChainElements() != null) {
 			List<TerminalNode> arrayQualifiers = context.ArrayQualifier();
 			return parseTypeChainElements(locator, resolver, context.typeChainElements(), arrayQualifiers != null ? arrayQualifiers.size() : 0);
@@ -72,10 +72,10 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeChain parseTypeChainElements(Locator locator, final TypeResolver resolver, ModuleParser.TypeChainElementsContext context, int dimensions) {
+	public static TypeChainInternal parseTypeChainElements(Locator locator, final TypeResolver resolver, ModuleParser.TypeChainElementsContext context, int dimensions) {
 		final DefaultTypeChain chain = new DefaultTypeChain(locator.locate(context), dimensions);
 		if (context.voidType() != null) {
-			chain.getElementsInternal().add(VoidTypeReference.VOID);
+			chain.getElementsInternal().add(VoidTypeReferenceInternal.VOID);
 		} else {
 			for (ModuleParser.TypeChainElementContext elemCtx : context.typeChainElement()) {
 				chain.getElementsInternal().add(parseTypeChainElement(locator, resolver, elemCtx));
@@ -86,9 +86,9 @@ public class TypeParsers {
 		return chain;
 	}
 
-	public static TypeReference parseTypeChainReturnType(Locator locator, TypeResolver resolver, ModuleParser.TypeChainReturnTypeContext context) {
+	public static TypeReferenceInternal parseTypeChainReturnType(Locator locator, TypeResolver resolver, ModuleParser.TypeChainReturnTypeContext context) {
 		if (context.voidType() != null) {
-			return VoidTypeReference.VOID;
+			return VoidTypeReferenceInternal.VOID;
 		} else if (context.typeChainElement() != null) {
 			return parseTypeChainElement(locator, resolver, context.typeChainElement());
 		} else {
@@ -96,7 +96,7 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeReference parseTypeChainElement(Locator locator, TypeResolver resolver, ModuleParser.TypeChainElementContext context) {
+	public static TypeReferenceInternal parseTypeChainElement(Locator locator, TypeResolver resolver, ModuleParser.TypeChainElementContext context) {
 		if (context.type() != null) {
 			return parseType(locator, resolver, context.type());
 		} else if (context.typeChain() != null) {
@@ -106,12 +106,12 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeReference parseObjectType(Locator locator, TypeResolver resolver, ModuleParser.ObjectTypeContext context, int dimensions) {
+	public static TypeReferenceInternal parseObjectType(Locator locator, TypeResolver resolver, ModuleParser.ObjectTypeContext context, int dimensions) {
 		ModuleParser.QualifiedNameContext name = context.qualifiedName();
 		TypeResolutionContext resContext = TypeResolutionContext.create(name);
 		TypeNode type = resolver.resolveType(resContext);
 
-		TypeNodeReference result;
+		TypeNodeReferenceInternal result;
 		if (type instanceof InterfaceNode) {
 			result = parseInterfaceReference(locator, resolver, context, context.typeArguments(), (InterfaceNode) type, dimensions);
 		} else if (type instanceof ExternInterfaceNode) {
@@ -137,23 +137,23 @@ public class TypeParsers {
 		}
 	}
 
-	protected static StructReference parseStructReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, StructNode type, int arrayDimensions) {
+	protected static StructReferenceInternal parseStructReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, StructNode type, int arrayDimensions) {
 		DefaultStructReference ifaceRef = new DefaultStructReference(locator.locate(typeCtx), type, arrayDimensions);
 		return parseParametrizedTypeNodeReference(locator, ifaceRef, resolver, typeCtx, argsCtx, type);
 	}
 
-	protected static InterfaceReference parseInterfaceReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, InterfaceNode type, int arrayDimensions) {
+	protected static InterfaceReferenceInternal parseInterfaceReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, InterfaceNode type, int arrayDimensions) {
 		DefaultInterfaceReference ifaceRef = new DefaultInterfaceReference(locator.locate(typeCtx), type, arrayDimensions);
 		return parseParametrizedTypeNodeReference(locator, ifaceRef, resolver, typeCtx, argsCtx, type);
 	}
 
-	protected static ExternInterfaceReference parseExternInterfaceReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, ExternInterfaceNode type, int arrayDimensions) {
+	protected static ExternInterfaceReferenceInternal parseExternInterfaceReference(Locator locator, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, ExternInterfaceNode type, int arrayDimensions) {
 		DefaultExternInterfaceReference ifaceRef = new DefaultExternInterfaceReference(locator.locate(typeCtx), type, arrayDimensions);
 		return parseParametrizedTypeNodeReference(locator, ifaceRef, resolver, typeCtx, argsCtx, type);
 	}
 
 	private static <T extends ParametrizedReferableTypeNode, R extends AbstractParametrizedTypeNodeReference<T>> R parseParametrizedTypeNodeReference(Locator locator, R reference, TypeResolver resolver, ParserRuleContext typeCtx, ModuleParser.TypeArgumentsContext argsCtx, T type) {
-		List<TypeReference> arguments = Lists.newArrayList();
+		List<TypeReferenceInternal> arguments = Lists.newArrayList();
 
 		if (argsCtx != null) {
 			List<ModuleParser.ReturnTypeContext> returnTypeCtx = argsCtx.returnType();
@@ -172,7 +172,7 @@ public class TypeParsers {
 		return reference;
 	}
 
-	public static PrimitiveTypeReference parsePrimitiveType(Locator locator, ModuleParser.PrimitiveTypeContext typeCtx, int arrayDimensions) {
+	public static PrimitiveTypeReferenceInternal parsePrimitiveType(Locator locator, ModuleParser.PrimitiveTypeContext typeCtx, int arrayDimensions) {
 		PrimitiveType type;
 		if (typeCtx.boolType() != null) {
 			type = PrimitiveType.BOOL;

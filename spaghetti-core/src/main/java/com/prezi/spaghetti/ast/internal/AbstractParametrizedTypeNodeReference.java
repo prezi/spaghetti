@@ -11,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractParametrizedTypeNodeReference<T extends ParametrizedReferableTypeNode> extends AbstractTypeNodeReference<T> implements ParametrizedTypeNodeReferenceInternal<T> {
-	private final List<TypeReference> argumentsInternal = Lists.newArrayList();
-	private final List<TypeReference> arguments = Collections.unmodifiableList(argumentsInternal);
+	private final List<TypeReferenceInternal> argumentsInternal = Lists.newArrayList();
+	private final List<TypeReference> arguments = Collections.<TypeReference>unmodifiableList(argumentsInternal);
 
 	public AbstractParametrizedTypeNodeReference(Location location, T type, int arrayDimensions) {
 		super(location, type, arrayDimensions);
@@ -29,7 +29,7 @@ public abstract class AbstractParametrizedTypeNodeReference<T extends Parametriz
 	}
 
 	@Override
-	public List<TypeReference> getArgumentsInternal() {
+	public List<TypeReferenceInternal> getArgumentsInternal() {
 		return argumentsInternal;
 	}
 

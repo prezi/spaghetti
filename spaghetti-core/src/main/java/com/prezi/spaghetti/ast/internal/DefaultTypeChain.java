@@ -6,16 +6,15 @@ import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.TypeChain;
 import com.prezi.spaghetti.ast.TypeReference;
 import com.prezi.spaghetti.ast.VoidTypeReference;
 
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultTypeChain extends AbstractTypeReference implements TypeChain {
-	private final List<TypeReference> elementsInternal = Lists.newArrayList();
-	private final List<TypeReference> elements = Collections.unmodifiableList(elementsInternal);
+public class DefaultTypeChain extends AbstractTypeReference implements TypeChainInternal {
+	private final List<TypeReferenceInternal> elementsInternal = Lists.newArrayList();
+	private final List<TypeReference> elements = Collections.<TypeReference>unmodifiableList(elementsInternal);
 
 	public DefaultTypeChain(Location location, int arrayDimensions) {
 		super(location, arrayDimensions);
@@ -23,11 +22,11 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	public List<TypeReference> getParameters() {
-		if (elementsInternal.size() == 2 && elementsInternal.get(0).equals(VoidTypeReference.VOID)) {
+		if (elements.size() == 2 && elements.get(0).equals(VoidTypeReference.VOID)) {
 			return Collections.emptyList();
 		}
 
-		return elementsInternal.subList(0, elementsInternal.size() - 1);
+		return elements.subList(0, elements.size() - 1);
 	}
 
 	@Override
@@ -36,7 +35,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		DefaultTypeChain chain = new DefaultTypeChain(getLocation(), getArrayDimensions() + extraDimensions);
 		chain.getElementsInternal().addAll(elementsInternal);
 		return chain;
@@ -62,7 +61,8 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 		return elements;
 	}
 
-	public List<TypeReference> getElementsInternal() {
+	@Override
+	public List<TypeReferenceInternal> getElementsInternal() {
 		return elementsInternal;
 	}
 

@@ -1,20 +1,18 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.InterfaceNode;
-import com.prezi.spaghetti.ast.InterfaceReference;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.TypeReference;
 
-public class DefaultInterfaceReference extends AbstractParametrizedTypeNodeReference<InterfaceNode> implements InterfaceReference {
+public class DefaultInterfaceReference extends AbstractParametrizedTypeNodeReference<InterfaceNode> implements InterfaceReferenceInternal {
 	public DefaultInterfaceReference(Location location, InterfaceNode type, int arrayDimensions) {
 		super(location, type, arrayDimensions);
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		DefaultInterfaceReference node = new DefaultInterfaceReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
-		node.getArgumentsInternal().addAll(getArguments());
+		node.getArgumentsInternal().addAll(getArgumentsInternal());
 		return node;
 	}
 
