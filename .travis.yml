@@ -8,6 +8,7 @@ env:
 sudo: false
 before_install:
   - curl http://haxe.org/website-content/downloads/3,1,3/downloads/haxe-3.1.3-linux32.tar.gz | tar xzv
+  - haxe-3.1.3/haxe -version
   - echo $PWD
   - which haxe
   - haxe -version
