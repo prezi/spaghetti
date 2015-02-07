@@ -148,6 +148,29 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	sourceCompatibility = "1.6"
 	targetCompatibility = "1.6"
 
+	sourceSets {
+		integTest {
+			java.srcDir file('src/integTest/java')
+			groovy.srcDir file('src/integTest/groovy')
+			resources.srcDir file('src/integTest/resources')
+		}
+	}
+
+	dependencies {
+		integTestCompile sourceSets.main.output
+		integTestCompile configurations.testCompile
+		integTestCompile sourceSets.test.output
+		integTestRuntime configurations.testRuntime
+	}
+
+	task integTest(type: Test) {
+		shouldRunAfter test
+		testClassesDir = sourceSets.integTest.output.classesDir
+		classpath = sourceSets.integTest.runtimeClasspath
+	}
+
+	check.dependsOn integTest
+
 	tasks.withType(AbstractCompile) {
 		options.encoding = "UTF-8"
 	}
@@ -283,7 +306,7 @@ configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	}
 
 	task zipIntegrationTestSources(type: Zip) {
-		from "src/test/it/src"
+		from "src/integTest/module/src"
 		archiveName "integration-test-sources.zip"
 	}
 
