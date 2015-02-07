@@ -66,6 +66,26 @@ Spaghetti is a [Java](http://java.oracle.com)-based tool, and requires Java 7 or
 
 The documentation is [available on the wiki](/../../wiki).
 
+## Contribution
+
+Issues, suggestions and pull-requests are welcome. You can build Spaghetti yourself by running:
+
+    ./gradlew install
+
+You will need the following installed:
+
+* Java 7 or newer
+* [Haxe](http://haxe.org) and [TypeScript](http://typescriptlang.org) to run the integration tests
+
+To install Haxe:
+
+* on Mac OS use Homebrew: `brew install haxe`
+* on Linux and Windows you can download installers from [http://haxe.org](http://haxe.org/download)
+
+To install TypeScript:
+
+* you'll need Node.js and NPM first, then run: `npm install -g typescript`
+
 ## Mailing List
 
 Get in touch with Spaghetti developers at: [spaghetti-dev@googlegroups.com](https://groups.google.com/forum/#!forum/spaghetti-dev).
