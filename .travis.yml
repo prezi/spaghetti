@@ -8,9 +8,6 @@ env:
 sudo: false
 before_install:
   - curl http://haxe.org/website-content/downloads/3,1,3/downloads/haxe-3.1.3-linux64.tar.gz | tar xz
-  - ls -l /home/travis/build/prezi/spaghetti/haxe-3.1.3/haxe
-  - echo $PWD
-  - $PWD/haxe-3.1.3/haxe -version
+  - export PATH=$PATH:$PWD/haxe-3.1.3
   - which haxe
   - haxe -version
-  - export PATH=$PATH:$PWD/haxe-3.1.3
