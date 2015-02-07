@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.haxe.impl
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 
-class HaxeModuleProxyGeneratorVisitorTest extends AstTestBase {
+class HaxeModuleProxyGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definition = """module com.example.test
 

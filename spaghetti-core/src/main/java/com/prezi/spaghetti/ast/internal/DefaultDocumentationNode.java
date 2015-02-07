@@ -4,6 +4,7 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
+import java.util.Collections;
 import java.util.List;
 
 public class DefaultDocumentationNode extends AbstractNode implements DocumentationNode {
@@ -11,7 +12,7 @@ public class DefaultDocumentationNode extends AbstractNode implements Documentat
 
 	public DefaultDocumentationNode(Location location, List<String> documentation) {
 		super(location);
-		this.documentation = documentation;
+		this.documentation = Collections.unmodifiableList(documentation);
 	}
 
 	@Override

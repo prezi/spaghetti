@@ -3,18 +3,16 @@ package com.prezi.spaghetti.ast.internal;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.StructNode;
-import com.prezi.spaghetti.ast.StructReference;
-import com.prezi.spaghetti.ast.TypeReference;
 
-public class DefaultStructReference extends AbstractParametrizedTypeNodeReference<StructNode> implements StructReference {
+public class DefaultStructReference extends AbstractParametrizedTypeNodeReference<StructNode> implements StructReferenceInternal {
 	public DefaultStructReference(Location location, StructNode type, int arrayDimensions) {
 		super(location, type, arrayDimensions);
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		DefaultStructReference node = new DefaultStructReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
-		node.getArguments().addAll(getArguments());
+		node.getArgumentsInternal().addAll(getArgumentsInternal());
 		return node;
 	}
 

@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.kotlin
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 
-class KotlinConstGeneratorVisitorTest extends AstTestBase {
+class KotlinConstGeneratorVisitorTest extends AstSpecification {
     def "generate"() {
         def definition = """module com.example.test
 

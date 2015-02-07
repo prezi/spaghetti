@@ -1,13 +1,11 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.AstTestBase
-
 import static com.prezi.spaghetti.ast.PrimitiveType.BOOL
 import static com.prezi.spaghetti.ast.PrimitiveType.FLOAT
 import static com.prezi.spaghetti.ast.PrimitiveType.INT
 import static com.prezi.spaghetti.ast.PrimitiveType.STRING
 
-class ConstParserTest extends AstTestBase {
+class ConstParserTest extends AstParserSpecification {
 	def "parse"() {
 		def locator = mockLocator("""
 const Values {
@@ -21,7 +19,7 @@ const Values {
 	string explicitStringValue = "lajos"
 }
 """)
-		def context = AstTestUtils.parser(locator).constDefinition()
+		def context = parser(locator).constDefinition()
 		def resolver = Mock(TypeResolver)
 		def parser = new ConstParser(locator, context, "com.example.test")
 

@@ -5,12 +5,10 @@ import com.prezi.spaghetti.ast.ConstEntryNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.NodeSets;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 
-public class DefaultConstEntryNode extends AbstractTypeNamePairNode<PrimitiveTypeReference> implements ConstEntryNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+public class DefaultConstEntryNode extends AbstractTypeNamePairNode<PrimitiveTypeReference> implements ConstEntryNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final Object value;
 
@@ -25,7 +23,7 @@ public class DefaultConstEntryNode extends AbstractTypeNamePairNode<PrimitiveTyp
 	}
 
 	@Override
-	public final NamedNodeSet<AnnotationNode> getAnnotations() {
+	public NamedNodeSetInternal<AnnotationNode> getAnnotations() {
 		return annotations;
 	}
 

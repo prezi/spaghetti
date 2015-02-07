@@ -1,18 +1,16 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.EnumNode;
-import com.prezi.spaghetti.ast.EnumReference;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.TypeReference;
 
-public class DefaultEnumReference extends AbstractTypeNodeReference<EnumNode> implements EnumReference {
+public class DefaultEnumReference extends AbstractTypeNodeReference<EnumNode> implements EnumReferenceInternal {
 	public DefaultEnumReference(Location location, EnumNode type, int arrayDimensions) {
 		super(location, type, arrayDimensions);
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		return new DefaultEnumReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
 	}
 

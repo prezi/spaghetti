@@ -12,12 +12,12 @@ import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.InterfaceDefinitionContext, InterfaceNode> {
+public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.InterfaceDefinitionContext, DefaultInterfaceNode> {
 	public InterfaceParser(Locator locator, ModuleParser.InterfaceDefinitionContext context, String moduleName) {
 		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static InterfaceNode createNode(Locator locator, ModuleParser.InterfaceDefinitionContext context, String moduleName) {
+	private static DefaultInterfaceNode createNode(Locator locator, ModuleParser.InterfaceDefinitionContext context, String moduleName) {
 		DefaultInterfaceNode node = new DefaultInterfaceNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
@@ -38,7 +38,7 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
 
 		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
-			getNode().getSuperInterfaces().add(parseSuperType(locator, resolver, superCtx));
+			getNode().getSuperInterfaces().addInternal(parseSuperType(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.MethodDefinitionContext methodCtx : getContext().methodDefinition()) {

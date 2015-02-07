@@ -6,15 +6,15 @@ import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.TypeChain;
 import com.prezi.spaghetti.ast.TypeReference;
 import com.prezi.spaghetti.ast.VoidTypeReference;
 
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultTypeChain extends AbstractTypeReference implements TypeChain {
-	private final List<TypeReference> elements = Lists.newArrayList();
+public class DefaultTypeChain extends AbstractTypeReference implements TypeChainInternal {
+	private final List<TypeReferenceInternal> elementsInternal = Lists.newArrayList();
+	private final List<TypeReference> elements = Collections.<TypeReference>unmodifiableList(elementsInternal);
 
 	public DefaultTypeChain(Location location, int arrayDimensions) {
 		super(location, arrayDimensions);
@@ -31,19 +31,19 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	public TypeReference getReturnType() {
-		return elements.get(elements.size() - 1);
+		return elementsInternal.get(elementsInternal.size() - 1);
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		DefaultTypeChain chain = new DefaultTypeChain(getLocation(), getArrayDimensions() + extraDimensions);
-		chain.getElements().addAll(elements);
+		chain.getElementsInternal().addAll(elementsInternal);
 		return chain;
 	}
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), elements);
+		return Iterables.concat(super.getChildren(), elementsInternal);
 	}
 
 	@Override
@@ -53,12 +53,17 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	public String toString() {
-		return Joiner.on("->").join(elements);
+		return Joiner.on("->").join(elementsInternal);
 	}
 
 	@Override
 	public List<TypeReference> getElements() {
 		return elements;
+	}
+
+	@Override
+	public List<TypeReferenceInternal> getElementsInternal() {
+		return elementsInternal;
 	}
 
 	@Override
@@ -69,7 +74,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 		DefaultTypeChain that = (DefaultTypeChain) o;
 
-		if (!elements.equals(that.elements)) return false;
+		if (!elementsInternal.equals(that.elementsInternal)) return false;
 
 		return true;
 	}
@@ -77,7 +82,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + elements.hashCode();
+		result = 31 * result + elementsInternal.hashCode();
 		return result;
 	}
 }

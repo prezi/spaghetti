@@ -1,10 +1,9 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.AstTestBase
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import spock.lang.Unroll
 
-class AnnotationParserTest extends AstTestBase {
+class AnnotationParserTest extends AstParserSpecification {
 	@Unroll
 	def "FromContext: #annotationDecl"() {
 		def locator = mockLocator(annotationDecl)

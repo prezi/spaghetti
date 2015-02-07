@@ -1,17 +1,18 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ParametrizedReferableTypeNode;
-import com.prezi.spaghetti.ast.ParametrizedTypeNodeReference;
 import com.prezi.spaghetti.ast.TypeReference;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractParametrizedTypeNodeReference<T extends ParametrizedReferableTypeNode> extends AbstractTypeNodeReference<T> implements ParametrizedTypeNodeReference<T> {
-	private final List<TypeReference> arguments = new ArrayList<TypeReference>();
+public abstract class AbstractParametrizedTypeNodeReference<T extends ParametrizedReferableTypeNode> extends AbstractTypeNodeReference<T> implements ParametrizedTypeNodeReferenceInternal<T> {
+	private final List<TypeReferenceInternal> argumentsInternal = Lists.newArrayList();
+	private final List<TypeReference> arguments = Collections.<TypeReference>unmodifiableList(argumentsInternal);
 
 	public AbstractParametrizedTypeNodeReference(Location location, T type, int arrayDimensions) {
 		super(location, type, arrayDimensions);
@@ -19,12 +20,17 @@ public abstract class AbstractParametrizedTypeNodeReference<T extends Parametriz
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), arguments);
+		return Iterables.concat(super.getChildren(), argumentsInternal);
 	}
 
 	@Override
 	public List<TypeReference> getArguments() {
 		return arguments;
+	}
+
+	@Override
+	public List<TypeReferenceInternal> getArgumentsInternal() {
+		return argumentsInternal;
 	}
 
 	@Override
@@ -35,7 +41,7 @@ public abstract class AbstractParametrizedTypeNodeReference<T extends Parametriz
 
 		AbstractParametrizedTypeNodeReference that = (AbstractParametrizedTypeNodeReference) o;
 
-		if (!arguments.equals(that.arguments)) return false;
+		if (!argumentsInternal.equals(that.argumentsInternal)) return false;
 
 		return true;
 	}
@@ -43,7 +49,7 @@ public abstract class AbstractParametrizedTypeNodeReference<T extends Parametriz
 	@Override
 	public int hashCode() {
 		int result = super.hashCode();
-		result = 31 * result + arguments.hashCode();
+		result = 31 * result + argumentsInternal.hashCode();
 		return result;
 	}
 }

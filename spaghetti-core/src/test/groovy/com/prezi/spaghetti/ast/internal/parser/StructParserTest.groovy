@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.AstTestBase
-import com.prezi.spaghetti.ast.NodeSets
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterReference
+import com.prezi.spaghetti.ast.internal.NodeSets
 
 import static com.prezi.spaghetti.ast.PrimitiveType.ANY
 import static com.prezi.spaghetti.ast.PrimitiveType.BOOL
@@ -11,7 +11,7 @@ import static com.prezi.spaghetti.ast.PrimitiveType.FLOAT
 import static com.prezi.spaghetti.ast.PrimitiveType.INT
 import static com.prezi.spaghetti.ast.PrimitiveType.STRING
 
-class StructParserTest extends AstTestBase {
+class StructParserTest extends AstSpecification {
 	def "parse primitives"() {
 		def locator = mockLocator("""
 struct MyStruct<T> {
@@ -23,7 +23,7 @@ struct MyStruct<T> {
 	T genericValue
 }
 """)
-		def context = AstTestUtils.parser(locator).structDefinition()
+		def context = AstParserSpecification.parser(locator).structDefinition()
 		def parser = new StructParser(locator, context, "com.example.test")
 
 		when:
@@ -66,7 +66,7 @@ struct StructB {
 	StructA structA
 }
 """)
-		def context = AstTestUtils.parser(locator).structDefinition()
+		def context = AstParserSpecification.parser(locator).structDefinition()
 		def mockStructA = Mock(StructNode)
 		def resolver = Mock(TypeResolver)
 		def parser = new StructParser(locator, context, "com.example.test")
@@ -99,7 +99,7 @@ struct MyStruct<T> {
 	T convertToRelative(T absolute)
 }
 """)
-		def context = AstTestUtils.parser(locator).structDefinition()
+		def context = AstParserSpecification.parser(locator).structDefinition()
 		def parser = new StructParser(locator, context, "com.example.test")
 
 		when:
@@ -122,7 +122,7 @@ struct MyStruct<T> {
 struct StructB extends StructA {
 }
 """)
-		def context = AstTestUtils.parser(locator).structDefinition()
+		def context = AstParserSpecification.parser(locator).structDefinition()
 		def mockStructA = Mock(StructNode) {
 			getName() >> "StructA"
 		}

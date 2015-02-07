@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 
-class TypeScriptInterfaceGeneratorVisitorTest extends AstTestBase {
+class TypeScriptInterfaceGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definition = """module com.example.test
 

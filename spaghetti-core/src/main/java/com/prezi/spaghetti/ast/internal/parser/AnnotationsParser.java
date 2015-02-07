@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
 import com.google.common.collect.Maps;
-import com.prezi.spaghetti.ast.AnnotatedNode;
 import com.prezi.spaghetti.ast.AnnotationNode;
+import com.prezi.spaghetti.ast.internal.AnnotatedNodeInternal;
 import com.prezi.spaghetti.ast.internal.DefaultAnnotationNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 
 public class AnnotationsParser {
-	public static void parseAnnotations(Locator locator, ModuleParser.AnnotationsContext context, AnnotatedNode node) {
+	public static void parseAnnotations(Locator locator, ModuleParser.AnnotationsContext context, AnnotatedNodeInternal node) {
 		if (context != null) {
 			for (ModuleParser.AnnotationContext annotationCtx : context.annotation()) {
 				node.getAnnotations().add(fromContext(locator, annotationCtx), annotationCtx);

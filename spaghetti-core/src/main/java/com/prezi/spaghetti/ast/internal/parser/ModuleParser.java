@@ -49,11 +49,12 @@ public class ModuleParser extends AbstractParser {
 
 		for (com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleElementContext elementCtx : moduleCtx.moduleElement()) {
 			if (elementCtx.importDeclaration() != null) {
-				FQName importedName = FQName.fromContext(elementCtx.importDeclaration().qualifiedName());
-				TerminalNode aliasDecl = elementCtx.importDeclaration().Name();
+				com.prezi.spaghetti.internal.grammar.ModuleParser.ImportDeclarationContext context = elementCtx.importDeclaration();
+				FQName importedName = FQName.fromContext(context.qualifiedName());
+				TerminalNode aliasDecl = context.Name();
 				String importAlias = aliasDecl != null ? aliasDecl.getText() : importedName.localName;
-				DefaultImportNode importNode = new DefaultImportNode(locate(elementCtx.importDeclaration().qualifiedName()), importedName, importAlias);
-				module.getImports().put(FQName.fromString(null, importAlias), importNode);
+				DefaultImportNode importNode = new DefaultImportNode(locate(context.qualifiedName()), importedName, importAlias);
+				module.getImports().add(importNode, context);
 			} else if (elementCtx.externTypeDefinition() != null) {
 				com.prezi.spaghetti.internal.grammar.ModuleParser.ExternTypeDefinitionContext context = elementCtx.externTypeDefinition();
 				AbstractModuleTypeParser typeParser = createExternTypeDef(context);

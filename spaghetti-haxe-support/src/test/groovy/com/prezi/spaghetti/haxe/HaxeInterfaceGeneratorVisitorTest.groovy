@@ -1,14 +1,14 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
-import com.prezi.spaghetti.ast.NodeSets
 import com.prezi.spaghetti.ast.TypeParameterNode
-import com.prezi.spaghetti.ast.internal.parser.AstTestUtils
+import com.prezi.spaghetti.ast.internal.NodeSets
+import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
 
-class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
+class HaxeInterfaceGeneratorVisitorTest extends AstSpecification {
 	def "generate"() {
 		def definition = """interface MyInterface<X> extends Tibor<X> {
 	/**
@@ -21,7 +21,7 @@ class HaxeInterfaceGeneratorVisitorTest extends AstTestBase {
 }
 """
 		def locator = mockLocator(definition)
-		def context = AstTestUtils.parser(locator).interfaceDefinition()
+		def context = AstParserSpecification.parser(locator).interfaceDefinition()
 		def parser = new InterfaceParser(locator, context, "com.example.test")
 		parser.parse(mockResolver([
 		        "Tibor": {

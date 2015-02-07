@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.ast.internal.parser
 
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 
-class EnumParserTest extends AstTestBase {
+class EnumParserTest extends AstSpecification {
 	def "parse"() {
 		def locator = mockLocator("""
 enum MyEnum {
@@ -10,7 +10,7 @@ enum MyEnum {
 	bela
 }
 """)
-		def context = AstTestUtils.parser(locator).enumDefinition()
+		def context = AstParserSpecification.parser(locator).enumDefinition()
 		def resolver = Mock(TypeResolver)
 		def parser = new EnumParser(locator, context, "com.example.test")
 

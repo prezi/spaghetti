@@ -3,13 +3,13 @@ package com.prezi.spaghetti.ast.internal.parser;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.internal.DefaultDocumentationNode;
-import com.prezi.spaghetti.ast.internal.MutableDocumentedNode;
+import com.prezi.spaghetti.ast.internal.DocumentedNodeInternal;
 import org.antlr.v4.runtime.Token;
 
 import java.util.List;
 
 public class DocumentationParser {
-	public static void parseDocumentation(Locator locator, Token documentation, MutableDocumentedNode node) {
+	public static void parseDocumentation(Locator locator, Token documentation, DocumentedNodeInternal node) {
 		if (documentation != null) {
 			String text = documentation.getText();
 			List<String> lines = Lists.newArrayList(text.substring(3, text.length() - 3).trim().split("\\r?\\n?\\s*\\*\\s?"));

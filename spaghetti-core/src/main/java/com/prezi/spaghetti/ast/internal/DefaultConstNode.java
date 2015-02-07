@@ -9,13 +9,11 @@ import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
-import com.prezi.spaghetti.ast.NamedNodeSet;
-import com.prezi.spaghetti.ast.NodeSets;
 
-public class DefaultConstNode extends AbstractTypeNode implements ConstNode, MutableDocumentedNode {
-	private final NamedNodeSet<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+public class DefaultConstNode extends AbstractTypeNode implements ConstNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
-	private final NamedNodeSet<ConstEntryNode> entries = NodeSets.newNamedNodeSet("entry");
+	private final NamedNodeSetInternal<ConstEntryNode> entries = NodeSets.newNamedNodeSet("entry");
 
 	public DefaultConstNode(Location location, FQName qualifiedName) {
 		super(location, qualifiedName);
@@ -32,7 +30,7 @@ public class DefaultConstNode extends AbstractTypeNode implements ConstNode, Mut
 	}
 
 	@Override
-	public final NamedNodeSet<AnnotationNode> getAnnotations() {
+	public NamedNodeSetInternal<AnnotationNode> getAnnotations() {
 		return annotations;
 	}
 
@@ -47,7 +45,7 @@ public class DefaultConstNode extends AbstractTypeNode implements ConstNode, Mut
 	}
 
 	@Override
-	public NamedNodeSet<ConstEntryNode> getEntries() {
+	public NamedNodeSetInternal<ConstEntryNode> getEntries() {
 		return entries;
 	}
 }

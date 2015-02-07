@@ -1,18 +1,17 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.ast.ConstNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultConstEntryNode;
 import com.prezi.spaghetti.ast.internal.DefaultConstNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
-public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefinitionContext, ConstNode> {
+public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefinitionContext, DefaultConstNode> {
 	public ConstParser(Locator locator, ModuleParser.ConstDefinitionContext context, String moduleName) {
 		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static ConstNode createNode(Locator locator, ModuleParser.ConstDefinitionContext context, String moduleName) {
+	private static DefaultConstNode createNode(Locator locator, ModuleParser.ConstDefinitionContext context, String moduleName) {
 		DefaultConstNode node = new DefaultConstNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);

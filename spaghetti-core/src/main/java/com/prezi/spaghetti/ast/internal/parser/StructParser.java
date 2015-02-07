@@ -9,16 +9,15 @@ import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultPropertyNode;
 import com.prezi.spaghetti.ast.internal.DefaultStructNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
-import com.prezi.spaghetti.ast.internal.MutableStructNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDefinitionContext, MutableStructNode> {
+public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDefinitionContext, DefaultStructNode> {
 	public StructParser(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
 		super(locator, context, createNode(locator, context, moduleName));
 	}
 
-	private static MutableStructNode createNode(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
+	private static DefaultStructNode createNode(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
 		DefaultStructNode node = new DefaultStructNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);

@@ -1,18 +1,18 @@
 package com.prezi.spaghetti.ast.internal.parser
 
 import com.google.common.collect.Iterables
-import com.prezi.spaghetti.ast.AstTestBase
+import com.prezi.spaghetti.ast.AstSpecification
 
 import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
 
-class InterfaceParserTest extends AstTestBase {
+class InterfaceParserTest extends AstSpecification {
 	def "parse"() {
 		def locator = mockLocator("""
 interface MyInterface {
 	int add(int a, @nullable int b)
 }
 """)
-		def context = AstTestUtils.parser(locator).interfaceDefinition()
+		def context = AstParserSpecification.parser(locator).interfaceDefinition()
 		def resolver = Mock(TypeResolver)
 		def parser = new InterfaceParser(locator, context, "com.example.test")
 

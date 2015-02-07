@@ -4,10 +4,8 @@ import com.google.common.base.Strings;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.PrimitiveType;
-import com.prezi.spaghetti.ast.PrimitiveTypeReference;
-import com.prezi.spaghetti.ast.TypeReference;
 
-public class DefaultPrimitiveTypeReference extends AbstractTypeReference implements PrimitiveTypeReference {
+public class DefaultPrimitiveTypeReference extends AbstractTypeReference implements PrimitiveTypeReferenceInternal {
 	private final PrimitiveType type;
 
 	public DefaultPrimitiveTypeReference(Location location, PrimitiveType type, int arrayDimensions) {
@@ -16,7 +14,7 @@ public class DefaultPrimitiveTypeReference extends AbstractTypeReference impleme
 	}
 
 	@Override
-	public TypeReference withAdditionalArrayDimensions(int extraDimensions) {
+	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
 		return new DefaultPrimitiveTypeReference(getLocation(), getType(), getArrayDimensions() + extraDimensions);
 	}
 
