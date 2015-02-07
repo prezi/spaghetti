@@ -277,6 +277,15 @@ configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 		compile project(path: ":spaghetti-core")
 		testCompile project(path: ":spaghetti-support-test-harness")
 	}
+
+	task zipIntegrationTestSources(type: Zip) {
+		from "src/test/it/src"
+		archiveName "integration-test-sources.zip"
+	}
+
+	processTestResources {
+		from zipIntegrationTestSources
+	}
 }
 
 configure(project(":spaghetti")) {
