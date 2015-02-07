@@ -96,11 +96,19 @@ public abstract class LanguageSupportSpecification extends Specification {
 	}
 
 	public static void execute(Object... args) {
+		executeIn(null, Arrays.asList(args))
+	}
+
+	public static void execute(List<?> args) {
 		executeIn(null, args)
 	}
 
 	public static void executeIn(File dir, Object... args) {
-		def process = Arrays.asList(args).execute((String[])null, dir)
+		executeIn(dir, Arrays.asList(args))
+	}
+
+	public static void executeIn(File dir, List<?> args) {
+		def process = args.execute((String[])null, dir)
 		process.waitForProcessOutput((OutputStream) System.out, System.err)
 		if (process.exitValue() != 0) {
 			throw new RuntimeException("Executing ${args.join(" ")} returned error code: ${process.exitValue()}")
