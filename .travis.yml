@@ -9,5 +9,6 @@ sudo: false
 before_install:
   - curl http://haxe.org/website-content/downloads/3,1,3/downloads/haxe-3.1.3-linux32.tar.gz | tar xzv
   - echo $PWD
-  - ls -lR
+  - which haxe
+  - haxe -version
   - export PATH=$PATH:$PWD/haxe-3.1.3
