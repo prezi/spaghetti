@@ -1,3 +1,5 @@
 module spaghetti.test as TestModule
 
+spaghetti.test.dependency.DependentEnum getNext(spaghetti.test.dependency.DependentEnum value)
+
 int add(int a, int b)

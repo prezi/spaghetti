@@ -1,0 +1,8 @@
+module spaghetti.test.dependency as DependencyModule
+
+enum DependentEnum {
+	ALMA
+	BELA
+}
+
+int getNumber()

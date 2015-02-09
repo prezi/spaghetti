@@ -42,9 +42,16 @@ public abstract class LanguageSupportSpecification extends Specification {
 		println "Building test module in ${rootDir}"
 
 		when:
+		// Build the dependency module
+		def testDependencyDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestDependencyModule.module"))
+		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, ModuleBundleSet.EMPTY)
+		def testDependencyModule = testDependencyConfig.localModule
+		// Make the module bundle
+		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text)
+
 		// Build the module
 		def testModuleDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
-		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, ModuleBundleSet.EMPTY)
+		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [testDependencyDefinition], [])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
 		def headersDir = new File(rootDir, "headers")
@@ -61,25 +68,26 @@ public abstract class LanguageSupportSpecification extends Specification {
 		processedJs << processJavaScript(bundleProcessor, moduleConfig, compiledJs.text)
 
 		// Make the module bundle
-		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text)
+		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, testDependencyModule.name)
 
 		// Make the app bundle
 		def testAppDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
-		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [testModuleDefinition], [])
+		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [testModuleDefinition], [testDependencyDefinition])
+		def appModule = appConfig.localModule
 
 		def processedAppJs = processJavaScript(new VerbatimJavaScriptBundleProcessor("js"), appConfig, Resources.getResource(this.class, "/app.js").text)
 
-		def appBundle = bundle("spaghetti.test.app",
+		def appBundle = bundle(appModule.name,
 				testAppDefinition.contents,
 				processedAppJs,
-				"spaghetti.test")
+				module.name)
 
 		// Package the application
 		def appDir = new File(rootDir, "application")
 		ApplicationPackageParameters applicationPackagingParams = new ApplicationPackageParameters(
-				new DefaultModuleBundleSet([appBundle] as Set, [moduleBundle] as Set),
-				"testApp.js",
-				"spaghetti.test.app",
+				new DefaultModuleBundleSet([appBundle] as Set, [moduleBundle, testDependencyBundle] as Set),
+				"test.js",
+				appModule.name,
 				true,
 				[],
 				[]
@@ -89,7 +97,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		// Execute the application
 		new File(appDir, "package.json") << Resources.getResource(this.class, "/package.json").text
 		executeIn(appDir, "npm", "install")
-		executeIn(appDir, "node_modules/.bin/mocha", "${appDir}/testApp.js")
+		executeIn(appDir, "node_modules/.bin/mocha")
 
 		then:
 		1 == 1
