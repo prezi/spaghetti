@@ -7,7 +7,7 @@ class TypeScriptEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor 
 
 	@Override
 	String visitEnumNode(EnumNode node) {
-"""export const enum ${node.name} {
+"""export enum ${node.name} {
 ${node.values*.accept(this).join(",\n")}
 }
 """

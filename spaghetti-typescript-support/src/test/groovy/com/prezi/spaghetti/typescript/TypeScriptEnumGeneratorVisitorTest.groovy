@@ -20,7 +20,7 @@ enum MyEnum {
 		def visitor = new TypeScriptEnumGeneratorVisitor()
 
 		expect:
-		visitor.visit(module) == """export const enum MyEnum {
+		visitor.visit(module) == """export enum MyEnum {
 	/**
 	 * Alma.
 	 */
