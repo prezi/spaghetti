@@ -1,5 +1,5 @@
-def gradleVer = "2.2.1"
-def groovyVersion = "2.3.6"
+def gradleVer = "2.3"
+def groovyVersion = "2.3.9"
 
 String gitVersion
 if (hasProperty("release")) {
