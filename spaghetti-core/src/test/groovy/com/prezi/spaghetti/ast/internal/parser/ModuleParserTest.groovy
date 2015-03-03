@@ -30,8 +30,7 @@ MyStruct<string> createStruct()
 		def parser = ModuleParser.create(locator.source)
 
 		when:
-		parser.parse(mockResolver())
-		def module = parser.module
+		def module = parser.parse(mockResolver())
 
 		then:
 		module.name == "com.example.test"
