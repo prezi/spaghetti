@@ -1,18 +1,18 @@
 package com.prezi.spaghetti.haxe.stub
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
-import com.prezi.spaghetti.ast.internal.parser.InterfaceParser
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class HaxeInterfaceStubGeneratorVisitorTest extends AstSpecification {
+class HaxeInterfaceStubGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definitionTibor = """interface Tibor<T> {
+		def definition = """
+module com.example.test
+
+interface Tibor<T> {
 	T getSomeT()
 	com.example.test.MyInterface<T[]> multiply(int max, ?int min)
 }
-"""
-		def locatorTibor = mockLocator(definitionTibor)
-		def definition = """interface MyInterface<X> extends com.example.test.Tibor<X> {
+
+interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
 	 */
@@ -27,16 +27,19 @@ class HaxeInterfaceStubGeneratorVisitorTest extends AstSpecification {
 	<T, U> T[] hello(X->(void->int)->U f)
 }
 """
-		def locator = mockLocator(definition)
-		def tibor = new InterfaceParser(locatorTibor, AstParserSpecification.parser(locatorTibor).interfaceDefinition(), "com.example.test")
-		def parser = new InterfaceParser(locator, AstParserSpecification.parser(locator).interfaceDefinition(), "com.example.test")
-		tibor.parse(AstParserSpecification.resolver(tibor.node, parser.node))
-		parser.parse(AstParserSpecification.resolver(tibor.node, parser.node))
-		def iface = parser.node
-		def visitor = new HaxeInterfaceStubGeneratorVisitor()
+		def result = parseAndVisitModule(definition, new HaxeInterfaceStubGeneratorVisitor())
 
 		expect:
-		visitor.visit(iface) == """class MyInterfaceStub<X> implements MyInterface<X> {
+		result == """class TiborStub<T> implements Tibor<T> {
+	public function getSomeT():T {
+		return null;
+	}
+	public function multiply(max:Int, ?min:Int):com.example.test.MyInterface<Array<T>> {
+		return null;
+	}
+
+}
+class MyInterfaceStub<X> implements MyInterface<X> {
 	/**
 	 * Does something.
 	 */
