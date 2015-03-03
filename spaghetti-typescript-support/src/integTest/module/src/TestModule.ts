@@ -6,9 +6,7 @@ export class TestModule {
 	}
 
 	static getNext(value:spaghetti.test.dependency.DependentEnum):spaghetti.test.dependency.DependentEnum {
-		return spaghetti.test.dependency.DependentEnum.fromValue(
-			spaghetti.test.dependency.DependentEnum.getValue(value) + 1
-		);
+		return value + 1;
 	}
 }
 
