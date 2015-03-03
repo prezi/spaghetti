@@ -1,12 +1,11 @@
 package com.prezi.spaghetti.haxe.access
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class HaxeModuleAccessorGeneratorVisitorTest extends AstSpecification {
+class HaxeModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
+		def definition = """
+module com.example.test
 
 extern interface JSON
 
@@ -26,11 +25,11 @@ JSON[] doSomething()
 @nullable int doStatic(@nullable int a, int b)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
-		def visitor = new HaxeModuleAccessorGeneratorVisitor(module)
+
+		def result = parseAndVisitModule(definition, new HaxeModuleAccessorGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """@:final class TestModule {
+		result == """@:final class TestModule {
 
 	static var __module:Dynamic = untyped __js__('Spaghetti["dependencies"]["com.example.test"]["module"]');
 

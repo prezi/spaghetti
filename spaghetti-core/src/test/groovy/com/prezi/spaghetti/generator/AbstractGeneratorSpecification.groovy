@@ -6,21 +6,20 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleVisitorBase
 import com.prezi.spaghetti.ast.ReferableTypeNode
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.ast.TypeNode
 import com.prezi.spaghetti.ast.TypeParameterNode
 import com.prezi.spaghetti.ast.internal.NodeSets
-import com.prezi.spaghetti.ast.internal.parser.AbstractModuleTypeParser
+import com.prezi.spaghetti.ast.internal.parser.AbstractParser
 import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
+import com.prezi.spaghetti.ast.internal.parser.TypeResolutionContext
+import com.prezi.spaghetti.ast.internal.parser.TypeResolver
 
 class AbstractGeneratorSpecification extends AstParserSpecification {
-	protected <T> T parseAndVisitNode(String fragment, ModuleVisitorBase<T> visitor, ReferableTypeNode[] existingTypes, Closure<AbstractModuleTypeParser> nodeParserCreator) {
+	protected <T> T parseAndVisitNode(String fragment, ModuleVisitorBase<T> visitor, ReferableTypeNode[] existingTypes, Closure<AbstractParser> nodeParserCreator) {
 		def locator = AstParserSpecification.mockLocator(fragment);
 		def moduleParser = AstParserSpecification.parser(locator)
 		def nodeParser = nodeParserCreator.call(locator, moduleParser)
-		def resolvableTypes = [:]
-		existingTypes.each { type ->
-			resolvableTypes.put type.name, { type }
-		}
-		nodeParser.parse(mockResolver(resolvableTypes))
+		nodeParser.parse(mockResolver(existingTypes))
 		return nodeParser.node.accept(visitor)
 	}
 
@@ -55,5 +54,21 @@ class AbstractGeneratorSpecification extends AstParserSpecification {
 		} else {
 			return FQName.fromString("com.example.test", name)
 		}
+	}
+
+	private TypeResolver mockResolver(TypeNode... typeNodes) {
+		def types = [:]
+		typeNodes.each { types.put it.name, it}
+		def resolver = Mock(TypeResolver)
+		resolver.resolveType(_) >> { TypeResolutionContext context ->
+			def name = context.name
+			def type = types.get(name.fullyQualifiedName)
+			if (type) {
+				return type
+			}
+
+			throw new IllegalStateException("Ran out of scope while looking for type: ${name}")
+		}
+		return resolver
 	}
 }

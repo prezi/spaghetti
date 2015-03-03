@@ -43,7 +43,7 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	{
 		def contents = ""
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
-		contents += new TypeScriptModuleProxyGeneratorVisitor(module).visit(module)
+		contents += new TypeScriptModuleProxyGeneratorVisitor().visit(module)
 		contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
@@ -51,7 +51,7 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	private static void generateDependentModule(ModuleNode module, File outputDirectory, String header, boolean generateAccessor) {
 		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
 		if (generateAccessor) {
-			contents += new TypeScriptModuleAccessorGeneratorVisitor(module).visit(module)
+			contents += new TypeScriptModuleAccessorGeneratorVisitor().visit(module)
 		}
 		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)

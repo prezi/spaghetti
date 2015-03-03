@@ -33,17 +33,17 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 	}
 
 	@Override
-	public void parse(TypeResolver resolver) {
+	public void parseInternal(TypeResolver resolver) {
 		// Let further processing access type parameters as defined types
-		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
+		resolver = new SimpleNamedTypeResolver(resolver, node.getTypeParameters());
 
 		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
-			getNode().getSuperInterfaces().addInternal(parseSuperType(locator, resolver, superCtx));
+			node.getSuperInterfaces().addInternal(parseSuperType(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.MethodDefinitionContext methodCtx : getContext().methodDefinition()) {
 			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(locator, resolver, methodCtx);
-			getNode().getMethods().add(methodNode, methodCtx.Name());
+			node.getMethods().add(methodNode, methodCtx.Name());
 		}
 	}
 

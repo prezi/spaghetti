@@ -33,13 +33,13 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 	}
 
 	@Override
-	public void parse(TypeResolver resolver) {
+	public void parseInternal(TypeResolver resolver) {
 		// Let further processing access type parameters as defined types
-		resolver = new SimpleNamedTypeResolver(resolver, getNode().getTypeParameters());
+		resolver = new SimpleNamedTypeResolver(resolver, node.getTypeParameters());
 
 		ModuleParser.SuperTypeDefinitionContext superCtx = getContext().superTypeDefinition();
 		if (superCtx != null) {
-			getNode().setSuperStruct(parseSuperType(locator, resolver, superCtx));
+			node.setSuperStruct(parseSuperType(locator, resolver, superCtx));
 		}
 
 		for (ModuleParser.StructElementDefinitionContext elemCtx : getContext().structElementDefinition()) {
@@ -53,11 +53,11 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 				DefaultPropertyNode propertyNode = new DefaultPropertyNode(locator.locate(pairCtx.Name()), name, type, optional);
 				AnnotationsParser.parseAnnotations(locator, propCtx.annotations(), propertyNode);
 				DocumentationParser.parseDocumentation(locator, propCtx.documentation, propertyNode);
-				getNode().getProperties().add(propertyNode, propCtx);
+				node.getProperties().add(propertyNode, propCtx);
 			} else if (elemCtx.methodDefinition() != null) {
 				ModuleParser.MethodDefinitionContext methodCtx = elemCtx.methodDefinition();
 				DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(locator, resolver, methodCtx);
-				getNode().getMethods().add(methodNode, methodCtx.Name());
+				node.getMethods().add(methodNode, methodCtx.Name());
 			}
 		}
 	}

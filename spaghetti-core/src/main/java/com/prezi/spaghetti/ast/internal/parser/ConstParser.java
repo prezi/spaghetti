@@ -19,7 +19,7 @@ public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefi
 	}
 
 	@Override
-	public void parse(TypeResolver resolver) {
+	public void parseInternal(TypeResolver resolver) {
 		for (ModuleParser.ConstEntryContext entryCtx : getContext().constEntry()) {
 			ModuleParser.ConstEntryDeclContext entryDeclCtx = entryCtx.constEntryDecl();
 
@@ -46,7 +46,7 @@ public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefi
 			DefaultConstEntryNode entry = new DefaultConstEntryNode(locator.locate(entryDeclCtx.Name()), name, type, value);
 			AnnotationsParser.parseAnnotations(locator, entryCtx.annotations(), entry);
 			DocumentationParser.parseDocumentation(locator, entryCtx.documentation, entry);
-			getNode().getEntries().add(entry, entryCtx);
+			node.getEntries().add(entry, entryCtx);
 		}
 	}
 }

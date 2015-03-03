@@ -1,12 +1,11 @@
 package com.prezi.spaghetti.kotlin.access
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class KotlinModuleAccessorGeneratorVisitorTest extends AstSpecification {
+class KotlinModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
+		def definition = """
+module com.example.test
 
 extern interface JSON
 
@@ -26,11 +25,10 @@ JSON[] doSomething()
 @nullable int doStatic(@nullable int a, int b)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
-		def visitor = new KotlinModuleAccessorGeneratorVisitor(module)
+		def result = parseAndVisitModule(definition, new KotlinModuleAccessorGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """native("Spaghetti[\\"dependencies\\"][\\"com.example.test\\"][\\"module\\"]") val moduleRef:TestModule = noImpl
+		result == """native("Spaghetti[\\"dependencies\\"][\\"com.example.test\\"][\\"module\\"]") val moduleRef:TestModule = noImpl
 
 object TestModule {
 	val module:TestModule = moduleRef;

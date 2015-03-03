@@ -1,10 +1,8 @@
 package com.prezi.spaghetti.kotlin.impl
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class KotlinModuleProxyGeneratorVisitorTest extends AstSpecification {
+class KotlinModuleProxyGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
 		def definition = """module com.example.test
 
@@ -29,11 +27,10 @@ void doSomethingVoid(int x)
 <T, U> T[] hello(T t, U y)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
-		def visitor = new KotlinModuleProxyGeneratorVisitor(module)
+		def result = parseAndVisitModule(definition, new KotlinModuleProxyGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """class __TestModuleProxy {
+		result == """class __TestModuleProxy {
 	fun doSomething():Unit {
 		return com.example.test.TestModule.doSomething()
 	}

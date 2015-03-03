@@ -42,7 +42,7 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 	 */
 	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory, String header)
 	{
-		def contents = new HaxeModuleProxyGeneratorVisitor(module).visit(module)
+		def contents = new HaxeModuleProxyGeneratorVisitor().visit(module)
 		HaxeUtils.createHaxeSourceFile(header, module.name, "__${module.alias}Proxy", outputDirectory, contents)
 	}
 
@@ -61,7 +61,7 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 	 */
 	private static void generateModuleAccessor(ModuleNode module, File outputDirectory, String header)
 	{
-		def contents = new HaxeModuleAccessorGeneratorVisitor(module).visit(module)
+		def contents = new HaxeModuleAccessorGeneratorVisitor().visit(module)
 		HaxeUtils.createHaxeSourceFile(header, module.name, module.alias, outputDirectory, contents)
 	}
 

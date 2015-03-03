@@ -1,12 +1,11 @@
 package com.prezi.spaghetti.haxe.impl
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class HaxeModuleProxyGeneratorVisitorTest extends AstSpecification {
+class HaxeModuleProxyGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
+		def definition = """
+module com.example.test
 
 interface MyInterface<T> {
 	/**
@@ -29,11 +28,10 @@ void doSomethingVoid(int x)
 <T, U> T[] hello(T t, U y)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
-		def visitor = new HaxeModuleProxyGeneratorVisitor(module)
+		def result = parseAndVisitModule(definition, new HaxeModuleProxyGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """@:final class __TestModuleProxy {
+		result == """@:final class __TestModuleProxy {
 	public function new() {}
 	public function doSomething():Void {
 		com.example.test.TestModule.doSomething();

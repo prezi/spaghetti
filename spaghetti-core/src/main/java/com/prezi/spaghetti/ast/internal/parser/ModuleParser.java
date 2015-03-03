@@ -2,7 +2,6 @@ package com.prezi.spaghetti.ast.internal.parser;
 
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.FQName;
-import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.internal.DefaultImportNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleNode;
@@ -14,10 +13,9 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
-public class ModuleParser extends AbstractParser {
+public class ModuleParser extends AbstractParser<DefaultModuleNode> {
 	private final List<AbstractModuleTypeParser> typeParsers;
 	private final List<com.prezi.spaghetti.internal.grammar.ModuleParser.MethodDefinitionContext> moduleMethodsToParse;
-	private final DefaultModuleNode module;
 
 	public static ModuleParser create(ModuleDefinitionSource source) {
 		com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext context = ModuleDefinitionParser.parse(source);
@@ -30,22 +28,13 @@ public class ModuleParser extends AbstractParser {
 		}
 	}
 
-	protected ModuleParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
-		super(locator);
+	public ModuleParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
+		super(locator, createModuleNode(locator, moduleCtx));
 		this.typeParsers = Lists.newArrayList();
 		this.moduleMethodsToParse = Lists.newArrayList();
 
-		String moduleName = moduleCtx.qualifiedName().getText();
-		List<String> nameParts = Arrays.asList(moduleCtx.qualifiedName().getText().split("\\."));
-		String moduleAlias;
-		if (moduleCtx.Name() != null) {
-			moduleAlias = moduleCtx.Name().getText();
-		} else {
-			moduleAlias = StringUtils.capitalize(nameParts.get(nameParts.size() - 1)) + "Module";
-		}
-		this.module = new DefaultModuleNode(locate(moduleCtx.qualifiedName()), moduleName, moduleAlias);
-		AnnotationsParser.parseAnnotations(locator, moduleCtx.annotations(), module);
-		DocumentationParser.parseDocumentation(locator, moduleCtx.documentation, module);
+		AnnotationsParser.parseAnnotations(locator, moduleCtx.annotations(), node);
+		DocumentationParser.parseDocumentation(locator, moduleCtx.documentation, node);
 
 		for (com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleElementContext elementCtx : moduleCtx.moduleElement()) {
 			if (elementCtx.importDeclaration() != null) {
@@ -54,17 +43,17 @@ public class ModuleParser extends AbstractParser {
 				TerminalNode aliasDecl = context.Name();
 				String importAlias = aliasDecl != null ? aliasDecl.getText() : importedName.localName;
 				DefaultImportNode importNode = new DefaultImportNode(locate(context.qualifiedName()), importedName, importAlias);
-				module.getImports().add(importNode, context);
+				node.getImports().add(importNode, context);
 			} else if (elementCtx.externTypeDefinition() != null) {
 				com.prezi.spaghetti.internal.grammar.ModuleParser.ExternTypeDefinitionContext context = elementCtx.externTypeDefinition();
 				AbstractModuleTypeParser typeParser = createExternTypeDef(context);
 				typeParsers.add(typeParser);
-				module.getExternTypes().add(typeParser.getNode(), context);
+				node.getExternTypes().add(typeParser.getNode(), context);
 			} else if (elementCtx.typeDefinition() != null) {
 				com.prezi.spaghetti.internal.grammar.ModuleParser.TypeDefinitionContext context = elementCtx.typeDefinition();
-				AbstractModuleTypeParser typeParser = createTypeDef(context, moduleName);
+				AbstractModuleTypeParser typeParser = createTypeDef(context, node.getName());
 				typeParsers.add(typeParser);
-				module.getTypes().add(typeParser.getNode(), context);
+				node.getTypes().add(typeParser.getNode(), context);
 			} else if (elementCtx.methodDefinition() != null) {
 				moduleMethodsToParse.add(elementCtx.methodDefinition());
 			} else {
@@ -73,19 +62,33 @@ public class ModuleParser extends AbstractParser {
 		}
 	}
 
-	public ModuleNode parse(TypeResolver resolver) {
+	private static DefaultModuleNode createModuleNode(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
+		String moduleName = moduleCtx.qualifiedName().getText();
+		List<String> nameParts = Arrays.asList(moduleCtx.qualifiedName().getText().split("\\."));
+		String moduleAlias;
+		if (moduleCtx.Name() != null) {
+			moduleAlias = moduleCtx.Name().getText();
+		} else {
+			moduleAlias = StringUtils.capitalize(nameParts.get(nameParts.size() - 1)) + "Module";
+		}
+		return new DefaultModuleNode(locator.locate(moduleCtx.qualifiedName()), moduleName, moduleAlias);
+	}
+
+	@Override
+	public DefaultModuleNode parse(TypeResolver resolver) {
 		try {
-			return parseInternal(resolver);
+			parseInternal(resolver);
+			return node;
 		} catch (InternalAstParserException ex) {
-			throw new AstParserException(module.getSource(), ex.getMessage(), ex);
+			throw new AstParserException(node.getSource(), ex.getMessage(), ex);
 		} catch (Exception ex) {
-			throw new AstParserException(module.getSource(), "Exception while pre-parsing", ex);
+			throw new AstParserException(node.getSource(), "Exception while pre-parsing", ex);
 		}
 	}
 
-	protected DefaultModuleNode parseInternal(TypeResolver resolver) {
+	protected void parseInternal(TypeResolver resolver) {
 		// Let us use types from the local module
-		resolver = new LocalModuleTypeResolver(resolver, module);
+		resolver = new LocalModuleTypeResolver(resolver, node);
 
 		// Parse each defined type
 		for (AbstractModuleTypeParser<?, ?> parser : typeParsers) {
@@ -95,10 +98,8 @@ public class ModuleParser extends AbstractParser {
 		// Parse module methods
 		for (com.prezi.spaghetti.internal.grammar.ModuleParser.MethodDefinitionContext methodCtx : moduleMethodsToParse) {
 			DefaultMethodNode methodNode = MethodParser.parseMethodDefinition(locator, resolver, methodCtx);
-			module.getMethods().add(methodNode, methodCtx.Name());
+			node.getMethods().add(methodNode, methodCtx.Name());
 		}
-
-		return module;
 	}
 
 	protected AbstractModuleTypeParser createTypeDef(com.prezi.spaghetti.internal.grammar.ModuleParser.TypeDefinitionContext typeCtx, String moduleName) {
@@ -123,14 +124,10 @@ public class ModuleParser extends AbstractParser {
 		}
 	}
 
-	public final DefaultModuleNode getModule() {
-		return module;
-	}
-
 	@Override
 	public String toString() {
 		return "ModuleParser{" +
-				"module=" + module +
+				"module=" + node +
 				'}';
 	}
 }
