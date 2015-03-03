@@ -72,7 +72,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		// Make the app bundle
 		def testAppDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
-		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [testModuleDefinition], [testDependencyDefinition])
+		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [testModuleDefinition, testDependencyDefinition], [])
 		def appModule = appConfig.localModule
 
 		def processedAppJs = processJavaScript(new VerbatimJavaScriptBundleProcessor("js"), appConfig, Resources.getResource(this.class, "/app.js").text)
@@ -80,7 +80,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def appBundle = bundle(appModule.name,
 				testAppDefinition.contents,
 				processedAppJs,
-				module.name)
+				module.name, testDependencyModule.name)
 
 		// Package the application
 		def appDir = new File(rootDir, "application")

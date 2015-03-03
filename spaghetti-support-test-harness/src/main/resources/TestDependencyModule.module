@@ -1,8 +1,22 @@
 module spaghetti.test.dependency as DependencyModule
 
-enum DependentEnum {
-	ALMA
-	BELA
+enum Fruit {
+	Apple
+	Pear
+	Plum
 }
 
-int getNumber()
+const Numbers {
+	ZERO = 0
+	ONE = 1
+	TWO = "two"
+}
+
+struct Point2d {
+	int x
+	int y
+}
+
+Point2d getPoint()
+
+void createPointViaCallback(int x, int y, Point2d->void callback)
