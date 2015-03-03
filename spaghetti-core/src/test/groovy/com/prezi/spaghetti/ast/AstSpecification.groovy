@@ -15,8 +15,7 @@ class AstSpecification extends Specification {
 
 	protected TypeResolver mockResolver(Map<String, Closure<TypeNode>> mocker = [:]) {
 		def resolver = Mock(TypeResolver)
-		resolver.resolveType(_) >> { args ->
-			TypeResolutionContext context = args[0]
+		resolver.resolveType(_) >> { TypeResolutionContext context ->
 			def name = context.name
 			def typeMocker = mocker.get(name.fullyQualifiedName)
 			def type = typeMocker ? typeMocker() : null
