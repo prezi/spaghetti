@@ -6,12 +6,6 @@ enum Fruit {
 	Plum
 }
 
-const Numbers {
-	ZERO = 0
-	ONE = 1
-	TWO = "two"
-}
-
 struct Point2d {
 	int x
 	int y

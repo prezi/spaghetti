@@ -5,12 +5,12 @@ export class TestModule {
 		return a + b;
 	}
 
-	static getValueOfTwo():string {
-		return spaghetti.test.dependency.Numbers.TWO;
-	}
-
 	static getNextEnumValue(value:spaghetti.test.dependency.Fruit):spaghetti.test.dependency.Fruit {
 		return value + 1;
+	}
+
+	static getValueOfTwo():string {
+		return Numbers.TWO;
 	}
 
 	static createPoint3dWithGivenValues(x:number, y:number, z:number):Point3d {

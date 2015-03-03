@@ -14,8 +14,14 @@ int addTwoNumbers(int a, int b)
  */
 Fruit getNextEnumValue(Fruit value)
 
+const Numbers {
+	ZERO = 0
+	ONE = 1
+	TWO = "two"
+}
+
 /**
- * Return the value of the constant Numbers.TWO defined in DependencyModule.
+ * Return the value of the constant "TWO" defined in right above Numbers.
  */
 string getValueOfTwo()
 

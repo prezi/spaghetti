@@ -2,7 +2,6 @@ package spaghetti.test;
 
 import spaghetti.test.dependency.DependencyModule;
 import spaghetti.test.dependency.Fruit;
-import spaghetti.test.dependency.Numbers;
 import spaghetti.test.dependency.Point2d;
 
 class TestModule {
