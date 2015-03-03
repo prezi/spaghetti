@@ -1,13 +1,10 @@
 package com.prezi.spaghetti.javascript
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ConstGeneratorSpecification
 
-class JavaScriptConstGeneratorVisitorTest extends AstSpecification {
+class JavaScriptConstGeneratorVisitorTest extends ConstGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
-
+		def definition = """
 /**
  * My dear constants.
  */
@@ -21,12 +18,10 @@ const MyConstants {
 	tibor = "tibor"
 }
 """
-		def parser = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition))
-		def module = parser.parse(mockResolver())
-		def visitor = new JavaScriptConstGeneratorVisitor()
+		def result = parseAndVisitConst(definition, new JavaScriptConstGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """var com;
+		result == """var com;
 (function (com) {
 	(function(example) {
 		(function(test) {

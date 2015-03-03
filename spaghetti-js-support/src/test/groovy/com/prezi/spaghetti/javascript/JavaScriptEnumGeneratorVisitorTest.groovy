@@ -1,12 +1,11 @@
 package com.prezi.spaghetti.javascript
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
-import com.prezi.spaghetti.ast.internal.parser.EnumParser
+import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 
-class JavaScriptEnumGeneratorVisitorTest extends AstSpecification {
+class JavaScriptEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	def "generate"() {
-		def definition = """enum MyEnum {
+		def definition = """
+enum MyEnum {
 	/**
 	 * Alma.
 	 */
@@ -16,14 +15,10 @@ class JavaScriptEnumGeneratorVisitorTest extends AstSpecification {
 	GEZA
 }
 """
-		def locator = mockLocator(definition)
-		def context = AstParserSpecification.parser(locator).enumDefinition()
-		def parser = new EnumParser(locator, context, "com.example.test")
-		parser.parse(mockResolver())
-		def visitor = new JavaScriptEnumGeneratorVisitor()
+		def result = parseAndVisitEnum(definition, new JavaScriptEnumGeneratorVisitor())
 
 		expect:
-		visitor.visit(parser.node) == """var com;
+		result == """var com;
 (function (com) {
 	(function(example) {
 		(function(test) {
