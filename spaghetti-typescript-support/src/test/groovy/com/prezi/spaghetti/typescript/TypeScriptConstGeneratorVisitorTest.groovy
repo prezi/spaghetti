@@ -1,12 +1,10 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
+import com.prezi.spaghetti.generator.ConstGeneratorSpecification
 
-class TypeScriptConstGeneratorVisitorTest extends AstSpecification {
+class TypeScriptConstGeneratorVisitorTest extends ConstGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
-
+		def definition = """
 /**
  * My dear constants.
  */
@@ -20,12 +18,11 @@ const MyConstants {
 	tibor = "tibor"
 }
 """
-		def locator = mockLocator(definition)
-		def module = ModuleParser.create(locator.source).parse(mockResolver())
-		def visitor = new TypeScriptConstGeneratorVisitor()
+
+		def result = parseAndVisitConst(definition, new TypeScriptConstGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """/**
+		result == """/**
  * My dear constants.
  */
 export class MyConstants {

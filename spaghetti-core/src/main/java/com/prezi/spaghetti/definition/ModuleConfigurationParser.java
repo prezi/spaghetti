@@ -93,7 +93,7 @@ public final class ModuleConfigurationParser {
 	private static TypeResolver createResolverFor(Iterable<ModuleParser> parsers) {
 		TypeResolver resolver = MissingTypeResolver.INSTANCE;
 		for (ModuleParser parser : parsers) {
-			resolver = new ModuleTypeResolver(resolver, parser.getModule());
+			resolver = new ModuleTypeResolver(resolver, parser.getNode());
 		}
 		return resolver;
 	}

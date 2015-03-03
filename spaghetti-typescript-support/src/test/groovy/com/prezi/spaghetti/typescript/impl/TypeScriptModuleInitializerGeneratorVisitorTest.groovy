@@ -1,12 +1,11 @@
 package com.prezi.spaghetti.typescript.impl
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class TypeScriptModuleInitializerGeneratorVisitorTest extends AstSpecification {
+class TypeScriptModuleInitializerGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
+		def definition = """
+module com.example.test
 interface MyInterface<T> {
 	/**
 	 * This should have nothing to do with the results.
@@ -17,11 +16,10 @@ interface MyInterface<T> {
 
 int doStatic(int x)
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
-		def visitor = new TypeScriptModuleInitializerGeneratorVisitor()
+		def result = parseAndVisitModule(definition, new TypeScriptModuleInitializerGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """export function __createSpaghettiModule():any {
+		result == """export function __createSpaghettiModule():any {
 	return new com.example.test.__TestModuleProxy();
 }
 """

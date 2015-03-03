@@ -1,12 +1,10 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
+import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 
-class TypeScriptEnumGeneratorVisitorTest extends AstSpecification {
+class TypeScriptEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
-
+		def definition = """
 enum MyEnum {
 	/**
 	 * Alma.
@@ -15,12 +13,10 @@ enum MyEnum {
 	BELA
 }
 """
-		def locator = mockLocator(definition)
-		def module = ModuleParser.create(locator.source).parse(mockResolver())
-		def visitor = new TypeScriptEnumGeneratorVisitor()
+		def result = parseAndVisitEnum(definition, new TypeScriptEnumGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """export enum MyEnum {
+		result == """export enum MyEnum {
 	/**
 	 * Alma.
 	 */

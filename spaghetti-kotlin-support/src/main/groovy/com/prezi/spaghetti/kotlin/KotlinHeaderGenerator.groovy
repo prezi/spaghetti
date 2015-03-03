@@ -44,7 +44,7 @@ class KotlinHeaderGenerator extends AbstractHeaderGenerator {
 	 */
 	private static void generateModuleStaticProxy(ModuleNode module, File outputDirectory, String header)
 	{
-		def contents = new KotlinModuleProxyGeneratorVisitor(module).visit(module)
+		def contents = new KotlinModuleProxyGeneratorVisitor().visit(module)
 		KotlinUtils.createKotlinSourceFile(header, module.name, "__${module.alias}Proxy", outputDirectory, contents)
 	}
 
@@ -63,7 +63,7 @@ class KotlinHeaderGenerator extends AbstractHeaderGenerator {
 	 */
 	private static void generateModuleAccessor(ModuleNode module, File outputDirectory, String header)
 	{
-		def contents = new KotlinModuleAccessorGeneratorVisitor(module).visit(module)
+		def contents = new KotlinModuleAccessorGeneratorVisitor().visit(module)
 		KotlinUtils.createKotlinSourceFile(header, module.name, module.alias, outputDirectory, contents)
 	}
 

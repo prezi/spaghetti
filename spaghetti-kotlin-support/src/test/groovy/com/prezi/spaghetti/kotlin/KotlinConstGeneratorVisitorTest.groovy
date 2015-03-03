@@ -1,34 +1,30 @@
 package com.prezi.spaghetti.kotlin
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
+import com.prezi.spaghetti.generator.ConstGeneratorSpecification
 
-class KotlinConstGeneratorVisitorTest extends AstSpecification {
+class KotlinConstGeneratorVisitorTest extends ConstGeneratorSpecification {
     def "generate"() {
-        def definition = """module com.example.test
-
+        def definition = """
 /**
  * My dear constants.
  */
-        @deprecated
-        const MyConstants {
-            int alma = 1
-            /**
-             * Bela is -123.
-             */
-            @deprecated("lajos")
-            int bela = -123
-            geza = -1.23
-            tibor = "tibor"
-        }
-        """
-        def locator = mockLocator(definition)
-        def parser = ModuleParser.create(locator.source)
-        def module = parser.parse(mockResolver())
-        def visitor = new KotlinConstGeneratorVisitor()
+@deprecated
+const MyConstants {
+    int alma = 1
+    /**
+     * Bela is -123.
+     */
+    @deprecated("lajos")
+    int bela = -123
+    geza = -1.23
+    tibor = "tibor"
+}
+"""
+
+        def result = parseAndVisitConst(definition, new KotlinConstGeneratorVisitor())
 
         expect:
-        visitor.visit(module) == """/**
+        result == """/**
  * My dear constants.
  */
 [deprecated]

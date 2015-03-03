@@ -1,12 +1,10 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
+import com.prezi.spaghetti.generator.ConstGeneratorSpecification
 
-class HaxeConstGeneratorVisitorTest extends AstSpecification {
+class HaxeConstGeneratorVisitorTest extends ConstGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
-
+		def definition = """
 /**
  * My dear constants.
  */
@@ -22,13 +20,11 @@ const MyConstants {
 	tibor = "tibor"
 }
 """
-		def locator = mockLocator(definition)
-		def parser = ModuleParser.create(locator.source)
-		def module = parser.parse(mockResolver())
-		def visitor = new HaxeConstGeneratorVisitor()
+
+		def result = parseAndVisitConst(definition, new HaxeConstGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """/**
+		result == """/**
  * My dear constants.
  */
 @:deprecated

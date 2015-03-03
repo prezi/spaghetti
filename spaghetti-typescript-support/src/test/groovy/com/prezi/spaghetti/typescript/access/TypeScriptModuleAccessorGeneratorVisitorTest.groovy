@@ -1,12 +1,11 @@
 package com.prezi.spaghetti.typescript.access
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.ModuleParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
-class TypeScriptModuleAccessorGeneratorVisitorTest extends AstSpecification {
+class TypeScriptModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
+		def definition = """
+module com.example.test
 
 interface MyInterface<T> {
 	/**
@@ -23,11 +22,11 @@ string doSomething()
 int doStatic(int a, int b)
 <T> MyInterface<T> returnT(T t)
 """
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", definition)).parse(mockResolver())
-		def visitor = new TypeScriptModuleAccessorGeneratorVisitor(module)
+
+		def result = parseAndVisitModule(definition, new TypeScriptModuleAccessorGeneratorVisitor())
 
 		expect:
-		visitor.visit(module) == """export class TestModule {
+		result == """export class TestModule {
 
 	private static module:any = Spaghetti["dependencies"]["com.example.test"]["module"];
 

@@ -9,12 +9,6 @@ import static com.prezi.spaghetti.generator.ReservedWords.MODULE
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class KotlinModuleAccessorGeneratorVisitor extends AbstractKotlinMethodGeneratorVisitor {
-	private final ModuleNode module
-
-	KotlinModuleAccessorGeneratorVisitor(ModuleNode module) {
-		this.module = module
-	}
-
 	@Override
 	String visitModuleNode(ModuleNode node) {
 		return \
@@ -23,23 +17,31 @@ class KotlinModuleAccessorGeneratorVisitor extends AbstractKotlinMethodGenerator
 object ${node.alias} {
 	val module:${node.alias} = moduleRef;
 
-${node.methods*.accept(this).join("")}
+${node.methods*.accept(new MethodVisitor(node)).join("")}
 }
 """
 	}
 
-	@Override
-	String visitMethodNode(MethodNode node) {
-		def returnType = node.returnType.accept(this)
-		returnType = wrapNullableTypeReference(returnType, node)
-		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + "> " : ""
-		def params = node.parameters*.accept(this).join(", ")
-		def paramNames = node.parameters*.name.join(", ")
+	private static class MethodVisitor extends AbstractKotlinMethodGeneratorVisitor {
+		private final ModuleNode module
 
-		return \
+		MethodVisitor(ModuleNode module) {
+			this.module = module
+		}
+
+		@Override
+		String visitMethodNode(MethodNode node) {
+			def returnType = node.returnType.accept(this)
+			returnType = wrapNullableTypeReference(returnType, node)
+			def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + "> " : ""
+			def params = node.parameters*.accept(this).join(", ")
+			def paramNames = node.parameters*.name.join(", ")
+
+			return \
 """	fun ${typeParams}${node.name}(${params}):${returnType} {
 		${returnType == "Void"?"":"return "}module.${node.name}(${paramNames})
 	}
 """
+		}
 	}
 }

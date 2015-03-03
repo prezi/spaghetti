@@ -1,10 +1,8 @@
 package com.prezi.spaghetti.kotlin
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
-import com.prezi.spaghetti.ast.internal.parser.EnumParser
+import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 
-class KotlinEnumGeneratorVisitorTest extends AstSpecification {
+class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	def "generate"() {
 		def definition = """enum MyEnum {
 	/**
@@ -16,14 +14,11 @@ class KotlinEnumGeneratorVisitorTest extends AstSpecification {
 	GEZA
 }
 """
-		def locator = mockLocator(definition)
-		def context = AstParserSpecification.parser(locator).enumDefinition()
-		def parser = new EnumParser(locator, context, "com.example.test")
-		parser.parse(mockResolver())
-		def visitor = new KotlinEnumGeneratorVisitor()
+
+		def result = parseAndVisitEnum(definition, new KotlinEnumGeneratorVisitor())
 
 		expect:
-		visitor.visit(parser.node) == """class MyEnum {
+		result == """class MyEnum {
 	class object {
 		/**
 		 * Alma.

@@ -27,6 +27,6 @@ public class ExternInterfaceParser extends AbstractModuleTypeParser<ModuleParser
 	}
 
 	@Override
-	public void parse(TypeResolver resolver) {
+	public void parseInternal(TypeResolver resolver) {
 	}
 }

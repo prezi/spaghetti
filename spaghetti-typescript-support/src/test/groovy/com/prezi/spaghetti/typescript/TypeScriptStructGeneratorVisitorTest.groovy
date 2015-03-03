@@ -1,13 +1,8 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.FQName
-import com.prezi.spaghetti.ast.StructNode
-import com.prezi.spaghetti.ast.internal.NodeSets
-import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
-import com.prezi.spaghetti.ast.internal.parser.StructParser
+import com.prezi.spaghetti.generator.StructGeneratorSpecification
 
-class TypeScriptStructGeneratorVisitorTest extends AstSpecification {
+class TypeScriptStructGeneratorVisitorTest extends StructGeneratorSpecification {
 	def "generate"() {
 		def definition = """/**
  * Hey this is my struct!
@@ -23,22 +18,10 @@ struct MyStruct<T> extends Parent {
 	T convert(T value)
 }
 """
-		def locator = mockLocator(definition)
-		def context = AstParserSpecification.parser(locator).structDefinition()
-		def parser = new StructParser(locator, context, "com.example.test")
-		parser.parse(mockResolver([
-				"Parent": {
-					Mock(StructNode) {
-						getName() >> "Parent"
-						getQualifiedName() >> FQName.fromString("com.example.test.Parent")
-						getTypeParameters() >> NodeSets.newNamedNodeSet("type parameters")
-					}
-				}
-		]))
-		def visitor = new TypeScriptStructGeneratorVisitor()
+		def result = parseAndVisitStruct(definition, new TypeScriptStructGeneratorVisitor(), mockStruct("Parent"))
 
 		expect:
-		visitor.visit(parser.node) == """/**
+		result == """/**
  * Hey this is my struct!
  */
 export interface MyStruct<T> extends com.example.test.Parent {

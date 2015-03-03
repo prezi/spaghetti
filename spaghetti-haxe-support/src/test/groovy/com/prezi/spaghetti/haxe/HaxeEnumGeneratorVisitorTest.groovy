@@ -1,10 +1,8 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
-import com.prezi.spaghetti.ast.internal.parser.EnumParser
+import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 
-class HaxeEnumGeneratorVisitorTest extends AstSpecification {
+class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	def "generate"() {
 		def definition = """enum MyEnum {
 	/**
@@ -16,14 +14,10 @@ class HaxeEnumGeneratorVisitorTest extends AstSpecification {
 	GEZA
 }
 """
-		def locator = mockLocator(definition)
-		def context = AstParserSpecification.parser(locator).enumDefinition()
-		def parser = new EnumParser(locator, context, "com.example.test")
-		parser.parse(mockResolver())
-		def visitor = new HaxeEnumGeneratorVisitor()
+		def result = parseAndVisitEnum(definition, new HaxeEnumGeneratorVisitor())
 
 		expect:
-		visitor.visit(parser.node) == """abstract MyEnum(Int) {
+		result == """abstract MyEnum(Int) {
 	/**
 	 * Alma.
 	 */
