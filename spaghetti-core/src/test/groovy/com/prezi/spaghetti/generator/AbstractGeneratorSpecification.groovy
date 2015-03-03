@@ -13,8 +13,9 @@ import com.prezi.spaghetti.ast.internal.parser.AbstractParser
 import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 import com.prezi.spaghetti.ast.internal.parser.TypeResolutionContext
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver
+import spock.lang.Specification
 
-class AbstractGeneratorSpecification extends AstParserSpecification {
+class AbstractGeneratorSpecification extends Specification {
 	protected <T> T parseAndVisitNode(String fragment, ModuleVisitorBase<T> visitor, ReferableTypeNode[] existingTypes, Closure<AbstractParser> nodeParserCreator) {
 		def locator = AstParserSpecification.mockLocator(fragment);
 		def moduleParser = AstParserSpecification.parser(locator)

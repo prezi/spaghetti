@@ -9,7 +9,7 @@ import spock.lang.Specification
 class AstSpecification extends Specification {
 	protected static Location mockLoc = new Location(ModuleDefinitionSource.fromString("mock", ""), -1, -1)
 
-	protected static Locator mockLocator(String definition) {
+	static Locator mockLocator(String definition) {
 		return new Locator(ModuleDefinitionSource.fromString("test", definition))
 	}
 
