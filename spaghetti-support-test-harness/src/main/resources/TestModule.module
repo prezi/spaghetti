@@ -29,7 +29,7 @@ struct Point3d extends Point2d {
 Point3d createPoint3dWithGivenValues(int x, int y, int z)
 
 /**
- * Return the Point2d created by TestDependencyModule.getPoint().
+ * Return the Point2d created by DependencyModule.getPoint().
  */
 Point2d getPointFromDependencyModule()
 

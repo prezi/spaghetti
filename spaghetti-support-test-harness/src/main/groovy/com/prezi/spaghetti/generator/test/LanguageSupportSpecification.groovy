@@ -43,7 +43,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		when:
 		// Build the dependency module
-		def testDependencyDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestDependencyModule.module"))
+		def testDependencyDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/DependencyModule.module"))
 		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, ModuleBundleSet.EMPTY)
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
