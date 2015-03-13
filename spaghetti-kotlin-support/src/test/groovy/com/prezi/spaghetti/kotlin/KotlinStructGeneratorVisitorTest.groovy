@@ -8,7 +8,7 @@ class KotlinStructGeneratorVisitorTest extends StructGeneratorSpecification {
 /**
  * Hey this is my struct!
  */
-struct MyStruct<T> extends Parent {
+struct MyStruct<T> extends Parent<T> {
 	int a
 	/**
 	 * This is field b.
@@ -19,15 +19,16 @@ struct MyStruct<T> extends Parent {
 	@nullable ?string d
 	@mutable T t
 	T convert(T value)
+	Parent<T> parent()
 }
 """
-		def result = parseAndVisitStruct(definition, new KotlinStructGeneratorVisitor(), mockStruct("Parent"))
+		def result = parseAndVisitStruct(definition, new KotlinStructGeneratorVisitor(), mockStruct("Parent", mockTypeParameter()))
 
 		expect:
 		result == """/**
  * Hey this is my struct!
  */
-trait MyStruct<T> : com.example.test.Parent {
+trait MyStruct<T> : com.example.test.Parent<T> {
 	val a: Int
 	/**
 	 * This is field b.
@@ -38,6 +39,7 @@ trait MyStruct<T> : com.example.test.Parent {
 	val d: String? = null
 	var t: T
 	fun convert(value:T):T
+	fun parent():com.example.test.Parent<T>
 
 }
 """

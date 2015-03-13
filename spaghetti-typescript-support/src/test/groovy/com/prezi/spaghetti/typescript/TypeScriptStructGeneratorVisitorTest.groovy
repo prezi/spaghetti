@@ -7,7 +7,7 @@ class TypeScriptStructGeneratorVisitorTest extends StructGeneratorSpecification 
 		def definition = """/**
  * Hey this is my struct!
  */
-struct MyStruct<T> extends Parent {
+struct MyStruct<T> extends Parent<T> {
 	int a
 	/**
 	 * This is field b.
@@ -16,15 +16,16 @@ struct MyStruct<T> extends Parent {
 	?string b
 	T t
 	T convert(T value)
+	Parent<T> parent()
 }
 """
-		def result = parseAndVisitStruct(definition, new TypeScriptStructGeneratorVisitor(), mockStruct("Parent"))
+		def result = parseAndVisitStruct(definition, new TypeScriptStructGeneratorVisitor(), mockStruct("Parent", mockTypeParameter()))
 
 		expect:
 		result == """/**
  * Hey this is my struct!
  */
-export interface MyStruct<T> extends com.example.test.Parent {
+export interface MyStruct<T> extends com.example.test.Parent<T> {
 	a: number;
 	/**
 	 * This is field b.
@@ -32,6 +33,7 @@ export interface MyStruct<T> extends com.example.test.Parent {
 	b?: string;
 	t: T;
 	convert(value:T):T;
+	parent():com.example.test.Parent<T>;
 
 }
 """

@@ -51,7 +51,7 @@ abstract class AbstractHaxeGeneratorVisitor extends StringModuleVisitorBase {
 
 	@Override
 	String visitStructReference(StructReference reference) {
-		return wrapSingleTypeReference(reference.type.qualifiedName.toString(), reference.arrayDimensions)
+		return wrapParametrizedTypeReference(reference.type.qualifiedName.toString(), reference)
 	}
 
 	@Override
