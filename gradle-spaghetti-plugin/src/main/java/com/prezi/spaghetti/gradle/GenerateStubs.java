@@ -48,7 +48,7 @@ public class GenerateStubs extends AbstractDefinitionAwareSpaghettiTask {
 		FileUtils.deleteQuietly(directory);
 		FileUtils.forceMkdir(directory);
 		StubGenerator generator = Generators.getService(StubGenerator.class, getLanguage());
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(), getOptions());
 		generator.generateStubs(generatorParams, directory);
 	}
 }

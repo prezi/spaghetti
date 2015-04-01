@@ -34,7 +34,7 @@ public class GenerateHeadersCommand extends AbstractLanguageAwareCommand {
 		FileUtils.deleteDirectory(outputDirectory);
 		FileUtils.forceMkdir(outputDirectory);
 		HeaderGenerator generator = Generators.getService(HeaderGenerator.class, language);
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(), getParsedOptions());
 		generator.generateHeaders(generatorParams, outputDirectory);
 		return 0;
 	}

@@ -5,7 +5,7 @@ import com.prezi.spaghetti.definition.ModuleConfiguration;
 /**
  * Parameters for the JavaScript processor.
  */
-public interface JavaScriptBundleProcessorParameters {
+public interface JavaScriptBundleProcessorParameters extends ParametersBase {
 	/**
 	 * The module configuration to generate sources for.
 	 */
