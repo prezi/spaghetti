@@ -13,8 +13,10 @@ import com.prezi.spaghetti.ast.internal.parser.ModuleTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.bundle.internal.DependentFiles;
 import com.prezi.spaghetti.definition.internal.DefaultModuleConfiguration;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,6 +37,25 @@ public final class ModuleConfigurationParser {
 		Collection<ModuleDefinitionSource> directSources = makeModuleSources(dependencies.getDirectBundles());
 		Collection<ModuleDefinitionSource> transitiveSources = makeModuleSources(dependencies.getTransitiveBundles());
 		return parse(localModuleSource, directSources, transitiveSources);
+	}
+
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, DependentFiles dependencies) {
+		Collection<ModuleDefinitionSource> directSources = makeModuleSourcesFromFile(dependencies.getDirectFiles());
+		Collection<ModuleDefinitionSource> transitiveSources = makeModuleSourcesFromFile(dependencies.getTransitiveFiles());
+		return parse(localModuleSource, directSources, transitiveSources);
+	}
+
+	private static Collection<ModuleDefinitionSource> makeModuleSourcesFromFile(Set<File> files) {
+		return Collections2.transform(files, new Function<File, ModuleDefinitionSource>() {
+			@Override
+			public ModuleDefinitionSource apply(File bundle) {
+				try {
+					return ModuleDefinitionSource.fromFile(bundle);
+				} catch (IOException e) {
+					throw Throwables.propagate(e);
+				}
+			}
+		});
 	}
 
 	private static Collection<ModuleDefinitionSource> makeModuleSources(Set<ModuleBundle> bundles) {

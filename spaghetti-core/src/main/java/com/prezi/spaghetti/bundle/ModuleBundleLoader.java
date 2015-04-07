@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 public class ModuleBundleLoader {
@@ -16,14 +17,19 @@ public class ModuleBundleLoader {
 	public static ModuleBundleSet loadBundles(Collection<File> directBundleFiles, Collection<File> transitiveBundleFiles) throws IOException {
 		Set<ModuleBundle> directBundles = loadBundles(directBundleFiles);
 		Set<ModuleBundle> transitiveBundles = loadBundles(transitiveBundleFiles);
-
-		Sets.SetView<ModuleBundle> sharedModules = Sets.intersection(directBundles, transitiveBundles);
-		if (!sharedModules.isEmpty()) {
-			logger.info("Some module bundles appear both as direct and as transitive dependencies, treating them as direct dependencies: {}", sharedModules);
-			transitiveBundles.removeAll(directBundles);
-		}
+		transitiveBundles = filterTransitiveDependencies(directBundles, transitiveBundles);
 
 		return new DefaultModuleBundleSet(directBundles, transitiveBundles);
+	}
+
+	public static<T> Set<T> filterTransitiveDependencies(Set<T> directDependencies, Set<T> transitiveDependencies) {
+		Sets.SetView<T> sharedModules = Sets.intersection(directDependencies, transitiveDependencies);
+		Set<T> filtered = new HashSet<T>(transitiveDependencies);
+		if (!sharedModules.isEmpty()) {
+			logger.info("Some modules appear both as direct and as transitive dependencies, treating them as direct dependencies: {}", sharedModules);
+			filtered.removeAll(directDependencies);
+		}
+		return filtered;
 	}
 
 	private static Set<ModuleBundle> loadBundles(Collection<File> bundleFiles) throws IOException {
