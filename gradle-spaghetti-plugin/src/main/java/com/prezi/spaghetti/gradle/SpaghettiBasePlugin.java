@@ -18,6 +18,7 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	public static final String TEST_CONFIGURATION_NAME = "testModules";
 	public static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
 	public static final String TEST_OBFUSCATED_CONFIGURATION_NAME = "testModulesObf";
+	public static final String MODULE_DEFINITION_CONFIGURATION_NAME = "modulesDef";
 
 	private final Instantiator instantiator;
 
@@ -34,12 +35,14 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
 		Configuration defaultTestObfuscatedConfiguration = project.getConfigurations().maybeCreate(TEST_OBFUSCATED_CONFIGURATION_NAME);
 		defaultTestObfuscatedConfiguration.extendsFrom(defaultObfuscatedConfiguration);
+		Configuration defaultModuleDefinitionConfiguration = project.getConfigurations().maybeCreate(MODULE_DEFINITION_CONFIGURATION_NAME);
 
 		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, project, instantiator,
 				defaultConfiguration,
 				defaultTestConfiguration,
 				defaultObfuscatedConfiguration,
-				defaultTestObfuscatedConfiguration);
+				defaultTestObfuscatedConfiguration,
+				defaultModuleDefinitionConfiguration);
 		project.getTasks().withType(AbstractSpaghettiTask.class).all(new Action<AbstractSpaghettiTask>() {
 			@Override
 			public void execute(AbstractSpaghettiTask task) {

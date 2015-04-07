@@ -20,15 +20,17 @@ public class SpaghettiExtension {
 	private Configuration testConfiguration;
 	private Configuration obfuscatedConfiguration;
 	private Configuration testObfuscatedConfiguration;
+	private Configuration moduleDefinitionConfiguration;
 	private String sourceBaseUrl;
 
-	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
+	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration, Configuration defaultModuleDefinitionConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
 		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator);
 		this.configuration = defaultConfiguration;
 		this.obfuscatedConfiguration = defaultObfuscatedConfiguration;
 		this.testConfiguration = defaultTestConfiguration;
 		this.testObfuscatedConfiguration = defaultTestObfuscatedConfiguration;
+		this.moduleDefinitionConfiguration = defaultModuleDefinitionConfiguration;
 
 		binaries.withType(BinaryInternal.class).all(new Action<BinaryInternal>() {
 			public void execute(BinaryInternal binary) {
@@ -114,6 +116,18 @@ public class SpaghettiExtension {
 
 	public void testObfuscatedConfiguration(Configuration testObfuscatedConfiguration) {
 		setTestObfuscatedConfiguration(testObfuscatedConfiguration);
+	}
+
+	public Configuration getModuleDefinitionConfiguration() {
+		return moduleDefinitionConfiguration;
+	}
+
+	public void setModuleDefinitionConfiguration(Configuration moduleDefinitionConfiguration) {
+		this.moduleDefinitionConfiguration = moduleDefinitionConfiguration;
+	}
+
+	public void moduleDefinitionConfiguration(Configuration moduleDefinitionConfiguration) {
+		setModuleDefinitionConfiguration(moduleDefinitionConfiguration);
 	}
 
 	public String getSourceBaseUrl() {
