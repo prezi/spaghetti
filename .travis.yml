@@ -20,7 +20,7 @@ before_install:
   - export KOTLIN_HOME=$PWD/kotlinc
   - unzip ${KOTLIN_HOME}/lib/kotlin-jslib.jar -d ${KOTLIN_HOME}/lib/kotlin-jslib
   - export PATH=$PATH:$KOTLIN_HOME/bin
-  - kotlinc-js -version
+  - kotlinc-js -version 2>&1 | head -n1 || true
 
   # TypeScript
   - npm install -g typescript
