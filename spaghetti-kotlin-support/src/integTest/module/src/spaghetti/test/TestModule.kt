@@ -20,17 +20,15 @@ public class TestModule {
 		}
 
 		public fun createPoint3dWithGivenValues(x:Int, y:Int, z:Int):Point3d {
-			/*return {
-				x: x,
-				y: y,
-				z: z
-			};*/
-			throw RuntimeException("no")
+			return object : Point3d {
+				override val x = x
+				override val y = y
+				override val z = z
+			}
 		}
 
 		public fun getPointFromDependencyModule():Point2d {
-			// return DependencyModule.getPoint();
-			throw RuntimeException("no")
+			return DependencyModule.getPoint()
 		}
 
 		public fun getPointFromDependencyModuleViaCallback(x:Int, y:Int):Point2d {
