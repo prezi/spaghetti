@@ -11,8 +11,7 @@ public class TestModule {
 		}
 
 		public fun getNextEnumValue(value:Fruit):Fruit {
-			// return Fruit.fromValue(value.value() + 1);
-			return value
+			return ((value as Int) + 1) as Fruit
 		}
 
 		public fun getValueOfTwo():String {
@@ -32,16 +31,19 @@ public class TestModule {
 		}
 
 		public fun getPointFromDependencyModuleViaCallback(x:Int, y:Int):Point2d {
-			/*var returnedPoint:Point2d = null;
-			spaghetti.test.dependency.DependencyModule.createPointViaCallback(x, y, fun (point:Point2d) {
-				returnedPoint = point;
-			});
-			return returnedPoint;*/
-			throw RuntimeException("no")
+            var result:Point2d? = null
+			DependencyModule.createPointViaCallback(x, y, { point ->
+				result = point
+			})
+            return result!!
 		}
 
 		public fun returnPointViaCallback(x:Int, y:Int, z:Int, callback:(Point3d)->Unit) {
-			//callback({x: x, y: y, z: z});
+            callback(object : Point3d {
+                override val x = x
+                override val y = y
+                override val z = z
+            });
 		}
 	}
 }
