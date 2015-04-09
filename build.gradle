@@ -223,10 +223,14 @@ subprojects {
 	String[] apis = [
 		"https://docs.oracle.com/javase/8/docs/api/",
 		"http://groovy.codehaus.org/gapi/",
-		// "http://www.gradle.org/docs/${gradleVer}/javadoc/",
+		"http://www.gradle.org/docs/${gradleVer}/javadoc/",
 		// "http://prezi.github.io/gradle-haxe-plugin/javadoc/",
 		// "http://prezi.github.io/gradle-typescript-plugin/javadoc/",
 	]
+
+	groovydoc {
+		enabled false
+	}
 
 	def excludes = [
 		"**/internal/*",
