@@ -1,5 +1,5 @@
-def gradleVer = "2.3"
-def groovyVersion = "2.3.9"
+ext.gradleVer = "2.3"
+ext.groovyVersion = "2.3.9"
 
 String gitVersion
 if (hasProperty("release")) {
@@ -121,10 +121,26 @@ subprojects { subproject ->
 }
 
 ext.codeProjects = subprojects.findAll {
-			it.name == "spaghetti-core" || it.name ==~ /gradle-.*/ || it.name ==~ /spaghetti-.*-support/
+			it.name == "spaghetti-core" || it.name == "spaghetti-support-test-harness" || it.name ==~ /gradle-.*/ || it.name ==~ /spaghetti-.*-support/
 		}
-ext.groovyProjects = [ project(":spaghetti-haxe-support"), project(":spaghetti-kotlin-support"), project(":spaghetti-typescript-support") ]
+ext.groovyProjects = [
+		project(":spaghetti-support-test-harness"),
+		project(":spaghetti-haxe-support"),
+		project(":spaghetti-kotlin-support"),
+		project(":spaghetti-typescript-support")
+]
 ext.javaProjects = codeProjects - groovyProjects
+
+def addTestDependencies(Project project, Configuration config) {
+	project.dependencies {
+		"${config.name}" "junit:junit:4.11"
+		"${config.name}" "org.mockito:mockito-all:1.9.5"
+		"${config.name}"("org.spockframework:spock-core:0.7-groovy-2.0") {
+			exclude group: "org.codehaus.groovy"
+		}
+		"${config.name}" "org.codehaus.groovy:groovy:${groovyVersion}"
+	}
+}
 
 configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	apply plugin: 'groovy'
@@ -132,17 +148,37 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	sourceCompatibility = "1.6"
 	targetCompatibility = "1.6"
 
+	sourceSets {
+		integTest {
+			java.srcDir file('src/integTest/java')
+			groovy.srcDir file('src/integTest/groovy')
+			resources.srcDir file('src/integTest/resources')
+		}
+	}
+
+	dependencies {
+		integTestCompile sourceSets.main.output
+		integTestCompile configurations.testCompile
+		integTestCompile sourceSets.test.output
+		integTestRuntime configurations.testRuntime
+	}
+
+	task integTest(type: Test) {
+		shouldRunAfter test
+		testClassesDir = sourceSets.integTest.output.classesDir
+		classpath = sourceSets.integTest.runtimeClasspath
+	}
+
+	check.dependsOn integTest
+
 	tasks.withType(AbstractCompile) {
 		options.encoding = "UTF-8"
 	}
 
-	dependencies {
-		testCompile "junit:junit:4.11"
-		testCompile "org.mockito:mockito-all:1.9.5"
-		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
-			exclude group: "org.codehaus.groovy"
-		}
-		testCompile "org.codehaus.groovy:groovy:${groovyVersion}"
+	addTestDependencies(project, configurations.testCompile)
+
+	test {
+		testLogging.showStandardStreams = true
 	}
 
 	task sourcesJar(type: Jar) {
@@ -155,7 +191,8 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	}
 
 	def doc
-	if (project.name ==~ /spaghetti-(haxe|typescript)-support/) {
+	if (project.name == "spaghetti-support-test-harness"
+			|| project.name ==~ /spaghetti-(haxe|typescript)-support/) {
 		doc = groovydoc
 	} else {
 		doc = javadoc
@@ -203,6 +240,7 @@ subprojects {
 	}
 
 	tasks.withType(Groovydoc) {
+		enabled false
 		groovydoc.groovyClasspath = configurations.groovydoc
 		// Done in doFirst() so that we don't download stuff in configuration phase
 		doFirst {
@@ -253,10 +291,28 @@ configure(groovyProjects) {
 	}
 }
 
+configure(project(":spaghetti-support-test-harness")) {
+	dependencies {
+		compile project(path: ":spaghetti-core")
+		compile project(path: ":spaghetti-core", configuration: "testCompile")
+	}
+
+	addTestDependencies(project, configurations.compile)
+}
+
 configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	dependencies {
 		compile project(path: ":spaghetti-core")
-		testCompile project(path: ":spaghetti-core", configuration: "testCompile")
+		testCompile project(path: ":spaghetti-support-test-harness")
+	}
+
+	task zipIntegrationTestSources(type: Zip) {
+		from "src/integTest/module/src"
+		archiveName "integration-test-sources.zip"
+	}
+
+	processTestResources {
+		from zipIntegrationTestSources
 	}
 }
 

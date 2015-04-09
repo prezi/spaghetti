@@ -2,6 +2,8 @@ rootProject.name = "spaghetti-parent"
 include "spaghetti"
 include "spaghetti-core"
 include "spaghetti-docs"
+
+include "spaghetti-support-test-harness"
 include "spaghetti-haxe-support"
 include 'spaghetti-js-support'
 include "spaghetti-typescript-support"

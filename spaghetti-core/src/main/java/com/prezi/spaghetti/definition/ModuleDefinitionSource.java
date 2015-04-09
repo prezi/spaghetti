@@ -2,10 +2,12 @@ package com.prezi.spaghetti.definition;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
+import com.google.common.io.Resources;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 /**
  * Source with location for module definitions.
@@ -35,6 +37,15 @@ public final class ModuleDefinitionSource {
 	 */
 	public static ModuleDefinitionSource fromFile(File file) throws IOException {
 		return new ModuleDefinitionSource(file.getPath(), Files.asCharSource(file, Charsets.UTF_8).read());
+	}
+
+	/**
+	 * Create a source from an URL resource.
+	 *
+	 * @param url the URL pointing to the definition resource.
+	 */
+	public static ModuleDefinitionSource fromUrl(URL url) throws IOException {
+		return new ModuleDefinitionSource(url.toString(), Resources.asCharSource(url, Charsets.UTF_8).read());
 	}
 
 	/**
