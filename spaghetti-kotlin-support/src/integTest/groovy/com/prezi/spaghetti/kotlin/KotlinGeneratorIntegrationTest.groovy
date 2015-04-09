@@ -26,8 +26,7 @@ class KotlinGeneratorIntegrationTest extends LanguageSupportSpecification {
 		def kotlinHome = System.getenv("KOTLIN_HOME")
 		execute([
 			"$kotlinHome/bin/kotlinc-js",
-			"kotlinc-js",
-			"-output",  compiledJs,
+			"-output", compiledJs,
 			"-library-files", "$kotlinHome/lib/kotlin-jslib.jar",
 			"-output-prefix", "$kotlinHome/lib/kotlin-jslib/kotlin.js",
 			*getKotlinSourceFiles(headersDir),
