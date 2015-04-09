@@ -7,10 +7,20 @@ env:
     - TERM=dumb
 sudo: false
 before_install:
+  # Haxe
   - curl http://haxe.org/website-content/downloads/3,1,3/downloads/haxe-3.1.3-linux64.tar.gz | tar xz
-  - export PATH=$PATH:$PWD/haxe-3.1.3
   - export HAXE_HOME=$PWD/haxe-3.1.3
   - export HAXE_STD_PATH=$PWD/haxe-3.1.3/std
+  - export PATH=$PATH:$HAXE_HOME
   - haxe -version
+
+  # Kotlin
+  - curl -L https://github.com/JetBrains/kotlin/releases/download/M11.1-bootstrap/kotlin-compiler-0.11.91.1.zip -o kotlin-compiler.zip
+  - unzip kotlin-compiler.zip
+  - export KOTLIN_HOME=$PWD/kotlinc
+  - export PATH=$PATH:$KOTLIN_HOME/bin
+  - kotlinc-js -version
+
+  # TypeScript
   - npm install -g typescript
   - tsc --version
