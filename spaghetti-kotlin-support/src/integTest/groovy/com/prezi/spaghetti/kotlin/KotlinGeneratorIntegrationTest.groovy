@@ -23,12 +23,13 @@ class KotlinGeneratorIntegrationTest extends LanguageSupportSpecification {
 		println "out: " + compiledJs
 		println "headers:" + getKotlinSourceFiles(headersDir)
 		println "sources: " + getKotlinSourceFiles(sourceDir)
+		def kotlinHome = System.getenv("KOTLIN_HOME")
 		execute([
-			"kotlinc-js",
+			"$kotlinHome/bin/kotlinc-js",
 			"-main", "noCall",
 			"-output",  compiledJs,
-			"-library-files", "/Users/noise64/portable/kotlin-compiler-0.11.91.1/lib/kotlin-jslib.jar",
-			"-output-prefix", "/Users/noise64/portable/kotlin-compiler-0.11.91.1/kotlin.js",
+			"-library-files", "$kotlinHome/lib/kotlin-jslib.jar",
+			"-output-prefix", "$kotlinHome/lib/kotlin-jslib/kotlin.js",
 			*getKotlinSourceFiles(headersDir),
 			*getKotlinSourceFiles(sourceDir)
 		])

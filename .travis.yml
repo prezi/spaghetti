@@ -18,6 +18,7 @@ before_install:
   - curl -L https://github.com/JetBrains/kotlin/releases/download/M11.1-bootstrap/kotlin-compiler-0.11.91.1.zip -o kotlin-compiler.zip
   - unzip kotlin-compiler.zip
   - export KOTLIN_HOME=$PWD/kotlinc
+  - unzip ${KOTLIN_HOME}/lib/kotlin-jslib.jar -d ${KOTLIN_HOME}/lib/kotlin-jslib
   - export PATH=$PATH:$KOTLIN_HOME/bin
   - kotlinc-js -version
 
