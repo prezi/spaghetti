@@ -21,6 +21,7 @@ import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.ConfigurablePublishArtifact;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
@@ -69,6 +70,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		DefaultSpaghettiResourceSet spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet.class, "spaghetti-resources", mainSources, fileResolver);
 		spaghettiResourceSet.getSource().srcDir("src/main/spaghetti-resources");
 		mainSources.add(spaghettiResourceSet);
+		addModulesDefArtifact(project);
 
 		// TODO Use a proper Spaghetti module binary to tie this together
 		final ProcessSpaghettiResources resourcesTask = project.getTasks().create("processSpaghettiResources", ProcessSpaghettiResources.class);
@@ -214,6 +216,27 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		}
 
 		spaghettiExtension.getBinaries().add(moduleBinary);
+	}
+
+	private static void addModulesDefArtifact(Project project) {
+		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
+		Configuration configuration = spaghettiExtension.getModuleDefinitionConfiguration();
+		File definition = findDefinition(project);
+		addBundleArtifactFile(project, configuration, definition, "modulesDef");
+	}
+
+	private static void addBundleArtifactFile(Project project, Configuration configuration, File file, final String name) {
+		if (file == null) {
+			return;
+		}
+		project.getArtifacts().add(configuration.getName(), file, new Closure(project) {
+			@Override
+			public Object call(Object... arguments) {
+				ConfigurablePublishArtifact artifact = (ConfigurablePublishArtifact) this.getDelegate();
+				artifact.setClassifier(name);
+				return artifact;
+			}
+		});
 	}
 
 	private static void addBundleArtifact(Project project, Configuration configuration, Zip task, final String name) {

@@ -5,6 +5,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundleLoader;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.bundle.internal.DependentFiles;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedArtifact;
@@ -37,6 +38,15 @@ public class ModuleBundleLookup {
 		}
 
 		return ModuleBundleLoader.loadBundles(directFiles, transitiveFiles);
+	}
+
+	public static DependentFiles lookupDependenciesAsFiles(Project project, Object dependencies) throws IOException {
+		Set<File> directFiles = Sets.newLinkedHashSet();
+		Set<File> transitiveFiles = Sets.newLinkedHashSet();
+
+		addFiles(project, dependencies, directFiles, transitiveFiles);
+		transitiveFiles = ModuleBundleLoader.filterTransitiveDependencies(directFiles, transitiveFiles);
+		return new DependentFiles(directFiles, transitiveFiles);
 	}
 
 	private static void addFiles(Project project, Object from, Set<File> directFiles, Set<File> transitiveFiles) throws IOException {
