@@ -45,7 +45,3 @@ public class TestModule {
 		}
 	}
 }
-
-/*fun main(args: Array<String>) {
-	TestModule.Companion.addTwoNumbers(1, 2)
-}*/
