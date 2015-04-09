@@ -32,16 +32,16 @@ void doSomethingVoid(int x)
 		expect:
 		result == """class __TestModuleProxy {
 	fun doSomething():Unit {
-		return com.example.test.TestModule.Companion.doSomething()
+		return com.example.test.TestModule.doSomething()
 	}
 	fun doSomethingElse(a:Int, b:Int):Array<String> {
-		return com.example.test.TestModule.Companion.doSomethingElse(a, b)
+		return com.example.test.TestModule.doSomethingElse(a, b)
 	}
 	fun doSomethingStatic(x:Int):Int {
-		return com.example.test.TestModule.Companion.doSomethingStatic(x)
+		return com.example.test.TestModule.doSomethingStatic(x)
 	}
 	fun doSomethingVoid(x:Int):Unit {
-		return com.example.test.TestModule.Companion.doSomethingVoid(x)
+		return com.example.test.TestModule.doSomethingVoid(x)
 	}
 	fun <T, U> hello(t:T, y:U):Array<T> {
 		return com.example.test.TestModule.hello(t, y)
