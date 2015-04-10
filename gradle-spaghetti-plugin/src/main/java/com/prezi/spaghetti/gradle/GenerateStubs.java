@@ -17,6 +17,18 @@ import java.util.concurrent.Callable;
 public class GenerateStubs extends AbstractDefinitionAwareSpaghettiTask {
 	private File outputDirectory;
 
+	@TaskAction
+	public void generate() throws IOException {
+		ModuleConfiguration config = readConfig(getDefinition());
+		getLogger().info("Generating module stubs for {}", config.getAllModules());
+		File directory = getOutputDirectory();
+		FileUtils.deleteQuietly(directory);
+		FileUtils.forceMkdir(directory);
+		StubGenerator generator = Generators.getService(StubGenerator.class, getLanguage());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(getTimestamp()));
+		generator.generateStubs(generatorParams, directory);
+	}
+
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory;
@@ -40,15 +52,5 @@ public class GenerateStubs extends AbstractDefinitionAwareSpaghettiTask {
 		});
 	}
 
-	@TaskAction
-	public void generate() throws IOException {
-		ModuleConfiguration config = readConfig(getDefinition());
-		getLogger().info("Generating module stubs for {}", config.getAllModules());
-		File directory = getOutputDirectory();
-		FileUtils.deleteQuietly(directory);
-		FileUtils.forceMkdir(directory);
-		StubGenerator generator = Generators.getService(StubGenerator.class, getLanguage());
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
-		generator.generateStubs(generatorParams, directory);
 	}
 }

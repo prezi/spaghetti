@@ -16,6 +16,18 @@ import java.io.IOException;
 public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 	private File outputDirectory;
 
+	@TaskAction
+	public void generate() throws IOException {
+		ModuleConfiguration config = readConfig(getDefinition());
+		getLogger().info("Generating module headers for {}", config.getLocalModule());
+		File directory = getOutputDirectory();
+		FileUtils.deleteQuietly(directory);
+		FileUtils.forceMkdir(directory);
+		HeaderGenerator generator = Generators.getService(HeaderGenerator.class, getLanguage());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(getTimestamp()));
+		generator.generateHeaders(generatorParams, directory);
+	}
+
 	@OutputDirectory
 	public File getOutputDirectory() {
 		return outputDirectory;
@@ -29,15 +41,5 @@ public class GenerateHeaders extends AbstractDefinitionAwareSpaghettiTask {
 		setOutputDirectory(directory);
 	}
 
-	@TaskAction
-	public void generate() throws IOException {
-		ModuleConfiguration config = readConfig(getDefinition());
-		getLogger().info("Generating module headers for {}", config.getLocalModule());
-		File directory = getOutputDirectory();
-		FileUtils.deleteQuietly(directory);
-		FileUtils.forceMkdir(directory);
-		HeaderGenerator generator = Generators.getService(HeaderGenerator.class, getLanguage());
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
-		generator.generateHeaders(generatorParams, directory);
 	}
 }
