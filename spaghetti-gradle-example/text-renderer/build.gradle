@@ -4,3 +4,7 @@ dependencies {
 	modules project(path: ":core", configuration: "modules")
 	modules project(path: ":layout", configuration: "modules")
 }
+
+generateHeaders {
+	timestamp false
+}
