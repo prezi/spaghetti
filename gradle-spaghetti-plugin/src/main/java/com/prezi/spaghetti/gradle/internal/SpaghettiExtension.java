@@ -21,6 +21,7 @@ public class SpaghettiExtension {
 	private Configuration obfuscatedConfiguration;
 	private Configuration testObfuscatedConfiguration;
 	private String sourceBaseUrl;
+	private boolean publishTestArtifacts;
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
@@ -127,5 +128,17 @@ public class SpaghettiExtension {
 	@SuppressWarnings("UnusedDeclaration")
 	public void sourceBaseUrl(String source) {
 		setSourceBaseUrl(source);
+	}
+
+	public boolean getPublishTestArtifacts() {
+		return publishTestArtifacts;
+	}
+
+	public void setPublishTestArtifacts(boolean publishTestArtifacts) {
+		this.publishTestArtifacts = publishTestArtifacts;
+	}
+
+	public void publishTestArtifacts(boolean publishTestArtifacts) {
+		setPublishTestArtifacts(publishTestArtifacts);
 	}
 }
