@@ -24,6 +24,10 @@ public class GenerateStubsCommand extends AbstractLanguageAwareCommand {
 			description = "Overwrite output directory if exists")
 	private boolean force;
 
+	@Option(name = {"--no-timestamp"},
+			description = "Do not add timestamp to generated file headers")
+	private boolean noTimestamp;
+
 	@Override
 	public Integer call() throws Exception {
 		if (!force && outputDirectory.exists()) {
@@ -34,7 +38,7 @@ public class GenerateStubsCommand extends AbstractLanguageAwareCommand {
 		FileUtils.deleteDirectory(outputDirectory);
 		FileUtils.forceMkdir(outputDirectory);
 		StubGenerator generator = Generators.getService(StubGenerator.class, language);
-		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader());
+		DefaultGeneratorParameters generatorParams = new DefaultGeneratorParameters(config, InternalGeneratorUtils.createHeader(!noTimestamp));
 		generator.generateStubs(generatorParams, outputDirectory);
 		return 0;
 	}
