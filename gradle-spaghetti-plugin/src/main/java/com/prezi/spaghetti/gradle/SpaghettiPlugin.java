@@ -208,8 +208,10 @@ public class SpaghettiPlugin implements Plugin<Project> {
 			addBundleArtifact(project, spaghettiExtension.getConfiguration(), zipModule, "");
 			addBundleArtifact(project, spaghettiExtension.getObfuscatedConfiguration(), zipObfuscated, "obfuscated");
 		} else {
-			addBundleArtifact(project, spaghettiExtension.getTestConfiguration(), zipModule, "test");
-			addBundleArtifact(project, spaghettiExtension.getTestObfuscatedConfiguration(), zipObfuscated, "test-obfuscated");
+			if (spaghettiExtension.getPublishTestArtifacts()) {
+				addBundleArtifact(project, spaghettiExtension.getTestConfiguration(), zipModule, "test");
+				addBundleArtifact(project, spaghettiExtension.getTestObfuscatedConfiguration(), zipObfuscated, "test-obfuscated");
+			}
 			SpaghettiBasePlugin.withDefaultTestConfiguration(project, bundleTask);
 		}
 
