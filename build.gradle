@@ -223,7 +223,7 @@ subprojects {
 	String[] apis = [
 		"https://docs.oracle.com/javase/8/docs/api/",
 		"http://groovy.codehaus.org/gapi/",
-		"https://www.gradle.org/docs/${gradleVer}/javadoc",
+		"https://gradle.org/docs/${gradleVer}/javadoc",
 		// "http://prezi.github.io/gradle-haxe-plugin/javadoc/",
 		// "http://prezi.github.io/gradle-typescript-plugin/javadoc/",
 	]
@@ -240,7 +240,6 @@ subprojects {
 	}
 
 	tasks.withType(Groovydoc) {
-		enabled false
 		groovydoc.groovyClasspath = configurations.groovydoc
 		// Done in doFirst() so that we don't download stuff in configuration phase
 		doFirst {
