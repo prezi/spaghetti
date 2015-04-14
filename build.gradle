@@ -280,7 +280,7 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) { p -
 
 project(":spaghetti-core") {
 	dependencies {
-		compile "com.google.javascript:closure-compiler:v20140814"
+		compile "com.google.javascript:closure-compiler:v20150315"
 	}
 }
 
