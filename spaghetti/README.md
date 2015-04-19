@@ -29,4 +29,4 @@ See 'spaghetti help <command>' for more information on a specific command.
 
 ### Tutorial
 
-Check out the [tutorial](/../../wiki/tutorial) for a ste-by-step introduction to each Spaghetti command.
+Check out the [tutorial](/../../wiki/tutorial) for a step-by-step introduction to each Spaghetti command.
