@@ -72,10 +72,12 @@ Issues, suggestions and pull-requests are welcome. You can build Spaghetti yours
 
     ./gradlew install
 
-You will need the following installed:
+### Prerequisites
+
+You will need the following installed to build Spaghetti locally:
 
 * Java 7 or newer
-* [Haxe](http://haxe.org) and [TypeScript](http://typescriptlang.org) to run the integration tests
+* [TypeScript](http://typescriptlang.org), [Kotlin](http://kotlinlang.org) and [Haxe](http://haxe.org) to run the integration tests
 
 To install Haxe:
 
@@ -85,6 +87,10 @@ To install Haxe:
 To install TypeScript:
 
 * you'll need Node.js and NPM first, then run: `npm install -g typescript`
+
+To install Kotlin:
+
+* you can download the Kotlin compiler from [GitHub](https://github.com/JetBrains/kotlin/releases/). Make sure `kotlinc` is available on the `PATH`, and `KOTLIN_HOME` is set.
 
 ## Mailing List
 
