@@ -337,12 +337,6 @@ configure(project(":spaghetti")) {
 			into "/"
 		}
 	}
-
-	artifacts {
-		archives(distZip) {
-			classifier "dist"
-		}
-	}
 }
 
 project(":gradle-spaghetti-plugin") {
