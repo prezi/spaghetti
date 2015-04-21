@@ -59,7 +59,7 @@ task addSite(type: Exec) {
 task commitSite(type: Exec) {
 	dependsOn addSite
 	onlyIf { shouldPublish }
-	commandLine "git", "commit", "--message", "Updated site for ${version} release"
+	commandLine "git", "commit", "--allow-empty", "--message", "Updated site for ${version} release"
 	workingDir siteDirectory
 }
 
