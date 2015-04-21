@@ -337,6 +337,10 @@ configure(project(":spaghetti")) {
 			into "/"
 		}
 	}
+
+	distTar {
+		compression Compression.GZIP
+	}
 }
 
 project(":gradle-spaghetti-plugin") {
