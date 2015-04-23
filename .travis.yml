@@ -5,6 +5,9 @@ jdk:
 sudo: false
 script:
   - ./gradlew assemble
+env:
+  global:
+    - JAVA_OPTS=-Djava.util.logging.config.file=$PWD/logging.properties
 before_install:
   # Haxe
   - curl http://haxe.org/website-content/downloads/3,1,3/downloads/haxe-3.1.3-linux64.tar.gz | tar xz
