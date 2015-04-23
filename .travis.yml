@@ -6,7 +6,7 @@ sudo: false
 install:
   - true
 script:
-  - ./gradlew check -i
+  - ./gradlew build -i
 env:
   global:
     - JAVA_OPTS=-Djava.util.logging.config.file=$PWD/logging.properties
