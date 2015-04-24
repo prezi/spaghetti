@@ -223,7 +223,7 @@ subprojects {
 	String[] apis = [
 		"https://docs.oracle.com/javase/8/docs/api/",
 		"http://groovy.codehaus.org/gapi/",
-		"http://gradle.org/docs/${gradleVer}/javadoc",
+		"https://gradle.org/docs/${gradleVer}/javadoc",
 		// "http://prezi.github.io/gradle-haxe-plugin/javadoc/",
 		// "http://prezi.github.io/gradle-typescript-plugin/javadoc/",
 	]
@@ -244,7 +244,6 @@ subprojects {
 		// Done in doFirst() so that we don't download stuff in configuration phase
 		doFirst {
 			apis.each {
-				println "downloading '$it/package-list'"
 				link(it, *(new URL("$it/package-list").text.tokenize("\n")))
 			}
 		}

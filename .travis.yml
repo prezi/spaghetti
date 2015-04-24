@@ -3,13 +3,8 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 sudo: false
-install:
-  - true
-script:
-  - ./gradlew build -i
 env:
   global:
-    - JAVA_OPTS=-Djava.util.logging.config.file=$PWD/logging.properties
     - GRADLE_OPTS=-Xmx1g
 before_install:
   # Haxe
