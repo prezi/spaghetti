@@ -1,16 +1,16 @@
 Spaghetti
 =========
 
-Spaghetti provides type-safe communication between JavaScript modules.
+Spaghetti enables type-safe communication between JavaScript modules.
 
 [![Build Status](https://travis-ci.org/prezi/spaghetti.svg)](https://travis-ci.org/prezi/spaghetti)
 [![Analytics](https://ga-beacon.appspot.com/UA-54695510-1/github.com/prezi/spaghetti)](https://github.com/igrigorik/ga-beacon)
 
-Because of the untyped nature of JavaScript, modularizing large, evolving JavaScript applications is difficult. To help keep track of changing APIs, Spaghetti uses compilers to check communication between modules, transforming run-time API compatibility problems into more manageable compile errors.
+Because of the untyped nature of JavaScript, modularizing large, evolving JavaScript applications into a micro-service architecture is difficult. This has motivated the development of a multitude of languages which compile to JavaScript, all of which excell at different tasks, and none of which is guaranteed to be around in a few years time. Spaghetti bridges between the type systems of compile-to-JS languages, to allow compile-time type checks of module APIs without forcing an overcommitment to any one language.
 
 ## How Does it Work?
 
-Spaghetti modules are written in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org). Each module's API is defined in a [Spaghetti Interface Definition file](/../../wiki/Spaghetti Syntax). Here's an example of a typical API definition:
+Spaghetti modules are *implemented* in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org), but each module's public API is *specified* in the [Spaghetti Interface Definition Language](/../../wiki/Spaghetti Syntax). Here's an example of a typical API definition:
 
 ```
 module com.example.greeter
@@ -22,7 +22,7 @@ interface Greeter {
 Greeter createGreeter()
 ```
 
-Based on this abstract definition, Spaghetti ensures type safety on both the implementor and the caller side of an API:
+Based on this abstract definition, Spaghetti ensures type safety on both the provider and the user side of an API:
 
 * **checking if a module implements its API properly** is done via generated interfaces that the module must implement. This way the compiler can check if you've made a mistake or have forgotten something. From the above example, the generated code for the `Greeter` Spaghetti interface in a TypeScript module looks like this:
 
