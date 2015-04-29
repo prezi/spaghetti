@@ -54,7 +54,6 @@ Spaghetti is a [Java](http://java.oracle.com)-based tool, and requires Java 7 or
 
 * The [command-line tool](spaghetti) is the quickest way to get working with Spaghetti.
 * [Gradle plugins](gradle-spaghetti-plugin/README.md) make it easy to integrate Spaghetti into your workflow.
-* Maven and other build system support has been planned, but no deadline has been set yet.
 
 ## Try It
 
