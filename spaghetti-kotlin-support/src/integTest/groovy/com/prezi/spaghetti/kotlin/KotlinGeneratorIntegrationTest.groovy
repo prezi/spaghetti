@@ -28,7 +28,7 @@ class KotlinGeneratorIntegrationTest extends LanguageSupportSpecification {
 			"$kotlinHome/bin/kotlinc-js",
 			"-output", compiledJs,
 			"-library-files", "$kotlinHome/lib/kotlin-jslib.jar",
-			"-output-prefix", "$kotlinHome/lib/kotlin-jslib/kotlin.js",
+			"-output-prefix", "build/kotlinjs/kotlin.js",
 			*getKotlinSourceFiles(headersDir),
 			*getKotlinSourceFiles(sourceDir),
 

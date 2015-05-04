@@ -211,6 +211,17 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 	}
 }
 
+project(":spaghetti-kotlin-support") {
+	task extractKotlinJsLib(type: Copy) {
+		from zipTree("${System.getenv("KOTLIN_HOME")}/lib/kotlin-jslib.jar")
+		into "${buildDir}/kotlinjs"
+	}
+
+	integTest {
+		dependsOn extractKotlinJsLib
+	}
+}
+
 subprojects {
 	configurations {
 		groovydoc { extendsFrom compile }
