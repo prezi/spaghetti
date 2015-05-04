@@ -36,6 +36,9 @@ subprojects { subproject ->
 		mavenLocal()
 		mavenCentral()
 		maven {
+			url "https://oss.sonatype.org/content/groups/public"
+		}
+		maven {
 			url "http://gradle.artifactoryonline.com/gradle/libs"
 		}
 	}
