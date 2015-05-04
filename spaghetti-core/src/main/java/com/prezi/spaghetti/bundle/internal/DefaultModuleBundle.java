@@ -37,6 +37,7 @@ import java.util.jar.Manifest;
 
 public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
+	private static final String MIN_VERSION_PREFIX = "2.";
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
@@ -161,7 +162,13 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 
 		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
-			throw new IllegalArgumentException("Spaghetti version mismatch (should be 1.x), but was \"" + spaghettiVersion + "\"): " + String.valueOf(source));
+			throw new IllegalArgumentException(
+				String.format("Spaghetti version mismatch (should be %sx, but was \"%s\"): %s",
+					MIN_VERSION_PREFIX,
+					spaghettiVersion,
+					String.valueOf(source)
+				)
+			);
 		}
 
 		String name = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_NAME);
@@ -247,7 +254,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
-		return spaghettiVersion.startsWith("2.");
+		return spaghettiVersion.startsWith(MIN_VERSION_PREFIX);
 	}
 
 	@Override
