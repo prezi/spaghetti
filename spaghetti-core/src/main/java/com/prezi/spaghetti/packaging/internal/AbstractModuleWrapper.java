@@ -22,7 +22,7 @@ public abstract class AbstractModuleWrapper implements ModuleWrapper {
 		Iterable<String> dependencyLines = Iterables.transform(dependencies.entrySet(), new Function<Map.Entry<String, String>, String>() {
 			@Override
 			public String apply(Map.Entry<String, String> entry) {
-				return "\"" + entry.getKey() + "\":" + entry.getValue();
+				return String.format("\"%s\":%s", entry.getKey(), entry.getValue());
 			}
 		});
 		String moduleName = params.bundle.getName();
