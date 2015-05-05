@@ -15,7 +15,7 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 	@Override
 	public String wrap(ModuleWrapperParameters params) throws IOException {
 		Map<String, String> modules = Maps.newLinkedHashMap();
-		int index = 0;
+		int index = params.bundle.getExternalDependencies().size();
 		for (String dependency : Sets.newTreeSet(params.bundle.getDependentModules())) {
 			modules.put(dependency, "dependencies[" + index + "]");
 			index++;
@@ -23,7 +23,13 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 
 		StringBuilder result = new StringBuilder();
 		result.append("function(){");
-		wrapModuleObject(result, params, "var baseUrl=__dirname;", modules);
+		StringBuilder externalDependenciesDeclaration = new StringBuilder();
+		int externalDependencyIdx = 0;
+		for (String externalDependency : params.bundle.getExternalDependencies()) {
+			externalDependenciesDeclaration.append(String.format("var %s=arguments[%d];", externalDependency, externalDependencyIdx));
+			externalDependencyIdx++;
+		}
+		wrapModuleObject(result, params, "var baseUrl=__dirname;", externalDependenciesDeclaration, modules);
 		result.append("}");
 		return result.toString();
 	}

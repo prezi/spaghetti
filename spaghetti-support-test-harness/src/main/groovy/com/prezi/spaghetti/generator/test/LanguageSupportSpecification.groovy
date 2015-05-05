@@ -138,7 +138,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 				null,
 				InternalGeneratorUtils.bundleJavaScript(javaScript),
 				null,
-				dependentModules as SortedSet,
+				dependentModules as Set,
+				[],
 				null
 		));
 	}

@@ -9,13 +9,15 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final String version;
 	private final String sourceBaseUrl;
 	private final Set<String> dependentModules;
+	private final Set<String> externalDependencies;
 	private final Set<String> resourcePaths;
 
-	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> externalDependencies, Set<String> resourcePaths) {
 		this.name = name;
 		this.version = version;
 		this.sourceBaseUrl = sourceBaseUrl;
 		this.dependentModules = dependentModules;
+		this.externalDependencies = externalDependencies;
 		this.resourcePaths = resourcePaths;
 	}
 
@@ -55,6 +57,11 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	@Override
 	public final Set<String> getDependentModules() {
 		return dependentModules;
+	}
+
+	@Override
+	public final Set<String> getExternalDependencies() {
+		return externalDependencies;
 	}
 
 	@Override

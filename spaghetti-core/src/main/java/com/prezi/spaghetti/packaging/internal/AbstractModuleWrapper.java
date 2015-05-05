@@ -18,7 +18,7 @@ import static com.prezi.spaghetti.generator.ReservedWords.GET_SPAGHETTI_VERSION;
 import static com.prezi.spaghetti.packaging.internal.CommentUtils.appendAfterInitialComment;
 
 public abstract class AbstractModuleWrapper implements ModuleWrapper {
-	protected void wrapModuleObject(StringBuilder builder, ModuleWrapperParameters params, String baseUrlDeclaration, Map<String, String> dependencies) throws IOException {
+	protected void wrapModuleObject(StringBuilder builder, ModuleWrapperParameters params, CharSequence baseUrlDeclaration, CharSequence externalDependenciesDeclaration, Map<String, String> dependencies) throws IOException {
 		Iterable<String> dependencyLines = Iterables.transform(dependencies.entrySet(), new Function<Map.Entry<String, String>, String>() {
 			@Override
 			public String apply(Map.Entry<String, String> entry) {
@@ -54,6 +54,7 @@ public abstract class AbstractModuleWrapper implements ModuleWrapper {
 				builder.append("})());");
 			builder.append("};");
 		builder.append("})(arguments);");
+		builder.append(externalDependenciesDeclaration);
 		appendAfterInitialComment(builder, "return{\"module\":(function(){return ", params.bundle.getJavaScript());
 		builder.append("\n})(),");
 		builder.append("\"version\":\"").append(params.bundle.getVersion()).append("\",");

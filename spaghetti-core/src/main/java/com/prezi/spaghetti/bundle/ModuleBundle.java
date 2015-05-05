@@ -58,6 +58,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	Set<String> getResourcePaths();
 
 	/**
+	 * Returns the list of external dependencies.
+	 */
+	Set<String> getExternalDependencies();
+
+	/**
 	 * Returns the contents of the module's definition.
 	 */
 	String getDefinition() throws IOException;
