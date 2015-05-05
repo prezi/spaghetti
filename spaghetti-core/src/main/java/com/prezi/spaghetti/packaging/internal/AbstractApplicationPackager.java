@@ -1,19 +1,28 @@
 package com.prezi.spaghetti.packaging.internal;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationPackager;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
 import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import com.prezi.spaghetti.structure.internal.StructuredZipWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 public abstract class AbstractApplicationPackager implements ApplicationPackager {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractApplicationPackager.class);
+
 	@Override
 	public void packageApplicationDirectory(File outputDirectory, ApplicationPackageParameters params) throws IOException {
 		packageApplication(new StructuredDirectoryWriter(outputDirectory), params);
@@ -36,6 +45,19 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 			}
 		}, null) == null) {
 			throw new IllegalArgumentException("Main bundle \"" + params.mainModule + "\" not found among bundles: " + Joiner.on(", ").join(params.bundles));
+		}
+
+		Set<ModuleBundle> bundlesWithExternalDependencies = Sets.filter(params.bundles, new Predicate<ModuleBundle>() {
+			@Override
+			public boolean apply(ModuleBundle bundle) {
+				return !bundle.getExternalDependencies().isEmpty();
+			}
+		});
+		if (!bundlesWithExternalDependencies.isEmpty()) {
+			logger.warn("Some modules have external dependencies that should be bound to actual dependencies:");
+			for (ModuleBundle bundle : bundlesWithExternalDependencies) {
+				logger.warn("\t{} depends on {}", bundle.getName(), Joiner.on(", ").join(bundle.getExternalDependencies()));
+			}
 		}
 
 		writer.init();
