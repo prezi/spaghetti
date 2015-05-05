@@ -37,22 +37,27 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 		return name.hashCode();
 	}
 
+	@Override
 	public final String getName() {
 		return name;
 	}
 
+	@Override
 	public final String getVersion() {
 		return version;
 	}
 
+	@Override
 	public final String getSourceBaseUrl() {
 		return sourceBaseUrl;
 	}
 
+	@Override
 	public final Set<String> getDependentModules() {
 		return dependentModules;
 	}
 
+	@Override
 	public final Set<String> getResourcePaths() {
 		return resourcePaths;
 	}
