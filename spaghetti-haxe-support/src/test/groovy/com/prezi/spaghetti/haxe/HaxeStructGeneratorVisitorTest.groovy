@@ -17,7 +17,7 @@ struct MyStruct<T> extends Parent<T> {
 	@nullable ?string b
 	@mutable T t
 	T convert(T value)
-	Parent<T> parent();
+	Parent<T> parent()
 }
 """
 		def result = parseAndVisitStruct(definition, new HaxeStructGeneratorVisitor(), mockStruct("Parent", mockTypeParameter()))
