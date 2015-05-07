@@ -1,6 +1,10 @@
 package com.prezi.spaghetti.packaging;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSortedSet;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+
+import java.util.Map;
 
 public class ApplicationPackageParameters {
 	public static final String DEFAULT_APPLICATION_NAME = "application.js";
@@ -11,13 +15,15 @@ public class ApplicationPackageParameters {
 	public final boolean execute;
 	public final Iterable<String> prefixes;
 	public final Iterable<String> suffixes;
+	public final Map<String, String> externals;
 
-	public ApplicationPackageParameters(ModuleBundleSet bundles, String applicationName, String mainModule, boolean execute, Iterable<String> prefixes, Iterable<String> suffixes) {
+	public ApplicationPackageParameters(ModuleBundleSet bundles, String applicationName, String mainModule, boolean execute, Iterable<String> prefixes, Iterable<String> suffixes, Map<String, String> externals) {
 		this.bundles = bundles;
 		this.applicationName = applicationName;
 		this.mainModule = mainModule;
 		this.execute = execute;
-		this.prefixes = prefixes;
-		this.suffixes = suffixes;
+		this.prefixes = ImmutableSortedSet.copyOf(prefixes);
+		this.suffixes = ImmutableSortedSet.copyOf(suffixes);
+		this.externals = ImmutableMap.copyOf(externals);
 	}
 }

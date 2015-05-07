@@ -55,7 +55,10 @@ class AmdModuleWrapperTest extends WrapperTestBase {
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new AmdModuleWrapper().makeApplication(dependencyTree, "com.example.test", true)
+		def externals = [
+		        "react": "react"
+		]
+		def result = new AmdModuleWrapper().makeApplication(dependencyTree, "com.example.test", true, externals)
 
 		expect:
 		result == [
@@ -64,7 +67,8 @@ class AmdModuleWrapperTest extends WrapperTestBase {
 					'"paths":{',
 						'"com.example.alma": "modules/com.example.alma/com.example.alma",',
 						'"com.example.bela": "modules/com.example.bela/com.example.bela",',
-						'"com.example.test": "modules/com.example.test/com.example.test"',
+						'"com.example.test": "modules/com.example.test/com.example.test",',
+						'"react": "react"',
 					'}',
 				'});',
 		        'require(["com.example.test"],function(__mainModule){',

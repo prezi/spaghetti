@@ -53,7 +53,7 @@ class SingleFileModuleWrapperTest extends WrapperTestBase {
 				"com.example.alma": ["com.example.bela"].toSet(),
 				"com.example.bela": [].toSet()
 		]
-		def result = new SingleFileModuleWrapper().makeApplication(dependencyTree, "com.example.test", true)
+		def result = new SingleFileModuleWrapper().makeApplication(dependencyTree, "com.example.test", true, ["react": "react"])
 
 		expect:
 		result == [

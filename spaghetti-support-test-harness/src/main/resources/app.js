@@ -61,6 +61,12 @@ return {
 					});
 				});
 			});
+
+			describe("#getExternalDependencyVersion()", function () {
+				it("should return the right version for external dependency", function () {
+					expect(module.getExternalDependencyVersion()).to.equal(require("chai").version);
+				})
+			});
 		});
 	}
 };

@@ -35,7 +35,7 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
+	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute, Map<String, String> externals) {
 		StringBuilder result = new StringBuilder();
 		if (!Strings.isNullOrEmpty(mainModule)) {
 			result.append("var mainModule=modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"];");

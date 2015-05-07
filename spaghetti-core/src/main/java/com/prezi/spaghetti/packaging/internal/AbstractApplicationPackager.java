@@ -18,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractApplicationPackager implements ApplicationPackager {
@@ -47,16 +50,16 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 			throw new IllegalArgumentException("Main bundle \"" + params.mainModule + "\" not found among bundles: " + Joiner.on(", ").join(params.bundles));
 		}
 
-		Set<ModuleBundle> bundlesWithExternalDependencies = Sets.filter(params.bundles, new Predicate<ModuleBundle>() {
-			@Override
-			public boolean apply(ModuleBundle bundle) {
-				return !bundle.getExternalDependencies().isEmpty();
+		Map<String, String> unmetExternals = new HashMap<String, String>();
+		for (ModuleBundle bundle : params.bundles) {
+			for (String external : bundle.getExternalDependencies()) {
+				if (!params.externals.containsKey(external)) unmetExternals.put(bundle.getName(), external);
 			}
-		});
-		if (!bundlesWithExternalDependencies.isEmpty()) {
-			logger.warn("Some modules have external dependencies that should be bound to actual dependencies:");
-			for (ModuleBundle bundle : bundlesWithExternalDependencies) {
-				logger.warn("\t{} depends on {}", bundle.getName(), Joiner.on(", ").join(bundle.getExternalDependencies()));
+		}
+		if (!unmetExternals.isEmpty()) {
+			logger.warn("Some modules have external dependencies without a specified path:");
+			for (Map.Entry<String, String> unmetExternal : unmetExternals.entrySet()) {
+				logger.warn("\t{} depends on {}", unmetExternal.getKey(), unmetExternal.getValue());
 			}
 		}
 

@@ -45,5 +45,9 @@ public class TestModule {
                 override val z = z
             });
 		}
+
+		public fun getExternalDependencyVersion():String {
+		    return js("libWithVersion.version")
+		}
 	}
 }

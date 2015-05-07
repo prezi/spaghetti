@@ -2,6 +2,7 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -45,9 +46,18 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
+	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute, Map<String, String> externals) {
 		StringBuilder result = new StringBuilder();
-		result.append(makeConfig(getModulesDirectory(), Sets.newTreeSet(dependencyTree.keySet())));
+		Iterable<String> paths =
+				Iterables.concat(
+						makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), getModulesDirectory()),
+						Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
+							@Override
+							public String apply(Map.Entry<String, String> external) {
+								return String.format("\"%s\": \"%s\"", external.getKey(), external.getValue());
+							}
+						}));
+		result.append(makeConfig(paths));
 		if (mainModule != null) {
 			result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 			if (execute) {
@@ -65,15 +75,17 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 		return "modules";
 	}
 
-	private static String makeConfig(String modulesRoot, Collection<String> moduleNames) {
-		final String normalizedModulesRoot = modulesRoot.endsWith("/") ? modulesRoot : modulesRoot + "/";
+	private static String makeConfig(Iterable<String> paths) {
+		return "require[\"config\"]({" + "\"baseUrl\":\".\"," + "\"paths\":{" + Joiner.on(',').join(paths) + "}" + "});";
+	}
 
-		Iterable<String> paths = Iterables.transform(moduleNames, new Function<String, String>() {
+	private static Collection<String> makeModuleDependencies(Collection<String> moduleNames, final String modulesRoot) {
+		final String normalizedModulesRoot = modulesRoot.endsWith("/") ? modulesRoot : modulesRoot + "/";
+		return Collections2.transform(moduleNames, new Function<String, String>() {
 			@Override
 			public String apply(String moduleName) {
-				return "\"" + moduleName + "\": \"" + normalizedModulesRoot + moduleName + "/" + moduleName + "\"";
+				return String.format("\"%s\": \"%s%s/%s\"", moduleName, normalizedModulesRoot, moduleName, moduleName);
 			}
 		});
-		return "require[\"config\"]({" + "\"baseUrl\":\".\"," + "\"paths\":{" + Joiner.on(',').join(paths) + "}" + "});";
 	}
 }

@@ -1,10 +1,14 @@
 package com.prezi.spaghetti.packaging.internal;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,8 +45,17 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
+	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute, Map<String, String> externals) {
 		StringBuilder result = new StringBuilder();
+		if (!externals.isEmpty()) {
+			Collection<String> externalPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
+				@Override
+				public String apply(Map.Entry<String, String> external) {
+					return "\"" + external.getKey() + "\":\"" + external.getValue() + "\"";
+				}
+			});
+			result.append("global[\"spaghetti\"]={\"config\":{\"paths\":{").append(Joiner.on(',').join(externalPaths)).append("}}};");
+		}
 		if (mainModule != null) {
 			result.append("var mainModule=require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"];");
 			if (execute) {
