@@ -15,12 +15,12 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 	public String wrap(ModuleWrapperParameters params) throws IOException {
 		Map<String, String> modules = Maps.newLinkedHashMap();
 		for (String dependency : Sets.newTreeSet(params.bundle.getDependentModules())) {
-			modules.put(dependency, "require(getPath(\"" + dependency + "\"))");
+			modules.put(dependency, "require(__resolveDependency(\"" + dependency + "\"))");
 		}
 
 		StringBuilder result = new StringBuilder();
 		result.append("module.exports=(function(){");
-		result.append("var getPath=function(module){");
+		result.append("var __resolveDependency=function(module){");
 			result.append("if (global[\"spaghetti\"]&&global[\"spaghetti\"][\"config\"]&&global[\"spaghetti\"][\"config\"][\"paths\"]&&global[\"spaghetti\"][\"config\"][\"paths\"][module]){");
 				result.append("return global[\"spaghetti\"][\"config\"][\"paths\"][module];");
 			result.append("}else{");
@@ -31,7 +31,7 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 		StringBuilder externalDependenciesDeclaration = new StringBuilder();
 		for (String externalDependency : params.bundle.getExternalDependencies()) {
 			externalDependenciesDeclaration.append(
-					String.format("var %s=require(getPath(\"%s\"));", externalDependency, externalDependency)
+					String.format("var %s=require(__resolveDependency(\"%s\"));", externalDependency, externalDependency)
 			);
 		}
 		wrapModuleObject(result, params, "var baseUrl=__dirname;", externalDependenciesDeclaration, modules);
