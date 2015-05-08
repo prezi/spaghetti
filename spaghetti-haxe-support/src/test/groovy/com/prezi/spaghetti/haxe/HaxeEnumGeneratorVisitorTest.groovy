@@ -11,7 +11,7 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	ALMA
 	@deprecated("escape \\"this\\"!")
 	BELA
-	GEZA
+	GEZA = 4
 }
 """
 		def result = parseAndVisitEnum(definition, new HaxeEnumGeneratorVisitor())
@@ -24,7 +24,7 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	public static var ALMA = new MyEnum(0);
 	@:deprecated("escape \\"this\\"!")
 	public static var BELA = new MyEnum(1);
-	public static var GEZA = new MyEnum(2);
+	public static var GEZA = new MyEnum(4);
 
 	static var _values:Array<MyEnum> = [ ALMA, BELA, GEZA ];
 	static var _names:Array<String> =  [ "ALMA", "BELA", "GEZA" ];

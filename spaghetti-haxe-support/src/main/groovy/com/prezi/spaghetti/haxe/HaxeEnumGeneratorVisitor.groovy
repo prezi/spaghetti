@@ -3,15 +3,18 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
+import com.prezi.spaghetti.generator.EnumGeneratorUtils
 
 class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name
 
+		def namesToValues = EnumGeneratorUtils.calculateEnumValues(node)
+		def valueVisitor = new EnumValueVisitor(enumName, namesToValues)
 		def values = []
-		node.values.eachWithIndex { value, index ->
-			values.add value.accept(new EnumValueVisitor(enumName, index))
+		node.values.each { value ->
+			values.add value.accept(valueVisitor)
 		}
 
 		return \
@@ -58,16 +61,16 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 
 	private static class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
 		private final String enumName
-		private final int index
+		private final Map<String, Integer> namesToValues
 
-		EnumValueVisitor(String enumName, int index) {
+		EnumValueVisitor(String enumName, Map<String, Integer> namesToValues) {
 			this.enumName = enumName
-			this.index = index
+			this.namesToValues = namesToValues
 		}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tpublic static var ${node.name} = new ${enumName}(${index});"
+			return "\tpublic static var ${node.name} = new ${enumName}(${namesToValues[node.name]});"
 		}
 	}
 }
