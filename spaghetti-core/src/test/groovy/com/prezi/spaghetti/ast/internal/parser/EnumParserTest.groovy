@@ -7,7 +7,7 @@ class EnumParserTest extends AstSpecification {
 		def locator = mockLocator("""
 enum MyEnum {
 	alma
-	bela
+	bela = 4
 }
 """)
 		def context = AstParserSpecification.parser(locator).enumDefinition()
@@ -22,6 +22,9 @@ enum MyEnum {
 		node.name == "MyEnum"
 		node.values*.name.toList() == [
 				"alma", "bela"
+		]
+		node.values*.value.toList() == [
+		        null, 4
 		]
 		node.values*.location*.toString() == [
 				"test:3:1",
