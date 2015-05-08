@@ -48,16 +48,16 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 	@Override
 	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute, Map<String, String> externals) {
 		StringBuilder result = new StringBuilder();
-		Iterable<String> paths =
-				Iterables.concat(
-						makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), getModulesDirectory()),
-						Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
-							@Override
-							public String apply(Map.Entry<String, String> external) {
-								return String.format("\"%s\": \"%s\"", external.getKey(), external.getValue());
-							}
-						}));
-		result.append(makeConfig(paths));
+		// AMD Configuration
+		Iterable<String> moduleDependencyPaths = makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), getModulesDirectory());
+		Iterable<String> externalDependencyPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
+			@Override
+			public String apply(Map.Entry<String, String> external) {
+				return String.format("\"%s\":\"%s\"", external.getKey(), external.getValue());
+			}
+		});
+		result.append(makeConfig(Iterables.concat(moduleDependencyPaths, externalDependencyPaths)));
+		// Require and optionally call main module
 		if (mainModule != null) {
 			result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 			if (execute) {
@@ -76,7 +76,7 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 	}
 
 	private static String makeConfig(Iterable<String> paths) {
-		return "require[\"config\"]({" + "\"baseUrl\":\".\"," + "\"paths\":{" + Joiner.on(',').join(paths) + "}" + "});";
+		return "require[\"config\"]({\"baseUrl\":\".\",\"paths\":{" + Joiner.on(',').join(paths) + "}});";
 	}
 
 	private static Collection<String> makeModuleDependencies(Collection<String> moduleNames, final String modulesRoot) {
@@ -84,7 +84,7 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 		return Collections2.transform(moduleNames, new Function<String, String>() {
 			@Override
 			public String apply(String moduleName) {
-				return String.format("\"%s\": \"%s%s/%s\"", moduleName, normalizedModulesRoot, moduleName, moduleName);
+				return String.format("\"%s\":\"%s%s/%s\"", moduleName, normalizedModulesRoot, moduleName, moduleName);
 			}
 		});
 	}
