@@ -1,12 +1,16 @@
 package com.prezi.spaghetti.bundle.internal;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ForwardingSortedSet;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -41,4 +45,21 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	public SortedSet<ModuleBundle> getTransitiveBundles() {
 		return transitiveBundles;
 	}
+
+	@Override
+	public Map<String, String> getExternalDependencies(Predicate<String> predicate) {
+		Map<String, String> externals = Maps.newLinkedHashMap();
+		for (ModuleBundle bundle : this) {
+			for (String external : bundle.getExternalDependencies()) {
+				if (predicate.apply(external)) externals.put(bundle.getName(), external);
+			}
+		}
+		return externals;
+	}
+
+	@Override
+	public Map<String, String> getExternalDependencies() {
+		return getExternalDependencies(Predicates.<String>alwaysTrue());
+	}
+
 }
