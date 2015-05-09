@@ -185,7 +185,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
 		SortedSet<String> externalDependencies = !Strings.isNullOrEmpty(externalDependenciesString) ?
 				Sets.newTreeSet(Arrays.asList(externalDependenciesString.split(","))) :
-				Collections.<String>emptySortedSet();
+				ImmutableSortedSet.<String>of();
 
 		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}
