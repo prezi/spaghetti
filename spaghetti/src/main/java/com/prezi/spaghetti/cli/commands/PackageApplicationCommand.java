@@ -69,7 +69,7 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 			String path = matcher.group(2);
 			String previouslyConfiguredPath = externals.put(name, path);
 			if (previouslyConfiguredPath != null) {
-				logger.warn("More than one paths configured for external dependency '{}'", name);
+				logger.warn("More than one path configured for external dependency '{}'", name);
 			}
 		}
 
