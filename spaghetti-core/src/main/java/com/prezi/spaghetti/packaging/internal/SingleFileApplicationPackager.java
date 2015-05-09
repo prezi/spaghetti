@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
@@ -17,13 +18,10 @@ import com.prezi.spaghetti.structure.internal.StructuredAppender;
 import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 	private final ModuleWrapper wrapper;
@@ -64,15 +62,31 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 					@Override
 					public String processDependency(final String module, Collection<String> dependencies) {
 						ModuleBundle bundle = bundles.get(module);
-						Collection<String> dependencyInstances = Collections2.transform(dependencies, new Function<String, String>() {
+						Collection<String> externalReferences = Collections2.transform(bundle.getExternalDependencies(), new Function<String, String>() {
+							@Nullable
 							@Override
-							public String apply(String it) {
-								return "modules[\"" + it + "\"]";
+							public String apply(String dependencyName) {
+								return params.externals.containsKey(dependencyName) ?
+										params.externals.get(dependencyName) :
+										dependencyName;
+							}
+						});
+						Collection<String> moduleReferences = Collections2.transform(dependencies, new Function<String, String>() {
+							@Override
+							public String apply(String moduleName) {
+								return String.format("modules[\"%s\"]", moduleName);
 							}
 						});
 						try {
 							String wrappedModule = wrapper.wrap(new ModuleWrapperParameters(bundle));
-							dependencyInitializers.add("modules[\"" + module + "\"] = (" + wrappedModule + "(" + Joiner.on(',').join(dependencyInstances) + "));");
+							dependencyInitializers.add(
+									String.format(
+										"modules[\"%s\"] = (%s(%s));",
+										module,
+										wrappedModule,
+										Joiner.on(',').join(Iterables.concat(externalReferences, moduleReferences))
+									)
+							);
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}
