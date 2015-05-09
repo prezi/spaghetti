@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
@@ -26,11 +27,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -46,7 +44,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Attributes.Name MANIFEST_ATTR_EXTERNAL_DEPENDENCIES = new Attributes.Name("External-Dependencies");
 	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> externalDependencies, Set<String> resourcePaths) {
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, SortedSet<String> externalDependencies, Set<String> resourcePaths) {
 		super(name, version, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
 		this.source = source;
 	}
@@ -185,7 +183,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		Set<String> dependentModules = !Strings.isNullOrEmpty(moduleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
 
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
-		Set<String> externalDependencies = !Strings.isNullOrEmpty(externalDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(externalDependenciesString.split(","))) : Collections.<String>emptySet();
+		SortedSet<String> externalDependencies = !Strings.isNullOrEmpty(externalDependenciesString) ?
+				Sets.newTreeSet(Arrays.asList(externalDependenciesString.split(","))) :
+				Collections.<String>emptySortedSet();
 
 		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}

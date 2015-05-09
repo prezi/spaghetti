@@ -30,7 +30,7 @@ class ModuleBundleTest extends Specification {
 						"console.log('hello');",
 						"sourcemap",
 						["com.example.alma", "com.example.bela"],
-						["react", "\$"],
+						["react", "\$"] as SortedSet,
 						null)
 		)
 
@@ -97,7 +97,7 @@ class ModuleBundleTest extends Specification {
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
 		bundle.dependentModules.sort() == ["com.example.alma", "com.example.bela"]
-		bundle.externalDependencies.sort() == ["\$", "react"]
+		bundle.externalDependencies.sort() == (["\$", "react"] as SortedSet)
 		0 * _
 	}
 
@@ -156,7 +156,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, [] as Set, [] as Set)
+		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, [] as SortedSet, [] as Set)
 	}
 
 	private static String get(IOAction<OutputStream> action) {

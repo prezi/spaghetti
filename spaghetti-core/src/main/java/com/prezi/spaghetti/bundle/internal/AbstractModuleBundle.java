@@ -3,16 +3,17 @@ package com.prezi.spaghetti.bundle.internal;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 
 import java.util.Set;
+import java.util.SortedSet;
 
 public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final String name;
 	private final String version;
 	private final String sourceBaseUrl;
 	private final Set<String> dependentModules;
-	private final Set<String> externalDependencies;
+	private final SortedSet<String> externalDependencies;
 	private final Set<String> resourcePaths;
 
-	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> externalDependencies, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, SortedSet<String> externalDependencies, Set<String> resourcePaths) {
 		this.name = name;
 		this.version = version;
 		this.sourceBaseUrl = sourceBaseUrl;
@@ -60,7 +61,7 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	}
 
 	@Override
-	public final Set<String> getExternalDependencies() {
+	public final SortedSet<String> getExternalDependencies() {
 		return externalDependencies;
 	}
 
