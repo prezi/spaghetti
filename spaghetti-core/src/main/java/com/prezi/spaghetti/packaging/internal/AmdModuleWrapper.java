@@ -46,9 +46,17 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute, Map<String, String> externals) {
-		StringBuilder result = new StringBuilder();
-		// AMD Configuration
+	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+		result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
+		if (execute) {
+            result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
+        }
+		result.append("});\n");
+		return result;
+	}
+
+	@Override
+	protected StringBuilder makeConfig(StringBuilder result, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
 		Iterable<String> moduleDependencyPaths = makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), getModulesDirectory());
 		Iterable<String> externalDependencyPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
 			@Override
@@ -56,27 +64,13 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 				return String.format("\"%s\":\"%s\"", external.getKey(), external.getValue());
 			}
 		});
-		result.append(makeConfig(Iterables.concat(moduleDependencyPaths, externalDependencyPaths)));
-		// Require and optionally call main module
-		if (mainModule != null) {
-			result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
-			if (execute) {
-				result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
-			}
-
-			result.append("});\n");
-		}
-
-		return result.toString();
-	}
-
-	@Override
-	public String getModulesDirectory() {
-		return "modules";
-	}
-
-	private static String makeConfig(Iterable<String> paths) {
-		return "require[\"config\"]({\"baseUrl\":\".\",\"paths\":{" + Joiner.on(',').join(paths) + "}});";
+		// Begin config
+		result.append("require[\"config\"]({\"baseUrl\":\".\",\"paths\":{");
+		// Append path definitions
+		Joiner.on(',').appendTo(result, Iterables.concat(moduleDependencyPaths, externalDependencyPaths));
+		// End config
+		result.append("}});");
+		return result;
 	}
 
 	private static Collection<String> makeModuleDependencies(Collection<String> moduleNames, final String modulesRoot) {
@@ -88,4 +82,9 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 			}
 		});
 	}
+	@Override
+	public String getModulesDirectory() {
+		return "modules";
+	}
+
 }

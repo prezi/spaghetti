@@ -45,8 +45,16 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute, Map<String, String> externals) {
-		StringBuilder result = new StringBuilder();
+	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+		result.append("var mainModule=require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"];");
+		if (execute) {
+            result.append("mainModule[\"main\"]();\n");
+        }
+		return result;
+	}
+
+	@Override
+	protected StringBuilder makeConfig(StringBuilder result, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
 		if (!externals.isEmpty()) {
 			Collection<String> externalPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
 				@Override
@@ -56,14 +64,7 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 			});
 			result.append("global[\"spaghetti\"]={\"config\":{\"paths\":{").append(Joiner.on(',').join(externalPaths)).append("}}};");
 		}
-		if (mainModule != null) {
-			result.append("var mainModule=require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"];");
-			if (execute) {
-				result.append("mainModule[\"main\"]();\n");
-			}
-		}
-
-		return result.toString();
+		return result;
 	}
 
 	@Override
