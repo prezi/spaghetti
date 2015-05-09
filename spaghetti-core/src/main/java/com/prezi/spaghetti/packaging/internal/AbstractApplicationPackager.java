@@ -50,12 +50,13 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 			throw new IllegalArgumentException("Main bundle \"" + params.mainModule + "\" not found among bundles: " + Joiner.on(", ").join(params.bundles));
 		}
 
-		Map<String, String> unmetExternals = new HashMap<String, String>();
-		for (ModuleBundle bundle : params.bundles) {
-			for (String external : bundle.getExternalDependencies()) {
-				if (!params.externals.containsKey(external)) unmetExternals.put(bundle.getName(), external);
-			}
-		}
+		Map<String, String> unmetExternals =
+				params.bundles.getExternalDependencies(new Predicate<String>() {
+					@Override
+					public boolean apply(@Nullable String external) {
+						return !params.externals.containsKey(external);
+					}
+				});
 		if (!unmetExternals.isEmpty()) {
 			logger.warn("Some modules have external dependencies without a specified path:");
 			for (Map.Entry<String, String> unmetExternal : unmetExternals.entrySet()) {
