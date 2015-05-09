@@ -51,7 +51,7 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 			Collection<String> externalPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
 				@Override
 				public String apply(Map.Entry<String, String> external) {
-					return "\"" + external.getKey() + "\":\"" + external.getValue() + "\"";
+					return String.format("\"%s\":\"%s\"", external.getKey(), external.getValue());
 				}
 			});
 			result.append("global[\"spaghetti\"]={\"config\":{\"paths\":{").append(Joiner.on(',').join(externalPaths)).append("}}};");
