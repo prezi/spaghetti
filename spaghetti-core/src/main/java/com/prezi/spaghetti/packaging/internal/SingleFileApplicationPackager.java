@@ -21,7 +21,11 @@ import org.apache.commons.io.IOUtils;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 	private final ModuleWrapper wrapper;
