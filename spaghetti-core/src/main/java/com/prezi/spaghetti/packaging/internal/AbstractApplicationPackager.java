@@ -3,6 +3,7 @@ package com.prezi.spaghetti.packaging.internal;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationPackager;
@@ -45,7 +46,7 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 		}
 
 		Map<String, String> unmetExternals =
-				params.bundles.getExternalDependencies(new Predicate<String>() {
+				Maps.filterValues(params.bundles.getExternalDependencies(), new Predicate<String>() {
 					@Override
 					public boolean apply(@Nullable String external) {
 						return !params.externals.containsKey(external);

@@ -47,19 +47,14 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	}
 
 	@Override
-	public SortedMap<String, String> getExternalDependencies(Predicate<String> predicate) {
+	public SortedMap<String, String> getExternalDependencies() {
 		SortedMap<String, String> externals = Maps.newTreeMap();
 		for (ModuleBundle bundle : this) {
 			for (String external : bundle.getExternalDependencies()) {
-				if (predicate.apply(external)) externals.put(bundle.getName(), external);
+				externals.put(bundle.getName(), external);
 			}
 		}
 		return externals;
-	}
-
-	@Override
-	public SortedMap<String, String> getExternalDependencies() {
-		return getExternalDependencies(Predicates.<String>alwaysTrue());
 	}
 
 }

@@ -12,6 +12,5 @@ public interface ModuleBundleSet extends SortedSet<ModuleBundle> {
 
 	SortedSet<ModuleBundle> getDirectBundles();
 	SortedSet<ModuleBundle> getTransitiveBundles();
-	SortedMap<String, String> getExternalDependencies(Predicate<String> predicate);
 	SortedMap<String, String> getExternalDependencies();
 }
