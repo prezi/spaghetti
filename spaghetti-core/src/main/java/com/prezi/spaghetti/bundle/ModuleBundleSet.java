@@ -4,7 +4,6 @@ import com.google.common.base.Predicate;
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
 

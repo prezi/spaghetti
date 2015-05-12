@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.packaging.internal;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;

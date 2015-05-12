@@ -1,11 +1,8 @@
 package com.prezi.spaghetti.packaging.internal;
 
-import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationPackager;
@@ -18,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public abstract class AbstractApplicationPackager implements ApplicationPackager {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractApplicationPackager.class);
