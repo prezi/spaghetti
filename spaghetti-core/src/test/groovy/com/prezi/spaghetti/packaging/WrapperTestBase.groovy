@@ -8,7 +8,7 @@ class WrapperTestBase extends Specification {
 		def mockBundle = Mock(ModuleBundle)
 		mockBundle.name >> name
 		mockBundle.version >> version
-		mockBundle.dependentModules >> dependencies
+		mockBundle.dependentModules >> (dependencies as SortedSet)
 		mockBundle.externalDependencies >> (externalDependencies as SortedSet)
 		mockBundle.javaScript >> javaScript
 		return new ModuleWrapperParameters(mockBundle)

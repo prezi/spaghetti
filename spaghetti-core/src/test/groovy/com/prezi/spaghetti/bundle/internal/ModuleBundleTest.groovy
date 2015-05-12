@@ -96,8 +96,8 @@ class ModuleBundleTest extends Specification {
 		bundle.name == "com.example.test"
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
-		bundle.dependentModules.sort() == ["com.example.alma", "com.example.bela"]
-		bundle.externalDependencies.sort() == (["\$", "react"] as SortedSet)
+		bundle.dependentModules == (["com.example.alma", "com.example.bela"] as SortedSet)
+		bundle.externalDependencies == (["\$", "react"] as SortedSet)
 		0 * _
 	}
 
