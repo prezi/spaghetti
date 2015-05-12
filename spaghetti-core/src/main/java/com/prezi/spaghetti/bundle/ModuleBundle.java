@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.bundle;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -51,12 +50,12 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	/**
 	 * Returns the names of the module's dependencies.
 	 */
-	Set<String> getDependentModules();
+	SortedSet<String> getDependentModules();
 
 	/**
 	 * Returns the list of resource file paths.
 	 */
-	Set<String> getResourcePaths();
+	SortedSet<String> getResourcePaths();
 
 	/**
 	 * Returns the list of external dependencies.

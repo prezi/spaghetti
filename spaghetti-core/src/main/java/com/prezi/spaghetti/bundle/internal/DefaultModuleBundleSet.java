@@ -10,8 +10,8 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> implements ModuleBundleSet {
@@ -47,8 +47,8 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	}
 
 	@Override
-	public Map<String, String> getExternalDependencies(Predicate<String> predicate) {
-		Map<String, String> externals = Maps.newLinkedHashMap();
+	public SortedMap<String, String> getExternalDependencies(Predicate<String> predicate) {
+		SortedMap<String, String> externals = Maps.newTreeMap();
 		for (ModuleBundle bundle : this) {
 			for (String external : bundle.getExternalDependencies()) {
 				if (predicate.apply(external)) externals.put(bundle.getName(), external);
@@ -58,7 +58,7 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	}
 
 	@Override
-	public Map<String, String> getExternalDependencies() {
+	public SortedMap<String, String> getExternalDependencies() {
 		return getExternalDependencies(Predicates.<String>alwaysTrue());
 	}
 

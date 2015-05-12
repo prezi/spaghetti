@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle.internal;
 
+import com.google.common.collect.ImmutableSortedSet;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 
 import java.util.Set;
@@ -9,17 +10,17 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final String name;
 	private final String version;
 	private final String sourceBaseUrl;
-	private final Set<String> dependentModules;
+	private final SortedSet<String> dependentModules;
 	private final SortedSet<String> externalDependencies;
-	private final Set<String> resourcePaths;
+	private final SortedSet<String> resourcePaths;
 
-	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, SortedSet<String> externalDependencies, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> externalDependencies, Set<String> resourcePaths) {
 		this.name = name;
 		this.version = version;
 		this.sourceBaseUrl = sourceBaseUrl;
-		this.dependentModules = dependentModules;
-		this.externalDependencies = externalDependencies;
-		this.resourcePaths = resourcePaths;
+		this.dependentModules = ImmutableSortedSet.copyOf(dependentModules);
+		this.externalDependencies = ImmutableSortedSet.copyOf(externalDependencies);
+		this.resourcePaths = ImmutableSortedSet.copyOf(resourcePaths);
 	}
 
 	@Override
@@ -56,7 +57,7 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	}
 
 	@Override
-	public final Set<String> getDependentModules() {
+	public final SortedSet<String> getDependentModules() {
 		return dependentModules;
 	}
 
@@ -66,7 +67,7 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	}
 
 	@Override
-	public final Set<String> getResourcePaths() {
+	public final SortedSet<String> getResourcePaths() {
 		return resourcePaths;
 	}
 }
