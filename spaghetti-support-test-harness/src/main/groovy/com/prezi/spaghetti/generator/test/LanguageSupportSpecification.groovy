@@ -118,6 +118,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 	}
 
 	public static void executeIn(File dir, List<?> args) {
+		println "Executing ${args.join(" ")}"
 		def process = args.execute((String[])null, dir)
 		process.waitForProcessOutput((OutputStream) System.out, System.err)
 		if (process.exitValue() != 0) {
