@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.obfuscation
 
+import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import com.prezi.spaghetti.obfuscation.internal.SymbolCollectVisitor
 import spock.lang.Specification
 
@@ -71,7 +71,7 @@ enum LeEnum {
 	}
 
 	private List<String> visit(String what) {
-		def module = ModuleParser.create(ModuleDefinitionSource.fromString("test", what)).parse(Mock(TypeResolver))
+		def module = ModuleParser.create(DefaultModuleDefinitionSource.fromString("test", what)).parse(Mock(TypeResolver))
 		def result = module.accept(new SymbolCollectVisitor())
 		return result.sort()
 	}

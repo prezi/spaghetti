@@ -6,8 +6,8 @@ import com.google.common.collect.ImmutableSortedSet;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 import java.util.SortedSet;
 
 public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> implements ModuleBundleSet {
@@ -15,7 +15,7 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	private final SortedSet<ModuleBundle> transitiveBundles;
 	private final SortedSet<ModuleBundle> allBundles;
 
-	public DefaultModuleBundleSet(Set<ModuleBundle> directBundles, Set<ModuleBundle> transitiveBundles) {
+	public DefaultModuleBundleSet(Collection<ModuleBundle> directBundles, Collection<ModuleBundle> transitiveBundles) {
 		Preconditions.checkArgument(Collections.disjoint(
 						Preconditions.checkNotNull(directBundles, "directBundles"),
 						Preconditions.checkNotNull(transitiveBundles, "transitiveBundles")

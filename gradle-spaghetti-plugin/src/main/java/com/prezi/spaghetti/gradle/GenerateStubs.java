@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.gradle;
 
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.generator.StubGenerator;
 import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
 import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;

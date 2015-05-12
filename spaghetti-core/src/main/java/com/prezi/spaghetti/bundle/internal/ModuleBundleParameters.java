@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.bundle;
+package com.prezi.spaghetti.bundle.internal;
 
 import java.io.File;
 import java.util.SortedSet;

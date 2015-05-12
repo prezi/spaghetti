@@ -6,9 +6,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.bundle.ModuleBundleElement;
-import com.prezi.spaghetti.bundle.ModuleBundleParameters;
 import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.structure.internal.FileProcessor;
 import com.prezi.spaghetti.structure.internal.IOAction;
@@ -36,6 +33,31 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 public class DefaultModuleBundle extends AbstractModuleBundle {
+	/**
+	 * Path of the module definition inside the bundle.
+	 */
+	private static final String DEFINITION_PATH = "module.def";
+
+	/**
+	 * Path of the source map inside the bundle.
+	 */
+	private static final String SOURCE_MAP_PATH = "module.map";
+
+	/**
+	 * Path of the module's JavaScript code inside the bundle.
+	 */
+	private static final String JAVASCRIPT_PATH = "module.js";
+
+	/**
+	 * Path of the metadata file inside the bundle.
+	 */
+	private static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF";
+
+	/**
+	 * Path of the resources directory inside the bundle.
+	 */
+	private static final String RESOURCES_PREFIX = "resources/";
+
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
 	private static final String MIN_VERSION_PREFIX = "2.";
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
@@ -85,7 +107,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			String url = params.sourceBaseUrl;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_SOURCE, url != null ? url : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_DEPENDENCIES, Joiner.on(',').join(params.dependentModules));
-			builder.appendFile(ModuleBundle.MANIFEST_MF_PATH, new IOAction<OutputStream>() {
+			builder.appendFile(MANIFEST_MF_PATH, new IOAction<OutputStream>() {
 				@Override
 				public void execute(OutputStream out) throws IOException {
 					manifest.write(out);

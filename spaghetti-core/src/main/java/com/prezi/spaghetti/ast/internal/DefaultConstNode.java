@@ -4,15 +4,14 @@ import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.ConstEntryNode;
-import com.prezi.spaghetti.ast.ConstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
-public class DefaultConstNode extends AbstractTypeNode implements ConstNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+public class DefaultConstNode extends AbstractTypeNode implements ConstNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 	private final NamedNodeSetInternal<ConstEntryNode> entries = NodeSets.newNamedNodeSet("entry");
 
 	public DefaultConstNode(Location location, FQName qualifiedName) {

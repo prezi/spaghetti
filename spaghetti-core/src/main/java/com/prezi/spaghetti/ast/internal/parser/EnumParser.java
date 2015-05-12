@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.internal.DefaultEnumNode;
 import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, DefaultEnumNode> {
@@ -11,7 +11,7 @@ public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefini
 	}
 
 	private static DefaultEnumNode createNode(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
-		DefaultEnumNode node = new DefaultEnumNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		DefaultEnumNode node = new DefaultEnumNode(locator.locate(context.Name()), DefaultFQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 		return node;

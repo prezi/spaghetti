@@ -1,4 +1,5 @@
 rootProject.name = "spaghetti-parent"
+include "spaghetti-api"
 include "spaghetti"
 include "spaghetti-core"
 include "spaghetti-docs"

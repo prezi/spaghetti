@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.Token;
 
@@ -35,7 +36,7 @@ public abstract class TypeResolutionContext {
 		private final Token token;
 
 		public TokenTypeResolutionContext(Token token) {
-			super(FQName.fromString(token.getText()));
+			super(DefaultFQName.fromString(token.getText()));
 			this.token = token;
 		}
 
@@ -55,7 +56,7 @@ public abstract class TypeResolutionContext {
 		private final ModuleParser.QualifiedNameContext context;
 
 		public FQNameTypeResolutionContext(ModuleParser.QualifiedNameContext context) {
-			super(FQName.fromString(context.getText()));
+			super(DefaultFQName.fromString(context.getText()));
 			this.context = context;
 		}
 

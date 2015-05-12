@@ -3,7 +3,7 @@ package com.prezi.spaghetti.gradle.internal;
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.bundle.ModuleBundleLoader;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleLoader;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;

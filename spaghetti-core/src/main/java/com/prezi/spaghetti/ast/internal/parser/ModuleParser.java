@@ -2,10 +2,11 @@ package com.prezi.spaghetti.ast.internal.parser;
 
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.FQName;
+import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 import com.prezi.spaghetti.ast.internal.DefaultImportNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleNode;
-import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang.StringUtils;
@@ -39,9 +40,9 @@ public class ModuleParser extends AbstractParser<DefaultModuleNode> {
 		for (com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleElementContext elementCtx : moduleCtx.moduleElement()) {
 			if (elementCtx.importDeclaration() != null) {
 				com.prezi.spaghetti.internal.grammar.ModuleParser.ImportDeclarationContext context = elementCtx.importDeclaration();
-				FQName importedName = FQName.fromContext(context.qualifiedName());
+				FQName importedName = DefaultFQName.fromContext(context.qualifiedName());
 				TerminalNode aliasDecl = context.Name();
-				String importAlias = aliasDecl != null ? aliasDecl.getText() : importedName.localName;
+				String importAlias = aliasDecl != null ? aliasDecl.getText() : importedName.getLocalName();
 				DefaultImportNode importNode = new DefaultImportNode(locate(context.qualifiedName()), importedName, importAlias);
 				node.getImports().add(importNode, context);
 			} else if (elementCtx.externTypeDefinition() != null) {

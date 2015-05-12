@@ -5,6 +5,7 @@ import com.prezi.spaghetti.ast.ImportNode;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.ast.TypeNode;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 
 public class LocalModuleTypeResolver implements TypeResolver {
 	private final TypeResolver parent;
@@ -21,7 +22,7 @@ public class LocalModuleTypeResolver implements TypeResolver {
 
 		// Resolve local module types
 		ImportNode importDecl = module.getImports().get(name);
-		FQName scopedName = importDecl != null ? importDecl.getQualifiedName() : FQName.qualifyLocalName(module.getName(), name);
+		FQName scopedName = importDecl != null ? importDecl.getQualifiedName() : DefaultFQName.qualifyLocalName(module.getName(), name);
 		QualifiedTypeNode type = module.getTypes().get(scopedName);
 
 		// If not found, try to resolve as locally defined extern

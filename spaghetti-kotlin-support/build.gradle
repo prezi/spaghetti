@@ -1,0 +1,12 @@
+dependencies {
+	compile "org.apache.commons:commons-lang3:3.4"
+}
+
+task extractKotlinJsLib(type: Copy) {
+	from zipTree("${System.getenv("KOTLIN_HOME")}/lib/kotlin-jslib.jar")
+	into "${buildDir}/kotlinjs"
+}
+
+integTest {
+	dependsOn extractKotlinJsLib
+}

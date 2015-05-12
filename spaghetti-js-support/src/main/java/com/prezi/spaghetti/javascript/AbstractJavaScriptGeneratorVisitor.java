@@ -1,15 +1,15 @@
 package com.prezi.spaghetti.javascript;
 
-import com.google.common.base.Strings;
 import com.prezi.spaghetti.ast.QualifiedNode;
 import com.prezi.spaghetti.ast.StringModuleVisitorBase;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
 abstract public class AbstractJavaScriptGeneratorVisitor extends StringModuleVisitorBase {
 	protected static <T extends QualifiedNode> String embedInPackageStructure(T node, PackagedGenerator<T> generator) {
-		List<String> levels = Arrays.asList(node.getQualifiedName().namespace.split("\\."));
+		List<String> levels = Arrays.asList(node.getQualifiedName().getNamespace().split("\\."));
 		String topLevel = levels.get(0);
 		return "var " + topLevel + ";\n"
 				+ "(function (" + topLevel + ") {\n"
@@ -18,7 +18,7 @@ abstract public class AbstractJavaScriptGeneratorVisitor extends StringModuleVis
 	}
 
 	private static <T extends QualifiedNode> String defineLevel(T node, int indentLevel, String parent, List<String> remainingLevels, PackagedGenerator<T> generator) {
-		final String indent = Strings.repeat("\t", indentLevel);
+		final String indent = StringUtils.repeat("\t", indentLevel);
 		String result;
 		if (remainingLevels.isEmpty()) {
 			result = generator.generate(node, indentLevel, parent);

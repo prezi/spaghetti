@@ -42,7 +42,7 @@ ${node.methods*.accept(new MethodVisitor(node)).join("")}
 			return \
 """	#if !spaghetti_noinline @:extern inline #end
 	public static function ${node.name}${typeParams}(${params}):${returnType} {
-		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.alias}.__module.${node.name}(${paramNames});
+		${node.returnType instanceof VoidTypeReference ? "" : "return "}${module.alias}.__module.${node.name}(${paramNames});
 	}
 """
 		}

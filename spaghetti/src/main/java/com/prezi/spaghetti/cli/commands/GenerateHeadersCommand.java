@@ -2,7 +2,7 @@ package com.prezi.spaghetti.cli.commands;
 
 import com.prezi.spaghetti.cli.SpaghettiCliException;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.Generators;
+import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.generator.HeaderGenerator;
 import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
 import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;

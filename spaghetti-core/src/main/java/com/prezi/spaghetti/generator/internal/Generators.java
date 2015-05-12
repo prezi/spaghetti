@@ -1,9 +1,13 @@
-package com.prezi.spaghetti.generator;
+package com.prezi.spaghetti.generator.internal;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+import com.prezi.spaghetti.generator.GeneratorService;
+import com.prezi.spaghetti.generator.HeaderGenerator;
+import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
+import com.prezi.spaghetti.generator.StubGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

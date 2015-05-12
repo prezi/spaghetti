@@ -9,7 +9,7 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 
 import java.util.ArrayList;
 
-public abstract class AbstractNode implements AstNode {
+public abstract class AbstractNode implements AstNodeInternal {
 	private final Location location;
 
 	protected AbstractNode(Location location) {

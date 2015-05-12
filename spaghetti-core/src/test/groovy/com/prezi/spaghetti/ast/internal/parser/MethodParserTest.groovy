@@ -1,16 +1,16 @@
 package com.prezi.spaghetti.ast.internal.parser
 
 import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.MethodParameterNode
-import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterNode
-import com.prezi.spaghetti.ast.VoidTypeReference
+import com.prezi.spaghetti.ast.internal.DefaultFQName
 import com.prezi.spaghetti.ast.internal.MethodNodeInternal
 import com.prezi.spaghetti.ast.internal.NamedNodeSetInternal
 import com.prezi.spaghetti.ast.internal.NodeSets
+import com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal
+import com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal
 
 class MethodParserTest extends AstSpecification {
 	def "parse simple"() {
@@ -26,9 +26,9 @@ class MethodParserTest extends AstSpecification {
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
-		1 * method.setReturnType({ it == PrimitiveTypeReference.INT })
-		1 * params.add({ it instanceof MethodParameterNode && it.name == "a" && it.type == PrimitiveTypeReference.INT }, _)
-		1 * params.add({ it instanceof MethodParameterNode && it.name == "b" && it.type == PrimitiveTypeReference.INT }, _)
+		1 * method.setReturnType({ it == PrimitiveTypeReferenceInternal.INT })
+		1 * params.add({ it instanceof MethodParameterNode && it.name == "a" && it.type == PrimitiveTypeReferenceInternal.INT }, _)
+		1 * params.add({ it instanceof MethodParameterNode && it.name == "b" && it.type == PrimitiveTypeReferenceInternal.INT }, _)
 		0 * _
 	}
 
@@ -76,7 +76,7 @@ class MethodParserTest extends AstSpecification {
 
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameter", [ typeParam ].toSet())
-		_ * typeParam.qualifiedName >> FQName.fromString("T")
+		_ * typeParam.qualifiedName >> DefaultFQName.fromString("T")
 		_ * method.parameters >> params
 		1 * method.setReturnType({ it.type == typeParam })
 		1 * params.add({ it instanceof MethodParameterNode && it.name == "t" && it.type.type == typeParam }, _)
@@ -96,21 +96,21 @@ class MethodParserTest extends AstSpecification {
 		then:
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
-		1 * method.setReturnType({ it == VoidTypeReference.VOID })
+		1 * method.setReturnType({ it == VoidTypeReferenceInternal.VOID })
 		1 * params.add({
 			it instanceof MethodParameterNode &&
 					it.name == "a" &&
-					it.type == PrimitiveTypeReference.STRING &&
+					it.type == PrimitiveTypeReferenceInternal.STRING &&
 					it.optional == false}, _)
 		1 * params.add({
 			it instanceof MethodParameterNode &&
 					it.name == "b" &&
-					it.type == PrimitiveTypeReference.INT &&
+					it.type == PrimitiveTypeReferenceInternal.INT &&
 					it.optional == true}, _)
 		1 * params.add({
 			it instanceof MethodParameterNode &&
 					it.name == "c" &&
-					it.type == PrimitiveTypeReference.STRING &&
+					it.type == PrimitiveTypeReferenceInternal.STRING &&
 					it.optional == true}, _)
 		0 * _
 	}

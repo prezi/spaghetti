@@ -8,31 +8,6 @@ import java.util.Set;
  */
 public interface ModuleBundle extends Comparable<ModuleBundle> {
 	/**
-	 * Path of the module definition inside the bundle.
-	 */
-	public static final String DEFINITION_PATH = "module.def";
-
-	/**
-	 * Path of the source map inside the bundle.
-	 */
-	public static final String SOURCE_MAP_PATH = "module.map";
-
-	/**
-	 * Path of the module's JavaScript code inside the bundle.
-	 */
-	public static final String JAVASCRIPT_PATH = "module.js";
-
-	/**
-	 * Path of the metadata file inside the bundle.
-	 */
-	public static final String MANIFEST_MF_PATH = "META-INF/MANIFEST.MF";
-
-	/**
-	 * Path of the resources directory inside the bundle.
-	 */
-	public static final String RESOURCES_PREFIX = "resources/";
-
-	/**
 	 * Returns the module's name.
 	 */
 	String getName();

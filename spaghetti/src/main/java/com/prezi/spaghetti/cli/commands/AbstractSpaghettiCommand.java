@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.collect.Lists;
-import com.prezi.spaghetti.bundle.ModuleBundleLoader;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleLoader;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import io.airlift.command.Option;
 

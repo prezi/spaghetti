@@ -1,0 +1,25 @@
+apply plugin: "application"
+
+dependencies {
+	compile project(":spaghetti-core")
+	compile "io.airlift:airline:0.6"
+	compile "ch.qos.logback:logback-classic:1.1.2"
+	runtime rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
+}
+
+mainClassName = "com.prezi.spaghetti.cli.SpaghettiCli"
+
+build { dependsOn installApp }
+
+configure(applicationDistribution) {
+	from(rootProject.file("README.md")) {
+		into "/"
+	}
+	from(rootProject.file("LICENSE.txt")) {
+		into "/"
+	}
+}
+
+distTar {
+	compression Compression.GZIP
+}

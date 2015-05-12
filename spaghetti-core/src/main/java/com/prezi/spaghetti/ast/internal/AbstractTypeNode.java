@@ -2,13 +2,12 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
-import com.prezi.spaghetti.ast.TypeNode;
 
-public abstract class AbstractTypeNode extends AbstractNamedNode implements TypeNode {
+public abstract class AbstractTypeNode extends AbstractNamedNode implements TypeNodeInternal {
 	private final FQName qualifiedName;
 
 	public AbstractTypeNode(Location location, FQName qualifiedName) {
-		super(location, qualifiedName.localName);
+		super(location, qualifiedName.getLocalName());
 		this.qualifiedName = qualifiedName;
 	}
 

@@ -8,6 +8,7 @@ import com.prezi.spaghetti.ast.ReferableTypeNode
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeNode
 import com.prezi.spaghetti.ast.TypeParameterNode
+import com.prezi.spaghetti.ast.internal.DefaultFQName
 import com.prezi.spaghetti.ast.internal.NodeSets
 import com.prezi.spaghetti.ast.internal.parser.AbstractParser
 import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
@@ -45,15 +46,15 @@ class AbstractGeneratorSpecification extends Specification {
 	protected TypeParameterNode mockTypeParameter(String name = null) {
 		return Mock(TypeParameterNode) { TypeParameterNode it ->
 			it.name >> name
-			it.qualifiedName >> (name == null ? null : FQName.fromString(name))
+			it.qualifiedName >> (name == null ? null : DefaultFQName.fromString(name))
 		}
 	}
 
 	private static FQName qName(String qualifiedName, String name) {
 		if (qualifiedName != null) {
-			return FQName.fromString(qualifiedName)
+			return DefaultFQName.fromString(qualifiedName)
 		} else {
-			return FQName.fromString("com.example.test", name)
+			return DefaultFQName.fromString("com.example.test", name)
 		}
 	}
 

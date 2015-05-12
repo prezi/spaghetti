@@ -1,10 +1,10 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.StructNode;
 import com.prezi.spaghetti.ast.StructReference;
 import com.prezi.spaghetti.ast.TypeNode;
 import com.prezi.spaghetti.ast.TypeReference;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultPropertyNode;
 import com.prezi.spaghetti.ast.internal.DefaultStructNode;
@@ -18,7 +18,7 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 	}
 
 	private static DefaultStructNode createNode(Locator locator, ModuleParser.StructDefinitionContext context, String moduleName) {
-		DefaultStructNode node = new DefaultStructNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		DefaultStructNode node = new DefaultStructNode(locator.locate(context.Name()), DefaultFQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 

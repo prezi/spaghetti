@@ -13,9 +13,9 @@ import com.prezi.spaghetti.ast.StructReference;
 
 import java.util.Collections;
 
-public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNodeInternal, DocumentedNodeInternal {
+public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 	private StructReference superStruct;
 	private final NamedNodeSetInternal<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
 	private final NamedNodeSetInternal<MethodNode> methods = NodeSets.newNamedNodeSet("method");

@@ -9,7 +9,7 @@ import spock.lang.Unroll
 
 @SuppressWarnings(["GroovyAssignabilityCheck"])
 class NodeSetTest extends Specification {
-	private static FQName qn(String name) { return FQName.fromString(name) }
+	private static FQName qn(String name) { return DefaultFQName.fromString(name) }
 
 	@Unroll
 	def "Contains and get: #value, #value2"() {

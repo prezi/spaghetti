@@ -1,11 +1,13 @@
-package com.prezi.spaghetti.definition;
+package com.prezi.spaghetti.definition.internal;
 
 import com.google.common.base.Function;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.prezi.spaghetti.ast.ModuleDefinitionSource;
 import com.prezi.spaghetti.ast.ModuleNode;
+import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource;
 import com.prezi.spaghetti.ast.internal.parser.AstParserException;
 import com.prezi.spaghetti.ast.internal.parser.MissingTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser;
@@ -13,6 +15,7 @@ import com.prezi.spaghetti.ast.internal.parser.ModuleTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.internal.DefaultModuleConfiguration;
 
 import java.io.IOException;
@@ -42,7 +45,7 @@ public final class ModuleConfigurationParser {
 			@Override
 			public ModuleDefinitionSource apply(ModuleBundle bundle) {
 				try {
-					return ModuleDefinitionSource.fromBundle(bundle);
+					return DefaultModuleDefinitionSource.fromString("module: " + bundle.getName(), bundle.getDefinition());
 				} catch (IOException e) {
 					throw Throwables.propagate(e);
 				}

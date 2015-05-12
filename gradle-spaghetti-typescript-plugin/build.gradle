@@ -1,0 +1,3 @@
+dependencies {
+	compile "com.prezi.typescript:gradle-typescript-plugin:2.2.5"
+}

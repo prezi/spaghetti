@@ -3,7 +3,7 @@ package com.prezi.spaghetti.ast.internal.parser
 import com.google.common.collect.Iterables
 import com.prezi.spaghetti.ast.AstSpecification
 
-import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
+import static com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal.INT
 
 class InterfaceParserTest extends AstSpecification {
 	def "parse"() {

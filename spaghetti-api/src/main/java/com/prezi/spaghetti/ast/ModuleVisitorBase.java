@@ -1,9 +1,5 @@
 package com.prezi.spaghetti.ast;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,7 +130,7 @@ public class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 		return result;
 	}
 
-	private final LinkedList<AstNode> stackInternal = Lists.newLinkedList();
+	private final LinkedList<AstNode> stackInternal = new LinkedList<AstNode>();
 	protected final List<AstNode> stack = Collections.unmodifiableList(stackInternal);
 
 	protected AstNode getParentNode() {
@@ -159,12 +155,14 @@ public class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 
 	@SuppressWarnings("unchecked")
 	private static <N extends AstNode> N findAncestorInternal(List<AstNode> stack, final Class<N> type) {
-		return (N) Iterables.find(stack, new Predicate<AstNode>() {
-			@Override
-			public boolean apply(AstNode input) {
-				return type.isAssignableFrom(input.getClass());
+		N result = null;
+		for (AstNode node : stack) {
+			if (type.isAssignableFrom(node.getClass())) {
+				result = (N) node;
+				break;
 			}
-		}, null);
+		}
+		return result;
 	}
 
 	@Override

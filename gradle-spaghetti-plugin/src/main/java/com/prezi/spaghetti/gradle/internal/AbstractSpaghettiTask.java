@@ -4,8 +4,9 @@ import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.definition.ModuleConfigurationParser;
-import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser;
+import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource;
 import com.prezi.spaghetti.internal.DeprecationNagger;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.internal.ConventionTask;
@@ -93,7 +94,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	public ModuleConfiguration readConfig(File definition) throws IOException {
 		ModuleDefinitionSource definitionSource;
 		try {
-			definitionSource = ModuleDefinitionSource.fromFile(definition);
+			definitionSource = DefaultModuleDefinitionSource.fromFile(definition);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

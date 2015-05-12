@@ -1,17 +1,17 @@
 package com.prezi.spaghetti.config
 
+import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.ast.internal.parser.AstParserException
-import com.prezi.spaghetti.definition.ModuleConfigurationParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser
 import spock.lang.Specification
 
 class ModuleConfigurationParserTest extends Specification {
 	def "Loaded multiple times"() {
 		when:
 		ModuleConfigurationParser.parse(
-				ModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test"),
-				[ModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test")],
-				[ModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test")]
+				DefaultModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test"),
+				[DefaultModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test")],
+				[DefaultModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test")]
 		)
 
 		then:
@@ -22,9 +22,9 @@ class ModuleConfigurationParserTest extends Specification {
 	def "Dependency accessed from another dependency"() {
 		when:
 		def config = ModuleConfigurationParser.parse(
-				ModuleDefinitionSource.fromString("A", "module com.example.testA"),
-				[ModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }")],
-				[ModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
+				DefaultModuleDefinitionSource.fromString("A", "module com.example.testA"),
+				[DefaultModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }")],
+				[DefaultModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
 		)
 		then:
 		config.localModule.name == "com.example.testA"

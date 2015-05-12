@@ -49,7 +49,7 @@ ${methodDefinitions}
 		private static String createReturnCall(MethodNode node) {
 			String returnCall
 			def returnType = node.returnType
-			if (returnType == VoidTypeReference.VOID) {
+			if (returnType instanceof VoidTypeReference) {
 				returnCall = "";
 			} else {
 				if (returnType instanceof PrimitiveTypeReference && returnType.arrayDimensions == 0) {

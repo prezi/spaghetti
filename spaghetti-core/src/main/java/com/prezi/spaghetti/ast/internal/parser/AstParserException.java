@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.ast.ModuleDefinitionSource;
 
 public class AstParserException extends RuntimeException {
 	public AstParserException(ModuleDefinitionSource source, String message) {

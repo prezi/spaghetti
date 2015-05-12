@@ -1,12 +1,12 @@
 package com.prezi.spaghetti.javascript;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 import com.prezi.spaghetti.ast.ConstEntryNode;
 import com.prezi.spaghetti.ast.ConstNode;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JavaScriptConstGeneratorVisitor extends AbstractJavaScriptGeneratorVisitor {
 
@@ -15,16 +15,19 @@ public class JavaScriptConstGeneratorVisitor extends AbstractJavaScriptGenerator
 		return embedInPackageStructure(node, new PackagedGenerator<ConstNode>() {
 			@Override
 			public String generate(ConstNode node, int indentLevel, String parent) {
-				final String indent = Strings.repeat("\t", indentLevel);
-				String entries = Joiner.on(",\n").join(Collections2.transform(node.getEntries(), new Function<ConstEntryNode, String>() {
-					@Override
-					public String apply(ConstEntryNode entry) {
-						return indent + "\t" + entry.accept(JavaScriptConstGeneratorVisitor.this);
-					}
-				}));
-				return indent + parent + "." + node.getName() + " = {\n"
-						+ entries + "\n"
-						+ indent + "};\n";
+				final String indent = StringUtils.repeat("\t", indentLevel);
+				List<String> entries = new ArrayList<String>();
+				for (ConstEntryNode entry : node.getEntries()) {
+					entries.add(indent + "\t" + entry.accept(JavaScriptConstGeneratorVisitor.this));
+				}
+				return String.format(
+						"%s%s.%s = {\n" +
+						"%s\n" +
+						"%s};\n",
+						indent, parent, node.getName(),
+						StringUtils.join(entries, ",\n"),
+						indent
+				);
 			}
 		});
 	}
@@ -32,12 +35,12 @@ public class JavaScriptConstGeneratorVisitor extends AbstractJavaScriptGenerator
 	@Override
 	public String visitConstEntryNode(ConstEntryNode node) {
 		String value = toPrimitiveString(node.getValue());
-		return "\"" + node.getName() + "\": " + value;
+		return String.format("\"%s\": %s", node.getName(), value);
 	}
 
 	public static String toPrimitiveString(Object value) {
 		if (value instanceof String) {
-			return "\"" + StringEscapeUtils.escapeJava((String) value) + "\"";
+			return String.format("\"%s\"", StringEscapeUtils.escapeJava((String) value));
 		} else {
 			return String.valueOf(value);
 		}

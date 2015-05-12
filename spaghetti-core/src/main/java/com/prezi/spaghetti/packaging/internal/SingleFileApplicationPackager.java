@@ -7,7 +7,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapper;

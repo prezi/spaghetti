@@ -1,9 +1,10 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.PrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultConstEntryNode;
 import com.prezi.spaghetti.ast.internal.DefaultConstNode;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
+import com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 
 public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefinitionContext, DefaultConstNode> {
@@ -12,7 +13,7 @@ public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefi
 	}
 
 	private static DefaultConstNode createNode(Locator locator, ModuleParser.ConstDefinitionContext context, String moduleName) {
-		DefaultConstNode node = new DefaultConstNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		DefaultConstNode node = new DefaultConstNode(locator.locate(context.Name()), DefaultFQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 		return node;
@@ -28,16 +29,16 @@ public class ConstParser extends AbstractModuleTypeParser<ModuleParser.ConstDefi
 			Object value;
 
 			if (entryDeclCtx.Boolean() != null) {
-				type = PrimitiveTypeReference.BOOL;
+				type = PrimitiveTypeReferenceInternal.BOOL;
 				value = Primitives.parseBoolean(entryDeclCtx.Boolean().getSymbol());
 			} else if (entryDeclCtx.Integer() != null) {
-				type = PrimitiveTypeReference.INT;
+				type = PrimitiveTypeReferenceInternal.INT;
 				value = Primitives.parseInt(entryDeclCtx.Integer().getSymbol());
 			} else if (entryDeclCtx.Float() != null) {
-				type = PrimitiveTypeReference.FLOAT;
+				type = PrimitiveTypeReferenceInternal.FLOAT;
 				value = Primitives.parseDouble(entryDeclCtx.Float().getSymbol());
 			} else if (entryDeclCtx.String() != null) {
-				type = PrimitiveTypeReference.STRING;
+				type = PrimitiveTypeReferenceInternal.STRING;
 				value = Primitives.parseString(entryDeclCtx.String().getSymbol());
 			} else {
 				throw new InternalAstParserException(entryDeclCtx, "Unknown primitive type");

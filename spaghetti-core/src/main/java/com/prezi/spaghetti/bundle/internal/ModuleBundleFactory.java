@@ -1,7 +1,6 @@
-package com.prezi.spaghetti.bundle;
+package com.prezi.spaghetti.bundle.internal;
 
-import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle;
-import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
+import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.structure.OutputType;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryProcessor;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
