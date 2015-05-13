@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static com.prezi.spaghetti.gradle.internal.TextFileUtils.getText;
@@ -25,6 +27,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 	private ApplicationType type = ApplicationType.COMMON_JS;
 	private Boolean execute = null;
 	private File outputDirectory;
+	private Map<String, String> externalDependencies = Maps.newLinkedHashMap();
 
 	@Input
 	@Optional
@@ -123,6 +126,21 @@ public class PackageApplication extends AbstractSpaghettiTask {
 		setOutputDirectory(outputDirectory);
 	}
 
+	@Input
+	public Map<String, String> getExternalDependencies() {
+		return externalDependencies;
+	}
+
+	public void setExternalDependencies(Map<String, String> externalDependencies) {
+		this.externalDependencies = externalDependencies;
+	}
+	public void externalDependencies(Map<String, String> externalDependencies) {
+		this.externalDependencies.putAll(externalDependencies);
+	}
+	public void externalDependency(String name, String path) {
+		this.externalDependencies.put(name, path);
+	}
+
 	@SuppressWarnings("UnusedDeclaration")
 	public File getApplicationFile() {
 		return new File(getOutputDirectory(), getApplicationName());
@@ -152,7 +170,8 @@ public class PackageApplication extends AbstractSpaghettiTask {
 				getMainModule(),
 				getExecute(),
 				getText(getPrefixes()),
-				getText(getSuffixes())
+				getText(getSuffixes()),
+				getExternalDependencies()
 		));
 	}
 }

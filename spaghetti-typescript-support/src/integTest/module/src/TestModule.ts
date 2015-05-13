@@ -1,5 +1,7 @@
 module spaghetti.test {
 
+declare var libWithVersion: any;
+
 export class TestModule {
 	static addTwoNumbers(a:number, b:number):number {
 		return a + b;
@@ -36,5 +38,9 @@ export class TestModule {
 	static returnPointViaCallback(x:number, y:number, z:number, callback:(point:Point3d)=>void) {
 		callback({x: x, y: y, z: z});
 	}
+
+    static getExternalDependencyVersion(): string {
+		return libWithVersion.version;
+    }
 }
 }

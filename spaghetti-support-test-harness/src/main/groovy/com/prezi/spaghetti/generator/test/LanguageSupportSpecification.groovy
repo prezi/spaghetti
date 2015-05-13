@@ -47,7 +47,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, ModuleBundleSet.EMPTY)
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
-		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text)
+		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text, [], [])
 
 		// Build the module
 		def testModuleDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
@@ -68,7 +68,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		processedJs << processJavaScript(bundleProcessor, moduleConfig, compiledJs.text)
 
 		// Make the module bundle
-		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, testDependencyModule.name)
+		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion"])
 
 		// Make the app bundle
 		def testAppDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
@@ -80,7 +80,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def appBundle = bundle(appModule.name,
 				testAppDefinition.contents,
 				processedAppJs,
-				module.name, testDependencyModule.name)
+				[module.name, testDependencyModule.name],
+                [])
 
 		// Package the application
 		def appDir = new File(rootDir, "application")
@@ -90,7 +91,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 				appModule.name,
 				true,
 				[],
-				[]
+				[],
+				["libWithVersion": "chai"]
 		)
 		ApplicationType.COMMON_JS.packager.packageApplicationDirectory(appDir, applicationPackagingParams)
 
@@ -116,6 +118,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 	}
 
 	public static void executeIn(File dir, List<?> args) {
+		println "Executing ${args.join(" ")}"
 		def process = args.execute((String[])null, dir)
 		process.waitForProcessOutput((OutputStream) System.out, System.err)
 		if (process.exitValue() != 0) {
@@ -129,7 +132,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		return processor.processModuleJavaScript(bundleProcessorParams, javaScript)
 	}
 
-	private ModuleBundle bundle(String name, String definition, String javaScript, String... dependentModules) {
+	private ModuleBundle bundle(String name, String definition, String javaScript, Collection<String> moduleDependencies, Collection<String> externalDependencies) {
 		def bundleDir = new File(rootDir, "bundles/" + name)
 		return ModuleBundleFactory.createDirectory(bundleDir, new ModuleBundleParameters(
 				name,
@@ -138,7 +141,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 				null,
 				InternalGeneratorUtils.bundleJavaScript(javaScript),
 				null,
-				dependentModules as SortedSet,
+				moduleDependencies,
+				externalDependencies,
 				null
 		));
 	}

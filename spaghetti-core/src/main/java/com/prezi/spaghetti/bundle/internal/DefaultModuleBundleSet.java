@@ -1,13 +1,17 @@
 package com.prezi.spaghetti.bundle.internal;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ForwardingSortedSet;
 import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> implements ModuleBundleSet {
@@ -41,4 +45,16 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	public SortedSet<ModuleBundle> getTransitiveBundles() {
 		return transitiveBundles;
 	}
+
+	@Override
+	public SortedMap<String, String> getExternalDependencies() {
+		SortedMap<String, String> externals = Maps.newTreeMap();
+		for (ModuleBundle bundle : this) {
+			for (String external : bundle.getExternalDependencies()) {
+				externals.put(bundle.getName(), external);
+			}
+		}
+		return externals;
+	}
+
 }
