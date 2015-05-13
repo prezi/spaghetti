@@ -1,7 +1,6 @@
-package com.prezi.spaghetti.bundle
+package com.prezi.spaghetti.bundle.internal
 
-import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle
-import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
+import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.internal.Version
 import com.prezi.spaghetti.structure.internal.FileProcessor
 import com.prezi.spaghetti.structure.internal.IOAction
@@ -29,7 +28,8 @@ class ModuleBundleTest extends Specification {
 						"http://git.example.com/test",
 						"console.log('hello');",
 						"sourcemap",
-						["com.example.alma", "com.example.bela"] as SortedSet,
+						["com.example.alma", "com.example.bela"],
+						["react", "\$"] as SortedSet,
 						null)
 		)
 
@@ -48,6 +48,7 @@ class ModuleBundleTest extends Specification {
 				"Module-Name: test",
 				"Module-Version: 3.7",
 				"Module-Dependencies: com.example.alma,com.example.bela",
+				"External-Dependencies: \$,react",
 				"Module-Source: http://git.example.com/test",
 		].sort()
 	}
@@ -84,6 +85,7 @@ class ModuleBundleTest extends Specification {
 					"Spaghetti-Version: 2.5",
 					"Module-Name: com.example.test",
 					"Module-Version: 3.7",
+					"External-Dependencies: react,\$",
 					"Module-Dependencies: com.example.alma,com.example.bela",
 					"Module-Source: http://git.example.com/test",
 					"" // Must have newline at end of manifest
@@ -93,7 +95,8 @@ class ModuleBundleTest extends Specification {
 		bundle.name == "com.example.test"
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
-		bundle.dependentModules.sort() == ["com.example.alma", "com.example.bela"]
+		bundle.dependentModules == (["com.example.alma", "com.example.bela"] as SortedSet)
+		bundle.externalDependencies == (["\$", "react"] as SortedSet)
 		0 * _
 	}
 
@@ -152,7 +155,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", null, [].toSet(), [].toSet())
+		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, [] as SortedSet, [] as Set)
 	}
 
 	private static String get(IOAction<OutputStream> action) {

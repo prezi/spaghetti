@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.internal.Version;
@@ -28,6 +29,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -65,10 +67,11 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies");
+	private static final Attributes.Name MANIFEST_ATTR_EXTERNAL_DEPENDENCIES = new Attributes.Name("External-Dependencies");
 	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> resourcePaths) {
-		super(name, version, sourceBaseUrl, dependentModules, resourcePaths);
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, SortedSet<String> externalDependencies, Set<String> resourcePaths) {
+		super(name, version, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
 		this.source = source;
 	}
 
@@ -107,6 +110,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			String url = params.sourceBaseUrl;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_SOURCE, url != null ? url : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_DEPENDENCIES, Joiner.on(',').join(params.dependentModules));
+			manifest.getMainAttributes().put(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES, Joiner.on(',').join(params.externalDependencies));
 			builder.appendFile(MANIFEST_MF_PATH, new IOAction<OutputStream>() {
 				@Override
 				public void execute(OutputStream out) throws IOException {
@@ -137,7 +141,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			StructuredProcessor source = builder.create();
-			return new DefaultModuleBundle(source, params.name, params.version, params.sourceBaseUrl, params.dependentModules, Collections.unmodifiableSet(resourcePaths));
+			return new DefaultModuleBundle(source, params.name, params.version, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
 		} finally {
 			builder.close();
 		}
@@ -203,7 +207,13 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		String moduleDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES);
 		Set<String> dependentModules = !Strings.isNullOrEmpty(moduleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
-		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, Collections.unmodifiableSet(resourcePaths));
+
+		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
+		SortedSet<String> externalDependencies = !Strings.isNullOrEmpty(externalDependenciesString) ?
+				Sets.newTreeSet(Arrays.asList(externalDependenciesString.split(","))) :
+				ImmutableSortedSet.<String>of();
+
+		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}
 
 	private String getString(String path) throws IOException {

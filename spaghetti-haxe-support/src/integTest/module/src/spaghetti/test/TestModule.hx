@@ -40,4 +40,8 @@ class TestModule {
 	public static function returnPointViaCallback(x:Int, y:Int, z:Int, callback:Point3d->Void):Void {
 		callback({x: x, y: y, z: z});
 	}
+
+	public static function getExternalDependencyVersion(): String {
+	    return untyped __js__('libWithVersion.version');
+	}
 }

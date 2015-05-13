@@ -23,6 +23,9 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
@@ -34,6 +37,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private File resourcesDirectoryInternal;
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
+	private Set<String> externalDependencies = Sets.newLinkedHashSet();
 
 	@InputFile
 	public File getInputFile() {
@@ -159,6 +163,24 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		this.suffixes(suffixes);
 	}
 
+	@Input
+	public Set<String> getExternalDependencies() {
+		return externalDependencies;
+	}
+
+	public void setExternalDependencies(Set<String> externalDependencies) {
+		this.externalDependencies = externalDependencies;
+	}
+	public void externalDependencies(Collection<String> externalDependencies) {
+		this.externalDependencies.addAll(externalDependencies);
+	}
+	public void externalDependencies(String... externalDependencies) {
+		externalDependencies(Arrays.asList(externalDependencies));
+	}
+	public void externalDependency(String... externalDependencies) {
+		externalDependencies(externalDependencies);
+	}
+
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException {
 		ModuleConfiguration config = readConfig(getDefinition());
@@ -199,6 +221,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 				javaScript,
 				sourceMap,
 				dependentModuleNames,
+				externalDependencies,
 				resourceDir
 		));
 	}

@@ -2,6 +2,7 @@ package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -59,6 +61,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 	@Option(name = {"-r", "--resources"},
 			description = "Resources directory")
 	private File resourcesDirectory;
+
+	@Option(name = {"-e", "--external-dependency"},
+			description = "External dependency")
+	private List<String> externalDependencies = Lists.newArrayList();
 
 	//
 	// Obfuscation parameters
@@ -118,6 +124,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				processedJavaScript,
 				sourceMap,
 				dependentModules,
+				externalDependencies,
 				resourcesDirectory);
 
 		ModuleBundleFactory.create(type, output, params);

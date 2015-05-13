@@ -49,3 +49,8 @@ Point2d getPointFromDependencyModuleViaCallback(int x, int y)
  * Construct a new Point3d with the given values, and pass it to the callback.
  */
 void returnPointViaCallback(int x, int y, int z, Point3d->void callback)
+
+/**
+ * Call into external dependency to get its version.
+ */
+string getExternalDependencyVersion()

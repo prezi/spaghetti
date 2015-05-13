@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.packaging.internal;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
@@ -15,7 +14,7 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 	@Override
 	public String wrap(ModuleWrapperParameters params) throws IOException {
 		Map<String, String> modules = Maps.newLinkedHashMap();
-		int index = 0;
+		int index = params.bundle.getExternalDependencies().size();
 		for (String dependency : Sets.newTreeSet(params.bundle.getDependentModules())) {
 			modules.put(dependency, "dependencies[" + index + "]");
 			index++;
@@ -23,21 +22,28 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 
 		StringBuilder result = new StringBuilder();
 		result.append("function(){");
-		wrapModuleObject(result, params, "var baseUrl=__dirname;", modules);
+		StringBuilder externalDependenciesDeclaration = new StringBuilder();
+		int externalDependencyIdx = 0;
+		for (String externalDependency : params.bundle.getExternalDependencies()) {
+			externalDependenciesDeclaration.append(String.format("var %s=arguments[%d];", externalDependency, externalDependencyIdx));
+			externalDependencyIdx++;
+		}
+		wrapModuleObject(result, params, "var baseUrl=__dirname;", externalDependenciesDeclaration, modules);
 		result.append("}");
 		return result.toString();
 	}
 
 	@Override
-	public String makeApplication(Map<String, Set<String>> dependencyTree, final String mainModule, boolean execute) {
-		StringBuilder result = new StringBuilder();
-		if (!Strings.isNullOrEmpty(mainModule)) {
-			result.append("var mainModule=modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"];");
-			if (execute) {
-				result.append("mainModule[\"main\"]();");
-			}
-		}
+	protected StringBuilder makeConfig(StringBuilder result, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
+		return result;
+	}
 
-		return result.toString();
+	@Override
+	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+		result.append("var mainModule=modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"];");
+		if (execute) {
+			result.append("mainModule[\"main\"]();");
+		}
+		return result;
 	}
 }
