@@ -5,17 +5,16 @@ import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.internal.DefaultEnumNode
 import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode
 import com.prezi.spaghetti.ast.internal.parser.AstParserException
-import spock.lang.Ignore
 
 import static com.prezi.spaghetti.generator.EnumGeneratorUtils.calculateEnumValues
 
 class EnumGeneratorUtilsTest extends AstSpecification {
-	def "empty enum works"() {
+	def "empty enum is allowed"() {
 		expect:
 		calculateEnumValues(mockEnum([:])) == [:]
 	}
 
-	def "simple enum without values works"() {
+	def "enum with fully implicit values has assigned values by position"() {
 		expect:
 		calculateEnumValues(mockEnum(
 		        alma:null,
@@ -28,50 +27,33 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 		]
 	}
 
-	def "simple enum with partial values works"() {
+	def "enum with fully explicit values overrides implicit values"() {
 		expect:
 		calculateEnumValues(mockEnum(
 		        alma:1,
-				bela:null,
-				geza:4
+				bela:2,
+				geza:3
 		)) == [
 		        alma:1,
 				bela:2,
-				geza:4
+				geza:3
 		]
 	}
 
-	@Ignore("Let's figure out what to do here")
-	def "backwards values work"() {
+	def "explicit values can have arbitrary order"() {
 		expect:
 		calculateEnumValues(mockEnum(
 		        alma:3,
-				bela:2,
-				geza:1
+				bela:7,
+				geza:0
 		)) == [
 		        alma:3,
-				bela:2,
-				geza:1
+				bela:7,
+				geza:0
 		]
 	}
 
-	@Ignore("Let's figure out what to do here")
-	def "backwards with partial values work"() {
-		expect:
-		calculateEnumValues(mockEnum(
-		        alma:3,
-				bela:2,
-				geza:1,
-				lajos:null
-		)) == [
-		        alma:3,
-				bela:2,
-				geza:1,
-				lajos:4
-		]
-	}
-
-	def "simple enum with invalid values throws error"() {
+	def "a mix of implicit and explicit values is not permitted"() {
 		when:
 		calculateEnumValues(mockEnum(
 		        alma:null,
@@ -80,7 +62,18 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 		))
 		then:
 		def ex = thrown AstParserException
-		ex.message == "Parse error in mockEnum value is wrong"
+		ex.message == "Parse error in mockMixed implicit and explicit entries in enum test"
+	}
+
+	def "duplicate values are not permitted"() {
+		when:
+		calculateEnumValues(mockEnum(
+				alma:1,
+				bela:1
+		))
+		then:
+		def ex = thrown AstParserException
+		ex.message == "Parse error in mockDuplicate value in enum test"
 	}
 
 	def mockEnum(Map<String, Integer> values) {
