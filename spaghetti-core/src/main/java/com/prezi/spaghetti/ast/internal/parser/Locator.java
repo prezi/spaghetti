@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
 import com.prezi.spaghetti.ast.Location;
-import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.ast.internal.DefaultLocation;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;

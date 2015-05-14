@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.ast
 
 import com.prezi.spaghetti.ast.internal.DefaultLocation
-import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.ast.internal.parser.Locator
 import com.prezi.spaghetti.ast.internal.parser.TypeResolutionContext
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver

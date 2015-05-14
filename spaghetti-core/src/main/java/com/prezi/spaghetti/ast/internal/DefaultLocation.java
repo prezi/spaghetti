@@ -2,7 +2,8 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Preconditions;
 import com.prezi.spaghetti.ast.Location;
-import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
 
 public final class DefaultLocation implements Location {
 	public static final Location INTERNAL = new DefaultLocation(DefaultModuleDefinitionSource.fromString("internal", ""), 0, 0);

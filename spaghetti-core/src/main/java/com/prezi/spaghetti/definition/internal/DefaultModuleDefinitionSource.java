@@ -1,9 +1,9 @@
-package com.prezi.spaghetti.ast.internal;
+package com.prezi.spaghetti.definition.internal;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
-import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.io.File;
 import java.io.IOException;

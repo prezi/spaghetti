@@ -3,8 +3,8 @@ package com.prezi.spaghetti.cli.commands;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser;
-import com.prezi.spaghetti.ast.ModuleDefinitionSource;
-import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
 import io.airlift.command.Option;
 
 import java.io.File;

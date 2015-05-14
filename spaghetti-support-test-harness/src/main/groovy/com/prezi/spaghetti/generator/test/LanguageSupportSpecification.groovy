@@ -10,7 +10,7 @@ import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser
-import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.generator.HeaderGenerator
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor

@@ -2,7 +2,7 @@ package com.prezi.spaghetti.ast.internal.parser
 
 import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.QualifiedTypeNode
-import com.prezi.spaghetti.ast.internal.DefaultModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import com.prezi.spaghetti.internal.grammar.ModuleParser
 import org.antlr.v4.runtime.BaseErrorListener

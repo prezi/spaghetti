@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.ast;
+package com.prezi.spaghetti.definition;
 
 public interface ModuleDefinitionSource {
 	String getLocation();

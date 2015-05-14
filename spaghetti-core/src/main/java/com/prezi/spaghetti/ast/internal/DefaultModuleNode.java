@@ -8,7 +8,7 @@ import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ImportNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
-import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 

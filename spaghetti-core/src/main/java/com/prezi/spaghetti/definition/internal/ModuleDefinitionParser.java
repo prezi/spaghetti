@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.definition.internal;
 
-import com.prezi.spaghetti.ast.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.internal.grammar.ModuleLexer;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.ANTLRInputStream;
