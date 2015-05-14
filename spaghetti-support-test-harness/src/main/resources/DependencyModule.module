@@ -6,6 +6,12 @@ enum Fruit {
 	Plum
 }
 
+enum Prime {
+	First = 2
+	Second = 3
+	Third = 5
+}
+
 struct Point2d {
 	int x
 	int y

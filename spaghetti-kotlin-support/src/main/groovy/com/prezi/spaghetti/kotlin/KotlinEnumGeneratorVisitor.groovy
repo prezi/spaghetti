@@ -2,38 +2,36 @@ package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
+import com.prezi.spaghetti.generator.EnumGeneratorUtils
 
 class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 	@Override
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name
 
+		def namesToValues = EnumGeneratorUtils.calculateEnumValues(node)
+		def valueVisitor = new EnumValueVisitor(enumName, namesToValues)
 		def values = []
-		node.values.eachWithIndex { value, index ->
-			values.add value.accept(new EnumValueVisitor(enumName, index))
+		node.values.each { value ->
+			values.add value.accept(valueVisitor)
 		}
 
 		return \
 """class ${enumName} {
 	class object {
 ${values.join("\n")}
-		private val _values = arrayListOf(${node.values.join(", ")})
-		private val _names = arrayListOf(${node.values.collect { "\"${it}\"" }.join(", ")})
+		private val _values = hashMap(${namesToValues.collect { name, value -> "\"${value}\" to ${name}"}.join(", ")})
+		private val _names = hashMap(${namesToValues.collect { name, value -> "\"${value}\" to \"${name}\""}.join(", ")})
 
-		fun names():Array<String> = _names.copyToArray()
+		fun names():Array<String> = array(${node.values.collect { "\"${it}\"" }.join(", ")})
 
-		fun values():Array<${enumName}> = _values.copyToArray()
+		fun values():Array<${enumName}> = array(${node.values.collect { it }.join(", ")})
 
-		fun getName(value:${enumName}):String = _names.get(value as Int)
+		fun getName(value:${enumName}):String = _names.get((value as Int).toString()) ?: throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
 
 		fun getValue(value:${enumName}):Int = value as Int
 
-		fun fromValue(value:Int):${enumName} {
-			if (value < 0 || value >= _values.size) {
-				throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
-			}
-			return _values[value]
-		}
+		fun fromValue(value:Int):${enumName} = _values.get(value.toString()) ?: throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
 
 		fun valueOf(name:String):${enumName} {
 			var result:${enumName}
@@ -51,16 +49,16 @@ ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
 
 	private static class EnumValueVisitor extends AbstractKotlinGeneratorVisitor {
 		private final String enumName
-		private final int index
+		private final Map<String, Integer> namesToValues
 
-		EnumValueVisitor(String enumName, int index) {
+		EnumValueVisitor(String enumName, Map<String, Integer> namesToValues) {
 			this.enumName = enumName
-			this.index = index
+			this.namesToValues = namesToValues
 		}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "		val ${node.name} = ${index} as ${enumName}"
+			return "		val ${node.name} = ${namesToValues[node.name]} as ${enumName}"
 		}
 	}
 }

@@ -12,6 +12,10 @@ public class TestModule {
 			return ((value as Int) + 1) as Fruit
 		}
 
+		public fun getPositionInPrimes(value:Prime):String {
+        	return Prime.getName(value)
+        }
+
 		public fun getValueOfTwo():String {
 			return Numbers.TWO
 		}
