@@ -5,7 +5,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.internal.parser.AstParserException;
 import com.prezi.spaghetti.ast.internal.parser.MissingTypeResolver;
@@ -15,6 +14,7 @@ import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.io.IOException;
 import java.util.Collection;

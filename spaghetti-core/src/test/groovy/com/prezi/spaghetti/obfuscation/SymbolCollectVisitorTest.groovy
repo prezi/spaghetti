@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.obfuscation
 
-import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.ast.internal.parser.ModuleParser
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.obfuscation.internal.SymbolCollectVisitor
 import spock.lang.Specification
 

@@ -2,9 +2,9 @@ package com.prezi.spaghetti.cli.commands;
 
 import com.prezi.spaghetti.cli.SpaghettiCliException;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.generator.StubGenerator;
 import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
+import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import io.airlift.command.Command;
 import io.airlift.command.Option;

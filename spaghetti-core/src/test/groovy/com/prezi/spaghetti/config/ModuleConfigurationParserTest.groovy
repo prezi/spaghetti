@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.config
 
-import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.ast.internal.parser.AstParserException
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser
 import spock.lang.Specification
 
