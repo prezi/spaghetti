@@ -4,7 +4,6 @@ import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.QualifiedTypeNode
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
-import com.prezi.spaghetti.definition.internal.ModuleParserContext
 import com.prezi.spaghetti.internal.grammar.ModuleParser
 import org.antlr.v4.runtime.BaseErrorListener
 import org.antlr.v4.runtime.RecognitionException

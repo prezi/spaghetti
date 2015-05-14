@@ -3,17 +3,24 @@ package com.prezi.spaghetti.packaging.internal;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationPackager;
 import com.prezi.spaghetti.structure.internal.StructuredDirectoryWriter;
 import com.prezi.spaghetti.structure.internal.StructuredWriter;
 import com.prezi.spaghetti.structure.internal.StructuredZipWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public abstract class AbstractApplicationPackager implements ApplicationPackager {
+	private static final Logger logger = LoggerFactory.getLogger(AbstractApplicationPackager.class);
+
 	@Override
 	public void packageApplicationDirectory(File outputDirectory, ApplicationPackageParameters params) throws IOException {
 		packageApplication(new StructuredDirectoryWriter(outputDirectory), params);
@@ -36,6 +43,20 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 			}
 		}, null) == null) {
 			throw new IllegalArgumentException("Main bundle \"" + params.mainModule + "\" not found among bundles: " + Joiner.on(", ").join(params.bundles));
+		}
+
+		Map<String, String> unmetExternals =
+				Maps.filterValues(params.bundles.getExternalDependencies(), new Predicate<String>() {
+					@Override
+					public boolean apply(@Nullable String external) {
+						return !params.externals.containsKey(external);
+					}
+				});
+		if (!unmetExternals.isEmpty()) {
+			logger.warn("Some modules have external dependencies without a specified path:");
+			for (Map.Entry<String, String> unmetExternal : unmetExternals.entrySet()) {
+				logger.warn("\t{} depends on {}", unmetExternal.getKey(), unmetExternal.getValue());
+			}
 		}
 
 		writer.init();

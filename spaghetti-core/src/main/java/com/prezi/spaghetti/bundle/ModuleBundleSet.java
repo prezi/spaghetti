@@ -1,8 +1,10 @@
 package com.prezi.spaghetti.bundle;
 
+import com.google.common.base.Predicate;
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet;
 
 import java.util.Collections;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 public interface ModuleBundleSet extends SortedSet<ModuleBundle> {
@@ -10,4 +12,5 @@ public interface ModuleBundleSet extends SortedSet<ModuleBundle> {
 
 	SortedSet<ModuleBundle> getDirectBundles();
 	SortedSet<ModuleBundle> getTransitiveBundles();
+	SortedMap<String, String> getExternalDependencies();
 }
