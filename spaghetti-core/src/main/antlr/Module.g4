@@ -80,7 +80,7 @@ enumDefinition : ( documentation = Doc )? annotations?
 	;
 
 enumValue : ( documentation = Doc )? annotations?
- 	Name
+ 	Name ('=' value = Integer)?
 	;
 
 methodDefinition : ( documentation = Doc )? annotations?

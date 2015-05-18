@@ -8,15 +8,22 @@ import com.prezi.spaghetti.ast.ModuleVisitor;
 
 public class DefaultEnumValueNode extends AbstractNamedNode implements EnumValueNode, AnnotatedNodeInternal, DocumentedNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
+	private final Integer value;
 	private DocumentationNode documentation = DocumentationNode.NONE;
 
-	public DefaultEnumValueNode(Location location, String name) {
+	public DefaultEnumValueNode(Location location, String name, Integer value) {
 		super(location, name);
+		this.value = value;
 	}
 
 	@Override
 	protected <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
 		return visitor.visitEnumValueNode(this);
+	}
+
+	@Override
+	public Integer getValue() {
+		return value;
 	}
 
 	@Override

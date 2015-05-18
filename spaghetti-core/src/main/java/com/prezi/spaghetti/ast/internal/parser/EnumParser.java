@@ -20,7 +20,8 @@ public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefini
 	@Override
 	public void parseInternal(TypeResolver resolver) {
 		for (ModuleParser.EnumValueContext valueCtx : getContext().enumValue()) {
-			DefaultEnumValueNode valueNode = new DefaultEnumValueNode(locator.locate(valueCtx.Name()), valueCtx.Name().getText());
+			Integer value = Primitives.parseInt(valueCtx.value);
+			DefaultEnumValueNode valueNode = new DefaultEnumValueNode(locator.locate(valueCtx.Name()), valueCtx.Name().getText(), value);
 			AnnotationsParser.parseAnnotations(locator, valueCtx.annotations(), valueNode);
 			DocumentationParser.parseDocumentation(locator, valueCtx.documentation, valueNode);
 			node.getValues().add(valueNode, valueCtx);

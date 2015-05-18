@@ -8,10 +8,10 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	/**
 	 * Alma.
 	 */
-	ALMA
+	ALMA = 1
 	@deprecated("escape \\"this\\"!")
-	BELA
-	GEZA
+	BELA = 2
+	GEZA = 4
 }
 """
 		def result = parseAndVisitEnum(definition, new HaxeEnumGeneratorVisitor())
@@ -21,13 +21,13 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	/**
 	 * Alma.
 	 */
-	public static var ALMA = new MyEnum(0);
+	public static var ALMA = new MyEnum(1);
 	@:deprecated("escape \\"this\\"!")
-	public static var BELA = new MyEnum(1);
-	public static var GEZA = new MyEnum(2);
+	public static var BELA = new MyEnum(2);
+	public static var GEZA = new MyEnum(4);
 
-	static var _values:Array<MyEnum> = [ ALMA, BELA, GEZA ];
-	static var _names:Array<String> =  [ "ALMA", "BELA", "GEZA" ];
+	static var _values = { "1": ALMA, "2": BELA, "4": GEZA };
+	static var _names =  { "1": "ALMA", "2": "BELA", "4": "GEZA" };
 
 	inline function new(value:Int) {
 		this = value;
@@ -38,15 +38,15 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	}
 
 	@:from public static function fromValue(value:Int) {
-		if (value < 0 || value >= _values.length) {
+		var key: String = Std.string(value);
+		if (!Reflect.hasField(_values, key)) {
 			throw "Invalid value for MyEnum: " + value;
 		}
-		var result = _values[value];
-		return result;
+		return Reflect.field(_values, key);
 	}
 
 	@:to public inline function name():String {
-		return _names[this];
+		return Reflect.field(_names, Std.string(this));
 	}
 
 	@:from public static inline function valueOf(name:String) {
@@ -60,7 +60,7 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	}
 
 	public static function values():Array<MyEnum> {
-		return _values.copy();
+		return [ALMA, BELA, GEZA];
 	}
 }
 """

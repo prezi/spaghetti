@@ -2,6 +2,7 @@ package spaghetti.test;
 
 import spaghetti.test.dependency.DependencyModule;
 import spaghetti.test.dependency.Fruit;
+import spaghetti.test.dependency.Prime;
 import spaghetti.test.dependency.Point2d;
 
 class TestModule {
@@ -12,6 +13,10 @@ class TestModule {
 	public static function getNextEnumValue(value:Fruit):Fruit {
 		return Fruit.fromValue(value.value() + 1);
 	}
+
+	public static function getPositionInPrimes(value:Prime):String {
+    		return value.name();
+    	}
 
 	public static function getValueOfTwo():String {
 		return Numbers.TWO;
