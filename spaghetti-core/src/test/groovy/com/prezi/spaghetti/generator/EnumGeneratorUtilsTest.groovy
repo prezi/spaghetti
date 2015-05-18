@@ -17,11 +17,11 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 	def "enum with fully implicit values has assigned values by position"() {
 		expect:
 		calculateEnumValues(mockEnum(
-		        alma:null,
+				alma:null,
 				bela:null,
 				geza:null
 		)) == [
-		        alma:0,
+				alma:0,
 				bela:1,
 				geza:2
 		]
@@ -30,11 +30,11 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 	def "enum with fully explicit values overrides implicit values"() {
 		expect:
 		calculateEnumValues(mockEnum(
-		        alma:1,
+				alma:1,
 				bela:2,
 				geza:3
 		)) == [
-		        alma:1,
+				alma:1,
 				bela:2,
 				geza:3
 		]
@@ -43,11 +43,11 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 	def "explicit values can have arbitrary order"() {
 		expect:
 		calculateEnumValues(mockEnum(
-		        alma:3,
+				alma:3,
 				bela:7,
 				geza:0
 		)) == [
-		        alma:3,
+				alma:3,
 				bela:7,
 				geza:0
 		]
@@ -56,7 +56,7 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 	def "a mix of implicit and explicit values is not permitted"() {
 		when:
 		calculateEnumValues(mockEnum(
-		        alma:null,
+				alma:null,
 				bela:0,
 				geza:1
 		))
