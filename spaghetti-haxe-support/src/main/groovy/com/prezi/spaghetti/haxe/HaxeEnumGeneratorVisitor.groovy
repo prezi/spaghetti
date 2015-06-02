@@ -3,26 +3,19 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
-import com.prezi.spaghetti.generator.EnumGeneratorUtils
 
 class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name
-
-		def namesToValues = EnumGeneratorUtils.calculateEnumValues(node)
-		def valueVisitor = new EnumValueVisitor(enumName, namesToValues)
-		def values = []
-		node.values.each { value ->
-			values.add value.accept(valueVisitor)
-		}
+		def entries = node.normalizedValues
 
 		return \
 """abstract ${enumName}(Int) {
-${values.join("\n")}
+${entries*.accept(new EnumValueVisitor(node.name)).join("\n")}
 
-	static var _values = { ${namesToValues.collect { name, val -> "\"${val}\": ${name}" }.join(", ")} };
-	static var _names =  { ${namesToValues.collect { name, val -> "\"${val}\": \"${name}\"" }.join(", ")} };
+	static var _values = { ${entries.collect { entry -> "\"${entry.value}\": ${entry.name}" }.join(", ")} };
+	static var _names =  { ${entries.collect { entry -> "\"${entry.value}\": \"${entry.name}\"" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
@@ -47,13 +40,13 @@ ${values.join("\n")}
 	@:from public static inline function valueOf(name:String) {
 		return switch(name)
 		{
-${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
+${entries.collect {"			case \"${it}\": ${it};"}.join("\n")}
 			default: throw "Invalid name for ${enumName}: " + name;
 		};
 	}
 
 	public static function values():Array<${enumName}> {
-		return [${node.values.collect { it }.join(", ")}];
+		return [${entries.collect { it }.join(", ")}];
 	}
 }
 """
@@ -61,16 +54,14 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 
 	private static class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
 		private final String enumName
-		private final Map<String, Integer> namesToValues
 
-		EnumValueVisitor(String enumName, Map<String, Integer> namesToValues) {
+		EnumValueVisitor(String enumName) {
 			this.enumName = enumName
-			this.namesToValues = namesToValues
 		}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tpublic static var ${node.name} = new ${enumName}(${namesToValues[node.name]});"
+			return "\tpublic static var ${node.name} = new ${enumName}(${node.value});"
 		}
 	}
 }

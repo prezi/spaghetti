@@ -1,65 +1,61 @@
-package com.prezi.spaghetti.generator
+package com.prezi.spaghetti.ast.internal
 
 import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.FQName
-import com.prezi.spaghetti.ast.internal.DefaultEnumNode
-import com.prezi.spaghetti.ast.internal.DefaultEnumValueNode
 import com.prezi.spaghetti.ast.internal.parser.AstParserException
 
-import static com.prezi.spaghetti.generator.EnumGeneratorUtils.calculateEnumValues
-
-class EnumGeneratorUtilsTest extends AstSpecification {
+class EnumNodeTest extends AstSpecification {
 	def "empty enum is allowed"() {
 		expect:
-		calculateEnumValues(mockEnum([:])) == [:]
+		mockEnum([:]).normalizedValues == mockEnum([:]).values
 	}
 
 	def "enum with fully implicit values has assigned values by position"() {
 		expect:
-		calculateEnumValues(mockEnum(
+		mockEnum(
 				alma:null,
 				bela:null,
 				geza:null
-		)) == [
+		).normalizedValues == mockEnum(
 				alma:0,
 				bela:1,
 				geza:2
-		]
+		).values
 	}
 
 	def "enum with fully explicit values overrides implicit values"() {
 		expect:
-		calculateEnumValues(mockEnum(
+		mockEnum(
 				alma:1,
 				bela:2,
 				geza:3
-		)) == [
+		).normalizedValues == mockEnum(
 				alma:1,
 				bela:2,
 				geza:3
-		]
+		).values
 	}
 
 	def "explicit values can have arbitrary order"() {
 		expect:
-		calculateEnumValues(mockEnum(
+		mockEnum(
 				alma:3,
 				bela:7,
 				geza:0
-		)) == [
+		).normalizedValues == mockEnum(
 				alma:3,
 				bela:7,
 				geza:0
-		]
+		).values
 	}
 
 	def "a mix of implicit and explicit values is not permitted"() {
 		when:
-		calculateEnumValues(mockEnum(
+		mockEnum(
 				alma:null,
 				bela:0,
 				geza:1
-		))
+		).normalizedValues
 		then:
 		def ex = thrown AstParserException
 		ex.message == "Parse error in mockMixed implicit and explicit entries in enum test"
@@ -67,10 +63,10 @@ class EnumGeneratorUtilsTest extends AstSpecification {
 
 	def "duplicate values are not permitted"() {
 		when:
-		calculateEnumValues(mockEnum(
+		mockEnum(
 				alma:1,
 				bela:1
-		))
+		).normalizedValues
 		then:
 		def ex = thrown AstParserException
 		ex.message == "Parse error in mockDuplicate value in enum test"
