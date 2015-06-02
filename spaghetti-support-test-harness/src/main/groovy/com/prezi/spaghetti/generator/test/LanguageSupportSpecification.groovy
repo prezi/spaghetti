@@ -6,7 +6,7 @@ import com.google.common.io.Resources
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
-import com.prezi.spaghetti.bundle.internal.ModuleBundleFactory
+import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource

@@ -2,6 +2,7 @@ package com.prezi.spaghetti.bundle.internal;
 
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

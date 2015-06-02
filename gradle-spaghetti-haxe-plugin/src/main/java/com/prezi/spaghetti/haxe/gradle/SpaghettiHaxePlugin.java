@@ -11,7 +11,7 @@ import com.prezi.haxe.gradle.HaxeExtension;
 import com.prezi.haxe.gradle.HaxeTestBinary;
 import com.prezi.haxe.gradle.HaxeTestCompile;
 import com.prezi.haxe.gradle.incubating.FunctionalSourceSet;
-import com.prezi.spaghetti.bundle.internal.ModuleBundleFactory;
+import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.gradle.PackageApplication;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
