@@ -22,7 +22,6 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.haxe.gradle.internal.HaxeSpaghettiModule;
 import com.prezi.spaghetti.packaging.ApplicationType;
-import org.apache.tools.ant.taskdefs.Execute;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
