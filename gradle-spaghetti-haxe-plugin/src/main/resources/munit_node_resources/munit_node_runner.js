@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var jsdom = require("jsdom");
 var Canvas = require('canvas');
 var describe = require("mocha").describe;

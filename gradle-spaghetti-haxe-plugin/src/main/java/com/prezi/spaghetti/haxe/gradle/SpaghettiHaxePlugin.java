@@ -22,6 +22,7 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.haxe.gradle.internal.HaxeSpaghettiModule;
 import com.prezi.spaghetti.packaging.ApplicationType;
+import org.apache.tools.ant.taskdefs.Execute;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -32,6 +33,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.tasks.Copy;
+import org.gradle.api.tasks.Exec;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,7 +113,8 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
 		});
-		final Task npmTask = createCopyNodeDependenciesTask(project);
+		final File nodeModulesDir =new File(project.getBuildDir(), "munit/node_modules");
+		final Task npmTask = createSetupNodeDependenciesTask(project, nodeModulesDir);
 		spaghettiExtension.getBinaries().withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
 			@Override
 			public void execute(final HaxeSpaghettiModule moduleBinary) {
@@ -122,7 +125,14 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 
 					MUnitWithSpaghetti munitTask = null;
 					if (((HaxeTestBinary) binary).getCompileTask() instanceof HaxeNodeTestCompile) {
-						munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, NodeTestWithSpaghetti.class);
+						NodeTestWithSpaghetti nodeTestWithSpaghetti = HaxeBasePlugin.createMUnitTask(project, testBinary, NodeTestWithSpaghetti.class);
+						nodeTestWithSpaghetti.getConventionMapping().map("nodeModulesDirectory", new Callable<File>() {
+							@Override
+							public File call() throws Exception {
+								return nodeModulesDir;
+							}
+						});
+						munitTask = nodeTestWithSpaghetti;
 						munitTask.dependsOn(npmTask);
 						appTask = createTestApplication(moduleBinary, testBinary, ApplicationType.COMMON_JS);
 					} else {
@@ -179,7 +189,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		});
 	}
 
-	private Task createCopyNodeDependenciesTask(final Project project) {
+	private Task createSetupNodeDependenciesTask(final Project project, File nodeModulesDir) {
 		final Configuration npmTestConfig = project.getConfigurations().maybeCreate("npmMunitTest");
 		List<String> dependencies = Arrays.asList("npm:requirejs:2.1.8",
 				"npm:jquery:2.1.1",
@@ -199,8 +209,8 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 			dependencyHandler.add(npmTestConfig.getName(), dependencyHandler.create(dependency));
 		}
 
-		Copy npmTask = project.getTasks().create("copyNpmMunitTestDependencies", Copy.class);
-		npmTask.from(new Callable<ConfigurableFileCollection>() {
+		Copy copyModulesTask = project.getTasks().create("copyNpmMunitTestDependencies", Copy.class);
+		copyModulesTask.from(new Callable<ConfigurableFileCollection>() {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
 				ConfigurableFileCollection unzippedFiles = project.files();
@@ -210,8 +220,12 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				return unzippedFiles;
 			}
 		});
-		npmTask.into(Callables.returning(new File(project.getBuildDir(), "munit/node_modules")));
-		return npmTask;
+		copyModulesTask.into(Callables.returning(new File(project.getBuildDir(), "munit/node_modules")));
+		Exec makeNodeCanvasTask = project.getTasks().create("makeNodeCanvasMunitTestDependencies", Exec.class);
+		makeNodeCanvasTask.setWorkingDir(new File(nodeModulesDir, "canvas"));
+		makeNodeCanvasTask.setCommandLine("make");
+		makeNodeCanvasTask.dependsOn(copyModulesTask);
+		return makeNodeCanvasTask;
 	}
 
 	private <T extends HaxeBinaryBase<?>> void addSpaghettiSourceSet(final Project project, HaxeExtension haxeExtension, final SpaghettiGeneratedSourceSet spaghettiSourceSet, Class<T> binaryType, String sourceSetName) {
