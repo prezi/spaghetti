@@ -191,7 +191,8 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 
 	private Task createSetupNodeDependenciesTask(final Project project, File nodeModulesDir) {
 		final Configuration npmTestConfig = project.getConfigurations().maybeCreate("npmMunitTest");
-		List<String> dependencies = Arrays.asList("npm:requirejs:2.1.8",
+		List<String> dependencies = Arrays.asList(
+				"npm:requirejs:2.1.8",
 				"npm:jquery:2.1.1",
 				"npm:jsdom:0.10.6-3",
 				"npm:cssstyle:0.2.14",
