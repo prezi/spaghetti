@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.gradle.api.Task;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.internal.ExecAction;
 import org.gradle.process.internal.ExecActionFactory;
 import sun.net.www.protocol.file.FileURLConnection;
@@ -54,10 +55,18 @@ public class NodeTestWithSpaghetti extends MUnitWithSpaghetti {
 	protected void prepareEnvironment(File workDir) throws IOException {
 		copyCompiledTest(workDir);
 		setupRunner(workDir);
-		run(workDir);
+		//run(workDir);
 	}
 
-	private void run(File workDir) {
+    @TaskAction
+    @Override
+    public void munit() throws IOException, InterruptedException {
+        File workDir = getWorkingDirectory();
+        FileUtils.deleteDirectory(workDir);
+        FileUtils.forceMkdir(workDir);
+
+        prepareEnvironment(workDir);
+
 		File munitNodeRunner = new File(workDir, "munit_node_runner.js");
 		munitNodeRunner.setExecutable(true);
 		ExecAction exec = execActionFactory.newExecAction();
