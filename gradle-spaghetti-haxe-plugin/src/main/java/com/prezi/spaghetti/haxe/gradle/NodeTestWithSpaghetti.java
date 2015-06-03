@@ -112,4 +112,9 @@ public class NodeTestWithSpaghetti extends MUnitWithSpaghetti {
 			}
 		}
 	}
+
+	@Override
+	public boolean shouldRunAutomatically() {
+		return getProject().hasProperty("munit.usenode") && !getProject().property("munit.usenode").equals("false");
+	}
 }
