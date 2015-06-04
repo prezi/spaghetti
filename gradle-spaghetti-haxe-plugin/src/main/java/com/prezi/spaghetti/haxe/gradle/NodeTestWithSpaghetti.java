@@ -1,14 +1,8 @@
 package com.prezi.spaghetti.haxe.gradle;
 
-import com.google.common.base.Throwables;
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.gradle.api.Task;
-import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.process.internal.ExecAction;
@@ -21,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Collections;
