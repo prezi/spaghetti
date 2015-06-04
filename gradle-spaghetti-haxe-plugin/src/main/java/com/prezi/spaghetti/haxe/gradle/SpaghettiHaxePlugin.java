@@ -50,9 +50,11 @@ import java.util.concurrent.Callable;
  * Add Spaghetti support to Haxe.
  */
 public class SpaghettiHaxePlugin implements Plugin<Project> {
-	private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
+    public static final String NODE_MUNIT_DEPENDENCIES = "nodeMunitDependencies";
+    public static final String MUNIT_NODE_MODULES_DIRECTORY = "munit/node_modules";
 
-	private final Instantiator instantiator;
+    private final Instantiator instantiator;
 	private final FileResolver fileResolver;
 
 	@Inject
@@ -112,8 +114,9 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
 		});
-		final File nodeModulesDir = new File(project.getBuildDir(), "munit/node_modules");
-		final Task npmTask = createSetupNodeDependenciesTask(project, nodeModulesDir);
+		final File nodeModulesDir =new File(project.getBuildDir(), MUNIT_NODE_MODULES_DIRECTORY);
+		final Task npmTask = createSetupNodeDependenciesTask(project);
+
 		spaghettiExtension.getBinaries().withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
 			@Override
 			public void execute(final HaxeSpaghettiModule moduleBinary) {
@@ -188,44 +191,10 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		});
 	}
 
-	private Task createSetupNodeDependenciesTask(final Project project, File nodeModulesDir) {
-		final Configuration npmTestConfig = project.getConfigurations().maybeCreate("npmMunitTest");
-		List<String> dependencies = Arrays.asList(
-				"npm:requirejs:2.1.8",
-				"npm:jquery:2.1.1",
-				"npm:jsdom:0.10.6-3",
-				"npm:cssstyle:0.2.14",
-				"npm:assert:1.1.1",
-				"npm:chai:1.9.0",
-				"npm:sinon:1.9.1",
-				"npm:mocha:1.17.1",
-				"npm:istanbul:0.2.16",
-				"npm:mocha-istanbul:0.2.0",
-				"npm:spec-xunit-file:0.0.1-2",
-				"npm:canvas:1.2.1");
+	private Task createSetupNodeDependenciesTask(final Project project) {
 
-		DependencyHandler dependencyHandler = project.getDependencies();
-		for (String dependency : dependencies) {
-			dependencyHandler.add(npmTestConfig.getName(), dependencyHandler.create(dependency));
-		}
+		return project.getTasks().create(NODE_MUNIT_DEPENDENCIES, Task.class);
 
-		Copy copyModulesTask = project.getTasks().create("copyNpmMunitTestDependencies", Copy.class);
-		copyModulesTask.from(new Callable<ConfigurableFileCollection>() {
-			@Override
-			public ConfigurableFileCollection call() throws Exception {
-				ConfigurableFileCollection unzippedFiles = project.files();
-				for (File file : npmTestConfig) {
-					unzippedFiles.from(project.zipTree(file));
-				}
-				return unzippedFiles;
-			}
-		});
-		copyModulesTask.into(Callables.returning(new File(project.getBuildDir(), "munit/node_modules")));
-		Exec makeNodeCanvasTask = project.getTasks().create("makeNodeCanvasMunitTestDependencies", Exec.class);
-		makeNodeCanvasTask.setWorkingDir(new File(nodeModulesDir, "canvas"));
-		makeNodeCanvasTask.setCommandLine("make");
-		makeNodeCanvasTask.dependsOn(copyModulesTask);
-		return makeNodeCanvasTask;
 	}
 
 	private <T extends HaxeBinaryBase<?>> void addSpaghettiSourceSet(final Project project, HaxeExtension haxeExtension, final SpaghettiGeneratedSourceSet spaghettiSourceSet, Class<T> binaryType, String sourceSetName) {
