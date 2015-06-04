@@ -112,7 +112,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
 		});
-		final File nodeModulesDir =new File(project.getBuildDir(), "munit/node_modules");
+		final File nodeModulesDir = new File(project.getBuildDir(), "munit/node_modules");
 		final Task npmTask = createSetupNodeDependenciesTask(project, nodeModulesDir);
 		spaghettiExtension.getBinaries().withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
 			@Override
