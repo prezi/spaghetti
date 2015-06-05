@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -93,11 +94,14 @@ public class NodeTestWithSpaghetti extends MUnitWithSpaghetti {
 				String fileName = StringUtils.removeStart(entry.getName(), jarConnection.getEntryName());
 				if (!entry.isDirectory()) {
 					InputStream entryInputStream = null;
+					OutputStream os = null;
 					try {
 						entryInputStream = jarFile.getInputStream(entry);
-						IOUtils.copy(entryInputStream, new FileOutputStream(new File(destination, fileName)));
+						os = new FileOutputStream(new File(destination, fileName));
+						IOUtils.copy(entryInputStream, os);
 					} finally {
 						IOUtils.closeQuietly(entryInputStream);
+						IOUtils.closeQuietly(os);
 					}
 				} else {
 					FileUtils.forceMkdir(new File(destination, fileName));
