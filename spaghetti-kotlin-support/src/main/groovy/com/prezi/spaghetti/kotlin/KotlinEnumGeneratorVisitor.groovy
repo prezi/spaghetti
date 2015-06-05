@@ -18,14 +18,14 @@ class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 
 		return \
 """class ${enumName} {
-	class object {
+	companion object {
 ${values.join("\n")}
-		private val _values = hashMap(${namesToValues.collect { name, value -> "\"${value}\" to ${name}"}.join(", ")})
-		private val _names = hashMap(${namesToValues.collect { name, value -> "\"${value}\" to \"${name}\""}.join(", ")})
+		private val _values = hashMapOf(${namesToValues.collect { name, value -> "\"${value}\" to ${name}"}.join(", ")})
+		private val _names = hashMapOf(${namesToValues.collect { name, value -> "\"${value}\" to \"${name}\""}.join(", ")})
 
-		fun names():Array<String> = array(${node.values.collect { "\"${it}\"" }.join(", ")})
+		fun names():Array<String> = arrayOf(${node.values.collect { "\"${it}\"" }.join(", ")})
 
-		fun values():Array<${enumName}> = array(${node.values.collect { it }.join(", ")})
+		fun values():Array<${enumName}> = arrayOf(${node.values.collect { it }.join(", ")})
 
 		fun getName(value:${enumName}):String = _names.get((value as Int).toString()) ?: throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
 
