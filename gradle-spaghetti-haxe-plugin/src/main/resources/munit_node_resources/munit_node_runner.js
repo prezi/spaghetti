@@ -2,15 +2,18 @@
 
 var jsdom = require("jsdom");
 var fs = require('fs');
-var path = require('path');
 
-global.window = jsdom.jsdom().createWindow();
-
-global.document = global.window.document;
 global.$ = require('jquery');
-global.alert = function(){}
+global.window = jsdom.jsdom().createWindow();
+global.alert = function(){};
 
-exitCode = 0;
+for(var p in global.window)
+{
+
+    if(!global[p])
+        global[p] = global.window[p];
+}
+
 
 var pprt = (function(){
 	var indentLevel = 0;
@@ -149,7 +152,6 @@ global.addToQueue = (function ()
 		else if(fnc == "setResult")
 		{
 			flushTrace();
-			exitCode = arg1 == 'true' ? 1 : 0;
 		}
 		else
 		{
