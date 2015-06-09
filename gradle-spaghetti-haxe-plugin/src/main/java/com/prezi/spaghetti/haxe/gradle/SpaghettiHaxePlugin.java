@@ -10,6 +10,7 @@ import com.prezi.haxe.gradle.HaxeCompile;
 import com.prezi.haxe.gradle.HaxeExtension;
 import com.prezi.haxe.gradle.HaxeTestBinary;
 import com.prezi.haxe.gradle.incubating.FunctionalSourceSet;
+import com.prezi.haxe.gradle.nodetest.HaxeNodeTestCompile;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.gradle.PackageApplication;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
@@ -27,23 +28,16 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.file.FileResolver;
-import org.gradle.api.tasks.Copy;
-import org.gradle.api.tasks.Exec;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.prezi.haxe.gradle.nodetest.HaxeNodeTestCompile;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -52,7 +46,6 @@ import java.util.concurrent.Callable;
 public class SpaghettiHaxePlugin implements Plugin<Project> {
     private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
     public static final String NODE_MUNIT_DEPENDENCIES = "nodeMunitDependencies";
-    public static final String MUNIT_NODE_MODULES_DIRECTORY = "munit/node_modules";
 
     private final Instantiator instantiator;
 	private final FileResolver fileResolver;
@@ -72,6 +65,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 
 		project.getPlugins().apply(HaxeBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
+		project.getExtensions().create("spaghettiHaxe", SpaghettiHaxeExtension.class);
 
 		final HaxeExtension haxeExtension = project.getExtensions().getByType(HaxeExtension.class);
 
@@ -114,7 +108,6 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
 		});
-		final File nodeModulesDir =new File(project.getBuildDir(), MUNIT_NODE_MODULES_DIRECTORY);
 		final Task npmTask = createSetupNodeDependenciesTask(project);
 
 		spaghettiExtension.getBinaries().withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
@@ -131,7 +124,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 						nodeTestWithSpaghetti.getConventionMapping().map("nodeModulesDirectory", new Callable<File>() {
 							@Override
 							public File call() throws Exception {
-								return nodeModulesDir;
+								return project.getExtensions().getByType(SpaghettiHaxeExtension.class).getMunitNodeModuleInstallDir();
 							}
 						});
 						munitTask = nodeTestWithSpaghetti;
