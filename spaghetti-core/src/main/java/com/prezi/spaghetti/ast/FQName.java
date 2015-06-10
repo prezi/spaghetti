@@ -35,11 +35,7 @@ public final class FQName implements Comparable<FQName>, Serializable {
 	}
 
 	public static FQName fromString(String fqName) {
-		if (fqName == null) {
-			throw new IllegalArgumentException("Qualified name cannot be empty");
-		}
-
-		if (fqName.isEmpty()) {
+		if (fqName == null || fqName.isEmpty()) {
 			throw new IllegalArgumentException("Qualified name cannot be empty");
 		}
 
