@@ -1,18 +1,26 @@
 package com.prezi.spaghetti.haxe.gradle;
 
-import com.prezi.haxe.gradle.MUnit;
+import com.prezi.haxe.gradle.MUnitNode;
 import com.prezi.spaghetti.haxe.gradle.internal.CompiledJsCopier;
 import org.gradle.api.internal.file.FileOperations;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.Optional;
+import org.gradle.process.internal.ExecActionFactory;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
 
-public class MUnitWithSpaghetti extends MUnit implements MUnitTask {
+public class MUnitNodeWithSpaghetti extends MUnitNode implements MUnitTask {
+
 	private File testApplication;
 	private String testApplicationName;
+
+	@Inject
+	public MUnitNodeWithSpaghetti(ExecActionFactory execActionFactory) {
+		super(execActionFactory);
+	}
 
 	@Override
 	@Optional
