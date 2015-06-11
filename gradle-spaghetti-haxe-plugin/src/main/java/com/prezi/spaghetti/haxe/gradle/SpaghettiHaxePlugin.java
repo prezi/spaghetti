@@ -45,8 +45,8 @@ import java.util.concurrent.Callable;
  * Add Spaghetti support to Haxe.
  */
 public class SpaghettiHaxePlugin implements Plugin<Project> {
-    private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
-    public static final String NODE_MUNIT_DEPENDENCIES = "nodeMunitDependencies";
+	private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
+	public static final String NODE_MUNIT_DEPENDENCIES = "nodeMunitDependencies";
 
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
