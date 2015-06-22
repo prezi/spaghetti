@@ -240,7 +240,7 @@ configure(codeProjects) {
 		// Done in doFirst() so that we don't download stuff in configuration phase
 		doFirst {
 			apis.each {
-				link(it, *(new URL("$it/package-list").text.tokenize("\n")))
+				//link(it, *(new URL("$it/package-list").text.tokenize("\n")))
 			}
 		}
 		exclude "**/internal/**"

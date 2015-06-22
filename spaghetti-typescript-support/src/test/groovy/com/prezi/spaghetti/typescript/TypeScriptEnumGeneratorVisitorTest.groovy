@@ -20,8 +20,8 @@ enum MyEnum {
 	/**
 	 * Alma.
 	 */
-	ALMA,
-	BELA
+	ALMA = 0,
+	BELA = 1
 }
 """
 	}

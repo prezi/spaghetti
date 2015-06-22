@@ -9,8 +9,8 @@ import com.prezi.haxe.gradle.HaxeBinaryBase;
 import com.prezi.haxe.gradle.HaxeCompile;
 import com.prezi.haxe.gradle.HaxeExtension;
 import com.prezi.haxe.gradle.HaxeTestBinary;
-import com.prezi.haxe.gradle.HaxeTestCompile;
 import com.prezi.haxe.gradle.incubating.FunctionalSourceSet;
+import com.prezi.haxe.gradle.nodetest.HaxeNodeTestCompile;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.gradle.PackageApplication;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
@@ -26,8 +26,10 @@ import com.prezi.spaghetti.packaging.ApplicationType;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
@@ -44,6 +46,7 @@ import java.util.concurrent.Callable;
  */
 public class SpaghettiHaxePlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiHaxePlugin.class);
+	public static final String NODE_MUNIT_DEPENDENCIES = "nodeMunitDependencies";
 
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
@@ -100,20 +103,31 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		haxeExtension.getBinaries().withType(HaxeTestBinary.class).all(new Action<HaxeTestBinary>() {
 			@Override
 			public void execute(final HaxeTestBinary testBinary) {
-				HaxeBasePlugin.createTestCompileTask(project, testBinary, HaxeTestCompile.class);
+				HaxeBasePlugin.createTestCompileTask(project, testBinary, testBinary.getCompileClass());
 
 				registerSpaghettiModuleBinary(project, testBinary, Collections.singleton(testBinary.getCompileTask()), true);
 			}
 		});
+		final Task npmTask = createSetupNodeDependenciesTask(project);
+
 		spaghettiExtension.getBinaries().withType(HaxeSpaghettiModule.class).all(new Action<HaxeSpaghettiModule>() {
 			@Override
 			public void execute(final HaxeSpaghettiModule moduleBinary) {
 				HaxeBinaryBase<?> binary = moduleBinary.getOriginal();
 				if (moduleBinary.isUsedForTesting() && binary instanceof HaxeTestBinary) {
 					HaxeTestBinary testBinary = (HaxeTestBinary) binary;
-					final PackageApplication appTask = createTestApplication(moduleBinary, testBinary);
 
-					MUnitWithSpaghetti munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, MUnitWithSpaghetti.class);
+					ConventionTask munitTask;
+					ApplicationType applicationType;
+					if (((HaxeTestBinary) binary).getCompileTask() instanceof HaxeNodeTestCompile) {
+						munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, MUnitNodeWithSpaghetti.class);
+						munitTask.dependsOn(npmTask);
+						applicationType = ApplicationType.COMMON_JS;
+					} else {
+						munitTask = HaxeBasePlugin.createMUnitTask(project, testBinary, MUnitWithSpaghetti.class);
+						applicationType = ApplicationType.AMD;
+					}
+					final PackageApplication appTask = createTestApplication(moduleBinary, testBinary, applicationType);
 					munitTask.getConventionMapping().map("testApplication", new Callable<File>() {
 						@Override
 						public File call() throws Exception {
@@ -131,7 +145,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				}
 			}
 
-			private PackageApplication createTestApplication(final HaxeSpaghettiModule moduleBinary, final HaxeTestBinary testBinary) {
+			private PackageApplication createTestApplication(final HaxeSpaghettiModule moduleBinary, final HaxeTestBinary testBinary, ApplicationType applicationType) {
 				String packageTaskName = testBinary.getNamingScheme().getTaskName("package");
 
 				PackageApplication appBundleTask = project.getTasks().create(packageTaskName, PackageApplication.class);
@@ -156,12 +170,16 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 					}
 				});
 				appBundleTask.getConventionMapping().map("applicationName", Callables.returning(testBinary.getName() + "_test.js"));
-				appBundleTask.getConventionMapping().map("type", Callables.returning(ApplicationType.AMD));
+				appBundleTask.getConventionMapping().map("type", Callables.returning(applicationType));
 				appBundleTask.getConventionMapping().map("execute", Callables.returning(false));
 				appBundleTask.dependsOn(moduleBinary.getBundleTask());
 				return appBundleTask;
 			}
 		});
+	}
+
+	private Task createSetupNodeDependenciesTask(final Project project) {
+		return project.getTasks().create(NODE_MUNIT_DEPENDENCIES, Task.class);
 	}
 
 	private <T extends HaxeBinaryBase<?>> void addSpaghettiSourceSet(final Project project, HaxeExtension haxeExtension, final SpaghettiGeneratedSourceSet spaghettiSourceSet, Class<T> binaryType, String sourceSetName) {

@@ -11,6 +11,10 @@ export class TestModule {
 		return value + 1;
 	}
 
+	static getPositionInPrimes(value:spaghetti.test.dependency.Prime):string {
+		return spaghetti.test.dependency.Prime[value];
+	}
+
 	static getValueOfTwo():string {
 		return Numbers.TWO;
 	}

@@ -3,7 +3,7 @@ package com.prezi.spaghetti.kotlin
 import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 
 class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
-	def "generate"() {
+	def "generate implicit"() {
 		def definition = """enum MyEnum {
 	/**
 	 * Alma.
@@ -19,7 +19,7 @@ class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 
 		expect:
 		result == """class MyEnum {
-	class object {
+	companion object {
 		/**
 		 * Alma.
 		 */
@@ -27,23 +27,71 @@ class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 		[deprecated("escape \\"this\\"!")]
 		val BELA = 1 as MyEnum
 		val GEZA = 2 as MyEnum
-		private val _values = arrayListOf(ALMA, BELA, GEZA)
-		private val _names = arrayListOf("ALMA", "BELA", "GEZA")
+		private val _values = hashMapOf("0" to ALMA, "1" to BELA, "2" to GEZA)
+		private val _names = hashMapOf("0" to "ALMA", "1" to "BELA", "2" to "GEZA")
 
-		fun names():Array<String> = _names.copyToArray()
+		fun names():Array<String> = arrayOf("ALMA", "BELA", "GEZA")
 
-		fun values():Array<MyEnum> = _values.copyToArray()
+		fun values():Array<MyEnum> = arrayOf(ALMA, BELA, GEZA)
 
-		fun getName(value:MyEnum):String = _names.get(value as Int)
+		fun getName(value:MyEnum):String = _names.get((value as Int).toString()) ?: throw IllegalArgumentException("Invalid value for MyEnum: " + value)
 
 		fun getValue(value:MyEnum):Int = value as Int
 
-		fun fromValue(value:Int):MyEnum {
-			if (value < 0 || value >= _values.size) {
-				throw IllegalArgumentException("Invalid value for MyEnum: " + value)
+		fun fromValue(value:Int):MyEnum = _values.get(value.toString()) ?: throw IllegalArgumentException("Invalid value for MyEnum: " + value)
+
+		fun valueOf(name:String):MyEnum {
+			var result:MyEnum
+			when(name)
+			{
+				"ALMA" -> result = ALMA
+				"BELA" -> result = BELA
+				"GEZA" -> result = GEZA
+				else -> throw IllegalArgumentException("Invalid name for MyEnum: " + name)
 			}
-			return _values[value]
+			return result
 		}
+	}
+}
+"""
+	}
+
+	def "generate explicit"() {
+		def definition = """enum MyEnum {
+	/**
+	 * Alma.
+	 */
+	ALMA = 1
+	@deprecated("escape \\"this\\"!")
+	BELA = 2
+	GEZA = 4
+}
+"""
+
+		def result = parseAndVisitEnum(definition, new KotlinEnumGeneratorVisitor())
+
+		expect:
+		result == """class MyEnum {
+	companion object {
+		/**
+		 * Alma.
+		 */
+		val ALMA = 1 as MyEnum
+		[deprecated("escape \\"this\\"!")]
+		val BELA = 2 as MyEnum
+		val GEZA = 4 as MyEnum
+		private val _values = hashMapOf("1" to ALMA, "2" to BELA, "4" to GEZA)
+		private val _names = hashMapOf("1" to "ALMA", "2" to "BELA", "4" to "GEZA")
+
+		fun names():Array<String> = arrayOf("ALMA", "BELA", "GEZA")
+
+		fun values():Array<MyEnum> = arrayOf(ALMA, BELA, GEZA)
+
+		fun getName(value:MyEnum):String = _names.get((value as Int).toString()) ?: throw IllegalArgumentException("Invalid value for MyEnum: " + value)
+
+		fun getValue(value:MyEnum):Int = value as Int
+
+		fun fromValue(value:Int):MyEnum = _values.get(value.toString()) ?: throw IllegalArgumentException("Invalid value for MyEnum: " + value)
 
 		fun valueOf(name:String):MyEnum {
 			var result:MyEnum

@@ -28,7 +28,7 @@ struct MyStruct<T> extends Parent<T> {
 		result == """/**
  * Hey this is my struct!
  */
-trait MyStruct<T> : com.example.test.Parent<T> {
+interface MyStruct<T> : com.example.test.Parent<T> {
 	val a: Int
 	/**
 	 * This is field b.

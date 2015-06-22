@@ -34,7 +34,7 @@ ${methodDefinitions}
 	}
 
 	private static String defineType(String typeName, Collection<?> superTypes) {
-		def declaration = "trait ${typeName}"
+		def declaration = "interface ${typeName}"
 		if (!superTypes.empty) {
 			declaration += ': ' + superTypes.join(", ")
 		}

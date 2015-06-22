@@ -8,32 +8,22 @@ class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name
 
-		def values = []
-		node.values.eachWithIndex { value, index ->
-			values.add value.accept(new EnumValueVisitor(enumName, index))
-		}
-
 		return \
 """class ${enumName} {
-	class object {
-${values.join("\n")}
-		private val _values = arrayListOf(${node.values.join(", ")})
-		private val _names = arrayListOf(${node.values.collect { "\"${it}\"" }.join(", ")})
+	companion object {
+${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
+		private val _values = hashMapOf(${node.values.collect { entry -> "\"${entry.value}\" to ${entry.name}"}.join(", ")})
+		private val _names = hashMapOf(${node.values.collect { entry -> "\"${entry.value}\" to \"${entry.name}\""}.join(", ")})
 
-		fun names():Array<String> = _names.copyToArray()
+		fun names():Array<String> = arrayOf(${node.values.collect { "\"${it}\"" }.join(", ")})
 
-		fun values():Array<${enumName}> = _values.copyToArray()
+		fun values():Array<${enumName}> = arrayOf(${node.values.collect { it }.join(", ")})
 
-		fun getName(value:${enumName}):String = _names.get(value as Int)
+		fun getName(value:${enumName}):String = _names.get((value as Int).toString()) ?: throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
 
 		fun getValue(value:${enumName}):Int = value as Int
 
-		fun fromValue(value:Int):${enumName} {
-			if (value < 0 || value >= _values.size) {
-				throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
-			}
-			return _values[value]
-		}
+		fun fromValue(value:Int):${enumName} = _values.get(value.toString()) ?: throw IllegalArgumentException("Invalid value for ${enumName}: " + value)
 
 		fun valueOf(name:String):${enumName} {
 			var result:${enumName}
@@ -51,16 +41,14 @@ ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
 
 	private static class EnumValueVisitor extends AbstractKotlinGeneratorVisitor {
 		private final String enumName
-		private final int index
 
-		EnumValueVisitor(String enumName, int index) {
+		EnumValueVisitor(String enumName) {
 			this.enumName = enumName
-			this.index = index
 		}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "		val ${node.name} = ${index} as ${enumName}"
+			return "		val ${node.name} = ${node.value} as ${enumName}"
 		}
 	}
 }

@@ -1,6 +1,7 @@
 module spaghetti.test as TestModule
 
 import spaghetti.test.dependency.Fruit
+import spaghetti.test.dependency.Prime
 import spaghetti.test.dependency.Point2d
 
 /**
@@ -13,6 +14,11 @@ int addTwoNumbers(int a, int b)
  * The enum is declared in the DependencyModule module.
  */
 Fruit getNextEnumValue(Fruit value)
+
+/**
+ * Return the position for the first three primes.
+ */
+string getPositionInPrimes(Prime value)
 
 const Numbers {
 	ZERO = 0

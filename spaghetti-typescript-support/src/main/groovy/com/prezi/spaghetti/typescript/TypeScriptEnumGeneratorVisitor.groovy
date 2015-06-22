@@ -8,13 +8,15 @@ class TypeScriptEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor 
 	@Override
 	String visitEnumNode(EnumNode node) {
 """export enum ${node.name} {
-${node.values*.accept(this).join(",\n")}
+${node.values*.accept(new EnumValueVisitor()).join(",\n")}
 }
 """
 	}
 
-	@Override
-	String visitEnumValueNode(EnumValueNode node) {
-		return "\t${node.name}"
+	private static class EnumValueVisitor extends AbstractTypeScriptGeneratorVisitor {
+		@Override
+		String visitEnumValueNode(EnumValueNode node) {
+			return "\t${node.name} = ${node.value}"
+		}
 	}
 }

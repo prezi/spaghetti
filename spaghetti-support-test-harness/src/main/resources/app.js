@@ -18,6 +18,12 @@ return {
 				});
 			});
 
+			describe("#getPositionInPrimes()", function () {
+				it("should return the name of the prime enum value", function () {
+					expect(module.getPositionInPrimes(3 /* Second */)).to.equal("Second");
+				});
+			});
+
 			describe("#getValueOfTwo()", function () {
 				it("should return the value of the constant Numbers.TWO", function () {
 					expect(module.getValueOfTwo()).to.equal("two");

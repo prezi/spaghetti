@@ -14,7 +14,7 @@ class KotlinStructGeneratorVisitor extends AbstractKotlinMethodGeneratorVisitor 
 		}
 		def superStruct = node.superStruct == null ? "" : ": " + node.superStruct.accept(this) + " "
 		def members = node.children.findAll({ it instanceof PropertyNode || it instanceof MethodNode })*.accept(this).join("")
-"""trait ${typeName} ${superStruct}{
+"""interface ${typeName} ${superStruct}{
 ${members}
 }
 """

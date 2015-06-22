@@ -18,7 +18,7 @@ interface MyInterface<X> extends Tibor<X> {
 		def result = parseAndVisitInterface(definition, new KotlinInterfaceGeneratorVisitor(), mockInterface("Tibor", mockTypeParameter()))
 
 		expect:
-		result == """trait MyInterface<X>: com.example.test.Tibor<X> {
+		result == """interface MyInterface<X>: com.example.test.Tibor<X> {
 	/**
 	 * Does something.
 	 */
