@@ -2,26 +2,18 @@ package com.prezi.spaghetti.kotlin
 
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
-import com.prezi.spaghetti.generator.EnumGeneratorUtils
 
 class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 	@Override
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name
 
-		def namesToValues = EnumGeneratorUtils.calculateEnumValues(node)
-		def valueVisitor = new EnumValueVisitor(enumName, namesToValues)
-		def values = []
-		node.values.each { value ->
-			values.add value.accept(valueVisitor)
-		}
-
 		return \
 """class ${enumName} {
 	companion object {
-${values.join("\n")}
-		private val _values = hashMapOf(${namesToValues.collect { name, value -> "\"${value}\" to ${name}"}.join(", ")})
-		private val _names = hashMapOf(${namesToValues.collect { name, value -> "\"${value}\" to \"${name}\""}.join(", ")})
+${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
+		private val _values = hashMapOf(${node.values.collect { entry -> "\"${entry.value}\" to ${entry.name}"}.join(", ")})
+		private val _names = hashMapOf(${node.values.collect { entry -> "\"${entry.value}\" to \"${entry.name}\""}.join(", ")})
 
 		fun names():Array<String> = arrayOf(${node.values.collect { "\"${it}\"" }.join(", ")})
 
@@ -49,16 +41,14 @@ ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
 
 	private static class EnumValueVisitor extends AbstractKotlinGeneratorVisitor {
 		private final String enumName
-		private final Map<String, Integer> namesToValues
 
-		EnumValueVisitor(String enumName, Map<String, Integer> namesToValues) {
+		EnumValueVisitor(String enumName) {
 			this.enumName = enumName
-			this.namesToValues = namesToValues
 		}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "		val ${node.name} = ${namesToValues[node.name]} as ${enumName}"
+			return "		val ${node.name} = ${node.value} as ${enumName}"
 		}
 	}
 }
