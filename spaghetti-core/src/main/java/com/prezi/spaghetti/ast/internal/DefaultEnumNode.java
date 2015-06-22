@@ -10,10 +10,7 @@ import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
-import java.util.Set;
-
 public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, AnnotatedNodeInternal, DocumentedNodeInternal {
-
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNode.NONE;
 	private final NamedNodeSetInternal<EnumValueNode> values = NodeSets.newNamedNodeSet("enum value");
@@ -51,5 +48,4 @@ public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, Annot
 	public NamedNodeSetInternal<EnumValueNode> getValues() {
 		return values;
 	}
-
 }
