@@ -12,14 +12,10 @@ import java.util.Set;
 public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefinitionContext, DefaultEnumNode> {
 
 	private enum EnumAssignmentStyle {
-		// Enums with no entries
-		NoEntries,
 		// Enums with one or more entries, all implicit
 		Implicit,
 		// Enums with one or more entries, all explicit
-		Explicit,
-		// Enums with at least one implicit and explicit assignment
-		Mixed
+		Explicit
 	}
 
 	public EnumParser(Locator locator, ModuleParser.EnumDefinitionContext context, String moduleName) {
@@ -35,7 +31,7 @@ public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefini
 
 	@Override
 	public void parseInternal(TypeResolver resolver) {
-		EnumAssignmentStyle enumStyle = EnumAssignmentStyle.NoEntries;
+		EnumAssignmentStyle enumStyle = null;
 		// Counter for implicitly numbered enum entries
 		int ordinal = 0;
 		// Tally set to detect duplicate entry numberings
@@ -50,7 +46,7 @@ public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefini
 			EnumAssignmentStyle entryStyle =
 					value == null ? EnumAssignmentStyle.Implicit : EnumAssignmentStyle.Explicit;
 			// The style of the first entry determines the enumStyle
-			if (enumStyle == EnumAssignmentStyle.NoEntries) {
+			if (enumStyle == null) {
 				enumStyle = entryStyle;
 			// If any later entryStyle differs from the enumStyle, we have illegal mixed style
 			} else if (enumStyle != entryStyle) {
@@ -64,7 +60,7 @@ public class EnumParser extends AbstractModuleTypeParser<ModuleParser.EnumDefini
 			if (enumStyle == EnumAssignmentStyle.Implicit) {
 				value = ordinal++;
 			// Perform uniqueness check on explicit values
-			} else if (enumStyle == EnumAssignmentStyle.Explicit) {
+			} else {
 				if (!seenValues.add(value)) {
 					throw new AstParserException(location.getSource(), "Duplicate value in enum " + node.getName());
 				}
