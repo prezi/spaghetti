@@ -4,47 +4,50 @@ import com.prezi.spaghetti.ast.AstSpecification
 
 class EnumParserTest extends AstSpecification {
 
-	def "parse"() {
-		when:
-		def emptyNode = parseEnum("""
+	def "parse empty node"() {
+		given:
+		def node = parseEnum("""
 enum MyEnum {
 }
 """)
-		then:
-		emptyNode.name == "MyEnum"
-		emptyNode.values*.name.toList() == []
-		emptyNode.values*.value.toList() == []
-		emptyNode.values*.location*.toString() == []
-		0 * _
+		expect:
+		node.name == "MyEnum"
+		node.values*.name.toList() == []
+		node.values*.value.toList() == []
+		node.values*.location*.toString() == []
+	}
 
-		when:
-		def implicitNode = parseEnum("""
+	def "parse implicit node"() {
+		given:
+		def node = parseEnum("""
 enum MyEnum {
 	alma
 	bela
 }
 """)
-		then:
-		implicitNode.name == "MyEnum"
-		implicitNode.values*.name.toList() == ["alma", "bela"]
-		implicitNode.values*.value.toList() == [0, 1]
-		implicitNode.values*.location*.toString() == ["test:3:1", "test:4:1"]
-		0 * _
+		expect:
+		node.name == "MyEnum"
+		node.values*.name.toList() == ["alma", "bela"]
+		node.values*.value.toList() == [0, 1]
+		node.values*.location*.toString() == ["test:3:1", "test:4:1"]
+	}
 
-		when:
-		def explicitNode = parseEnum("""
+	def "parse explicit node"() {
+		given:
+		def node = parseEnum("""
 enum MyEnum {
 	alma = 2
 	bela = 7
 }
 """)
-		then:
-		explicitNode.name == "MyEnum"
-		explicitNode.values*.name.toList() == ["alma", "bela"]
-		explicitNode.values*.value.toList() == [2, 7]
-		explicitNode.values*.location*.toString() == ["test:3:1", "test:4:1"]
-		0 * _
+		expect:
+		node.name == "MyEnum"
+		node.values*.name.toList() == ["alma", "bela"]
+		node.values*.value.toList() == [2, 7]
+		node.values*.location*.toString() == ["test:3:1", "test:4:1"]
+	}
 
+	def "parse mixed node"() {
 		when:
 		parseEnum("""
 enum MyEnum {
@@ -53,9 +56,11 @@ enum MyEnum {
 }
 """)
 		then:
-		def mixedEx = thrown AstParserException
-		mixedEx.message == "Parse error in testMixed implicit and explicit entries in enum MyEnum"
+		def ex = thrown AstParserException
+		ex.message == "Parse error in testMixed implicit and explicit entries in enum MyEnum"
+	}
 
+	def "parse duplicate values"() {
 		when:
 		parseEnum("""
 enum MyEnum {
@@ -64,8 +69,8 @@ enum MyEnum {
 }
 """)
 		then:
-		def dupeEx = thrown AstParserException
-		dupeEx.message == "Parse error in testDuplicate value in enum MyEnum"
+		def ex = thrown AstParserException
+		ex.message == "Parse error in testDuplicate value in enum MyEnum"
 	}
 
 	def parseEnum(String enumDef) {
