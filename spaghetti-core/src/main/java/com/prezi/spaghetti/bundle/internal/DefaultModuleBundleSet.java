@@ -1,8 +1,6 @@
 package com.prezi.spaghetti.bundle.internal;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.ForwardingSortedSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;

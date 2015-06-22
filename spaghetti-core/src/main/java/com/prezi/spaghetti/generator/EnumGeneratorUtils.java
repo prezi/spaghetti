@@ -6,7 +6,6 @@ import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.internal.parser.AstParserException;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
