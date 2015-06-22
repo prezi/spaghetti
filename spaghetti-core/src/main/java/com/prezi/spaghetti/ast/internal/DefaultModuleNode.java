@@ -8,23 +8,22 @@ import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.ImportNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.MethodNode;
-import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.QualifiedTypeNode;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.util.Collections;
 
-public class DefaultModuleNode extends AbstractNamedNode implements ModuleNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+public class DefaultModuleNode extends AbstractNamedNode implements ModuleNodeInternal {
 	private static NodeSetKeyExtractor<FQName, ImportNode> IMPORT_QUALIFIED_ALIAS_EXTRACTOR = new NodeSetKeyExtractor<FQName, ImportNode>() {
 		@Override
 		public FQName key(ImportNode node) {
-			return FQName.fromString(null, node.getAlias());
+			return DefaultFQName.fromString(null, node.getAlias());
 		}
 	};
 
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 	private final String alias;
 	private final QualifiedNodeSetInternal<ImportNode> imports = new DefaultQualifiedNodeSet<ImportNode>(IMPORT_QUALIFIED_ALIAS_EXTRACTOR, "import", Collections.<ImportNode>emptySet());
 	private final QualifiedNodeSetInternal<QualifiedTypeNode> types = NodeSets.newQualifiedNodeSet("type");

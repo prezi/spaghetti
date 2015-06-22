@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implements InterfaceNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+public class DefaultInterfaceNode extends AbstractParametrizedTypeNode implements InterfaceNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 	private final QualifiedTypeNodeReferenceSetInternal<InterfaceReferenceBase<? extends InterfaceNodeBase>> superInterfaces = NodeSets.newQualifiedNodeReferenceSet("super interface");
 	private final NamedNodeSetInternal<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 

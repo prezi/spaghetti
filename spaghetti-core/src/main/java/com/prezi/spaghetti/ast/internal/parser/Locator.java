@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
 import com.prezi.spaghetti.ast.Location;
+import com.prezi.spaghetti.ast.internal.DefaultLocation;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -14,7 +15,7 @@ public final class Locator {
 	}
 
 	public Location locate(Token token) {
-		return new Location(source, token.getLine(), token.getCharPositionInLine());
+		return new DefaultLocation(source, token.getLine(), token.getCharPositionInLine());
 	}
 
 	public Location locate(TerminalNode node) {

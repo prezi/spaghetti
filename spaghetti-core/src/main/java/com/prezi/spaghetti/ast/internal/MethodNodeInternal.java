@@ -5,7 +5,7 @@ import com.prezi.spaghetti.ast.MethodParameterNode;
 import com.prezi.spaghetti.ast.TypeParameterNode;
 import com.prezi.spaghetti.ast.TypeReference;
 
-public interface MethodNodeInternal extends AnnotatedNodeInternal, MethodNode {
+public interface MethodNodeInternal extends MethodNode, AnnotatedNodeInternal, DocumentedNodeInternal, AstNodeInternal {
 	@Override
 	NamedNodeSetInternal<TypeParameterNode> getTypeParameters();
 	@Override

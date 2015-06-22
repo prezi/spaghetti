@@ -1,11 +1,10 @@
 package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.FQName;
-import com.prezi.spaghetti.ast.ImportNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
-public class DefaultImportNode extends AbstractNode implements ImportNode {
+public class DefaultImportNode extends AbstractNode implements ImportNodeInternal {
 
 	private final FQName qualifiedName;
 	private final String alias;
@@ -23,7 +22,7 @@ public class DefaultImportNode extends AbstractNode implements ImportNode {
 
 	@Override
 	public String toString() {
-		return qualifiedName.fullyQualifiedName;
+		return qualifiedName.getFullyQualifiedName();
 	}
 
 	@Override

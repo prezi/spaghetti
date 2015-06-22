@@ -2,7 +2,7 @@ package com.prezi.spaghetti.ast.internal.parser
 
 import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.QualifiedTypeNode
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import com.prezi.spaghetti.internal.grammar.ModuleParser
 import org.antlr.v4.runtime.BaseErrorListener
@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.misc.Nullable
 
 class AstParserSpecification extends AstSpecification {
 	static ModuleParser parser(String data) {
-		ModuleDefinitionParser.createParser(ModuleDefinitionSource.fromString("test", data)).parser
+		ModuleDefinitionParser.createParser(DefaultModuleDefinitionSource.fromString("test", data)).parser
 	}
 
 	static ModuleParser parser(Locator locator) {

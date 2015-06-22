@@ -2,8 +2,9 @@ package com.prezi.spaghetti.cli.commands;
 
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.definition.ModuleConfigurationParser;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser;
 import io.airlift.command.Option;
 
 import java.io.File;
@@ -22,6 +23,6 @@ public abstract class AbstractDefinitionAwareCommand extends AbstractSpaghettiCo
 	}
 
 	private static ModuleDefinitionSource parseDefinition(File file) throws IOException {
-		return ModuleDefinitionSource.fromFile(file);
+		return DefaultModuleDefinitionSource.fromFile(file);
 	}
 }

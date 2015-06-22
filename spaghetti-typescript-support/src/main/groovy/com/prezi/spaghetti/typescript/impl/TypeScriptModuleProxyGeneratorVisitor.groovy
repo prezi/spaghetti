@@ -32,7 +32,7 @@ ${node.methods*.accept(new MethodVisitor(node)).join("")}
 
 			return \
 """	${node.name}${typeParams}(${params}):${returnType} {
-		${node.returnType == VoidTypeReference.VOID ? "" : "return "}${module.name}.${module.alias}.${node.name}(${paramNames});
+		${node.returnType instanceof VoidTypeReference ? "" : "return "}${module.name}.${module.alias}.${node.name}(${paramNames});
 	}
 """
 		}

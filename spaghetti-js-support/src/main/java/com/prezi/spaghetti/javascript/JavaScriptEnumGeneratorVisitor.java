@@ -1,11 +1,10 @@
 package com.prezi.spaghetti.javascript;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class JavaScriptEnumGeneratorVisitor extends AbstractJavaScriptGeneratorVisitor {
@@ -15,17 +14,22 @@ public class JavaScriptEnumGeneratorVisitor extends AbstractJavaScriptGeneratorV
 		return embedInPackageStructure(node, new PackagedGenerator<EnumNode>() {
 			@Override
 			public String generate(EnumNode node, int indentLevel, String parent) {
-				final String indent = Strings.repeat("\t", indentLevel);
-				List<String> values = Lists.newArrayList();
+				final String indent = StringUtils.repeat("\t", indentLevel);
+				List<String> values = new ArrayList<String>();
 				int idx = 0;
 				for (EnumValueNode value : node.getValues()) {
-					values.add(indent + "\t\"" + value.getName() + "\": " + idx);
+					values.add(String.format("%s\t\"%s\": %d", indent, value.getName(), idx));
 					idx++;
 				}
-				String entries = Joiner.on(",\n").join(values);
-				return indent + parent + "." + node.getName() + " = {\n"
-						+ entries + "\n"
-						+ indent + "};\n";
+				String entries = StringUtils.join(values, ",\n");
+				return String.format(
+						"%s%s.%s = {\n" +
+						"%s\n" +
+						"%s};\n",
+						indent, parent, node.getName(),
+						entries,
+						indent
+				);
 			}
 		});
 	}

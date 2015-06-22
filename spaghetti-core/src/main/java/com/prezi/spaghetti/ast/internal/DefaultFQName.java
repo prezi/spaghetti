@@ -1,22 +1,19 @@
-package com.prezi.spaghetti.ast;
+package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import java.io.Serializable;
 import java.util.List;
 
-/**
- * Fully qualified name.
- */
-public final class FQName implements Comparable<FQName>, Serializable {
-	public final String namespace;
-	public final String localName;
-	public final String fullyQualifiedName;
+public class DefaultFQName implements FQName {
+	private final String namespace;
+	private final String localName;
+	private final String fullyQualifiedName;
 
-	private FQName(String namespace, String localName) {
+	private DefaultFQName(String namespace, String localName) {
 		this(makeFullyQualifiedName(namespace, localName), namespace, localName);
 	}
 
@@ -28,7 +25,7 @@ public final class FQName implements Comparable<FQName>, Serializable {
 		}
 	}
 
-	private FQName(String fullyQualifiedName, String namespace, String localName) {
+	private DefaultFQName(String fullyQualifiedName, String namespace, String localName) {
 		this.fullyQualifiedName = fullyQualifiedName;
 		this.localName = localName;
 		this.namespace = !Strings.isNullOrEmpty(namespace) ? namespace : null;
@@ -50,11 +47,11 @@ public final class FQName implements Comparable<FQName>, Serializable {
 			_name = fqName.substring(lastDot + 1);
 		}
 
-		return new FQName(fqName, _namespace, _name);
+		return new DefaultFQName(fqName, _namespace, _name);
 	}
 
 	public static FQName fromString(String namespace, String name) {
-		return new FQName(namespace, name);
+		return new DefaultFQName(namespace, name);
 	}
 
 	public static FQName fromContext(ModuleParser.QualifiedNameContext context) {
@@ -74,28 +71,46 @@ public final class FQName implements Comparable<FQName>, Serializable {
 		return fromString(namespace.toString(), localName);
 	}
 
-	public FQName qualifyLocalName(FQName name) {
-		if (name.hasNamespace()) {
-			return name;
-		} else {
-			return fromString(namespace, name.localName);
-		}
-	}
-
 	public static FQName qualifyLocalName(String namespace, FQName name) {
 		if (name.hasNamespace()) {
 			return name;
 		} else {
-			return fromString(namespace, name.localName);
+			return fromString(namespace, name.getLocalName());
 		}
 	}
 
+	@Override
+	public String getNamespace() {
+		return namespace;
+	}
+
+	@Override
+	public String getLocalName() {
+		return localName;
+	}
+
+	@Override
+	public String getFullyQualifiedName() {
+		return fullyQualifiedName;
+	}
+
+	@Override
+	public FQName qualifyLocalName(FQName name) {
+		if (name.hasNamespace()) {
+			return name;
+		} else {
+			return fromString(namespace, name.getLocalName());
+		}
+	}
+
+	@Override
 	public List<String> getParts() {
 		List<String> result = !Strings.isNullOrEmpty(namespace) ? Lists.newArrayList(namespace.split("\\.")) : Lists.<String> newArrayList();
 		result.add(localName);
 		return result;
 	}
 
+	@Override
 	public boolean hasNamespace() {
 		return namespace != null;
 	}
@@ -107,7 +122,7 @@ public final class FQName implements Comparable<FQName>, Serializable {
 
 	@Override
 	public int compareTo(FQName o) {
-		return fullyQualifiedName.compareTo(o.fullyQualifiedName);
+		return fullyQualifiedName.compareTo(o.getFullyQualifiedName());
 	}
 
 	@Override
@@ -117,7 +132,7 @@ public final class FQName implements Comparable<FQName>, Serializable {
 
 		FQName fqName = (FQName) o;
 
-		return fullyQualifiedName.equals(fqName.fullyQualifiedName);
+		return fullyQualifiedName.equals(fqName.getFullyQualifiedName());
 	}
 
 	@Override

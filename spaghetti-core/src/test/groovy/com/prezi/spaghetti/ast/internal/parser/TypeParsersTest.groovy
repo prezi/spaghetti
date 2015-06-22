@@ -8,9 +8,9 @@ import com.prezi.spaghetti.ast.TypeReference
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import spock.lang.Unroll
 
-import static com.prezi.spaghetti.ast.PrimitiveTypeReference.INT
-import static com.prezi.spaghetti.ast.PrimitiveTypeReference.STRING
-import static com.prezi.spaghetti.ast.VoidTypeReference.VOID
+import static com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal.INT
+import static com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal.STRING
+import static com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal.VOID
 
 class TypeParsersTest extends AstSpecification {
 	@Unroll

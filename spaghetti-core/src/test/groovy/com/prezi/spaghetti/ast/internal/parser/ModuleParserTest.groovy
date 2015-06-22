@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.ast.internal.parser
 
 import com.prezi.spaghetti.ast.AstSpecification
-import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.ast.internal.DefaultFQName
 
 class ModuleParserTest extends AstSpecification {
 	def "parse single"() {
@@ -70,7 +70,7 @@ struct MyStruct {
 		def moduleA = ModuleParser.create(locatorA.source).parse(resolver)
 		resolver = new ModuleTypeResolver(resolver, moduleA)
 		def moduleB = ModuleParser.create(locatorB.source).parse(resolver)
-		StructNode struct = moduleB.types.get(FQName.fromString("test.b.MyStruct")) as StructNode
+		StructNode struct = moduleB.types.get(DefaultFQName.fromString("test.b.MyStruct")) as StructNode
 
 		expect:
 		moduleA.types*.qualifiedName*.toString() == [

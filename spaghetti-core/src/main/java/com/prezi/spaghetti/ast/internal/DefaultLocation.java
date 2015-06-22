@@ -1,29 +1,34 @@
-package com.prezi.spaghetti.ast;
+package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Preconditions;
+import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
 
-public final class Location {
-	public static final Location INTERNAL = new Location(ModuleDefinitionSource.fromString("internal", ""), 0, 0);
+public final class DefaultLocation implements Location {
+	public static final Location INTERNAL = new DefaultLocation(DefaultModuleDefinitionSource.fromString("internal", ""), 0, 0);
 
 	private final ModuleDefinitionSource source;
 	private final int line;
 	private final int character;
 
-	public Location(ModuleDefinitionSource source, int line, int character) {
+	public DefaultLocation(ModuleDefinitionSource source, int line, int character) {
 		this.source = Preconditions.checkNotNull(source, "source");
 		this.line = line;
 		this.character = character;
 	}
 
+	@Override
 	public ModuleDefinitionSource getSource() {
 		return source;
 	}
 
+	@Override
 	public int getLine() {
 		return line;
 	}
 
+	@Override
 	public int getCharacter() {
 		return character;
 	}
@@ -35,9 +40,9 @@ public final class Location {
 
 		Location location = (Location) o;
 
-		if (character != location.character) return false;
-		if (line != location.line) return false;
-		if (!source.equals(location.source)) return false;
+		if (character != location.getCharacter()) return false;
+		if (line != location.getLine()) return false;
+		if (!source.equals(location.getSource())) return false;
 
 		return true;
 	}

@@ -3,7 +3,7 @@ package com.prezi.spaghetti.packaging.internal;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.internal.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;

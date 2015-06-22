@@ -1,0 +1,4 @@
+dependencies {
+	compile "com.prezi.haxe:gradle-haxe-plugin:4.1.6"
+	compile "org.webjars:requirejs:2.1.8"
+}

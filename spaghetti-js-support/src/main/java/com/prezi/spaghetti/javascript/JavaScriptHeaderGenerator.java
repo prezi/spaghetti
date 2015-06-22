@@ -1,8 +1,5 @@
 package com.prezi.spaghetti.javascript;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharSink;
-import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator;
 import com.prezi.spaghetti.generator.GeneratorParameters;
@@ -31,13 +28,13 @@ public class JavaScriptHeaderGenerator extends AbstractHeaderGenerator {
 	private static File createSourceFile(String header, String name, File outputDirectory, String contents) throws IOException {
 		File file = new File(outputDirectory, name + ".js");
 		FileUtils.deleteQuietly(file);
-		CharSink out = Files.asCharSink(file, Charsets.UTF_8);
-		out.write(
+		String headerString =
 				"/*\n"
 				+ " * " + header + "\n"
 				+ " */\n"
 				+ contents
-		);
+		;
+		FileUtils.write(file, headerString, "utf-8");
 		return file;
 	}
 }

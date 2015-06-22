@@ -1,8 +1,11 @@
 package com.prezi.spaghetti.ast
 
+import com.prezi.spaghetti.ast.internal.DefaultFQName
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference
+import com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal
+import com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal
 import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 
 import static com.prezi.spaghetti.ast.internal.TypeParameterResolver.resolveTypeParameters
@@ -14,13 +17,13 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		def locator = mockLocator("int")
 		def type = parseType(locator, resolver(), parser(locator).type())
 		expect:
-		resolveTypeParameters(type, [:]) == PrimitiveTypeReference.INT
+		resolveTypeParameters(type, [:]) == PrimitiveTypeReferenceInternal.INT
 	}
 
 	def "resolveTypeParameters chain"() {
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def bindings = [
-				(paramT): PrimitiveTypeReference.STRING
+				(paramT): PrimitiveTypeReferenceInternal.STRING
 		]
 
 		def locator = mockLocator("int->T->void")
@@ -29,9 +32,9 @@ class TypeParameterResolverTest extends AstParserSpecification {
 
 		expect:
 		result.elements == [
-				PrimitiveTypeReference.INT,
-				PrimitiveTypeReference.STRING,
-				VoidTypeReference.VOID
+				PrimitiveTypeReferenceInternal.INT,
+				PrimitiveTypeReferenceInternal.STRING,
+				VoidTypeReferenceInternal.VOID
 		]
 	}
 
@@ -39,11 +42,11 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		// T -> U -> string
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
-		def iface = new DefaultInterfaceNode(mockLoc, FQName.fromString("com.example.test.Iface"))
+		def iface = new DefaultInterfaceNode(mockLoc, DefaultFQName.fromString("com.example.test.Iface"))
 		iface.getTypeParameters().addInternal(paramT);
 		def bindings = [
 				(paramT): new DefaultTypeParameterReference(mockLoc, paramU, 0),
-				(paramU): PrimitiveTypeReference.STRING,
+				(paramU): PrimitiveTypeReferenceInternal.STRING,
 		]
 
 		def locator = mockLocator("com.example.test.Iface<T>")
@@ -53,7 +56,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		expect:
 		result.type == iface
 		result.arguments == [
-				PrimitiveTypeReference.STRING
+				PrimitiveTypeReferenceInternal.STRING
 		]
 	}
 
@@ -62,7 +65,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		// T[] -> U[]
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
-		def iface = new DefaultInterfaceNode(mockLoc, FQName.fromString("com.example.test.Iface"))
+		def iface = new DefaultInterfaceNode(mockLoc, DefaultFQName.fromString("com.example.test.Iface"))
 		iface.getTypeParameters().addInternal(paramT);
 		def bindings = [
 				(paramT): new DefaultTypeParameterReference(mockLoc, paramU, 0)
@@ -92,8 +95,8 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		TypeChain result = (TypeChain) resolveTypeParameters(type, bindings)
 
 		expect:
-		result.elements[0] == PrimitiveTypeReference.INT
-		result.elements[2] == VoidTypeReference.VOID
+		result.elements[0] == PrimitiveTypeReferenceInternal.INT
+		result.elements[2] == VoidTypeReferenceInternal.VOID
 		((TypeParameterReference) result.elements[1]).type == paramU
 	}
 }

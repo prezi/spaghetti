@@ -1,8 +1,5 @@
 package com.prezi.spaghetti.ast.internal;
 
-import com.prezi.spaghetti.ast.ExternInterfaceReference;
-import com.prezi.spaghetti.ast.InterfaceReference;
-import com.prezi.spaghetti.ast.StructReference;
 import com.prezi.spaghetti.ast.TypeParameterNode;
 import com.prezi.spaghetti.ast.TypeReference;
 
@@ -29,14 +26,14 @@ public class TypeParameterResolver {
 				return parametrizedRef;
 			}
 			ParametrizedTypeNodeReferenceInternal<?> result;
-			if (node instanceof StructReference) {
-				StructReference structRef = (StructReference) node;
+			if (node instanceof StructReferenceInternal) {
+				StructReferenceInternal structRef = (StructReferenceInternal) node;
 				result = new DefaultStructReference(structRef.getLocation(), structRef.getType(), structRef.getArrayDimensions());
-			} else if(node instanceof InterfaceReference) {
-				InterfaceReference ifaceRef = (InterfaceReference) node;
+			} else if(node instanceof InterfaceReferenceInternal) {
+				InterfaceReferenceInternal ifaceRef = (InterfaceReferenceInternal) node;
 				result = new DefaultInterfaceReference(ifaceRef.getLocation(), ifaceRef.getType(), ifaceRef.getArrayDimensions());
-			} else if (node instanceof ExternInterfaceReference) {
-				ExternInterfaceReference externRef = (ExternInterfaceReference) node;
+			} else if (node instanceof ExternInterfaceReferenceInternal) {
+				ExternInterfaceReferenceInternal externRef = (ExternInterfaceReferenceInternal) node;
 				result = new DefaultExternInterfaceReference(externRef.getLocation(), externRef.getType(), externRef.getArrayDimensions());
 			} else {
 				throw new AssertionError("Unknown parametrized type: " + node.getClass());

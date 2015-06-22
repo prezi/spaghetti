@@ -2,14 +2,13 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
-import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
-public class DefaultEnumValueNode extends AbstractNamedNode implements EnumValueNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+public class DefaultEnumValueNode extends AbstractNamedNode implements EnumValueNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private final Integer value;
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 
 	public DefaultEnumValueNode(Location location, String name, Integer value) {
 		super(location, name);

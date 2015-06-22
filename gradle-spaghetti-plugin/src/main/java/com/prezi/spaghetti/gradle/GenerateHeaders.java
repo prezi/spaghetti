@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.gradle;
 
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.Generators;
 import com.prezi.spaghetti.generator.HeaderGenerator;
 import com.prezi.spaghetti.generator.internal.DefaultGeneratorParameters;
+import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import org.apache.commons.io.FileUtils;

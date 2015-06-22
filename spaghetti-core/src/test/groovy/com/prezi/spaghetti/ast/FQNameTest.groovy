@@ -1,12 +1,13 @@
 package com.prezi.spaghetti.ast
 
+import com.prezi.spaghetti.ast.internal.DefaultFQName
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class FQNameTest extends Specification {
 	def "invalids"() {
 		when:
-		FQName.fromString(what)
+		DefaultFQName.fromString(what)
 
 		then:
 		def ex = thrown IllegalArgumentException
@@ -20,7 +21,7 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "from string #nameAsString"() {
-		def fqname = FQName.fromString(nameAsString)
+		def fqname = DefaultFQName.fromString(nameAsString)
 
 		expect:
 		fqname.namespace == namespace
@@ -37,7 +38,7 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "from namespace and local name: #nameAsString"() {
-		def fqname = FQName.fromString(namespace, localName)
+		def fqname = DefaultFQName.fromString(namespace, localName)
 
 		expect:
 		fqname.namespace == namespace
@@ -53,7 +54,7 @@ class FQNameTest extends Specification {
 	}
 
 	def "from empty namespace becomes null namepsace"() {
-		def fqname = FQName.fromString("", "lajos")
+		def fqname = DefaultFQName.fromString("", "lajos")
 
 		expect:
 		fqname.namespace == null
@@ -63,8 +64,8 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "qualify name against another name"() {
-		def parent = FQName.fromString(parentNameAsString)
-		def child = FQName.fromString(nameAsString)
+		def parent = DefaultFQName.fromString(parentNameAsString)
+		def child = DefaultFQName.fromString(nameAsString)
 		def resolved = parent.qualifyLocalName(child)
 
 		expect:
@@ -79,8 +80,8 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "qualify local name against namespace"() {
-		def child = FQName.fromString(nameAsString)
-		def resolved = FQName.qualifyLocalName(parentNamespace, child)
+		def child = DefaultFQName.fromString(nameAsString)
+		def resolved = DefaultFQName.qualifyLocalName(parentNamespace, child)
 
 		expect:
 		resolved.fullyQualifiedName == resultName
@@ -93,7 +94,7 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "has namespace #name"() {
-		def fqname = FQName.fromString(name)
+		def fqname = DefaultFQName.fromString(name)
 
 		expect:
 		fqname.hasNamespace() == hasNamespace
@@ -106,8 +107,8 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "compare to #a <=> #b"() {
-		def fqa = FQName.fromString(a)
-		def fqb = FQName.fromString(b)
+		def fqa = DefaultFQName.fromString(a)
+		def fqb = DefaultFQName.fromString(b)
 
 		expect:
 		(fqa <=> fqb) == (a <=> b)
@@ -123,7 +124,7 @@ class FQNameTest extends Specification {
 
 	@Unroll
 	def "parts of #fqName == #parts"() {
-		def name = FQName.fromString(fqName)
+		def name = DefaultFQName.fromString(fqName)
 
 		expect:
 		name.parts == parts

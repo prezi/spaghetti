@@ -1,16 +1,17 @@
 package com.prezi.spaghetti.ast
 
+import com.prezi.spaghetti.ast.internal.DefaultLocation
 import com.prezi.spaghetti.ast.internal.parser.Locator
 import com.prezi.spaghetti.ast.internal.parser.TypeResolutionContext
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import spock.lang.Specification
 
 class AstSpecification extends Specification {
-	protected static Location mockLoc = new Location(ModuleDefinitionSource.fromString("mock", ""), -1, -1)
+	protected static Location mockLoc = new DefaultLocation(DefaultModuleDefinitionSource.fromString("mock", ""), -1, -1)
 
 	static Locator mockLocator(String definition) {
-		return new Locator(ModuleDefinitionSource.fromString("test", definition))
+		return new Locator(DefaultModuleDefinitionSource.fromString("test", definition))
 	}
 
 	protected TypeResolver mockResolver(Map<String, Closure<TypeNode>> mocker = [:]) {

@@ -1,7 +1,7 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
-import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceNode;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -12,7 +12,7 @@ public class ExternInterfaceParser extends AbstractModuleTypeParser<ModuleParser
 	}
 
 	private static DefaultExternInterfaceNode createNode(Locator locator, ModuleParser.ExternInterfaceDefinitionContext context) {
-		DefaultExternInterfaceNode node = new DefaultExternInterfaceNode(locator.locate(context.qualifiedName()), FQName.fromContext(context.qualifiedName()));
+		DefaultExternInterfaceNode node = new DefaultExternInterfaceNode(locator.locate(context.qualifiedName()), DefaultFQName.fromContext(context.qualifiedName()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 

@@ -4,15 +4,14 @@ import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.ast.AnnotationNode;
 import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.DocumentationNode;
-import com.prezi.spaghetti.ast.EnumNode;
 import com.prezi.spaghetti.ast.EnumValueNode;
 import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 
-public class DefaultEnumNode extends AbstractTypeNode implements EnumNode, AnnotatedNodeInternal, DocumentedNodeInternal {
+public class DefaultEnumNode extends AbstractTypeNode implements EnumNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 	private final NamedNodeSetInternal<EnumValueNode> values = NodeSets.newNamedNodeSet("enum value");
 
 	public DefaultEnumNode(Location location, FQName qualifiedName) {

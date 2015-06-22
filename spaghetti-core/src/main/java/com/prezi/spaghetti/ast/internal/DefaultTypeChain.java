@@ -7,7 +7,6 @@ import com.prezi.spaghetti.ast.AstNode;
 import com.prezi.spaghetti.ast.Location;
 import com.prezi.spaghetti.ast.ModuleVisitor;
 import com.prezi.spaghetti.ast.TypeReference;
-import com.prezi.spaghetti.ast.VoidTypeReference;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +21,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	public List<TypeReference> getParameters() {
-		if (elements.size() == 2 && elements.get(0).equals(VoidTypeReference.VOID)) {
+		if (elements.size() == 2 && elements.get(0).equals(VoidTypeReferenceInternal.VOID)) {
 			return Collections.emptyList();
 		}
 

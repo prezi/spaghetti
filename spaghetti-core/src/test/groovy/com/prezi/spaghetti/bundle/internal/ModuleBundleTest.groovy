@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.bundle.internal
 
 import com.prezi.spaghetti.bundle.ModuleBundle
-import com.prezi.spaghetti.bundle.ModuleBundleParameters
 import com.prezi.spaghetti.internal.Version
 import com.prezi.spaghetti.structure.internal.FileProcessor
 import com.prezi.spaghetti.structure.internal.IOAction

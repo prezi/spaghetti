@@ -16,7 +16,7 @@ import com.prezi.spaghetti.ast.StructReference
 import com.prezi.spaghetti.ast.TypeChain
 import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.VoidTypeReference
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang3.StringEscapeUtils
 
 abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 	private static def EXTERNS = [:].asImmutable()

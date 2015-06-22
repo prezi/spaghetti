@@ -6,12 +6,11 @@ import com.google.common.io.Resources
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
-import com.prezi.spaghetti.bundle.ModuleBundleParameters
-import com.prezi.spaghetti.bundle.ModuleBundleSet
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
+import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
 import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.definition.ModuleConfigurationParser
-import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.generator.HeaderGenerator
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor
@@ -43,14 +42,14 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		when:
 		// Build the dependency module
-		def testDependencyDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/DependencyModule.module"))
-		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, ModuleBundleSet.EMPTY)
+		def testDependencyDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/DependencyModule.module"))
+		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, new DefaultModuleBundleSet([], []))
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
 		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text, [], [])
 
 		// Build the module
-		def testModuleDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
+		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
 		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [testDependencyDefinition], [])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
@@ -71,7 +70,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion"])
 
 		// Make the app bundle
-		def testAppDefinition = ModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
+		def testAppDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
 		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [testModuleDefinition, testDependencyDefinition], [])
 		def appModule = appConfig.localModule
 

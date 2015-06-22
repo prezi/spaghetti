@@ -9,7 +9,7 @@ import com.prezi.spaghetti.ast.TypeReference;
 
 import java.util.Map;
 
-public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeReference> implements MethodParameterNode, AnnotatedNodeInternal {
+public class DefaultMethodParameterNode extends AbstractTypeNamePairNode<TypeReference> implements MethodParameterNodeInternal {
 
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private final boolean isOptional;

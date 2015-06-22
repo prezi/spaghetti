@@ -1,9 +1,11 @@
-package com.prezi.spaghetti.bundle;
+package com.prezi.spaghetti.bundle.internal;
+
+import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 
 /**
  * Types of elements of a module bundle.
  * <p>
- * Used in {@link com.prezi.spaghetti.bundle.ModuleBundleFactory#extract(ModuleBundle, java.io.File, ModuleBundleElement...)}.
+ * Used in {@link ModuleBundleFactory#extract(com.prezi.spaghetti.bundle.ModuleBundle, java.io.File, ModuleBundleElement...)}.
  * </p>
  */
 public enum ModuleBundleElement {

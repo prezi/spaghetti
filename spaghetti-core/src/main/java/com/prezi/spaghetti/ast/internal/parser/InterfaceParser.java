@@ -1,11 +1,11 @@
 package com.prezi.spaghetti.ast.internal.parser;
 
 import com.prezi.spaghetti.ast.ExternInterfaceNode;
-import com.prezi.spaghetti.ast.FQName;
 import com.prezi.spaghetti.ast.InterfaceNode;
 import com.prezi.spaghetti.ast.InterfaceNodeBase;
 import com.prezi.spaghetti.ast.InterfaceReferenceBase;
 import com.prezi.spaghetti.ast.TypeNode;
+import com.prezi.spaghetti.ast.internal.DefaultFQName;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceNode;
 import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterNode;
@@ -18,7 +18,7 @@ public class InterfaceParser extends AbstractModuleTypeParser<ModuleParser.Inter
 	}
 
 	private static DefaultInterfaceNode createNode(Locator locator, ModuleParser.InterfaceDefinitionContext context, String moduleName) {
-		DefaultInterfaceNode node = new DefaultInterfaceNode(locator.locate(context.Name()), FQName.fromString(moduleName, context.Name().getText()));
+		DefaultInterfaceNode node = new DefaultInterfaceNode(locator.locate(context.Name()), DefaultFQName.fromString(moduleName, context.Name().getText()));
 		AnnotationsParser.parseAnnotations(locator, context.annotations(), node);
 		DocumentationParser.parseDocumentation(locator, context.documentation, node);
 

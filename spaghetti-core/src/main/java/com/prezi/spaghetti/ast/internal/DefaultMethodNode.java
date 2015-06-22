@@ -14,9 +14,9 @@ import com.prezi.spaghetti.ast.TypeReference;
 import java.util.Collections;
 import java.util.Map;
 
-public class DefaultMethodNode extends AbstractNamedNode implements MethodNodeInternal, DocumentedNodeInternal {
+public class DefaultMethodNode extends AbstractNamedNode implements MethodNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
-	private DocumentationNode documentation = DocumentationNode.NONE;
+	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
 	private final NamedNodeSetInternal<TypeParameterNode> typeParameters = NodeSets.newNamedNodeSet("type parameter");
 	private TypeReference returnType;
 	private final NamedNodeSetInternal<MethodParameterNode> parameters = NodeSets.newNamedNodeSet("parameter");

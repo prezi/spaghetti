@@ -123,9 +123,7 @@ subprojects { subproject ->
 	}
 }
 
-ext.codeProjects = subprojects.findAll {
-			it.name == "spaghetti-core" || it.name == "spaghetti-support-test-harness" || it.name ==~ /gradle-.*/ || it.name ==~ /spaghetti-.*-support/
-		}
+ext.codeProjects = subprojects - project(":spaghetti-docs")
 ext.groovyProjects = [
 		project(":spaghetti-support-test-harness"),
 		project(":spaghetti-haxe-support"),
@@ -134,18 +132,8 @@ ext.groovyProjects = [
 ]
 ext.javaProjects = codeProjects - groovyProjects
 
-def addTestDependencies(Project project, Configuration config) {
-	project.dependencies {
-		"${config.name}" "junit:junit:4.11"
-		"${config.name}" "org.mockito:mockito-all:1.9.5"
-		"${config.name}"("org.spockframework:spock-core:0.7-groovy-2.0") {
-			exclude group: "org.codehaus.groovy"
-		}
-		"${config.name}" "org.codehaus.groovy:groovy:${groovyVersion}"
-	}
-}
 
-configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
+configure(codeProjects) {
 	apply plugin: 'groovy'
 
 	sourceCompatibility = "1.6"
@@ -178,7 +166,14 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 		options.encoding = "UTF-8"
 	}
 
-	addTestDependencies(project, configurations.testCompile)
+	project.dependencies {
+		testCompile "junit:junit:4.11"
+		testCompile "org.mockito:mockito-all:1.9.5"
+		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
+			exclude group: "org.codehaus.groovy"
+		}
+		testCompile "org.codehaus.groovy:groovy:${groovyVersion}"
+	}
 
 	test {
 		testLogging.showStandardStreams = true
@@ -212,20 +207,7 @@ configure(subprojects.findAll { it.name != "spaghetti-docs" }) {
 		archives docJar
 		archives sourcesJar
 	}
-}
 
-project(":spaghetti-kotlin-support") {
-	task extractKotlinJsLib(type: Copy) {
-		from zipTree("${System.getenv("KOTLIN_HOME")}/lib/kotlin-jslib.jar")
-		into "${buildDir}/kotlinjs"
-	}
-
-	integTest {
-		dependsOn extractKotlinJsLib
-	}
-}
-
-subprojects {
 	configurations {
 		groovydoc { extendsFrom compile }
 	}
@@ -284,18 +266,16 @@ def inheritJavadoc(Project target, Project dependency) {
 }
 
 // Make Javadocs depend on core
-configure(codeProjects - project(":spaghetti-core")) { p ->
+configure(codeProjects - project(":spaghetti-core") - project(":spaghetti-api")) { p ->
 	inheritJavadoc p, project(":spaghetti-core")
+}
+
+configure(project(":spaghetti-core")) { p ->
+	inheritJavadoc p, project(":spaghetti-api")
 }
 
 configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) { p ->
 	inheritJavadoc p, project(":gradle-spaghetti-plugin")
-}
-
-project(":spaghetti-core") {
-	dependencies {
-		compile "com.google.javascript:closure-compiler:v20140814"
-	}
 }
 
 configure(groovyProjects) {
@@ -304,18 +284,9 @@ configure(groovyProjects) {
 	}
 }
 
-configure(project(":spaghetti-support-test-harness")) {
-	dependencies {
-		compile project(path: ":spaghetti-core")
-		compile project(path: ":spaghetti-core", configuration: "testCompile")
-	}
-
-	addTestDependencies(project, configurations.compile)
-}
-
 configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	dependencies {
-		compile project(path: ":spaghetti-core")
+		compile project(path: ":spaghetti-api")
 		testCompile project(path: ":spaghetti-support-test-harness")
 	}
 
@@ -329,75 +300,10 @@ configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	}
 }
 
-configure(project(":spaghetti")) {
-	apply plugin: "application"
-
-	dependencies {
-		compile project(":spaghetti-core")
-		compile "io.airlift:airline:0.6"
-		compile "ch.qos.logback:logback-classic:1.1.2"
-		runtime rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
-	}
-
-	mainClassName = "com.prezi.spaghetti.cli.SpaghettiCli"
-
-	build { dependsOn installApp }
-
-	configure(applicationDistribution) {
-		from(rootProject.file("README.md")) {
-			into "/"
-		}
-		from(rootProject.file("LICENSE.txt")) {
-			into "/"
-		}
-	}
-
-	distTar {
-		compression Compression.GZIP
-	}
-}
-
-project(":gradle-spaghetti-plugin") {
-	dependencies {
-		compile gradleApi()
-		compile project(path: ":spaghetti-core")
-
-		// Required only for the incubating stuff brought over from Gradle 2.0
-		compile "commons-lang:commons-lang:2.6"
-		compile "commons-io:commons-io:2.4"
-
-		// Add all support projects
-		compile rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
-	}
-
-	task run(type: Exec) {
-		// Make sure we install all dependencies
-		dependsOn install
-		configurations.runtime.allDependencies.withType(ProjectDependency).all { ProjectDependency projectDep ->
-			dependsOn projectDep.dependencyProject.getTasksByName("install", false)
-		}
-		workingDir "src/test/at"
-		commandLine = ["gradle", "clean", "packApplication", "-is", "--no-daemon"]
-	}
-}
-
 configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 	dependencies {
 		compile gradleApi()
 		compile project(path: ":gradle-spaghetti-plugin")
-	}
-}
-
-project(":gradle-spaghetti-haxe-plugin") {
-	dependencies {
-		compile "com.prezi.haxe:gradle-haxe-plugin:4.1.6"
-		compile "org.webjars:requirejs:2.1.8"
-	}
-}
-
-project(":gradle-spaghetti-typescript-plugin") {
-	dependencies {
-		compile "com.prezi.typescript:gradle-typescript-plugin:2.2.5"
 	}
 }
 
