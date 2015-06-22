@@ -8,14 +8,13 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitEnumNode(EnumNode node) {
 		def enumName = node.name
-		def entries = node.normalizedValues
 
 		return \
 """abstract ${enumName}(Int) {
-${entries*.accept(new EnumValueVisitor(node.name)).join("\n")}
+${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
 
-	static var _values = { ${entries.collect { entry -> "\"${entry.value}\": ${entry.name}" }.join(", ")} };
-	static var _names =  { ${entries.collect { entry -> "\"${entry.value}\": \"${entry.name}\"" }.join(", ")} };
+	static var _values = { ${node.values.collect { entry -> "\"${entry.value}\": ${entry.name}" }.join(", ")} };
+	static var _names =  { ${node.values.collect { entry -> "\"${entry.value}\": \"${entry.name}\"" }.join(", ")} };
 
 	inline function new(value:Int) {
 		this = value;
@@ -40,13 +39,13 @@ ${entries*.accept(new EnumValueVisitor(node.name)).join("\n")}
 	@:from public static inline function valueOf(name:String) {
 		return switch(name)
 		{
-${entries.collect {"			case \"${it}\": ${it};"}.join("\n")}
+${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 			default: throw "Invalid name for ${enumName}: " + name;
 		};
 	}
 
 	public static function values():Array<${enumName}> {
-		return [${entries.collect { it }.join(", ")}];
+		return [${node.values.collect { it }.join(", ")}];
 	}
 }
 """
