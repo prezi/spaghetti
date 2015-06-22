@@ -73,6 +73,20 @@ enum MyEnum {
 		ex.message == "Parse error in testDuplicate value in enum MyEnum"
 	}
 
+
+	def "parse duplicate names"() {
+		when:
+		parseEnum("""
+enum MyEnum {
+	alma = 1
+	alma = 2
+}
+""")
+		then:
+		def ex = thrown InternalAstParserException
+		ex.message == " at line 4:1: A(n) enum value with the same name already exists: alma"
+	}
+
 	def parseEnum(String enumDef) {
 		def locator = mockLocator(enumDef)
 		def context = AstParserSpecification.parser(locator).enumDefinition()
