@@ -390,7 +390,7 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 
 project(":gradle-spaghetti-haxe-plugin") {
 	dependencies {
-		compile "com.prezi.haxe:gradle-haxe-plugin:4.1.5"
+		compile "com.prezi.haxe:gradle-haxe-plugin:4.1.6"
 		compile "org.webjars:requirejs:2.1.8"
 	}
 }

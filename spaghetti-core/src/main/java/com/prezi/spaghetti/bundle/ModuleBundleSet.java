@@ -1,6 +1,5 @@
 package com.prezi.spaghetti.bundle;
 
-import com.google.common.base.Predicate;
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet;
 
 import java.util.Collections;
