@@ -24,7 +24,7 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 		result.append("function(){");
 		StringBuilder externalDependenciesDeclaration = new StringBuilder();
 		int externalDependencyIdx = 0;
-		for (String externalDependency : params.bundle.getExternalDependencies()) {
+		for (String externalDependency : params.bundle.getExternalDependencies().keySet()) {
 			externalDependenciesDeclaration.append(String.format("var %s=arguments[%d];", externalDependency, externalDependencyIdx));
 			externalDependencyIdx++;
 		}

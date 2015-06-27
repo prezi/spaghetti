@@ -46,7 +46,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, new DefaultModuleBundleSet([], []))
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
-		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text, [], [])
+		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text, [], [:])
 
 		// Build the module
 		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
@@ -67,7 +67,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		processedJs << processJavaScript(bundleProcessor, moduleConfig, compiledJs.text)
 
 		// Make the module bundle
-		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion"])
+		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion": "libName"])
 
 		// Make the app bundle
 		def testAppDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
@@ -80,7 +80,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 				testAppDefinition.contents,
 				processedAppJs,
 				[module.name, testDependencyModule.name],
-                [])
+                [:])
 
 		// Package the application
 		def appDir = new File(rootDir, "application")
@@ -91,7 +91,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 				true,
 				[],
 				[],
-				["libWithVersion": "chai"]
+				["libName": "chai"]
 		)
 		ApplicationType.COMMON_JS.packager.packageApplicationDirectory(appDir, applicationPackagingParams)
 
@@ -131,7 +131,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		return processor.processModuleJavaScript(bundleProcessorParams, javaScript)
 	}
 
-	private ModuleBundle bundle(String name, String definition, String javaScript, Collection<String> moduleDependencies, Collection<String> externalDependencies) {
+	private ModuleBundle bundle(String name, String definition, String javaScript, Collection<String> moduleDependencies, Map<String, String> externalDependencies) {
 		def bundleDir = new File(rootDir, "bundles/" + name)
 		return ModuleBundleFactory.createDirectory(bundleDir, new ModuleBundleParameters(
 				name,

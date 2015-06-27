@@ -33,10 +33,10 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 			+ "var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));";
 
 		StringBuilder result = new StringBuilder();
-		result.append("define([\"").append(Joiner.on("\",\"").join(Iterables.concat(params.bundle.getExternalDependencies(), moduleNamesWithRequire))).append("\"],function(){");
+		result.append("define([\"").append(Joiner.on("\",\"").join(Iterables.concat(params.bundle.getExternalDependencies().values(), moduleNamesWithRequire))).append("\"],function(){");
 		StringBuilder externalDependenciesDeclaration = new StringBuilder();
 		int externalDependencyIdx = 0;
-		for (String externalDependency : params.bundle.getExternalDependencies()) {
+		for (String externalDependency : params.bundle.getExternalDependencies().keySet()) {
 			externalDependenciesDeclaration.append(String.format("var %s=arguments[%d];", externalDependency, externalDependencyIdx));
 			externalDependencyIdx++;
 		}

@@ -1,9 +1,11 @@
 package com.prezi.spaghetti.bundle.internal;
 
+import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
 
 public abstract class AbstractModuleBundle implements ModuleBundleInternal {
@@ -11,15 +13,15 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final String version;
 	private final String sourceBaseUrl;
 	private final SortedSet<String> dependentModules;
-	private final SortedSet<String> externalDependencies;
+	private final SortedMap<String, String> externalDependencies;
 	private final SortedSet<String> resourcePaths;
 
-	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, Set<String> externalDependencies, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, SortedMap<String, String> externalDependencies, Set<String> resourcePaths) {
 		this.name = name;
 		this.version = version;
 		this.sourceBaseUrl = sourceBaseUrl;
 		this.dependentModules = ImmutableSortedSet.copyOf(dependentModules);
-		this.externalDependencies = ImmutableSortedSet.copyOf(externalDependencies);
+		this.externalDependencies = ImmutableSortedMap.copyOf(externalDependencies);
 		this.resourcePaths = ImmutableSortedSet.copyOf(resourcePaths);
 	}
 
@@ -62,7 +64,7 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	}
 
 	@Override
-	public final SortedSet<String> getExternalDependencies() {
+	public final SortedMap<String, String> getExternalDependencies() {
 		return externalDependencies;
 	}
 
