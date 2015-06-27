@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractApplicationPackager implements ApplicationPackager {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractApplicationPackager.class);
@@ -45,8 +46,8 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 			throw new IllegalArgumentException("Main bundle \"" + params.mainModule + "\" not found among bundles: " + Joiner.on(", ").join(params.bundles));
 		}
 
-		Map<String, String> unmetExternals =
-				Maps.filterValues(params.bundles.getExternalDependencies(), new Predicate<String>() {
+		Map<String, Set<String>> unmetExternals =
+				Maps.filterKeys(params.bundles.getExternalDependencies(), new Predicate<String>() {
 					@Override
 					public boolean apply(@Nullable String external) {
 						return !params.externals.containsKey(external);
@@ -54,8 +55,10 @@ public abstract class AbstractApplicationPackager implements ApplicationPackager
 				});
 		if (!unmetExternals.isEmpty()) {
 			logger.warn("Some modules have external dependencies without a specified path:");
-			for (Map.Entry<String, String> unmetExternal : unmetExternals.entrySet()) {
-				logger.warn("\t{} depends on {}", unmetExternal.getKey(), unmetExternal.getValue());
+			for (Map.Entry<String, Set<String>> unmetExternal : unmetExternals.entrySet()) {
+				logger.warn("\t{} is a dependency of {}",
+						unmetExternal.getKey(),
+						Joiner.on(", ").join(unmetExternal.getValue()));
 			}
 		}
 

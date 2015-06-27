@@ -4,13 +4,16 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ForwardingSortedSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> implements ModuleBundleSet {
 	private final SortedSet<ModuleBundle> directBundles;
@@ -45,11 +48,15 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	}
 
 	@Override
-	public SortedMap<String, String> getExternalDependencies() {
-		SortedMap<String, String> externals = Maps.newTreeMap();
+	public SortedMap<String, Set<String>> getExternalDependencies() {
+		SortedMap<String, Set<String>> externals = Maps.newTreeMap();
 		for (ModuleBundle bundle : this) {
 			for (String external : bundle.getExternalDependencies()) {
-				externals.put(bundle.getName(), external);
+				Set<String> bundles = externals.containsKey(external) ?
+						externals.get(external) :
+						Sets.<String>newTreeSet();
+				bundles.add(bundle.getName());
+				externals.put(external, bundles);
 			}
 		}
 		return externals;

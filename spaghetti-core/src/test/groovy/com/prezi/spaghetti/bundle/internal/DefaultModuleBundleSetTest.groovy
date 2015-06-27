@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.bundle.internal
 
 import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.structure.internal.StructuredProcessor
 import spock.lang.Specification
 
 class DefaultModuleBundleSetTest extends Specification {
@@ -38,6 +39,30 @@ class DefaultModuleBundleSetTest extends Specification {
 
 		then:
 		thrown IllegalArgumentException
+	}
+
+	def "external dependency collection"() {
+		def bundleA = createBundleWithExternalDependencies("A", ["alpha", "beta"] as SortedSet)
+		def bundleB = createBundleWithExternalDependencies("B", ["alpha", "gamma"] as SortedSet)
+
+		when:
+		def set = new DefaultModuleBundleSet([bundleA, bundleB], [] as Set)
+
+		then:
+		set.externalDependencies.get("alpha") == (["A", "B"] as SortedSet)
+		set.externalDependencies.get("beta") == (["A"] as SortedSet)
+		set.externalDependencies.get("zeta") == null
+	}
+
+	ModuleBundle createBundleWithExternalDependencies(String name, SortedSet<String> extDeps) {
+		new DefaultModuleBundle(
+				Mock(StructuredProcessor),
+				name,
+				"1.0",
+				"",
+				[] as Set,
+				extDeps,
+				[] as Set)
 	}
 
 	ModuleBundle createBundle(String name) {
