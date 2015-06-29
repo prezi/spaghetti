@@ -19,3 +19,8 @@ build/
 .temp/
 
 _site/
+
+.project
+.classpath
+.settings/
+bin/

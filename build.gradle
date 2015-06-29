@@ -20,6 +20,7 @@ allprojects {
 	description = "Spaghetti"
 	version = gitVersion
 	apply plugin: 'idea'
+	apply plugin: 'eclipse'
 
 	tasks.withType(Upload).all { dependsOn "check" }
 	tasks.withType(org.gradle.api.tasks.compile.JavaCompile) {
