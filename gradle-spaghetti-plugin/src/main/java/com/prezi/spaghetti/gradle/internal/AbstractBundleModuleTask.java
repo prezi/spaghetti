@@ -8,6 +8,7 @@ import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
@@ -27,8 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
@@ -40,7 +41,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private File resourcesDirectoryInternal;
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
-	private SortedMap<String, String> externalDependencies = Maps.newTreeMap();
+	private Map<String, String> externalDependencies = Maps.newTreeMap();
 
 	@InputFile
 	public File getInputFile() {
@@ -167,18 +168,24 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	}
 
 	@Input
-	public SortedMap<String, String> getExternalDependencies() {
+	public Map<String, String> getExternalDependencies() {
 		return externalDependencies;
 	}
 
-	public void setExternalDependencies(SortedMap<String, String> externalDependencies) {
+	public void setExternalDependencies(Map<String, String> externalDependencies) {
 		this.externalDependencies = externalDependencies;
 	}
-	public void externalDependencies(SortedMap<String, String> externalDependencies) {
+	public void externalDependencies(Map<String, String> externalDependencies) {
 		this.externalDependencies.putAll(externalDependencies);
+	}
+	public void externalDependencies(Set<String> externalDependencies) {
+		externalDependencies(BundleUtils.parseExternalDependencies(externalDependencies));
 	}
 	public void externalDependency(String importName, String dependencyName) {
 		externalDependencies(ImmutableSortedMap.of(importName, dependencyName));
+	}
+	public void externalDependency(String shorthand) {
+		externalDependency(shorthand, shorthand);
 	}
 
 	@TaskAction

@@ -36,6 +36,8 @@ import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DefaultModuleBundle extends AbstractModuleBundle {
 	/**
@@ -214,8 +216,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		Set<String> dependentModules = !Strings.isNullOrEmpty(moduleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
 
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
-		Map<String, String> externalDependencies =
-				Splitter.on(',').withKeyValueSeparator(':').split(Strings.nullToEmpty(externalDependenciesString));
+		Map<String, String> externalDependencies = BundleUtils.parseExternalDependencies(externalDependenciesString);
 
 		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}

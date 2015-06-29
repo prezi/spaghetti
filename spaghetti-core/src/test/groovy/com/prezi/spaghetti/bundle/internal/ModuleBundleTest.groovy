@@ -86,7 +86,7 @@ class ModuleBundleTest extends Specification {
 					"Spaghetti-Version: 2.5",
 					"Module-Name: com.example.test",
 					"Module-Version: 3.7",
-					"External-Dependencies: React:react,\$:jquery",
+					"External-Dependencies: React:react,\$:jquery,shorthand",
 					"Module-Dependencies: com.example.alma,com.example.bela",
 					"Module-Source: http://git.example.com/test",
 					"" // Must have newline at end of manifest
@@ -97,7 +97,7 @@ class ModuleBundleTest extends Specification {
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
 		bundle.dependentModules == (["com.example.alma", "com.example.bela"] as SortedSet)
-		bundle.externalDependencies == ["\$": "jquery", "React": "react"]
+		bundle.externalDependencies == ["\$": "jquery", "React": "react", "shorthand": "shorthand"]
 		0 * _
 	}
 
