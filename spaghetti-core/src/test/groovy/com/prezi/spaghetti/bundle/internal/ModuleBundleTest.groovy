@@ -97,7 +97,7 @@ class ModuleBundleTest extends Specification {
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
 		bundle.dependentModules == (["com.example.alma", "com.example.bela"] as SortedSet)
-		bundle.externalDependencies == ImmutableSortedMap.copyOf("\$": "jquery", "React": "react")
+		bundle.externalDependencies == ["\$": "jquery", "React": "react"]
 		0 * _
 	}
 
@@ -156,7 +156,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, ImmutableSortedMap.of(), [] as Set)
+		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, [:], [] as Set)
 	}
 
 	private static String get(IOAction<OutputStream> action) {

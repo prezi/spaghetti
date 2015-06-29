@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -16,7 +17,7 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final SortedMap<String, String> externalDependencies;
 	private final SortedSet<String> resourcePaths;
 
-	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, SortedMap<String, String> externalDependencies, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
 		this.name = name;
 		this.version = version;
 		this.sourceBaseUrl = sourceBaseUrl;

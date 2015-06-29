@@ -62,7 +62,7 @@ class DefaultModuleBundleSetTest extends Specification {
 				"1.0",
 				"",
 				[] as Set,
-				ImmutableSortedMap.copyOf(extDeps),
+				extDeps,
 				[] as Set)
 	}
 
