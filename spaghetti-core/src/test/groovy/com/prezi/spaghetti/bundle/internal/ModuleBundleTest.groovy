@@ -68,6 +68,37 @@ class ModuleBundleTest extends Specification {
 	}
 
 	@SuppressWarnings("GroovyAssignabilityCheck")
+	def "load bundle with empty dependency lists"() {
+		def source = Mock(StructuredProcessor)
+
+		when:
+		def bundle = DefaultModuleBundle.loadInternal(source)
+
+		then:
+		_ * source.hasFile(_) >> true
+		_ * source.init()
+		_ * source.close()
+		//noinspection GroovyAssignabilityCheck
+		1 * source.processFiles({
+			FileProcessor handler = it
+			handler.processFile("META-INF/MANIFEST.MF", content(
+					"Manifest-Version: 1.0",
+					"Spaghetti-Version: 2.5",
+					"Module-Name: com.example.test",
+					"Module-Version: 3.7",
+					"External-Dependencies: ",
+					"Module-Dependencies: ",
+					"Module-Source: http://git.example.com/test",
+					"" // Must have newline at end of manifest
+			))
+			true
+		})
+		bundle.dependentModules == ([] as SortedSet)
+		bundle.externalDependencies == [:]
+		0 * _
+	}
+
+	@SuppressWarnings("GroovyAssignabilityCheck")
 	def "load bundle with all files present"() {
 		def source = Mock(StructuredProcessor)
 

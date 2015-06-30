@@ -16,7 +16,9 @@ public class BundleUtils {
 	private static final Pattern EXTERNAL_LIB = Pattern.compile("([^:]+)(?::(.+))?");
 
 	public static Map<String, String> parseExternalDependencies(String dependencyList) {
-		return parseExternalDependencies(Splitter.on(',').split(Strings.nullToEmpty(dependencyList)));
+		return Strings.isNullOrEmpty(dependencyList) ?
+				Maps.<String, String>newLinkedHashMap() :
+				parseExternalDependencies(Splitter.on(',').split(dependencyList));
 	}
 
 	public static Map<String, String> parseExternalDependencies(Iterable<String> dependencyList) {
