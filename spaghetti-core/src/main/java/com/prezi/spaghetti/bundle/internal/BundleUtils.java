@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 public class BundleUtils {
 
 	private static final Pattern EXTERNAL_LIB = Pattern.compile("([^:]+)(?::(.+))?");
-	private static final Logger logger = LoggerFactory.getLogger(BundleUtils.class);
 
 	public static Map<String, String> parseExternalDependencies(String dependencyList) {
 		return parseExternalDependencies(Splitter.on(',').split(Strings.nullToEmpty(dependencyList)));
@@ -24,10 +23,7 @@ public class BundleUtils {
 		Map<String, String> externalDependencies = Maps.newLinkedHashMap();
 		for (String extDep : dependencyList) {
 			Map.Entry<String, String> parsedDeclaration = parseExternalDependencyPair(extDep);
-			String previouslyConfiguredPath = externalDependencies.put(parsedDeclaration.getKey(), parsedDeclaration.getValue());
-			if (previouslyConfiguredPath != null) {
-				logger.warn("More than one path configured for external dependency '{}'", parsedDeclaration.getKey());
-			}
+			externalDependencies.put(parsedDeclaration.getKey(), parsedDeclaration.getValue());
 		}
 		return externalDependencies;
 	}
