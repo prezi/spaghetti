@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.cli.commands;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,18 +60,15 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 
 		ModuleBundleSet bundles = lookupBundles();
 
-		// Transform list of externals to map from external name to path
-		Map<String, String> externals = Maps.newLinkedHashMap();
-		for (String colonPair : externalList) {
-			Matcher matcher = EXTERNAL_LIB.matcher(colonPair);
-			if (!matcher.matches()) {
-				throw new SpaghettiCliException("Incorrect format for external dependency " + colonPair + ", use 'dependency:path'");
-			}
-			String name = matcher.group(1);
-			String path = matcher.group(2);
-			String previouslyConfiguredPath = externals.put(name, path);
-			if (previouslyConfiguredPath != null) {
-				logger.warn("More than one path configured for external dependency '{}'", name);
+		// Transform list of externals to map from dependency name to path
+		Map<String,String> externals = Maps.newLinkedHashMap();
+		Splitter.MapSplitter splitter = Splitter.on(",").withKeyValueSeparator(':');
+		for (String externalDependency : externalList) {
+			try {
+				externals.putAll(splitter.split(externalDependency));
+			} catch (IllegalArgumentException e) {
+				throw new SpaghettiCliException(
+						"Incorrect format for external dependency " + externalDependency + ", use 'dependency:path'");
 			}
 		}
 

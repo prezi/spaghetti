@@ -51,7 +51,7 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	public SortedMap<String, Set<String>> getExternalDependencies() {
 		SortedMap<String, Set<String>> externals = Maps.newTreeMap();
 		for (ModuleBundle bundle : this) {
-			for (String external : bundle.getExternalDependencies()) {
+			for (String external : bundle.getExternalDependencies().values()) {
 				Set<String> bundles = externals.containsKey(external) ?
 						externals.get(external) :
 						Sets.<String>newTreeSet();

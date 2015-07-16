@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle.internal
 
+import com.google.common.collect.ImmutableSortedMap
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.internal.Version
 import com.prezi.spaghetti.structure.internal.FileProcessor
@@ -29,7 +30,7 @@ class ModuleBundleTest extends Specification {
 						"console.log('hello');",
 						"sourcemap",
 						["com.example.alma", "com.example.bela"],
-						["react", "\$"] as SortedSet,
+						ImmutableSortedMap.copyOf("React": "react", "\$": "jquery"),
 						null)
 		)
 
@@ -48,7 +49,7 @@ class ModuleBundleTest extends Specification {
 				"Module-Name: test",
 				"Module-Version: 3.7",
 				"Module-Dependencies: com.example.alma,com.example.bela",
-				"External-Dependencies: \$,react",
+				"External-Dependencies: \$:jquery,React:react",
 				"Module-Source: http://git.example.com/test",
 		].sort()
 	}
@@ -64,6 +65,37 @@ class ModuleBundleTest extends Specification {
 		0 * _
 		def ex = thrown IllegalArgumentException
 		ex.message.contains "Not a module, missing manifest"
+	}
+
+	@SuppressWarnings("GroovyAssignabilityCheck")
+	def "load bundle with empty dependency lists"() {
+		def source = Mock(StructuredProcessor)
+
+		when:
+		def bundle = DefaultModuleBundle.loadInternal(source)
+
+		then:
+		_ * source.hasFile(_) >> true
+		_ * source.init()
+		_ * source.close()
+		//noinspection GroovyAssignabilityCheck
+		1 * source.processFiles({
+			FileProcessor handler = it
+			handler.processFile("META-INF/MANIFEST.MF", content(
+					"Manifest-Version: 1.0",
+					"Spaghetti-Version: 2.5",
+					"Module-Name: com.example.test",
+					"Module-Version: 3.7",
+					"External-Dependencies: ",
+					"Module-Dependencies: ",
+					"Module-Source: http://git.example.com/test",
+					"" // Must have newline at end of manifest
+			))
+			true
+		})
+		bundle.dependentModules == ([] as SortedSet)
+		bundle.externalDependencies == [:]
+		0 * _
 	}
 
 	@SuppressWarnings("GroovyAssignabilityCheck")
@@ -85,7 +117,7 @@ class ModuleBundleTest extends Specification {
 					"Spaghetti-Version: 2.5",
 					"Module-Name: com.example.test",
 					"Module-Version: 3.7",
-					"External-Dependencies: react,\$",
+					"External-Dependencies: React:react,\$:jquery,shorthand",
 					"Module-Dependencies: com.example.alma,com.example.bela",
 					"Module-Source: http://git.example.com/test",
 					"" // Must have newline at end of manifest
@@ -96,7 +128,7 @@ class ModuleBundleTest extends Specification {
 		bundle.version == "3.7"
 		bundle.sourceBaseUrl == "http://git.example.com/test"
 		bundle.dependentModules == (["com.example.alma", "com.example.bela"] as SortedSet)
-		bundle.externalDependencies == (["\$", "react"] as SortedSet)
+		bundle.externalDependencies == ["\$": "jquery", "React": "react", "shorthand": "shorthand"]
 		0 * _
 	}
 
@@ -155,7 +187,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, [] as SortedSet, [] as Set)
+		return new DefaultModuleBundle(source, "test", "3.7", null, [] as Set, [:], [] as Set)
 	}
 
 	private static String get(IOAction<OutputStream> action) {

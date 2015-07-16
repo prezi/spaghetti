@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle.internal
 
+import com.google.common.collect.ImmutableSortedMap
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.structure.internal.StructuredProcessor
 import spock.lang.Specification
@@ -42,8 +43,8 @@ class DefaultModuleBundleSetTest extends Specification {
 	}
 
 	def "external dependency collection"() {
-		def bundleA = createBundleWithExternalDependencies("A", ["alpha", "beta"] as SortedSet)
-		def bundleB = createBundleWithExternalDependencies("B", ["alpha", "gamma"] as SortedSet)
+		def bundleA = createBundleWithExternalDependencies("A", ["Alpha": "alpha", "Beta": "beta"])
+		def bundleB = createBundleWithExternalDependencies("B", ["Alphi": "alpha", "Gamma": "gamma"])
 
 		when:
 		def set = new DefaultModuleBundleSet([bundleA, bundleB], [] as Set)
@@ -54,7 +55,7 @@ class DefaultModuleBundleSetTest extends Specification {
 		set.externalDependencies.get("zeta") == null
 	}
 
-	ModuleBundle createBundleWithExternalDependencies(String name, SortedSet<String> extDeps) {
+	ModuleBundle createBundleWithExternalDependencies(String name, Map<String, String> extDeps) {
 		new DefaultModuleBundle(
 				Mock(StructuredProcessor),
 				name,

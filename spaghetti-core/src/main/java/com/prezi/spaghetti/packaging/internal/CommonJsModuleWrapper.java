@@ -33,9 +33,11 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper implements Stru
 		result.append("};");
 
 		StringBuilder externalDependenciesDeclaration = new StringBuilder();
-		for (String externalDependency : params.bundle.getExternalDependencies()) {
+		for (Map.Entry<String, String> externalDependency : params.bundle.getExternalDependencies().entrySet()) {
 			externalDependenciesDeclaration.append(
-					String.format("var %s=require(__resolveDependency(\"%s\"));", externalDependency, externalDependency)
+					String.format("var %s=require(__resolveDependency(\"%s\"));",
+							externalDependency.getKey(),
+							externalDependency.getValue())
 			);
 		}
 		wrapModuleObject(result, params, "var baseUrl=__dirname;", externalDependenciesDeclaration, modules);

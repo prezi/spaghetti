@@ -66,7 +66,7 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 					@Override
 					public String processDependency(final String module, Collection<String> dependencies) {
 						ModuleBundle bundle = bundles.get(module);
-						Collection<String> externalReferences = Collections2.transform(bundle.getExternalDependencies(), new Function<String, String>() {
+						Collection<String> externalReferences = Collections2.transform(bundle.getExternalDependencies().values(), new Function<String, String>() {
 							@Nullable
 							@Override
 							public String apply(String dependencyName) {

@@ -2,6 +2,7 @@ package com.prezi.spaghetti.bundle;
 
 import java.io.IOException;
 import java.util.SortedSet;
+import java.util.SortedMap;
 
 /**
  * Represents a module bundle.
@@ -35,7 +36,7 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	/**
 	 * Returns the list of external dependencies.
 	 */
-	SortedSet<String> getExternalDependencies();
+	SortedMap<String, String> getExternalDependencies();
 
 	/**
 	 * Returns the contents of the module's definition.

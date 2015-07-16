@@ -1,12 +1,15 @@
 package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.cli.SpaghettiCliException;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
@@ -27,6 +30,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -64,7 +68,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 
 	@Option(name = {"-e", "--external-dependency"},
 			description = "External dependency")
-	private List<String> externalDependencies = Lists.newArrayList();
+	private List<String> externalDependencyList = Lists.newArrayList();
 
 	//
 	// Obfuscation parameters
@@ -108,6 +112,14 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		SortedSet<String> dependentModules = Sets.newTreeSet();
 		for (ModuleNode dependentModule : config.getDirectDependentModules()) {
 			dependentModules.add(dependentModule.getName());
+		}
+
+		// Transform list of externals to map from variable name to dependency name
+		Map<String,String> externalDependencies = null;
+		try {
+			externalDependencies = BundleUtils.parseExternalDependencies(externalDependencyList);
+		} catch (IllegalArgumentException e) {
+			throw new SpaghettiCliException(e.getMessage());
 		}
 
 		if (obfuscate) {
