@@ -1,6 +1,4 @@
-package com.prezi.spaghetti.bundle.internal;
-
-import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+package com.prezi.spaghetti.bundle;
 
 /**
  * Types of elements of a module bundle.

@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.bundle;
 
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundle;
-import com.prezi.spaghetti.bundle.internal.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.structure.OutputType;

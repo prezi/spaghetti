@@ -2,7 +2,7 @@ package com.prezi.spaghetti.packaging;
 
 import com.google.common.collect.ImmutableList;
 import com.prezi.spaghetti.bundle.ModuleBundle;
-import com.prezi.spaghetti.bundle.internal.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleBundleElement;
 
 import java.util.EnumSet;
 import java.util.List;

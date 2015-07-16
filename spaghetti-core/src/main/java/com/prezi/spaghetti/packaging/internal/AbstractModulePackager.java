@@ -2,7 +2,7 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.prezi.spaghetti.bundle.internal.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ModulePackageParameters;
 import com.prezi.spaghetti.packaging.ModulePackager;

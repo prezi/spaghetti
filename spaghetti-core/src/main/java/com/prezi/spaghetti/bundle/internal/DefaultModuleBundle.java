@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.structure.internal.FileProcessor;
 import com.prezi.spaghetti.structure.internal.IOAction;
