@@ -1,19 +1,40 @@
 package com.prezi.spaghetti.typescript.impl
 
 import com.prezi.spaghetti.ast.AstNode
+import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.VoidTypeReference
+import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
-class TypeScriptModuleProxyGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
+class TypeScriptModuleProxyGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
 """export class __${node.alias}Proxy {
 ${node.methods*.accept(new MethodVisitor(node)).join("")}
-}
+${node.accept(new QualifiedEnumVisitor(node))}}
 """
+	}
+
+	private static class QualifiedEnumVisitor extends StringModuleVisitorBase {
+		private ModuleNode qualifyingNode
+
+		public QualifiedEnumVisitor(ModuleNode qualifyingNode) {
+			this.qualifyingNode = qualifyingNode
+		}
+
+		@Override
+		String visitEnumNode(EnumNode enumNode) {
+			return "public ${enumNode.name} = ${qualifyingNode.name}.${enumNode.name};\n"
+		}
+
+		@Override
+		String afterVisit(AstNode n, String result) {
+			return result
+		}
 	}
 
 	private static class MethodVisitor extends AbstractTypeScriptMethodGeneratorVisitor {

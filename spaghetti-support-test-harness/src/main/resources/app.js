@@ -73,6 +73,12 @@ return {
 					expect(module.getExternalDependencyVersion()).to.equal(require("chai").version);
 				})
 			});
+
+			describe("enum proxying", function () {
+				it("should expose the locally defined 'Exported' enum", function () {
+					expect(module.Exported.Target).to.equal(42);
+				})
+			});
 		});
 	}
 };
