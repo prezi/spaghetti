@@ -16,10 +16,8 @@ public class JavaScriptEnumGeneratorVisitor extends AbstractJavaScriptGeneratorV
 			public String generate(EnumNode node, int indentLevel, String parent) {
 				final String indent = StringUtils.repeat("\t", indentLevel);
 				List<String> values = new ArrayList<String>();
-				int idx = 0;
 				for (EnumValueNode value : node.getValues()) {
-					values.add(String.format("%s\t\"%s\": %d", indent, value.getName(), idx));
-					idx++;
+					values.add(String.format("%s\t\"%s\": %d", indent, value.getName(), value.getValue()));
 				}
 				String entries = StringUtils.join(values, ",\n");
 				return String.format(
