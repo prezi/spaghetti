@@ -1,8 +1,10 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
+import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
@@ -53,7 +55,21 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 		if (generateAccessor) {
 			contents += new TypeScriptModuleAccessorGeneratorVisitor().visit(module)
 		}
-		contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
+		contents += new TypeScriptDefinitionIteratorVisitor() {
+			@Override
+			TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
+				return new TypeScriptEnumGeneratorVisitor() {
+					TypeScriptEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
+						return new TypeScriptEnumGeneratorVisitor.EnumValueVisitor() {
+							@Override
+							String generateValueExpression(EnumValueNode node) {
+								return "${GeneratorUtils.createModuleAccessor(module)}[\"${enumName}\"][\"${node.name}\"]"
+							}
+						}
+					}
+				}
+			}
+		}.visit(module)
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
 }

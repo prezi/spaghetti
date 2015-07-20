@@ -32,8 +32,12 @@ class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	@Override
 	Void visitEnumNode(EnumNode node) {
-		createSourceFile(node, new HaxeEnumGeneratorVisitor())
+		createSourceFile(node, createHaxeEnumGeneratorVisitor())
 		return null
+	}
+
+	HaxeEnumGeneratorVisitor createHaxeEnumGeneratorVisitor() {
+		return new HaxeEnumGeneratorVisitor()
 	}
 
 	@Override

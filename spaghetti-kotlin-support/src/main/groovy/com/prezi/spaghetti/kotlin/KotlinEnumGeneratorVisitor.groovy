@@ -11,7 +11,7 @@ class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 		return \
 """class ${enumName} {
 	companion object {
-${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
+${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 		private val _values = hashMapOf(${node.values.collect { entry -> "${entry.name}.toString() to ${entry.name}"}.join(", ")})
 		private val _names = hashMapOf(${node.values.collect { entry -> "${entry.name}.toString() to \"${entry.name}\""}.join(", ")})
 
@@ -39,7 +39,11 @@ ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
 """
 	}
 
-	private static class EnumValueVisitor extends AbstractKotlinGeneratorVisitor {
+	protected EnumValueVisitor createEnumValueVisitor(String enumName) {
+		return new EnumValueVisitor(enumName)
+	}
+
+	protected class EnumValueVisitor extends AbstractKotlinGeneratorVisitor {
 		private final String enumName
 
 		EnumValueVisitor(String enumName) {
@@ -48,7 +52,11 @@ ${node.values.collect { "				\"${it}\" -> result = ${it}" }.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "		val ${node.name} = ${node.value} as ${enumName}"
+			return "		val ${node.name} = ${generateValueExpression(node)} as ${enumName}"
+		}
+
+		String generateValueExpression(EnumValueNode node) {
+			return node.value
 		}
 	}
 }

@@ -11,7 +11,7 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 
 		return \
 """abstract ${enumName}(Int) {
-${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
+${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 
 	static var _values = [${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
 	static var _names = [${node.values.collect { entry -> "Std.string(${entry.name}) => \"${entry.name}\"" }.join(", ")}];
@@ -51,7 +51,11 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 """
 	}
 
-	private static class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
+	protected EnumValueVisitor createEnumValueVisitor(String enumName) {
+		return new EnumValueVisitor(enumName);
+	}
+
+	protected class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
 		private final String enumName
 
 		EnumValueVisitor(String enumName) {
@@ -60,7 +64,11 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tpublic static var ${node.name} = new ${enumName}(${node.value});"
+			return "\tpublic static var ${node.name} = new ${enumName}(${generateValueExpression(node)});"
+		}
+
+		String generateValueExpression(EnumValueNode node) {
+			return node.value.toString();
 		}
 	}
 }
