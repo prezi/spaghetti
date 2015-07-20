@@ -27,8 +27,8 @@ class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 		[deprecated("escape \\"this\\"!")]
 		val BELA = 1 as MyEnum
 		val GEZA = 2 as MyEnum
-		private val _values = hashMapOf("0" to ALMA, "1" to BELA, "2" to GEZA)
-		private val _names = hashMapOf("0" to "ALMA", "1" to "BELA", "2" to "GEZA")
+		private val _values = hashMapOf(ALMA.toString() to ALMA, BELA.toString() to BELA, GEZA.toString() to GEZA)
+		private val _names = hashMapOf(ALMA.toString() to "ALMA", BELA.toString() to "BELA", GEZA.toString() to "GEZA")
 
 		fun names():Array<String> = arrayOf("ALMA", "BELA", "GEZA")
 
@@ -80,8 +80,8 @@ class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 		[deprecated("escape \\"this\\"!")]
 		val BELA = 2 as MyEnum
 		val GEZA = 4 as MyEnum
-		private val _values = hashMapOf("1" to ALMA, "2" to BELA, "4" to GEZA)
-		private val _names = hashMapOf("1" to "ALMA", "2" to "BELA", "4" to "GEZA")
+		private val _values = hashMapOf(ALMA.toString() to ALMA, BELA.toString() to BELA, GEZA.toString() to GEZA)
+		private val _names = hashMapOf(ALMA.toString() to "ALMA", BELA.toString() to "BELA", GEZA.toString() to "GEZA")
 
 		fun names():Array<String> = arrayOf("ALMA", "BELA", "GEZA")
 

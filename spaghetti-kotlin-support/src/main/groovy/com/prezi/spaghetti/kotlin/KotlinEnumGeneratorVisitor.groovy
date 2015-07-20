@@ -12,8 +12,8 @@ class KotlinEnumGeneratorVisitor extends AbstractKotlinGeneratorVisitor {
 """class ${enumName} {
 	companion object {
 ${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
-		private val _values = hashMapOf(${node.values.collect { entry -> "\"${entry.value}\" to ${entry.name}"}.join(", ")})
-		private val _names = hashMapOf(${node.values.collect { entry -> "\"${entry.value}\" to \"${entry.name}\""}.join(", ")})
+		private val _values = hashMapOf(${node.values.collect { entry -> "${entry.name}.toString() to ${entry.name}"}.join(", ")})
+		private val _names = hashMapOf(${node.values.collect { entry -> "${entry.name}.toString() to \"${entry.name}\""}.join(", ")})
 
 		fun names():Array<String> = arrayOf(${node.values.collect { "\"${it}\"" }.join(", ")})
 

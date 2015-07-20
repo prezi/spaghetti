@@ -13,8 +13,8 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 """abstract ${enumName}(Int) {
 ${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
 
-	static var _values = [${node.values.collect { entry -> "\"${entry.value}\" => ${entry.name}" }.join(", ")}];
-	static var _names = [${node.values.collect { entry -> "\"${entry.value}\" => \"${entry.name}\"" }.join(", ")}];
+	static var _values = [${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
+	static var _names = [${node.values.collect { entry -> "Std.string(${entry.name}) => \"${entry.name}\"" }.join(", ")}];
 
 	inline function new(value:Int) {
 		this = value;

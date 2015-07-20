@@ -26,8 +26,8 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	public static var BELA = new MyEnum(2);
 	public static var GEZA = new MyEnum(4);
 
-	static var _values = ["1" => ALMA, "2" => BELA, "4" => GEZA];
-	static var _names = ["1" => "ALMA", "2" => "BELA", "4" => "GEZA"];
+	static var _values = [Std.string(ALMA) => ALMA, Std.string(BELA) => BELA, Std.string(GEZA) => GEZA];
+	static var _names = [Std.string(ALMA) => "ALMA", Std.string(BELA) => "BELA", Std.string(GEZA) => "GEZA"];
 
 	inline function new(value:Int) {
 		this = value;
