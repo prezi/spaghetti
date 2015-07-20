@@ -15,7 +15,7 @@ before_install:
   - haxe -version
 
   # Kotlin
-  - curl -L https://github.com/JetBrains/kotlin/releases/download/build-0.12.200/kotlin-compiler-0.12.200.zip -o kotlin-compiler.zip
+  - curl -L https://github.com/JetBrains/kotlin/releases/download/build-0.12.613/kotlin-compiler-0.12.613.zip -o kotlin-compiler.zip
   - unzip kotlin-compiler.zip
   - export KOTLIN_HOME=$PWD/kotlinc
   - export PATH=$PATH:$KOTLIN_HOME/bin
