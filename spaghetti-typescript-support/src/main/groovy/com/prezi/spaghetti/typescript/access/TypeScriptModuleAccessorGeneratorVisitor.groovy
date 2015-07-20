@@ -2,12 +2,11 @@ package com.prezi.spaghetti.typescript.access
 
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
 
-import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE
-import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
@@ -15,7 +14,7 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGenerat
 	String visitModuleNode(ModuleNode node) {
 """export class ${node.alias} {
 
-	private static ${MODULE}:any = ${SPAGHETTI_CLASS}[\"${DEPENDENCIES}\"][\"${node.name}\"][\"${MODULE}\"];
+	private static ${MODULE}:any = ${GeneratorUtils.createModuleAccessor(node)};
 
 ${node.methods*.accept(new MethodVisitor(node)).join("")}
 }
