@@ -13,8 +13,8 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 """abstract ${enumName}(Int) {
 ${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
 
-	static var _values = { ${node.values.collect { entry -> "\"${entry.value}\": ${entry.name}" }.join(", ")} };
-	static var _names =  { ${node.values.collect { entry -> "\"${entry.value}\": \"${entry.name}\"" }.join(", ")} };
+	static var _values = [${node.values.collect { entry -> "\"${entry.value}\" => ${entry.name}" }.join(", ")}];
+	static var _names = [${node.values.collect { entry -> "\"${entry.value}\" => \"${entry.name}\"" }.join(", ")}];
 
 	inline function new(value:Int) {
 		this = value;
@@ -26,14 +26,14 @@ ${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
 
 	@:from public static function fromValue(value:Int) {
 		var key: String = Std.string(value);
-		if (!Reflect.hasField(_values, key)) {
+		if (!_values.exists(key)) {
 			throw "Invalid value for ${enumName}: " + value;
 		}
-		return Reflect.field(_values, key);
+		return _values[key];
 	}
 
 	@:to public inline function name():String {
-		return Reflect.field(_names, Std.string(this));
+		return _names[Std.string(this)];
 	}
 
 	@:from public static inline function valueOf(name:String) {
