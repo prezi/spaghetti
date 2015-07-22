@@ -54,22 +54,38 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
 		if (generateAccessor) {
 			contents += new TypeScriptModuleAccessorGeneratorVisitor().visit(module)
-		}
-		contents += new TypeScriptDefinitionIteratorVisitor() {
-			@Override
-			TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
-				return new TypeScriptEnumGeneratorVisitor() {
-					TypeScriptEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
-						return new TypeScriptEnumGeneratorVisitor.EnumValueVisitor() {
-							@Override
-							String generateValueExpression(EnumValueNode node) {
-								return "${GeneratorUtils.createModuleAccessor(module)}[\"${enumName}\"][\"${node.name}\"]"
+			contents += new TypeScriptDefinitionIteratorVisitor() {
+				@Override
+				TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
+					return new TypeScriptEnumGeneratorVisitor() {
+						TypeScriptEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
+							return new TypeScriptEnumGeneratorVisitor.EnumValueVisitor() {
+								@Override
+								String generateValueExpression(EnumValueNode node) {
+									return "${GeneratorUtils.createModuleAccessor(module)}[\"${enumName}\"][\"${node.name}\"]"
+								}
 							}
 						}
 					}
 				}
-			}
-		}.visit(module)
+			}.visit(module)
+		} else {
+			contents += new TypeScriptDefinitionIteratorVisitor() {
+				@Override
+				TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
+					return new TypeScriptEnumGeneratorVisitor() {
+						TypeScriptEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
+							return new TypeScriptEnumGeneratorVisitor.EnumValueVisitor() {
+								@Override
+								String visitEnumValueNode(EnumValueNode node) {
+									return ""
+								}
+							}
+						}
+					}
+				}
+			}.visit(module)
+		}
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
 }

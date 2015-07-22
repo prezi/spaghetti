@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe
 
+import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
@@ -24,11 +25,12 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 		generateModuleInitializer(config.localModule, outputDirectory, header)
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
-		config.allDependentModules.each { dependentModule ->
-			generateForeignModuleTypes(dependentModule, outputDirectory, header)
+		config.transitiveDependentModules.each { dependentModule ->
+			generateTransitiveDependencyTypes(dependentModule, outputDirectory, header)
 		}
 		config.directDependentModules.each { dependentModule ->
 			generateModuleAccessor(dependentModule, outputDirectory, header)
+			generateDirectDependencyTypes(dependentModule, outputDirectory, header)
 		}
 	}
 
@@ -76,10 +78,11 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 	}
 
 	/**
-	 * Generates interfaces, enums, structs and constants defined in the foreign module.
+	 * Generates interfaces, enum proxies, structs and constants for the foreign module.
 	 */
-	private static void generateForeignModuleTypes(ModuleNode module, File outputDirectory, String header)
+	private static void generateDirectDependencyTypes(ModuleNode module, File outputDirectory, String header)
 	{
+		// For direct dependencies, enum member access is by reference to the original definition site.
 		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.name) {
 			@Override
 			HaxeEnumGeneratorVisitor createHaxeEnumGeneratorVisitor() {
@@ -91,6 +94,25 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 								return "untyped __js__('${GeneratorUtils.createModuleAccessor(module)}[\"${enumName}\"][\"${node.name}\"]')"
 							}
 						}
+					}
+				}
+			}
+		}.visit(module)
+	}
+
+	/**
+	 * Generates interfaces, abstract enum types, structs and constants for the foreign module.
+	 */
+	private static void generateTransitiveDependencyTypes(ModuleNode module, File outputDirectory, String header)
+	{
+		// For transitive dependencies, we consider enums only as abstract types without an option to access their members.
+		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.name) {
+			@Override
+			HaxeEnumGeneratorVisitor createHaxeEnumGeneratorVisitor() {
+				return new HaxeEnumGeneratorVisitor() {
+					@Override
+					String visitEnumNode(EnumNode enumNode) {
+						return """abstract ${enumNode.name}(Int) {}"""
 					}
 				}
 			}
