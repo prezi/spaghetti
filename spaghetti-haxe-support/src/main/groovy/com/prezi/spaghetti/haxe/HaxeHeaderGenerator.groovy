@@ -112,7 +112,7 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 				return new HaxeEnumGeneratorVisitor() {
 					@Override
 					String visitEnumNode(EnumNode enumNode) {
-						return """abstract ${enumNode.name}(Int) {}"""
+						return """abstract ${enumNode.name}(Int) to Int {}"""
 					}
 				}
 			}
