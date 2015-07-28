@@ -1,8 +1,10 @@
 package com.prezi.spaghetti.kotlin
 
+import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
+import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.kotlin.access.KotlinModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.kotlin.impl.KotlinModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.kotlin.impl.KotlinModuleProxyGeneratorVisitor
@@ -24,7 +26,7 @@ class KotlinHeaderGenerator extends AbstractHeaderGenerator {
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
 		config.allDependentModules.each { dependentModule ->
-			generateModuleTypes(dependentModule, outputDirectory, header)
+			generateForeignModuleTypes(dependentModule, outputDirectory, header)
 		}
 		config.directDependentModules.each { dependentModule ->
 			generateModuleAccessor(dependentModule, outputDirectory, header)
@@ -73,5 +75,26 @@ class KotlinHeaderGenerator extends AbstractHeaderGenerator {
 	private static void generateModuleTypes(ModuleNode module, File outputDirectory, String header)
 	{
 		new KotlinDefinitionIteratorVisitor(outputDirectory, header, module.name).visit(module)
+	}
+
+	/**
+	 * Generates interfaces, enums, structs and constants defined in the foreign module.
+	 */
+	private static void generateForeignModuleTypes(ModuleNode module, File outputDirectory, String header) {
+		new KotlinDefinitionIteratorVisitor(outputDirectory, header, module.name) {
+			@Override
+			KotlinEnumGeneratorVisitor createKotlinEnumGeneratorVisitor() {
+				return new KotlinEnumGeneratorVisitor() {
+					KotlinEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
+						return new KotlinEnumGeneratorVisitor.EnumValueVisitor(enumName) {
+							@Override
+							String generateValueExpression(EnumValueNode node) {
+								return "js(\"${GeneratorUtils.createModuleAccessor(module).replaceAll("\"", "\\\\\"")}[\\\"${enumName}\\\"][\\\"${node.name}\\\"]\")"
+							}
+						}
+					}
+				}
+			}
+		}.visit(module)
 	}
 }

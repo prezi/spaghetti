@@ -5,6 +5,14 @@ import spaghetti.test.dependency.Prime
 import spaghetti.test.dependency.Point2d
 
 /**
+ * This enum should be exported on the compiled module.
+ */
+enum Exported {
+	Target = 42
+	Another = 12
+}
+
+/**
  * Add the two numbers and return the result.
  */
 int addTwoNumbers(int a, int b)

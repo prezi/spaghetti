@@ -2,17 +2,14 @@ package com.prezi.spaghetti.kotlin.access
 
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.kotlin.AbstractKotlinMethodGeneratorVisitor
-
-import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES
-import static com.prezi.spaghetti.generator.ReservedWords.MODULE
-import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class KotlinModuleAccessorGeneratorVisitor extends AbstractKotlinMethodGeneratorVisitor {
 	@Override
 	String visitModuleNode(ModuleNode node) {
 		return \
-"""native("${SPAGHETTI_CLASS}[\\"${DEPENDENCIES}\\"][\\"${node.name}\\"][\\"${MODULE}\\"]") val moduleRef:${node.alias} = noImpl
+"""native("${GeneratorUtils.createModuleAccessor(node).replaceAll("\"", "\\\\\"")}") val moduleRef:${node.alias} = noImpl
 
 object ${node.alias} {
 	val module:${node.alias} = moduleRef;

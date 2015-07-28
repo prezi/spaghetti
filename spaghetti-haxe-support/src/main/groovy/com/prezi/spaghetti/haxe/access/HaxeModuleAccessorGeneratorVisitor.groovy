@@ -5,10 +5,7 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
 import com.prezi.spaghetti.haxe.AbstractHaxeMethodGeneratorVisitor
-
-import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES
-import static com.prezi.spaghetti.generator.ReservedWords.MODULE
-import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
+import com.prezi.spaghetti.generator.GeneratorUtils
 
 class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 
@@ -17,7 +14,7 @@ class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		return \
 """@:final class ${node.alias} {
 
-	static var __module:Dynamic = untyped __js__('${SPAGHETTI_CLASS}[\"${DEPENDENCIES}\"][\"${node.name}\"][\"${MODULE}\"]');
+	static var __module:Dynamic = untyped __js__('${GeneratorUtils.createModuleAccessor(node)}');
 
 ${node.methods*.accept(new MethodVisitor(node)).join("")}
 }

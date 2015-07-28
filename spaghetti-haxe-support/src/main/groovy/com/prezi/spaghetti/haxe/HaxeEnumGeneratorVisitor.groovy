@@ -11,10 +11,10 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 
 		return \
 """abstract ${enumName}(Int) {
-${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
+${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 
-	static var _values = { ${node.values.collect { entry -> "\"${entry.value}\": ${entry.name}" }.join(", ")} };
-	static var _names =  { ${node.values.collect { entry -> "\"${entry.value}\": \"${entry.name}\"" }.join(", ")} };
+	static var _values = [${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
+	static var _names = [${node.values.collect { entry -> "Std.string(${entry.name}) => \"${entry.name}\"" }.join(", ")}];
 
 	inline function new(value:Int) {
 		this = value;
@@ -26,14 +26,14 @@ ${node.values*.accept(new EnumValueVisitor(node.name)).join("\n")}
 
 	@:from public static function fromValue(value:Int) {
 		var key: String = Std.string(value);
-		if (!Reflect.hasField(_values, key)) {
+		if (!_values.exists(key)) {
 			throw "Invalid value for ${enumName}: " + value;
 		}
-		return Reflect.field(_values, key);
+		return _values[key];
 	}
 
 	@:to public inline function name():String {
-		return Reflect.field(_names, Std.string(this));
+		return _names[Std.string(this)];
 	}
 
 	@:from public static inline function valueOf(name:String) {
@@ -51,7 +51,11 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 """
 	}
 
-	private static class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
+	protected EnumValueVisitor createEnumValueVisitor(String enumName) {
+		return new EnumValueVisitor(enumName);
+	}
+
+	protected class EnumValueVisitor extends AbstractHaxeGeneratorVisitor {
 		private final String enumName
 
 		EnumValueVisitor(String enumName) {
@@ -60,7 +64,11 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tpublic static var ${node.name} = new ${enumName}(${node.value});"
+			return "\tpublic static var ${node.name} = new ${enumName}(${generateValueExpression(node)});"
+		}
+
+		String generateValueExpression(EnumValueNode node) {
+			return node.value.toString();
 		}
 	}
 }

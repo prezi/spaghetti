@@ -15,7 +15,11 @@ class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
 
 	@Override
 	String visitEnumNode(EnumNode node) {
-		return new TypeScriptEnumGeneratorVisitor().visit(node)
+		return createTypeScriptEnumGeneratorVisitor().visit(node)
+	}
+
+	TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
+		return new TypeScriptEnumGeneratorVisitor()
 	}
 
 	@Override

@@ -26,8 +26,8 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	public static var BELA = new MyEnum(2);
 	public static var GEZA = new MyEnum(4);
 
-	static var _values = { "1": ALMA, "2": BELA, "4": GEZA };
-	static var _names =  { "1": "ALMA", "2": "BELA", "4": "GEZA" };
+	static var _values = [Std.string(ALMA) => ALMA, Std.string(BELA) => BELA, Std.string(GEZA) => GEZA];
+	static var _names = [Std.string(ALMA) => "ALMA", Std.string(BELA) => "BELA", Std.string(GEZA) => "GEZA"];
 
 	inline function new(value:Int) {
 		this = value;
@@ -39,14 +39,14 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 
 	@:from public static function fromValue(value:Int) {
 		var key: String = Std.string(value);
-		if (!Reflect.hasField(_values, key)) {
+		if (!_values.exists(key)) {
 			throw "Invalid value for MyEnum: " + value;
 		}
-		return Reflect.field(_values, key);
+		return _values[key];
 	}
 
 	@:to public inline function name():String {
-		return Reflect.field(_names, Std.string(this));
+		return _names[Std.string(this)];
 	}
 
 	@:from public static inline function valueOf(name:String) {

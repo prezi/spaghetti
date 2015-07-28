@@ -32,8 +32,12 @@ class KotlinDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	@Override
 	Void visitEnumNode(EnumNode node) {
-		createSourceFile(node, new KotlinEnumGeneratorVisitor())
+		createSourceFile(node, createKotlinEnumGeneratorVisitor())
 		return null
+	}
+
+	KotlinEnumGeneratorVisitor createKotlinEnumGeneratorVisitor() {
+		return new KotlinEnumGeneratorVisitor()
 	}
 
 	@Override
