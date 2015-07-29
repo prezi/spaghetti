@@ -59,7 +59,7 @@ public class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> 
 
 	@Override
 	public Collection<String> visitEnumNode(EnumNode node) {
-		return extractNames(node.getValues());
+		return ImmutableList.<String>builder().add(node.getName()).addAll(extractNames(node.getValues())).build();
 	}
 
 	private static Collection<String> extractNames(Collection<? extends NamedNode> nodes) {

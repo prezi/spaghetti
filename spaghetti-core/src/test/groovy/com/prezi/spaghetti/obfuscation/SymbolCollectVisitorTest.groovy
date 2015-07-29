@@ -67,7 +67,7 @@ enum LeEnum {
 }
 """
 		expect:
-		result == ["alpha", "beta"]
+		result == ["LeEnum", "alpha", "beta"]
 	}
 
 	private List<String> visit(String what) {
