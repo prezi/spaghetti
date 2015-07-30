@@ -23,6 +23,7 @@ import java.util.concurrent.Callable;
 public class ObfuscateModule extends AbstractBundleModuleTask {
 	private final Set<String> additionalSymbols = Sets.newLinkedHashSet();
 	private final Set<Object> closureExterns = Sets.newLinkedHashSet();
+	private String compilationLevel = "advanced";
 	private File workDir;
 	private String nodeSourceMapRoot;
 
@@ -56,7 +57,8 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 				getNodeSourceMapRoot(),
 				getClosureExterns(),
 				getAdditionalSymbols(),
-				getWorkDir()
+				getWorkDir(),
+				getCompilationLevel()
 		));
 		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDir);
 	}
@@ -73,6 +75,11 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 	public void workDir(String workDir) {
 		setWorkDir(workDir);
 	}
+
+	@Input
+	public String getCompilationLevel() { return compilationLevel; }
+
+	public void setCompilationLevel(String compilationLevel) { this.compilationLevel = compilationLevel; }
 
 	@Input
 	public Set<String> getAdditionalSymbols() {

@@ -36,14 +36,13 @@ public class ClosureCompiler {
 
 	private static Logger logger = LoggerFactory.getLogger(ClosureCompiler.class);
 	private static final int lineLengthThreshold = 1;
-	private static final CompilationLevel compilationLevel = CompilationLevel.ADVANCED_OPTIMIZATIONS;
 
 	/**
 	 * compiles 'jsFileName', appends the obfuscated code to
 	 * 'obfuscated' and appends the source map to 'sourceMap' using
 	 * 'sourceMapName' (the 'file' field in the sourcemap)
 	 */
-	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap, Set<File> customExterns) throws IOException {
+	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap, CompilationLevel compilationLevel, Set<File> customExterns) throws IOException {
 		com.google.javascript.jscomp.Compiler compiler = new Compiler(System.err);
 		CompilerOptions options = new CompilerOptions();
 
