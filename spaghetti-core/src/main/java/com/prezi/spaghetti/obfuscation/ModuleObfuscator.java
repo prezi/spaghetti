@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.javascript.jscomp.CompilationLevel;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.ReservedWords;
@@ -52,37 +53,40 @@ public class ModuleObfuscator {
 		ModuleConfiguration config = params.config;
 		ModuleNode module = params.module;
 
-		ImmutableSet.Builder<String> builder = ImmutableSet.builder();
-		builder.addAll(protectedSymbols);
-		for (ModuleNode moduleNode : config.getAllModules()) {
-			builder.addAll(new SymbolCollectVisitor().visit(moduleNode));
-		}
-
-		builder.addAll(params.additionalSymbols);
-		ImmutableSet<String> symbols = builder.build();
-
 		// OBFUSCATE
 		StringBuilder compressedJS = new StringBuilder();
 
+		// Write JavaScript source
 		File workDir = params.workingDirectory;
 		FileUtils.deleteQuietly(workDir);
 		FileUtils.forceMkdir(workDir);
 		File closureFile = new File(workDir, "closure.js");
 		FileUtils.write(closureFile, params.javaScript);
-		FileUtils.write(closureFile, "\nvar __a = {}\n", true);
-		for (String symbol : symbols) {
-			FileUtils.write(closureFile, "/** @expose */\n__a." + symbol + " = {}\n", true);
+
+		// Append @expose annotations for Closure Compiler
+		if (params.compilationLevel == CompilationLevel.ADVANCED_OPTIMIZATIONS) {
+			ImmutableSet.Builder<String> builder = ImmutableSet.builder();
+			builder.addAll(protectedSymbols).addAll(params.additionalSymbols);
+			for (ModuleNode moduleNode : config.getAllModules()) {
+				builder.addAll(new SymbolCollectVisitor().visit(moduleNode));
+			}
+			ImmutableSet<String> symbols = builder.build();
+
+			FileUtils.write(closureFile, "\nvar __a = {}\n", true);
+			for (String symbol : symbols) {
+				FileUtils.write(closureFile, "/** @expose */\n__a." + symbol + " = {}\n", true);
+			}
 		}
 
+		// Hand off for compilation
 		StringBuilder sourceMapBuilder = new StringBuilder();
-		Integer closureRet = ClosureCompiler.compile(closureFile.toString(), compressedJS, module.getName(), sourceMapBuilder, params.closureExterns);
+		Integer closureRet = ClosureCompiler.compile(closureFile.toString(), compressedJS, module.getName(), sourceMapBuilder, params.compilationLevel, params.closureExterns);
 		if (closureRet != 0) {
 			throw new RuntimeException("Closure returned with exit code " + closureRet);
 		}
 
-		String mapJStoMin = sourceMapBuilder.toString();
-
 		// SOURCEMAP
+		String mapJStoMin = sourceMapBuilder.toString();
 		String sourceMap = params.sourceMap;
 		Object finalSourceMap;
 		if (sourceMap != null) {

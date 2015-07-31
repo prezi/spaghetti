@@ -78,6 +78,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 			description = "Obfuscate the output with Closure compiler")
 	private boolean obfuscate;
 
+	@Option(name = {"--compilation-level"},
+			description = "Set the compilation level for Closure compiler")
+	private String compilationLevel = "advanced";
+
 	@Option(name = {"--symbols"},
 			description = "Comma delimited list of additional symbols to protect during obfuscation")
 	private String additionalSymbols;
@@ -177,7 +181,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				System.getenv("NODE_PATH"),
 				externs,
 				additionalSymbolsSet,
-				workDir
+				workDir,
+				compilationLevel
 		));
 	}
 }
