@@ -8,22 +8,22 @@ class TypeScriptInterfaceStubGeneratorVisitorTest extends ModuleGeneratorSpecifi
 module com.example.test
 
 interface Tibor<T> {
-	T getSomeT()
+	getSomeT(): T;
 }
 
 interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
 	 */
-	void doSomething()
+	doSomething(): void;
 
-	bool boolValue()
-	int intValue()
-	float floatValue()
-	string stringValue()
-	any anyValue()
-	@nullable string[] doSomethingElse(@nullable int a, ?int b)
-	<T, U> T[] hello(X->(void->int)->U f)
+	boolValue(): bool;
+	intValue(): int;
+	floatValue(): float;
+	stringValue(): string;
+	anyValue(): any;
+	@nullable doSomethingElse(@nullable a: int, b?: int): string[];
+	hello<T, U>(f: (X, () -> int) -> U): T[];
 }
 """
 		def result = parseAndVisitModule(definition, new TypeScriptInterfaceStubGeneratorVisitor())

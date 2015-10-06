@@ -13,17 +13,17 @@ interface MyInterface<T> {
 	/**
 	 * This should not influence anything.
 	 */
-	int add(int a, int b)
+	add(a: int, b: int): int;
 }
 
 /**
  * Initializes module.
  */
 @deprecated("use doSomething() instead")
-void initModule(int a, ?int b)
-JSON[] doSomething()
-@nullable int doStatic(@nullable int a, int b)
-<T> MyInterface<T> returnT(T t)
+initModule(a: int, b?: int): void;
+doSomething(): JSON[];
+@nullable doStatic(@nullable a: int, b: int): int;
+returnT<T>(t: T): MyInterface<T>;
 """
 
 		def result = parseAndVisitModule(definition, new HaxeModuleAccessorGeneratorVisitor())

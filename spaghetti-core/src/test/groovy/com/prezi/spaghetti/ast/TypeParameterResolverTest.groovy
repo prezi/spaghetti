@@ -9,13 +9,15 @@ import com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal
 import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 
 import static com.prezi.spaghetti.ast.internal.TypeParameterResolver.resolveTypeParameters
+import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseComplexType
+import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseFunctionType
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseType
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseTypeChain
 
 class TypeParameterResolverTest extends AstParserSpecification {
 	def "resolveTypeParameters simple"() {
 		def locator = mockLocator("int")
-		def type = parseType(locator, resolver(), parser(locator).type())
+		def type = parseComplexType(locator, resolver(), parser(locator).complexType())
 		expect:
 		resolveTypeParameters(type, [:]) == PrimitiveTypeReferenceInternal.INT
 	}
@@ -26,8 +28,8 @@ class TypeParameterResolverTest extends AstParserSpecification {
 				(paramT): PrimitiveTypeReferenceInternal.STRING
 		]
 
-		def locator = mockLocator("int->T->void")
-		def type = parseTypeChain(locator, resolver(paramT), parser(locator).typeChain())
+		def locator = mockLocator("(int, T) -> void")
+		def type = parseFunctionType(locator, resolver(paramT), parser(locator).functionType(), 0)
 		TypeChain result = (TypeChain) resolveTypeParameters(type, bindings)
 
 		expect:
@@ -39,7 +41,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 	}
 
 	def "resolveTypeParameters two levels"() {
-		// T -> U -> string
+		// (T, U) -> string
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
 		def iface = new DefaultInterfaceNode(mockLoc, DefaultFQName.fromString("com.example.test.Iface"))
@@ -50,7 +52,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		]
 
 		def locator = mockLocator("com.example.test.Iface<T>")
-		def type = parseType(locator, resolver(paramT, iface), parser(locator).type())
+		def type = parseComplexType(locator, resolver(paramT, iface), parser(locator).complexType())
 		InterfaceReference result = (InterfaceReference) resolveTypeParameters(type, bindings)
 
 		expect:
@@ -62,7 +64,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 
 	// See https://github.com/prezi/spaghetti/issues/143
 	def "resolveTypeParameters with array"() {
-		// T[] -> U[]
+		// (T[]) -> U[]
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
 		def iface = new DefaultInterfaceNode(mockLoc, DefaultFQName.fromString("com.example.test.Iface"))
@@ -72,7 +74,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 		]
 
 		def locator = mockLocator("com.example.test.Iface<T[]>")
-		def type = parseType(locator, resolver(paramT, iface), parser(locator).type())
+		def type = parseComplexType(locator, resolver(paramT, iface), parser(locator).complexType())
 		InterfaceReference result = (InterfaceReference) resolveTypeParameters(type, bindings)
 
 		expect:
@@ -83,15 +85,15 @@ class TypeParameterResolverTest extends AstParserSpecification {
 	}
 
 	def "resolveTypeParameters unbound"() {
-		// T -> U
+		// (T) -> U
 		def paramT = new DefaultTypeParameterNode(mockLoc, "T")
 		def paramU = new DefaultTypeParameterNode(mockLoc, "U")
 		def bindings = [
 				(paramT): new DefaultTypeParameterReference(mockLoc, paramU, 0)
 		]
 
-		def locator = mockLocator("int->T->void")
-		def type = parseTypeChain(locator, resolver(paramT), parser(locator).typeChain())
+		def locator = mockLocator("(int, T) -> void")
+		def type = parseFunctionType(locator, resolver(paramT), parser(locator).functionType(), 0)
 		TypeChain result = (TypeChain) resolveTypeParameters(type, bindings)
 
 		expect:

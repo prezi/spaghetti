@@ -6,7 +6,7 @@ class HaxeModuleInitializerGeneratorVisitorTest extends ModuleGeneratorSpecifica
 	def "generate"() {
 		def definition = """
 module com.example.test
-int doStatic(int x)
+doStatic(x: int): int;
 """
 		def result = parseAndVisitModule(definition, new HaxeModuleInitializerGeneratorVisitor())
 

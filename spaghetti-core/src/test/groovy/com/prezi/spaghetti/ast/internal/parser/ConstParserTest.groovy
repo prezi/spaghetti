@@ -9,14 +9,14 @@ class ConstParserTest extends AstParserSpecification {
 	def "parse"() {
 		def locator = mockLocator("""
 const Values {
-	boolValue = false
-	bool explicitBoolValue = true
-	intValue = -1
-	int explicitIntValue = 1
-	floatValue = -1.0
-	float explicitFloatValue = 1.0
-	stringValue = "bela"
-	string explicitStringValue = "lajos"
+	boolValue = false;
+	explicitBoolValue: bool = true;
+	intValue = -1;
+	explicitIntValue: int = 1;
+	floatValue = -1.0;
+	explicitFloatValue: float = 1.0;
+	stringValue = "bela";
+	explicitStringValue: string = "lajos";
 }
 """)
 		def context = parser(locator).constDefinition()
@@ -38,13 +38,13 @@ const Values {
 		]
 		node.entries*.location*.toString() == [
 				"test:3:1",
-				"test:4:6",
+				"test:4:1",
 				"test:5:1",
-				"test:6:5",
+				"test:6:1",
 				"test:7:1",
-				"test:8:7",
+				"test:8:1",
 				"test:9:1",
-				"test:10:8",
+				"test:10:1",
 		]
 		node.entries*.value == [
 				false, true,

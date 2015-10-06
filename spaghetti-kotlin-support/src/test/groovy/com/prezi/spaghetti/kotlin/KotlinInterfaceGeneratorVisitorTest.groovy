@@ -9,10 +9,10 @@ interface MyInterface<X> extends Tibor<X> {
 	/**
 	 * Does something.
 	 */
-	void doSomething()
+	doSomething(): void;
 
-	@nullable string[] doSomethingElse(@nullable int a, ?int b)
-	<T, U> T[] hello(X->(void->int)->U f)
+	@nullable doSomethingElse(@nullable a: int, b?: int): string[];
+	hello<T, U>(f: (X, () -> int) -> U): T[];
 }
 """
 		def result = parseAndVisitInterface(definition, new KotlinInterfaceGeneratorVisitor(), mockInterface("Tibor", mockTypeParameter()))

@@ -8,23 +8,23 @@ class HaxeInterfaceStubGeneratorVisitorTest extends ModuleGeneratorSpecification
 module com.example.test
 
 interface Tibor<T> {
-	T getSomeT()
-	com.example.test.MyInterface<T[]> multiply(int max, ?int min)
+	getSomeT(): T;
+	multiply(max: int, min?: int): com.example.test.MyInterface<T[]>;
 }
 
 interface MyInterface<X> extends com.example.test.Tibor<X> {
 	/**
 	 * Does something.
 	 */
-	void doSomething()
+	doSomething(): void;
 
-	bool boolValue()
-	int intValue()
-	float floatValue()
-	string stringValue()
-	any anyValue()
-	@nullable string[] doSomethingElse(@nullable int a, ?int b)
-	<T, U> T[] hello(X->(void->int)->U f)
+	boolValue(): bool;
+	intValue(): int;
+	floatValue(): float;
+	stringValue(): string;
+	anyValue(): any;
+	@nullable doSomethingElse(@nullable a: int, b?: int): string[];
+	hello<T, U>(f: (X, () -> int) -> U): T[];
 }
 """
 		def result = parseAndVisitModule(definition, new HaxeInterfaceStubGeneratorVisitor())

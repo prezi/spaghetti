@@ -6,7 +6,7 @@ class KotlinModuleInitializerGeneratorVisitorTest extends ModuleGeneratorSpecifi
 	def "generate"() {
 		def definition = """
 module com.example.test
-int doStatic(int x)
+doStatic(x: int): int;
 """
 		def result = parseAndVisitModule(definition, new KotlinModuleInitializerGeneratorVisitor())
 

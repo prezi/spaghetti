@@ -13,10 +13,10 @@ enum Prime {
 }
 
 struct Point2d {
-	int x
-	int y
+	x: int;
+	y: int;
 }
 
-Point2d getPoint()
+getPoint(): Point2d;
 
-void createPointViaCallback(int x, int y, Point2d->void callback)
+createPointViaCallback(x: int, y: int, callback: (Point2d) -> void): void;

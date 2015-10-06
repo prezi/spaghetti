@@ -9,7 +9,7 @@ class InterfaceParserTest extends AstSpecification {
 	def "parse"() {
 		def locator = mockLocator("""
 interface MyInterface {
-	int add(int a, @nullable int b)
+	add(a: int, @nullable b: int): int;
 }
 """)
 		def context = AstParserSpecification.parser(locator).interfaceDefinition()
@@ -23,17 +23,17 @@ interface MyInterface {
 		then:
 		node.name == "MyInterface"
 		node.methods*.name == ["add"]
-		node.methods*.location*.toString() == ["test:3:5"]
+		node.methods*.location*.toString() == ["test:3:1"]
 		node.methods*.parameters*.name == [
 				["a", "b"],
 		]
-		node.methods[0].parameters[0].location.toString() == "test:3:13"
-		node.methods[0].parameters[1].location.toString() == "test:3:30"
+		node.methods[0].parameters[0].location.toString() == "test:3:5"
+		node.methods[0].parameters[1].location.toString() == "test:3:23"
 		node.methods*.returnType == [
 				INT,
 		]
 		node.methods*.returnType*.location*.toString() == [
-		        "test:3:1"
+		        "test:3:32"
 		]
 		node.methods*.parameters*.type == [
 				[INT, INT],

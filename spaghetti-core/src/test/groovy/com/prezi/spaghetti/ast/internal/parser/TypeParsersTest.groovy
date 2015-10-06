@@ -38,10 +38,13 @@ class TypeParsersTest extends AstSpecification {
 		collectDimensions(type) == dimensions
 
 		where:
-		definition                     | elements                   | chainDimensions | dimensions
-		"int->int"                     | [INT, INT]                 | 0               | [0, 0]
-		"(int->string)[]"              | [INT, STRING]              | 1               | [0, 0]
-		"int->(int[]->void)->string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, 0], 1]
+		definition                           | elements                   | chainDimensions | dimensions
+		"() -> int"                          | [VOID, INT]                | 0               | [0, 0]
+		"(int) -> int"                       | [INT, INT]                 | 0               | [0, 0]
+		"(int)->int"                         | [INT, INT]                 | 0               | [0, 0]
+		"(int, string) -> int"               | [INT, STRING, INT]         | 0               | [0, 0, 0]
+		"((int) -> string)[]"                | [INT, STRING]              | 1               | [0, 0]
+		"(int, (int[]) -> void) -> string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, 0], 1]
 	}
 
 	def collectElements(TypeChain chain) {

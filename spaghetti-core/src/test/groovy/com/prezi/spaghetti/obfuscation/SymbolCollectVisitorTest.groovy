@@ -17,7 +17,7 @@ class SymbolCollectVisitorTest extends Specification {
 	def "interface methods"() {
 		def result = visit """module prezi.test.tibor as Tibor
 interface Iface {
-	int add(int a, int b)
+	add(a: int, b: int): int;
 }
 """
 		expect:
@@ -27,10 +27,10 @@ interface Iface {
 	def "if same method is found twice, only one symbol should be found"() {
 		def result = visit """module prezi.test.tibor as Tibor
 interface Iface {
-	int add(int a, int b)
-	int sub(int a, int b)
+	add(a: int, b: int): int;
+	sub(a: int, b: int): int;
 }
-int add(int a, int b)
+add(a: int, b: int): int;
 """
 		expect:
 		result == ["add", "sub"]
@@ -39,9 +39,9 @@ int add(int a, int b)
 	def "struct properties and methods are found"() {
 		def result = visit """module prezi.test.tibor as Tibor
 struct Struct {
-	int alpha
-	int beta
-	int add(int a, int b)
+	alpha: int;
+	beta: int;
+	add(a: int, b: int): int;
 }
 """
 		expect:
@@ -51,8 +51,8 @@ struct Struct {
 	def "constants are found"() {
 		def result = visit """module prezi.test.tibor as Tibor
 const Constants {
-	int alpha = 1
-	beta = 5.0
+	alpha: int = 1;
+	beta = 5.0;
 }
 """
 		expect:

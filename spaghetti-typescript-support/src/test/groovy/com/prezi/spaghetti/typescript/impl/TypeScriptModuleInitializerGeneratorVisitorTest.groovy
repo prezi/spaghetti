@@ -10,11 +10,11 @@ interface MyInterface<T> {
 	/**
 	 * This should have nothing to do with the results.
 	 */
-	void someDummyMethod(int x)
+	someDummyMethod(x: int): void;
 }
 
 
-int doStatic(int x)
+doStatic(x: int): int;
 """
 		def result = parseAndVisitModule(definition, new TypeScriptModuleInitializerGeneratorVisitor())
 

@@ -48,7 +48,7 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 				ModuleParser.TypeNamePairContext pairCtx = propCtx.typeNamePair();
 				String name = pairCtx.Name().getText();
 				TypeReference type = TypeParsers.parseComplexType(locator, resolver, pairCtx.complexType());
-				boolean optional = propCtx.optional != null;
+				boolean optional = pairCtx.optional != null;
 
 				DefaultPropertyNode propertyNode = new DefaultPropertyNode(locator.locate(pairCtx.Name()), name, type, optional);
 				AnnotationsParser.parseAnnotations(locator, propCtx.annotations(), propertyNode);

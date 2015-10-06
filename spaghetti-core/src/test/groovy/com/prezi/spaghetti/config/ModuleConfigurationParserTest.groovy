@@ -23,8 +23,8 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		def config = ModuleConfigurationParser.parse(
 				DefaultModuleDefinitionSource.fromString("A", "module com.example.testA"),
-				[DefaultModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { int x int y }")],
-				[DefaultModuleDefinitionSource.fromString("C", "module com.example.testC com.example.testB.Point origin()")]
+				[DefaultModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { x: int; y: int; }")],
+				[DefaultModuleDefinitionSource.fromString("C", "module com.example.testC origin(): com.example.testB.Point;")]
 		)
 		then:
 		config.localModule.name == "com.example.testA"

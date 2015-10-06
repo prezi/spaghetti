@@ -43,67 +43,29 @@ public class TypeParsers {
 	}
 
 	public static TypeReferenceInternal parseComplexType(Locator locator, TypeResolver resolver, ModuleParser.ComplexTypeContext context) {
-		if (context.type() != null) {
-			return parseType(locator, resolver, context.type());
-		} else if (context.typeChain() != null) {
-			return parseTypeChain(locator, resolver, context.typeChain());
+		Integer dimensions = context.ArrayQualifier() != null ? context.ArrayQualifier().size() : 0;
+		if (context.primitiveType() != null) {
+			return parsePrimitiveType(locator, context.primitiveType(), dimensions);
+		} else if (context.objectType() != null) {
+			return parseObjectType(locator, resolver, context.objectType(), dimensions);
+		} else if (context.functionType() != null) {
+			return parseFunctionType(locator, resolver, context.functionType(), dimensions);
 		} else {
 			throw new InternalAstParserException(context, "Unknown complex type");
 		}
 	}
 
-	public static TypeReferenceInternal parseType(Locator locator, TypeResolver resolver, ModuleParser.TypeContext context) {
-		Integer dimensions = context.ArrayQualifier().size();
-		if (context.primitiveType() != null) {
-			return parsePrimitiveType(locator, context.primitiveType(), dimensions);
-		} else if (context.objectType() != null) {
-			return parseObjectType(locator, resolver, context.objectType(), dimensions);
-		} else {
-			throw new InternalAstParserException(context, "Unknown type");
-		}
-	}
-
-	public static TypeChainInternal parseTypeChain(Locator locator, TypeResolver resolver, ModuleParser.TypeChainContext context) {
-		if (context.typeChainElements() != null) {
-			List<TerminalNode> arrayQualifiers = context.ArrayQualifier();
-			return parseTypeChainElements(locator, resolver, context.typeChainElements(), arrayQualifiers != null ? arrayQualifiers.size() : 0);
-		} else {
-			throw new InternalAstParserException(context, "Unknown type chain");
-		}
-	}
-
-	public static TypeChainInternal parseTypeChainElements(Locator locator, final TypeResolver resolver, ModuleParser.TypeChainElementsContext context, int dimensions) {
+	public static TypeChainInternal parseFunctionType(Locator locator, TypeResolver resolver, ModuleParser.FunctionTypeContext context, int dimensions) {
 		final DefaultTypeChain chain = new DefaultTypeChain(locator.locate(context), dimensions);
-		if (context.voidType() != null) {
+		if (context.functionParameters() == null) {
 			chain.getElementsInternal().add(VoidTypeReferenceInternal.VOID);
 		} else {
-			for (ModuleParser.TypeChainElementContext elemCtx : context.typeChainElement()) {
-				chain.getElementsInternal().add(parseTypeChainElement(locator, resolver, elemCtx));
+			for (ModuleParser.ComplexTypeContext typeCtx : context.functionParameters().complexType()) {
+				chain.getElementsInternal().add(parseComplexType(locator, resolver, typeCtx));
 			}
 		}
-
-		chain.getElementsInternal().add(parseTypeChainReturnType(locator, resolver, context.typeChainReturnType()));
+		chain.getElementsInternal().add(parseReturnType(locator, resolver, context.returnType()));
 		return chain;
-	}
-
-	public static TypeReferenceInternal parseTypeChainReturnType(Locator locator, TypeResolver resolver, ModuleParser.TypeChainReturnTypeContext context) {
-		if (context.voidType() != null) {
-			return VoidTypeReferenceInternal.VOID;
-		} else if (context.typeChainElement() != null) {
-			return parseTypeChainElement(locator, resolver, context.typeChainElement());
-		} else {
-			throw new InternalAstParserException(context, "Unknown return type chain element");
-		}
-	}
-
-	public static TypeReferenceInternal parseTypeChainElement(Locator locator, TypeResolver resolver, ModuleParser.TypeChainElementContext context) {
-		if (context.type() != null) {
-			return parseType(locator, resolver, context.type());
-		} else if (context.typeChain() != null) {
-			return parseTypeChain(locator, resolver, context.typeChain());
-		} else {
-			throw new InternalAstParserException(context, "Unknown type chain element");
-		}
 	}
 
 	public static TypeReferenceInternal parseObjectType(Locator locator, TypeResolver resolver, ModuleParser.ObjectTypeContext context, int dimensions) {

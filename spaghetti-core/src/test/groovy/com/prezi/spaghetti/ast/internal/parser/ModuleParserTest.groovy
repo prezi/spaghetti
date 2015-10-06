@@ -16,15 +16,15 @@ enum MyEnum {
 }
 
 struct MyStruct<T> {
-	MyEnum en
-	JSON str
-	T value
+	en: MyEnum;
+	str: JSON;
+	value: T;
 }
 
 interface Lajos extends Iterable<string> {
 }
 
-MyStruct<string> createStruct()
+createStruct(): MyStruct<string>;
 """
 		def locator = mockLocator(definition)
 		def parser = ModuleParser.create(locator.source)
@@ -61,9 +61,9 @@ import test.a.A1
 import test.a.A2 as AX
 
 struct MyStruct {
-	A1 a1
-	AX a2
-	test.a.A3 a3
+	a1: A1;
+	a2: AX;
+	a3: test.a.A3;
 }
 """)
 		def resolver = mockResolver()

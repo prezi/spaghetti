@@ -11,16 +11,16 @@ interface MyInterface<T> {
 	/**
 	 * This should have nothing to do with the results.
 	 */
-	void someDummyMethod(int x)
+	someDummyMethod(x: int): void;
 }
 /**
  * Initializes module.
  */
 @deprecated("use doSomething() instead")
-void initModule(int a, ?int b)
-string doSomething()
-int doStatic(int a, int b)
-<T> MyInterface<T> returnT(T t)
+initModule(a: int, b?: int): void;
+doSomething(): string;
+doStatic(a: int, b: int): int;
+returnT<T>(t: T): MyInterface<T>;
 """
 
 		def result = parseAndVisitModule(definition, new TypeScriptModuleAccessorGeneratorVisitor())

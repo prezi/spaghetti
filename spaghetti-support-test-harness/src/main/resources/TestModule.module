@@ -15,56 +15,56 @@ enum Exported {
 /**
  * Add the two numbers and return the result.
  */
-int addTwoNumbers(int a, int b)
+addTwoNumbers(a: int, b: int): int;
 
 /**
  * Take the given enum value, and return the next value in the Fruit enum.
  * The enum is declared in the DependencyModule module.
  */
-Fruit getNextEnumValue(Fruit value)
+getNextEnumValue(value: Fruit): Fruit;
 
 /**
  * Return the position for the first three primes.
  */
-string getPositionInPrimes(Prime value)
+getPositionInPrimes(value: Prime): string;
 
 const Numbers {
-	ZERO = 0
-	ONE = 1
-	TWO = "two"
+	ZERO = 0;
+	ONE = 1;
+	TWO = "two";
 }
 
 /**
  * Return the value of the constant "TWO" defined in right above Numbers.
  */
-string getValueOfTwo()
+getValueOfTwo(): string;
 
 struct Point3d extends Point2d {
-	int z
+	z: int;
 }
 
 /**
  * Create an instance of the Point3d type, and assign the parameters to its fields.
  */
-Point3d createPoint3dWithGivenValues(int x, int y, int z)
+createPoint3dWithGivenValues(x: int, y: int, z: int): Point3d;
 
 /**
  * Return the Point2d created by DependencyModule.getPoint().
  */
-Point2d getPointFromDependencyModule()
+getPointFromDependencyModule(): Point2d;
 
 /**
  * Call DependencyModule.createStructViaCallback() with the given x and y values,
  * and return the Point2d created.
  */
-Point2d getPointFromDependencyModuleViaCallback(int x, int y)
+getPointFromDependencyModuleViaCallback(x: int, y: int): Point2d;
 
 /**
  * Construct a new Point3d with the given values, and pass it to the callback.
  */
-void returnPointViaCallback(int x, int y, int z, Point3d->void callback)
+returnPointViaCallback(x: int, y: int, z: int, callback: (Point3d) -> void): void;
 
 /**
  * Call into external dependency to get its version.
  */
-string getExternalDependencyVersion()
+getExternalDependencyVersion(): string;

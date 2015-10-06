@@ -9,7 +9,7 @@ moduleDefinition : ( documentation = Doc )? annotations?
 moduleElement	: importDeclaration
 				| typeDefinition
 				| externTypeDefinition
-				| methodDefinition
+				| methodDefinition ';'
 	;
 
 importDeclaration : 'import' qualifiedName ( 'as' Name )?
@@ -29,7 +29,7 @@ interfaceDefinition : ( documentation = Doc )? annotations?
 	'interface' Name typeParameters?
 	( 'extends' superTypeDefinition ( ',' superTypeDefinition )* )?
 	'{'
-		methodDefinition*
+		( methodDefinition ';' )*
 	'}'
 	;
 
@@ -47,7 +47,7 @@ structDefinition : ( documentation = Doc )? annotations?
 	'struct' Name typeParameters?
 	( 'extends' superTypeDefinition )?
 	'{'
-		structElementDefinition*
+		( structElementDefinition ';' )*
 	'}'
 	;
 
@@ -58,7 +58,7 @@ structElementDefinition
 
 constDefinition : ( documentation = Doc )? annotations?
 	'const' Name '{'
-		constEntry*
+		( constEntry  ';' )*
 	'}'
 	;
 
@@ -67,10 +67,10 @@ constEntry : ( documentation = Doc )? annotations?
 	;
 
 constEntryDecl
-	: boolType? Name '=' Boolean
-	| intType? Name '=' Integer
-	| floatType? Name '=' Float
-	| stringType? Name '=' String
+	: Name ( ':' boolType )? '=' Boolean
+	| Name ( ':' intType)? '=' Integer
+	| Name ( ':' floatType)? '=' Float
+	| Name ( ':' stringType)? '=' String
 	;
 
 enumDefinition : ( documentation = Doc )? annotations?
@@ -84,14 +84,15 @@ enumValue : ( documentation = Doc )? annotations?
 	;
 
 methodDefinition : ( documentation = Doc )? annotations?
-	typeParameters?
-	returnType
 	Name
+	typeParameters?
 	'(' methodParameters? ')'
+	':'
+	returnType
 	;
 
 propertyDefinition : ( documentation = Doc )? annotations?
-	( optional = '?' )? typeNamePair
+	typeNamePair
 	;
 
 annotations : annotation+
@@ -117,45 +118,30 @@ annotationValue	: Null
 methodParameters : methodParameter ( ',' methodParameter )*
 	;
 
-methodParameter	: annotations?  ( optional = '?' )? typeNamePair
+methodParameter	: annotations? typeNamePair
 	;
 
-typeNamePair : complexType Name
+typeNamePair : Name ( optional = '?' )? ':' complexType
+	;
+
+complexType
+	: primitiveType ArrayQualifier*
+	| objectType ArrayQualifier*
+	| functionType
+	| '(' functionType ')' ArrayQualifier*
+	;
+
+functionType
+	: '(' functionParameters? ')' '->' returnType
+	;
+
+functionParameters
+	: complexType ( ',' complexType )*
 	;
 
 returnType
 	: voidType
 	| complexType
-	;
-
-complexType
-	: type
-	| typeChain
-	;
-
-type
-	: primitiveType ArrayQualifier*
-	| objectType ArrayQualifier*
-	;
-
-typeChain
-	: typeChainElements
-	| '(' typeChainElements ')' ArrayQualifier+
-	;
-
-typeChainElements
-	: voidType '->' typeChainReturnType
-	| typeChainElement ( '->' typeChainElement )* '->' typeChainReturnType
-	;
-
-typeChainReturnType
-	: voidType
-	| typeChainElement
-	;
-
-typeChainElement
-	: type
-	| '(' typeChain ')'
 	;
 
 primitiveType	: boolType
