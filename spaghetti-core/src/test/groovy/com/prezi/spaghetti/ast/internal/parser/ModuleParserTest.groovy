@@ -11,7 +11,7 @@ extern interface JSON
 extern interface Iterable<T>
 
 enum MyEnum {
-	alma
+	alma,
 	bela
 }
 

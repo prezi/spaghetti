@@ -75,7 +75,7 @@ constEntryDecl
 
 enumDefinition : ( documentation = Doc )? annotations?
 	'enum' Name '{'
-		enumValue*
+		( enumValue ( ',' enumValue )* )?
 	'}'
 	;
 

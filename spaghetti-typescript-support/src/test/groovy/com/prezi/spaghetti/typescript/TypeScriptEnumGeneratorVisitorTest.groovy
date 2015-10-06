@@ -9,7 +9,7 @@ enum MyEnum {
 	/**
 	 * Alma.
 	 */
-	ALMA
+	ALMA,
 	BELA
 }
 """

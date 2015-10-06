@@ -62,7 +62,7 @@ const Constants {
 	def "enum values are found"() {
 		def result = visit """module prezi.test.tibor as Tibor
 enum LeEnum {
-	alpha
+	alpha,
 	beta
 }
 """

@@ -1,14 +1,14 @@
 module spaghetti.test.dependency as DependencyModule
 
 enum Fruit {
-	Apple
-	Pear
+	Apple,
+	Pear,
 	Plum
 }
 
 enum Prime {
-	First = 2
-	Second = 3
+	First = 2,
+	Second = 3,
 	Third = 5
 }
 

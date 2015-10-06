@@ -9,9 +9,9 @@ enum MyEnum {
 	/**
 	 * Alma.
 	 */
-	ALMA
+	ALMA,
 	@deprecated("escape \\"this\\"!")
-	BELA
+	BELA,
 	GEZA
 }
 """
@@ -41,9 +41,9 @@ enum MyEnum {
 	/**
 	 * Alma.
 	 */
-	ALMA = 2
+	ALMA = 2,
 	@deprecated("escape \\"this\\"!")
-	BELA = 5
+	BELA = 5,
 	GEZA = 1
 }
 """
