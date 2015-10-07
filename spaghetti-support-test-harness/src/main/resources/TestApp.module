@@ -1,3 +1,5 @@
-module spaghetti.test.app as TestApp
+module spaghetti.test.app as TestApp {
 
-main(): void;
+	main(): void;
+
+}

@@ -9,9 +9,9 @@ class ModuleConfigurationParserTest extends Specification {
 	def "Loaded multiple times"() {
 		when:
 		ModuleConfigurationParser.parse(
-				DefaultModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test"),
-				[DefaultModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test")],
-				[DefaultModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test")]
+				DefaultModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test {}"),
+				[DefaultModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test {}")],
+				[DefaultModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test {}")]
 		)
 
 		then:
@@ -22,9 +22,9 @@ class ModuleConfigurationParserTest extends Specification {
 	def "Dependency accessed from another dependency"() {
 		when:
 		def config = ModuleConfigurationParser.parse(
-				DefaultModuleDefinitionSource.fromString("A", "module com.example.testA"),
-				[DefaultModuleDefinitionSource.fromString("B", "module com.example.testB struct Point { x: int; y: int; }")],
-				[DefaultModuleDefinitionSource.fromString("C", "module com.example.testC origin(): com.example.testB.Point;")]
+				DefaultModuleDefinitionSource.fromString("A", "module com.example.testA {}"),
+				[DefaultModuleDefinitionSource.fromString("B", "module com.example.testB { struct Point { x: int; y: int; } }")],
+				[DefaultModuleDefinitionSource.fromString("C", "module com.example.testC { origin(): com.example.testB.Point; }")]
 		)
 		then:
 		config.localModule.name == "com.example.testA"

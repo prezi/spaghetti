@@ -5,8 +5,9 @@ import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 class HaxeModuleInitializerGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
 		def definition = """
-module com.example.test
-doStatic(x: int): int;
+module com.example.test {
+	doStatic(x: int): int;
+}
 """
 		def result = parseAndVisitModule(definition, new HaxeModuleInitializerGeneratorVisitor())
 

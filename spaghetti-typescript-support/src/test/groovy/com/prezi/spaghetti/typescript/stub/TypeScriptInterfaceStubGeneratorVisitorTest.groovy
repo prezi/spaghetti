@@ -5,25 +5,26 @@ import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 class TypeScriptInterfaceStubGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
 		def definition = """
-module com.example.test
+module com.example.test {
 
-interface Tibor<T> {
-	getSomeT(): T;
-}
+	interface Tibor<T> {
+		getSomeT(): T;
+	}
 
-interface MyInterface<X> extends com.example.test.Tibor<X> {
-	/**
-	 * Does something.
-	 */
-	doSomething(): void;
+	interface MyInterface<X> extends com.example.test.Tibor<X> {
+		/**
+		 * Does something.
+		 */
+		doSomething(): void;
 
-	boolValue(): bool;
-	intValue(): int;
-	floatValue(): float;
-	stringValue(): string;
-	anyValue(): any;
-	@nullable doSomethingElse(@nullable a: int, b?: int): string[];
-	hello<T, U>(f: (X, () -> int) -> U): T[];
+		boolValue(): bool;
+		intValue(): int;
+		floatValue(): float;
+		stringValue(): string;
+		anyValue(): any;
+		@nullable doSomethingElse(@nullable a: int, b?: int): string[];
+		hello<T, U>(f: (X, () -> int) -> U): T[];
+	}
 }
 """
 		def result = parseAndVisitModule(definition, new TypeScriptInterfaceStubGeneratorVisitor())

@@ -3,7 +3,9 @@ grammar Module;
 moduleDefinition : ( documentation = Doc )? annotations?
 	'module' qualifiedName
 	( 'as' Name )?
+	'{'
 	moduleElement*
+	'}'
 	;
 
 moduleElement	: importDeclaration

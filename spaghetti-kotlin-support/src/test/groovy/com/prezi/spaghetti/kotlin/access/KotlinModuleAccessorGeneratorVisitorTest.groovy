@@ -5,25 +5,26 @@ import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 class KotlinModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
 		def definition = """
-module com.example.test
+module com.example.test {
 
-extern interface JSON
+	extern interface JSON
 
-interface MyInterface<T> {
+	interface MyInterface<T> {
+		/**
+		 * This should not influence anything.
+		 */
+		add(a: int, b: int): int;
+	}
+
 	/**
-	 * This should not influence anything.
+	 * Initializes module.
 	 */
-	add(a: int, b: int): int;
+	@deprecated("use doSomething() instead")
+	initModule(a: int, b?: int): void;
+	doSomething(): JSON[];
+	@nullable doStatic(@nullable a: int, b: int): int;
+	returnT<T>(t: T): MyInterface<T>;
 }
-
-/**
- * Initializes module.
- */
-@deprecated("use doSomething() instead")
-initModule(a: int, b?: int): void;
-doSomething(): JSON[];
-@nullable doStatic(@nullable a: int, b: int): int;
-returnT<T>(t: T): MyInterface<T>;
 """
 		def result = parseAndVisitModule(definition, new KotlinModuleAccessorGeneratorVisitor())
 

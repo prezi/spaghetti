@@ -4,28 +4,29 @@ import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
 class KotlinModuleProxyGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
-		def definition = """module com.example.test
+		def definition = """module com.example.test {
 
-interface MyInterface<T> {
+	interface MyInterface<T> {
+		/**
+		 * This should have nothing to do with the results.
+		 */
+		someDummyMethod(x: int): void;
+	}
 	/**
-	 * This should have nothing to do with the results.
+	 * Does something.
 	 */
-	someDummyMethod(x: int): void;
-}
-/**
- * Does something.
- */
-doSomething(): void;
+	doSomething(): void;
 
-doSomethingElse(a: int, b: int): string[];
-/**
- * No JavaDoc should be generated, this is a non-user-visible class.
- */
-@deprecated("This should be ignored, too")
-doSomethingStatic(x: int): int;
-doSomethingVoid(x: int): void;
-hello<T, U>(t: T, y: U): T[];
-returnT<T>(t: T): MyInterface<T>;
+	doSomethingElse(a: int, b: int): string[];
+	/**
+	 * No JavaDoc should be generated, this is a non-user-visible class.
+	 */
+	@deprecated("This should be ignored, too")
+	doSomethingStatic(x: int): int;
+	doSomethingVoid(x: int): void;
+	hello<T, U>(t: T, y: U): T[];
+	returnT<T>(t: T): MyInterface<T>;
+}
 """
 		def result = parseAndVisitModule(definition, new KotlinModuleProxyGeneratorVisitor())
 
