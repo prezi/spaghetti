@@ -7,8 +7,8 @@ import com.prezi.spaghetti.ast.internal.DefaultFQName
 class ModuleParserTest extends AstSpecification {
 	def "parse single"() {
 		def definition = """module com.example.test {
-extern interface JSON
-extern interface Iterable<T>
+extern interface JSON;
+extern interface Iterable<T>;
 
 enum MyEnum {
 	alma,

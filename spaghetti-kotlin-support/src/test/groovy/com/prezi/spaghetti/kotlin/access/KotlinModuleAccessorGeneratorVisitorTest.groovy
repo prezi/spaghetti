@@ -7,7 +7,7 @@ class KotlinModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecificat
 		def definition = """
 module com.example.test {
 
-	extern interface JSON
+	extern interface JSON;
 
 	interface MyInterface<T> {
 		/**

@@ -7,7 +7,7 @@ class HaxeModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecificatio
 		def definition = """
 module com.example.test {
 
-	extern interface JSON
+	extern interface JSON;
 
 	interface MyInterface<T> {
 		/**

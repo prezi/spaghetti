@@ -39,7 +39,7 @@ superTypeDefinition : qualifiedName typeArguments?
 	;
 
 externInterfaceDefinition : ( documentation = Doc )? annotations?
-	'extern' 'interface' qualifiedName typeParameters?
+	'extern' 'interface' qualifiedName typeParameters? ';'
     ;
 
 typeParameters : '<' Name ( ',' Name )* '>'
