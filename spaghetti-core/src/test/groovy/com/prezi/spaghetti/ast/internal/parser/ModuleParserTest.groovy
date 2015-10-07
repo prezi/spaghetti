@@ -57,8 +57,8 @@ struct A2 {}
 interface A3 {}
 """)
 		def locatorB = mockLocator("""module test.b
-import test.a.A1
-import test.a.A2 as AX
+import test.a.A1;
+import test.a.A2 as AX;
 
 struct MyStruct {
 	a1: A1;

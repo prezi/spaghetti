@@ -12,7 +12,7 @@ moduleElement	: importDeclaration
 				| methodDefinition ';'
 	;
 
-importDeclaration : 'import' qualifiedName ( 'as' Name )?
+importDeclaration : 'import' qualifiedName ( 'as' Name )? ';'
 	;
 
 typeDefinition	: interfaceDefinition

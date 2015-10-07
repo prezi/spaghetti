@@ -1,8 +1,8 @@
 module spaghetti.test as TestModule
 
-import spaghetti.test.dependency.Fruit
-import spaghetti.test.dependency.Prime
-import spaghetti.test.dependency.Point2d
+import spaghetti.test.dependency.Fruit;
+import spaghetti.test.dependency.Prime;
+import spaghetti.test.dependency.Point2d;
 
 /**
  * This enum should be exported on the compiled module.
