@@ -47,6 +47,25 @@ class TypeParsersTest extends AstSpecification {
 		"(int, (int[]) -> void) -> string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, 0], 1]
 	}
 
+	@Unroll
+	def "legacy type chain #definition"() {
+		def type = parseLegacy TypeChain, definition
+
+		expect:
+		collectElements(type) == elements
+		type.arrayDimensions == chainDimensions
+		collectDimensions(type) == dimensions
+
+		where:
+		definition                           | elements                   | chainDimensions | dimensions
+		"void->int"                          | [VOID, INT]                | 0               | [0, 0]
+		"int->int"                       | [INT, INT]                 | 0               | [0, 0]
+		"int->int"                         | [INT, INT]                 | 0               | [0, 0]
+		"int->string-> int"               | [INT, STRING, INT]         | 0               | [0, 0, 0]
+		"(int->string)[]"                | [INT, STRING]              | 1               | [0, 0]
+		"int->(int[]->void)->string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, 0], 1]
+	}
+
 	def collectElements(TypeChain chain) {
 		return chain.elements.collect {
 			return it instanceof TypeChain ? collectElements(it) : it
@@ -68,6 +87,16 @@ class TypeParsersTest extends AstSpecification {
 		def context = parserContext.parser.returnType()
 		assert !parserContext.listener.inError
 		def returnType = TypeParsers.parseReturnType(locator, mockResolver(), context)
+		assert type.isAssignableFrom(returnType.class)
+		return (T) returnType
+	}
+
+	protected <T extends TypeReference> T parseLegacy(Class<T> type, String definition) {
+		def locator = mockLocator(definition)
+		def parserContext = ModuleDefinitionParser.createParser(locator.source)
+		def context = parserContext.parser.returnTypeLegacy()
+		assert !parserContext.listener.inError
+		def returnType = TypeParsers.parseReturnTypeLegacy(locator, mockResolver(), context)
 		assert type.isAssignableFrom(returnType.class)
 		return (T) returnType
 	}

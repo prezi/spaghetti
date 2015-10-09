@@ -1,5 +1,11 @@
 grammar Module;
 
+moduleDefinitionLegacy : ( documentation = Doc )? annotations?
+	'module' qualifiedName
+	( 'as' Name )?
+	moduleElementLegacy*
+	;
+
 moduleDefinition : ( documentation = Doc )? annotations?
 	'module' qualifiedName
 	( 'as' Name )?
@@ -8,13 +14,19 @@ moduleDefinition : ( documentation = Doc )? annotations?
 	'}'
 	;
 
-moduleElement	: importDeclaration
+moduleElement	: importDeclaration ';'
 				| typeDefinition
 				| externTypeDefinition
 				| methodDefinition ';'
 	;
 
-importDeclaration : 'import' qualifiedName ( 'as' Name )? ';'
+moduleElementLegacy : importDeclaration
+					| typeDefinitionLegacy
+					| externTypeDefinitionLegacy
+					| methodDefinitionLegacy
+	;
+
+importDeclaration : 'import' qualifiedName ( 'as' Name )?
 	;
 
 typeDefinition	: interfaceDefinition
@@ -23,8 +35,18 @@ typeDefinition	: interfaceDefinition
 				| enumDefinition
 	;
 
+typeDefinitionLegacy	: interfaceDefinitionLegacy
+						| structDefinitionLegacy
+						| constDefinitionLegacy
+						| enumDefinitionLegacy
+	;
+
 externTypeDefinition
 	: externInterfaceDefinition
+	;
+
+externTypeDefinitionLegacy
+	: externInterfaceDefinitionLegacy
 	;
 
 interfaceDefinition : ( documentation = Doc )? annotations?
@@ -35,11 +57,26 @@ interfaceDefinition : ( documentation = Doc )? annotations?
 	'}'
 	;
 
+interfaceDefinitionLegacy : ( documentation = Doc )? annotations?
+	'interface' Name typeParameters?
+	( 'extends' superTypeDefinitionLegacy ( ',' superTypeDefinitionLegacy )* )?
+	'{'
+		methodDefinitionLegacy*
+	'}'
+	;
+
 superTypeDefinition : qualifiedName typeArguments?
+	;
+
+superTypeDefinitionLegacy : qualifiedName typeArgumentsLegacy?
 	;
 
 externInterfaceDefinition : ( documentation = Doc )? annotations?
 	'extern' 'interface' qualifiedName typeParameters? ';'
+    ;
+
+externInterfaceDefinitionLegacy : ( documentation = Doc )? annotations?
+	'extern' 'interface' qualifiedName typeParameters?
     ;
 
 typeParameters : '<' Name ( ',' Name )* '>'
@@ -53,9 +90,22 @@ structDefinition : ( documentation = Doc )? annotations?
 	'}'
 	;
 
+structDefinitionLegacy : ( documentation = Doc )? annotations?
+	'struct' Name typeParameters?
+	( 'extends' superTypeDefinitionLegacy )?
+	'{'
+		structElementDefinitionLegacy*
+	'}'
+	;
+
 structElementDefinition
 	: propertyDefinition
 	| methodDefinition
+	;
+
+structElementDefinitionLegacy
+	: propertyDefinitionLegacy
+	| methodDefinitionLegacy
 	;
 
 constDefinition : ( documentation = Doc )? annotations?
@@ -64,8 +114,18 @@ constDefinition : ( documentation = Doc )? annotations?
 	'}'
 	;
 
+constDefinitionLegacy : ( documentation = Doc )? annotations?
+	'const' Name '{'
+		( constEntryLegacy )*
+	'}'
+	;
+
 constEntry : ( documentation = Doc )? annotations?
 	constEntryDecl
+	;
+
+constEntryLegacy : ( documentation = Doc )? annotations?
+	constEntryDeclLegacy
 	;
 
 constEntryDecl
@@ -75,9 +135,22 @@ constEntryDecl
 	| Name ( ':' stringType)? '=' String
 	;
 
+constEntryDeclLegacy
+	: boolType? Name '=' Boolean
+	| intType? Name '=' Integer
+	| floatType? Name '=' Float
+	| stringType? Name '=' String
+	;
+
 enumDefinition : ( documentation = Doc )? annotations?
 	'enum' Name '{'
 		( enumValue ( ',' enumValue )* )?
+	'}'
+	;
+
+enumDefinitionLegacy : ( documentation = Doc )? annotations?
+	'enum' Name '{'
+		( enumValue )*
 	'}'
 	;
 
@@ -93,8 +166,19 @@ methodDefinition : ( documentation = Doc )? annotations?
 	returnType
 	;
 
+methodDefinitionLegacy : ( documentation = Doc )? annotations?
+	typeParameters?
+	returnTypeLegacy
+	Name
+	'(' methodParametersLegacy? ')'
+	;
+
 propertyDefinition : ( documentation = Doc )? annotations?
 	typeNamePair
+	;
+
+propertyDefinitionLegacy : ( documentation = Doc )? annotations?
+	( optional = '?' )? typeNamePairLegacy
 	;
 
 annotations : annotation+
@@ -120,10 +204,19 @@ annotationValue	: Null
 methodParameters : methodParameter ( ',' methodParameter )*
 	;
 
+methodParametersLegacy : methodParameterLegacy ( ',' methodParameterLegacy )*
+	;
+
 methodParameter	: annotations? typeNamePair
 	;
 
+methodParameterLegacy	: annotations?  ( optional = '?' )? typeNamePairLegacy
+	;
+
 typeNamePair : Name ( optional = '?' )? ':' complexType
+	;
+
+typeNamePairLegacy : complexTypeLegacy Name
 	;
 
 complexType
@@ -131,6 +224,36 @@ complexType
 	| objectType ArrayQualifier*
 	| functionType
 	| '(' functionType ')' ArrayQualifier*
+	;
+
+complexTypeLegacy
+	: type
+	| typeChain
+	;
+
+type
+	: primitiveType ArrayQualifier*
+	| objectTypeLegacy ArrayQualifier*
+	;
+
+typeChain
+	: typeChainElements
+	| '(' typeChainElements ')' ArrayQualifier+
+	;
+
+typeChainElements
+	: voidType '->' typeChainReturnType
+	| typeChainElement ( '->' typeChainElement )* '->' typeChainReturnType
+	;
+
+typeChainReturnType
+	: voidType
+	| typeChainElement
+	;
+
+typeChainElement
+	: type
+	| '(' typeChain ')'
 	;
 
 functionType
@@ -144,6 +267,11 @@ functionParameters
 returnType
 	: voidType
 	| complexType
+	;
+
+returnTypeLegacy
+	: voidType
+	| complexTypeLegacy
 	;
 
 primitiveType	: boolType
@@ -174,7 +302,13 @@ voidType : 'void'
 objectType : qualifiedName typeArguments?
 	;
 
+objectTypeLegacy : qualifiedName typeArgumentsLegacy?
+	;
+
 typeArguments : '<' returnType ( ',' returnType )* '>'
+	;
+
+typeArgumentsLegacy : '<' returnTypeLegacy ( ',' returnTypeLegacy )* '>'
 	;
 
 qualifiedName : Name ( '.' Name )*

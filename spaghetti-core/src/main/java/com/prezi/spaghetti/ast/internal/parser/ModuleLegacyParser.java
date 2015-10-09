@@ -8,23 +8,20 @@ import com.prezi.spaghetti.ast.internal.DefaultMethodNode;
 import com.prezi.spaghetti.ast.internal.DefaultModuleNode;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser;
+import com.prezi.spaghetti.internal.grammar.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class ModuleParser extends AbstractParser<DefaultModuleNode> {
+public class ModuleLegacyParser extends AbstractParser<DefaultModuleNode> {
 	private final List<AbstractModuleTypeParser> typeParsers;
 	private final List<org.antlr.v4.runtime.ParserRuleContext> moduleMethodsToParse;
 
-	public static ModuleParser create(ModuleDefinitionSource source) {
+	public static ModuleLegacyParser create(ModuleDefinitionSource source) {
 		try {
-			try {
-				return new ModuleParser(new Locator(source), ModuleDefinitionParser.parse(source));
-			} catch (IllegalArgumentException e) {
-				return new ModuleParser(new Locator(source), ModuleDefinitionParser.parseLegacy(source));
-			}
+			return new ModuleLegacyParser(new Locator(source), ModuleDefinitionParser.parse(source));
 		} catch (InternalAstParserException ex) {
 			throw new AstParserException(source, ex.getMessage(), ex);
 		} catch (Exception ex) {
@@ -32,7 +29,7 @@ public class ModuleParser extends AbstractParser<DefaultModuleNode> {
 		}
 	}
 
-	public ModuleParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
+	public ModuleLegacyParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext moduleCtx) {
 		super(locator, createModuleNode(locator, moduleCtx));
 		this.typeParsers = Lists.newArrayList();
 		this.moduleMethodsToParse = Lists.newArrayList();
@@ -66,7 +63,7 @@ public class ModuleParser extends AbstractParser<DefaultModuleNode> {
 		}
 	}
 
-	public ModuleParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionLegacyContext moduleCtx) {
+	public ModuleLegacyParser(Locator locator, com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionLegacyContext moduleCtx) {
 		super(locator, createModuleNode(locator, moduleCtx));
 		this.typeParsers = Lists.newArrayList();
 		this.moduleMethodsToParse = Lists.newArrayList();

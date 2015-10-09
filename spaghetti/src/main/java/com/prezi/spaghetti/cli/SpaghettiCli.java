@@ -5,6 +5,7 @@ import com.prezi.spaghetti.cli.commands.AbstractCommand;
 import com.prezi.spaghetti.cli.commands.BundleModuleCommand;
 import com.prezi.spaghetti.cli.commands.GenerateHeadersCommand;
 import com.prezi.spaghetti.cli.commands.GenerateStubsCommand;
+import com.prezi.spaghetti.cli.commands.MigrateSyntaxCommand;
 import com.prezi.spaghetti.cli.commands.PackageApplicationCommand;
 import com.prezi.spaghetti.cli.commands.VersionCommand;
 import io.airlift.command.Cli;
@@ -30,6 +31,7 @@ public class SpaghettiCli {
 				.withCommands(
 						BundleModuleCommand.class,
 						PackageApplicationCommand.class,
+						MigrateSyntaxCommand.class,
 						VersionCommand.class,
 						Help.class
 				)
