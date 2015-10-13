@@ -192,8 +192,7 @@ public class MigrateSyntaxCommand extends AbstractDefinitionAwareCommand {
 				}
 			} else if (moduleElem.methodDefinitionLegacy() != null) {
 				newline(moduleDef);
-				indent(moduleDef, 1);
-				moduleDef.append(methodDefinition(moduleElem.methodDefinitionLegacy()));
+				moduleDef.append(methodDefinition(moduleElem.methodDefinitionLegacy(), 1));
 			}
 			newline(moduleDef);
 		}
@@ -207,7 +206,7 @@ public class MigrateSyntaxCommand extends AbstractDefinitionAwareCommand {
 
 	private static void generateMeta(org.antlr.v4.runtime.Token doc, ModuleParser.AnnotationsContext anns, StringBuilder builder, int indent) {
 		if (doc != null) {
-			for (String docBit : doc.getText().split("\n")) {
+			for (String docBit : doc.getText().split("\\n")) {
 				indent(builder, indent);
 				builder.append(docBit.trim());
 				newline(builder);

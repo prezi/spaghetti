@@ -10,13 +10,11 @@ for MODULE in $MODULES
 do
   TMP_FILE=$(mktemp -t module)
   # 2. Translate all simple comments so they'll be saved
-  sed 's/\/\*\([^*]\)/\/**~SING \1/g' $MODULE > $TMP_FILE
-  sed 's/\/\/\([^*]\+\)$/\/**~LINE \1*\//g' $TMP_FILE > $MODULE
+  ./ffs.rb $MODULE > $TMP_FILE
   # 3. Use Spaghetti to migrate
-  $SPAGHETTI_BIN migrate --definition $MODULE > $TMP_FILE
+  $SPAGHETTI_BIN migrate --definition $TMP_FILE > $MODULE
   # 4. Convert all translated comments back to simple comments
-  sed 's/\/\*\*~SING /\/*/g' $TMP_FILE > $MODULE
-  sed 's/\/\*\*~LINE \(.*\)\*\/$/\/\/\1/g' $MODULE > $TMP_FILE
+  ./sff.rb $MODULE > $TMP_FILE
   # TMP_FILE ping pong to MODULE
   mv $TMP_FILE $MODULE
 done
