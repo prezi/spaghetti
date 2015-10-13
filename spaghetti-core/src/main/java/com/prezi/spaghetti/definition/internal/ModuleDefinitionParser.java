@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 public class ModuleDefinitionParser {
 	public static ModuleParser.ModuleDefinitionContext parse(final ModuleDefinitionSource source) {
-		ModuleParserContext parserContext = createParser(source, true);
+		ModuleParserContext parserContext = createParser(source, false);
 		ModuleParser.ModuleDefinitionContext tree = parserContext.getParser().moduleDefinition();
 		if (parserContext.getListener().isInError()) {
 			throw new IllegalArgumentException("Could not parse module definition \'" + source.getLocation() + "\', see errors reported above");
@@ -17,7 +17,7 @@ public class ModuleDefinitionParser {
 	}
 
 	public static ModuleParser.ModuleDefinitionLegacyContext parseLegacy(final ModuleDefinitionSource source) {
-		ModuleParserContext parserContext = createParser(source, false);
+		ModuleParserContext parserContext = createParser(source, true);
 		ModuleParser.ModuleDefinitionLegacyContext tree = parserContext.getParser().moduleDefinitionLegacy();
 		if (parserContext.getListener().isInError()) {
 			throw new IllegalArgumentException("Could not parse module definition \'" + source.getLocation() + "\', see errors reported above");

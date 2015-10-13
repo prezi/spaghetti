@@ -21,9 +21,9 @@ public class ModuleParser extends AbstractParser<DefaultModuleNode> {
 	public static ModuleParser create(ModuleDefinitionSource source) {
 		try {
 			try {
-				return new ModuleParser(new Locator(source), ModuleDefinitionParser.parse(source));
-			} catch (IllegalArgumentException e) {
 				return new ModuleParser(new Locator(source), ModuleDefinitionParser.parseLegacy(source));
+			} catch (IllegalArgumentException e) {
+				return new ModuleParser(new Locator(source), ModuleDefinitionParser.parse(source));
 			}
 		} catch (InternalAstParserException ex) {
 			throw new AstParserException(source, ex.getMessage(), ex);
