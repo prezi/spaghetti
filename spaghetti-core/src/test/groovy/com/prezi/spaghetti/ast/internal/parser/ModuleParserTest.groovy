@@ -6,25 +6,26 @@ import com.prezi.spaghetti.ast.internal.DefaultFQName
 
 class ModuleParserTest extends AstSpecification {
 	def "parse single"() {
-		def definition = """module com.example.test
-extern interface JSON
-extern interface Iterable<T>
+		def definition = """module com.example.test {
+extern interface JSON;
+extern interface Iterable<T>;
 
 enum MyEnum {
-	alma
+	alma,
 	bela
 }
 
 struct MyStruct<T> {
-	MyEnum en
-	JSON str
-	T value
+	en: MyEnum;
+	str: JSON;
+	value: T;
 }
 
 interface Lajos extends Iterable<string> {
 }
 
-MyStruct<string> createStruct()
+createStruct(): MyStruct<string>;
+}
 """
 		def locator = mockLocator(definition)
 		def parser = ModuleParser.create(locator.source)

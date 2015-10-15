@@ -8,7 +8,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 public class ModuleDefinitionParser {
 	public static ModuleParser.ModuleDefinitionContext parse(final ModuleDefinitionSource source) {
-		ModuleParserContext parserContext = createParser(source, false);
+		ModuleParserContext parserContext = createParser(source);
 		ModuleParser.ModuleDefinitionContext tree = parserContext.getParser().moduleDefinition();
 		if (parserContext.getListener().isInError()) {
 			throw new IllegalArgumentException("Could not parse module definition \'" + source.getLocation() + "\', see errors reported above");
@@ -16,34 +16,10 @@ public class ModuleDefinitionParser {
 		return tree;
 	}
 
-	public static ModuleParser.ModuleDefinitionLegacyContext parseLegacy(final ModuleDefinitionSource source) {
-		ModuleParserContext parserContext = createParser(source, true);
-		ModuleParser.ModuleDefinitionLegacyContext tree = parserContext.getParser().moduleDefinitionLegacy();
-		if (parserContext.getListener().isInError()) {
-			throw new IllegalArgumentException("Could not parse module definition \'" + source.getLocation() + "\', see errors reported above");
-		}
-		return tree;
-	}
-
-	public static ModuleParserContext createParser(ModuleDefinitionSource source, boolean silent) {
-		ANTLRInputStream input = new ANTLRInputStream(source.getContents());
-
-		ParserErrorListener errorListener = new ParserErrorListener(source.getLocation(), silent);
-		ModuleLexer lexer = new ModuleLexer(input);
-		lexer.removeErrorListeners();
-		lexer.addErrorListener(errorListener);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-		ModuleParser parser = new ModuleParser(tokens);
-		parser.removeErrorListeners();
-		parser.addErrorListener(errorListener);
-		return new ModuleParserContext(lexer, parser, errorListener);
-	}
-
 	public static ModuleParserContext createParser(ModuleDefinitionSource source) {
 		ANTLRInputStream input = new ANTLRInputStream(source.getContents());
 
-		ParserErrorListener errorListener = new ParserErrorListener(source.getLocation(), false);
+		ParserErrorListener errorListener = new ParserErrorListener(source.getLocation());
 		ModuleLexer lexer = new ModuleLexer(input);
 		lexer.removeErrorListeners();
 		lexer.addErrorListener(errorListener);
