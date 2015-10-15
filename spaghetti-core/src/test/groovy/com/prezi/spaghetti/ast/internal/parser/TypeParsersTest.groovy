@@ -3,7 +3,7 @@ package com.prezi.spaghetti.ast.internal.parser
 import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
-import com.prezi.spaghetti.ast.TypeChain
+import com.prezi.spaghetti.ast.FunctionType
 import com.prezi.spaghetti.ast.TypeReference
 import com.prezi.spaghetti.definition.internal.ModuleDefinitionParser
 import spock.lang.Unroll
@@ -30,7 +30,7 @@ class TypeParsersTest extends AstSpecification {
 
 	@Unroll
 	def "type chain #definition"() {
-		def type = parse TypeChain, definition
+		def type = parse FunctionType, definition
 
 		expect:
 		collectElements(type) == elements
@@ -47,15 +47,15 @@ class TypeParsersTest extends AstSpecification {
 		"(int, (int[]) -> void) -> string[]" | [INT, [INT, VOID], STRING] | 0               | [0, [1, 0], 1]
 	}
 
-	def collectElements(TypeChain chain) {
+	def collectElements(FunctionType chain) {
 		return chain.elements.collect {
-			return it instanceof TypeChain ? collectElements(it) : it
+			return it instanceof FunctionType ? collectElements(it) : it
 		}
 	}
 
-	def collectDimensions(TypeChain chain) {
+	def collectDimensions(FunctionType chain) {
 		return chain.elements.collect {
-			if (it instanceof TypeChain) {
+			if (it instanceof FunctionType) {
 				return collectDimensions(it)
 			}
 			return it.arrayDimensions

@@ -15,19 +15,18 @@ import com.prezi.spaghetti.ast.internal.DefaultExternInterfaceReference;
 import com.prezi.spaghetti.ast.internal.DefaultInterfaceReference;
 import com.prezi.spaghetti.ast.internal.DefaultPrimitiveTypeReference;
 import com.prezi.spaghetti.ast.internal.DefaultStructReference;
-import com.prezi.spaghetti.ast.internal.DefaultTypeChain;
+import com.prezi.spaghetti.ast.internal.DefaultFunctionType;
 import com.prezi.spaghetti.ast.internal.DefaultTypeParameterReference;
 import com.prezi.spaghetti.ast.internal.ExternInterfaceReferenceInternal;
 import com.prezi.spaghetti.ast.internal.InterfaceReferenceInternal;
 import com.prezi.spaghetti.ast.internal.PrimitiveTypeReferenceInternal;
 import com.prezi.spaghetti.ast.internal.StructReferenceInternal;
-import com.prezi.spaghetti.ast.internal.TypeChainInternal;
+import com.prezi.spaghetti.ast.internal.FunctionTypeInternal;
 import com.prezi.spaghetti.ast.internal.TypeNodeReferenceInternal;
 import com.prezi.spaghetti.ast.internal.TypeReferenceInternal;
 import com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal;
 import com.prezi.spaghetti.internal.grammar.ModuleParser;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.List;
 
@@ -55,17 +54,17 @@ public class TypeParsers {
 		}
 	}
 
-	public static TypeChainInternal parseFunctionType(Locator locator, TypeResolver resolver, ModuleParser.FunctionTypeContext context, int dimensions) {
-		final DefaultTypeChain chain = new DefaultTypeChain(locator.locate(context), dimensions);
+	public static FunctionTypeInternal parseFunctionType(Locator locator, TypeResolver resolver, ModuleParser.FunctionTypeContext context, int dimensions) {
+		final DefaultFunctionType functionType = new DefaultFunctionType(locator.locate(context), dimensions);
 		if (context.functionParameters() == null) {
-			chain.getElementsInternal().add(VoidTypeReferenceInternal.VOID);
+			functionType.getElementsInternal().add(VoidTypeReferenceInternal.VOID);
 		} else {
 			for (ModuleParser.ComplexTypeContext typeCtx : context.functionParameters().complexType()) {
-				chain.getElementsInternal().add(parseComplexType(locator, resolver, typeCtx));
+				functionType.getElementsInternal().add(parseComplexType(locator, resolver, typeCtx));
 			}
 		}
-		chain.getElementsInternal().add(parseReturnType(locator, resolver, context.returnType()));
-		return chain;
+		functionType.getElementsInternal().add(parseReturnType(locator, resolver, context.returnType()));
+		return functionType;
 	}
 
 	public static TypeReferenceInternal parseObjectType(Locator locator, TypeResolver resolver, ModuleParser.ObjectTypeContext context, int dimensions) {

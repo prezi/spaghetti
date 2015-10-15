@@ -11,8 +11,6 @@ import com.prezi.spaghetti.ast.internal.parser.AstParserSpecification
 import static com.prezi.spaghetti.ast.internal.TypeParameterResolver.resolveTypeParameters
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseComplexType
 import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseFunctionType
-import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseType
-import static com.prezi.spaghetti.ast.internal.parser.TypeParsers.parseTypeChain
 
 class TypeParameterResolverTest extends AstParserSpecification {
 	def "resolveTypeParameters simple"() {
@@ -30,7 +28,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 
 		def locator = mockLocator("(int, T) -> void")
 		def type = parseFunctionType(locator, resolver(paramT), parser(locator).functionType(), 0)
-		TypeChain result = (TypeChain) resolveTypeParameters(type, bindings)
+		FunctionType result = (FunctionType) resolveTypeParameters(type, bindings)
 
 		expect:
 		result.elements == [
@@ -94,7 +92,7 @@ class TypeParameterResolverTest extends AstParserSpecification {
 
 		def locator = mockLocator("(int, T) -> void")
 		def type = parseFunctionType(locator, resolver(paramT), parser(locator).functionType(), 0)
-		TypeChain result = (TypeChain) resolveTypeParameters(type, bindings)
+		FunctionType result = (FunctionType) resolveTypeParameters(type, bindings)
 
 		expect:
 		result.elements[0] == PrimitiveTypeReferenceInternal.INT

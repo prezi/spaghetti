@@ -11,11 +11,11 @@ import com.prezi.spaghetti.ast.TypeReference;
 import java.util.Collections;
 import java.util.List;
 
-public class DefaultTypeChain extends AbstractTypeReference implements TypeChainInternal {
+public class DefaultFunctionType extends AbstractTypeReference implements FunctionTypeInternal {
 	private final List<TypeReferenceInternal> elementsInternal = Lists.newArrayList();
 	private final List<TypeReference> elements = Collections.<TypeReference>unmodifiableList(elementsInternal);
 
-	public DefaultTypeChain(Location location, int arrayDimensions) {
+	public DefaultFunctionType(Location location, int arrayDimensions) {
 		super(location, arrayDimensions);
 	}
 
@@ -35,7 +35,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	public TypeReferenceInternal withAdditionalArrayDimensions(int extraDimensions) {
-		DefaultTypeChain chain = new DefaultTypeChain(getLocation(), getArrayDimensions() + extraDimensions);
+		DefaultFunctionType chain = new DefaultFunctionType(getLocation(), getArrayDimensions() + extraDimensions);
 		chain.getElementsInternal().addAll(elementsInternal);
 		return chain;
 	}
@@ -47,7 +47,7 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 
 	@Override
 	protected <T> T acceptInternal(ModuleVisitor<? extends T> visitor) {
-		return visitor.visitTypeChain(this);
+		return visitor.visitFunctionType(this);
 	}
 
 	@Override
@@ -68,10 +68,10 @@ public class DefaultTypeChain extends AbstractTypeReference implements TypeChain
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof DefaultTypeChain)) return false;
+		if (!(o instanceof DefaultFunctionType)) return false;
 		if (!super.equals(o)) return false;
 
-		DefaultTypeChain that = (DefaultTypeChain) o;
+		DefaultFunctionType that = (DefaultFunctionType) o;
 
 		if (!elementsInternal.equals(that.elementsInternal)) return false;
 
