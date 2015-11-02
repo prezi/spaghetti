@@ -1,128 +1,129 @@
 /**
  * Layout module.
  */
-module prezi.graphics.text as Layout
+module prezi.graphics.text as Layout {
 
-import prezi.graphics.core.JsEnum
+	import prezi.graphics.core.JsEnum;
 
-/**
- * Different types of character styles.
- */
-@deprecated("dont use lol")
-enum CharacterStyleType {
 	/**
-	 * This takes an int.
+	 * Different types of character styles.
 	 */
-	@deprecated("such bad")
-	COLOR
+	@deprecated("dont use lol")
+	enum CharacterStyleType {
+		/**
+		 * This takes an int.
+		 */
+		@deprecated("such bad")
+		COLOR,
+
+		/**
+		 * A string with the name of the font family.
+		 */
+		FONT_FAMILY,
+
+		/**
+		 * This one can be "italic" or "normal".
+		 */
+		FONT_STYLE,
+
+		/**
+		 * Something like "condensed", or our favorite: "normal".
+		 */
+		FONT_STRETCH,
+
+		/**
+		 * The ever so famous "bold" (or "normal").
+		 */
+		FONT_WEIGHT,
+
+		/**
+		 * This'll be a bool.
+		 */
+		UNDERLINE,
+
+		/**
+		 * Again, a bool saying whether or not the text is an URL.
+		 */
+		URL
+	}
+
+	@deprecated
+	@annotated(name="meta", param=true)
+	struct CharacterStyle {
+		/**
+		 * The type of the style.
+		 */
+		@deprecated
+		type: CharacterStyleType;
+		/**
+		 * The value of the style.
+		 */
+		@mutable value: any;
+	}
+
+	struct Generic<T> {
+		element: T;
+	}
+
+	@deprecated
+	interface AbstractText {
+		@deprecated("use \"insertNextGen\" instead")
+		insert(offset: int, text: string, @nullable withStyles: CharacterStyle[]): void;
+		delete(offset: int, end: int): void;
+	}
 
 	/**
-	 * A string with the name of the font family.
+	 * Describes a block of text.
 	 */
-	FONT_FAMILY
+	interface Text extends AbstractText {
+		/**
+		 * Inserts the given string at <code>offset</code>.
+		 */
+		@deprecated
+		getRawText(): string;
+	}
+
+	extern interface HTMLCanvasElement;
 
 	/**
-	 * This one can be "italic" or "normal".
+	 * Stuff here only to test code generation features.
 	 */
-	FONT_STYLE
+	interface TestStuff<Pre, Post> {
+		registerCallback(callback: (string) -> void): void;
+		doVoidCallback(callback: () -> int): int;
+		doAsync(callback: (string, (int) -> string) -> void, converter: (int) -> string): int;
+		doSomething(pre: Pre, text: string, post: Post): string;
+		drawSomething(canvas: HTMLCanvasElement): void;
+	}
+
+	interface Dummy {
+		getValue(): int;
+	}
+
+	interface TestStuff2<T> extends TestStuff<T, T>, Dummy {
+		readValue<X>(object: T, name: string, defaultValue: X): X;
+	}
 
 	/**
-	 * Something like "condensed", or our favorite: "normal".
-	 */
-	FONT_STRETCH
-
-	/**
-	 * The ever so famous "bold" (or "normal").
-	 */
-	FONT_WEIGHT
-
-	/**
-	 * This'll be a bool.
-	 */
-	UNDERLINE
-
-	/**
-	 * Again, a bool saying whether or not the text is an URL.
-	 */
-	URL
-}
-
-@deprecated
-@annotated(name="meta", param=true)
-struct CharacterStyle {
-	/**
-	 * The type of the style.
+	 * Some constants.
 	 */
 	@deprecated
-	CharacterStyleType type
-	/**
-	 * The value of the style.
-	 */
-	@mutable any value
+	const Values {
+		/**
+		 * To say hello.
+		 */
+		HELLO: int = 12;
+
+		/**
+		 * To say Hi.
+		 */
+		@deprecated
+		HI: string = "Hello";
+	}
+
+	createText(text?: string): Text;
+	createTestStuff(): TestStuff<string, string>;
+	getResource(): string;
+	createTestStuffWithStringKey<T>(): TestStuff<T, string>;
+	getEnumValue(value: JsEnum): string;
 }
-
-struct Generic<T> {
-	T element
-}
-
-@deprecated
-interface AbstractText {
-	@deprecated("use \"insertNextGen\" instead")
-	void insert(int offset, string text, @nullable CharacterStyle[] withStyles)
-	void delete(int offset, int end)
-}
-
-/**
- * Describes a block of text.
- */
-interface Text extends AbstractText {
-	/**
-	 * Inserts the given string at <code>offset</code>.
-	 */
-	@deprecated
-	string getRawText()
-}
-
-extern interface HTMLCanvasElement
-
-/**
- * Stuff here only to test code generation features.
- */
-interface TestStuff<Pre, Post> {
-	void registerCallback(string->void callback)
-	int doVoidCallback(void->int callback)
-	int doAsync(string->(int->string)->void callback, int->string converter)
-	string doSomething(Pre pre, string text, Post post)
-	void drawSomething(HTMLCanvasElement canvas)
-}
-
-interface Dummy {
-	int getValue()
-}
-
-interface TestStuff2<T> extends TestStuff<T, T>, Dummy {
-	<X> X readValue(T object, string name, X defaultValue)
-}
-
-/**
- * Some constants.
- */
-@deprecated
-const Values {
-	/**
-	 * To say hello.
-	 */
-	int HELLO = 12
-
-	/**
-	 * To say Hi.
-	 */
-	@deprecated
-	string HI = "Hello"
-}
-
-Text createText(?string text)
-TestStuff<string, string> createTestStuff()
-string getResource()
-<T> TestStuff<T, string> createTestStuffWithStringKey()
-string getEnumValue(JsEnum value)

@@ -1,13 +1,15 @@
-module prezi.graphics.core as Core
+module prezi.graphics.core as Core {
 
-enum JsEnum {
-	ALMA
-	BELA
+	enum JsEnum {
+		ALMA,
+		BELA
+	}
+
+	const JsConst {
+		alma: int = 1;
+		bela = "bela";
+	}
+
+	giveMeANumber(): int;
+
 }
-
-const JsConst {
-	int alma = 1
-	bela = "bela"
-}
-
-int giveMeANumber()
