@@ -9,17 +9,17 @@ class KotlinStructGeneratorVisitorTest extends StructGeneratorSpecification {
  * Hey this is my struct!
  */
 struct MyStruct<T> extends Parent<T> {
-	int a
+	a: int;
 	/**
 	 * This is field b.
 	 */
 	@deprecated("struct")
-	?string b
-	@nullable string c
-	@nullable ?string d
-	@mutable T t
-	T convert(T value)
-	Parent<T> parent()
+	b?: string;
+	@nullable c: string;
+	@nullable d?: string;
+	@mutable t: T;
+	convert(value: T): T;
+	parent(): Parent<T>;
 }
 """
 		def result = parseAndVisitStruct(definition, new KotlinStructGeneratorVisitor(), mockStruct("Parent", mockTypeParameter()))

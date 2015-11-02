@@ -1,3 +1,5 @@
-module prezi.test.client as Client
+module prezi.test.client as Client {
 
-void main()
+	main(): void;
+
+}

@@ -1,22 +1,23 @@
-module spaghetti.test.dependency as DependencyModule
+module spaghetti.test.dependency as DependencyModule {
 
-enum Fruit {
-	Apple
-	Pear
-	Plum
+	enum Fruit {
+		Apple,
+		Pear,
+		Plum
+	}
+
+	enum Prime {
+		First = 2,
+		Second = 3,
+		Third = 5
+	}
+
+	struct Point2d {
+		x: int;
+		y: int;
+	}
+
+	getPoint(): Point2d;
+
+	createPointViaCallback(x: int, y: int, callback: (Point2d) -> void): void;
 }
-
-enum Prime {
-	First = 2
-	Second = 3
-	Third = 5
-}
-
-struct Point2d {
-	int x
-	int y
-}
-
-Point2d getPoint()
-
-void createPointViaCallback(int x, int y, Point2d->void callback)

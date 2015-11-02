@@ -101,7 +101,7 @@ public class ModuleVisitorBase<T> implements ModuleVisitor<T> {
 	}
 
 	@Override
-	public T visitTypeChain(TypeChain node) {
+	public T visitFunctionType(FunctionType node) {
 		return visitChildren(node);
 	}
 

@@ -9,10 +9,10 @@ interface MyInterface<X> extends Parent<X> {
 	/**
 	 * Does something.
 	 */
-	void doSomething(string[] value)
+	doSomething(value: string[]): void;
 
-	string[] doSomethingElse(int a, ?int b)
-	<T, U> T[] hello(X->(void->int)->U f)
+	doSomethingElse(a: int, b?: int): string[];
+	hello<T, U>(f: (X, () -> int) -> U): T[];
 }
 """
 		def result = parseAndVisitInterface(definition, new TypeScriptInterfaceGeneratorVisitor(), mockInterface("Parent", mockTypeParameter()))

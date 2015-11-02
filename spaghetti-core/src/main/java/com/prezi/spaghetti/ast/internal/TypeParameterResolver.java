@@ -13,10 +13,10 @@ public class TypeParameterResolver {
 			return (PrimitiveTypeReferenceInternal) node;
 		} else if (node instanceof EnumReferenceInternal) {
 			return (EnumReferenceInternal) node;
-		} else if (node instanceof TypeChainInternal) {
-			TypeChainInternal typeChain = (TypeChainInternal) node;
-			DefaultTypeChain result = new DefaultTypeChain(typeChain.getLocation(), typeChain.getArrayDimensions());
-			for (TypeReferenceInternal elem : typeChain.getElementsInternal()) {
+		} else if (node instanceof FunctionTypeInternal) {
+			FunctionTypeInternal functionType = (FunctionTypeInternal) node;
+			DefaultFunctionType result = new DefaultFunctionType(functionType.getLocation(), functionType.getArrayDimensions());
+			for (TypeReferenceInternal elem : functionType.getElementsInternal()) {
 				result.getElementsInternal().add(resolveTypeParameters(elem, bindings));
 			}
 			return result;

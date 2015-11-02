@@ -10,14 +10,14 @@ class KotlinConstGeneratorVisitorTest extends ConstGeneratorSpecification {
  */
 @deprecated
 const MyConstants {
-    int alma = 1
+    alma: int = 1;
     /**
      * Bela is -123.
      */
     @deprecated("lajos")
-    int bela = -123
-    geza = -1.23
-    tibor = "tibor"
+    bela: int = -123;
+    geza = -1.23;
+    tibor = "tibor";
 }
 """
 

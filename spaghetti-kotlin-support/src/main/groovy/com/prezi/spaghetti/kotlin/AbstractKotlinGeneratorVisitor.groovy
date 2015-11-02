@@ -13,7 +13,7 @@ import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.StructReference
-import com.prezi.spaghetti.ast.TypeChain
+import com.prezi.spaghetti.ast.FunctionType
 import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.VoidTypeReference
 import org.apache.commons.lang3.StringEscapeUtils
@@ -30,7 +30,7 @@ abstract class AbstractKotlinGeneratorVisitor extends StringModuleVisitorBase {
 	]
 
 	@Override
-	String visitTypeChain(TypeChain node) {
+	String visitFunctionType(FunctionType node) {
 		def parameters = node.parameters
 		def retType = node.returnType.accept(this)
 		return "(${parameters*.accept(this).join(",")})->${retType}"

@@ -15,12 +15,12 @@ class StructParserTest extends AstSpecification {
 	def "parse primitives"() {
 		def locator = mockLocator("""
 struct MyStruct<T> {
-	bool boolValue
-	int intValue
-	float floatValue
-	?string stringValue
-	any anyValue
-	T genericValue
+	boolValue: bool;
+	intValue: int;
+	floatValue: float;
+	stringValue?: string;
+	anyValue: any;
+	genericValue: T;
 }
 """)
 		def context = AstParserSpecification.parser(locator).structDefinition()
@@ -63,7 +63,7 @@ struct MyStruct<T> {
 	def "parse local reference"() {
 		def locator = mockLocator("""
 struct StructB {
-	StructA structA
+	structA: StructA;
 }
 """)
 		def context = AstParserSpecification.parser(locator).structDefinition()
@@ -96,7 +96,7 @@ struct StructB {
 	def "parse method"() {
 		def locator = mockLocator("""
 struct MyStruct<T> {
-	T convertToRelative(T absolute)
+	convertToRelative(absolute: T): T;
 }
 """)
 		def context = AstParserSpecification.parser(locator).structDefinition()

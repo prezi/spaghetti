@@ -21,7 +21,7 @@ enum MyEnum {
 		given:
 		def node = parseEnum("""
 enum MyEnum {
-	alma
+	alma,
 	bela
 }
 """)
@@ -36,7 +36,7 @@ enum MyEnum {
 		given:
 		def node = parseEnum("""
 enum MyEnum {
-	alma = 2
+	alma = 2,
 	bela = 7
 }
 """)
@@ -51,7 +51,7 @@ enum MyEnum {
 		when:
 		parseEnum("""
 enum MyEnum {
-	alma
+	alma,
 	bela = 1
 }
 """)
@@ -64,7 +64,7 @@ enum MyEnum {
 		when:
 		parseEnum("""
 enum MyEnum {
-	alma = 1
+	alma = 1,
 	bela = 1
 }
 """)
@@ -78,7 +78,7 @@ enum MyEnum {
 		when:
 		parseEnum("""
 enum MyEnum {
-	alma = 1
+	alma = 1,
 	alma = 2
 }
 """)

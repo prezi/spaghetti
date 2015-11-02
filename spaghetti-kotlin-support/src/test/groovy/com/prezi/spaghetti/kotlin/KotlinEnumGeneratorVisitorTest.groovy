@@ -8,9 +8,9 @@ class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	/**
 	 * Alma.
 	 */
-	ALMA
+	ALMA,
 	@deprecated("escape \\"this\\"!")
-	BELA
+	BELA,
 	GEZA
 }
 """
@@ -61,9 +61,9 @@ class KotlinEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	/**
 	 * Alma.
 	 */
-	ALMA = 1
+	ALMA = 1,
 	@deprecated("escape \\"this\\"!")
-	BELA = 2
+	BELA = 2,
 	GEZA = 4
 }
 """

@@ -20,7 +20,7 @@ public interface ModuleVisitor<T> {
 	T visitPropertyNode(PropertyNode node);
 	T visitStructNode(StructNode node);
 	T visitStructReference(StructReference reference);
-	T visitTypeChain(TypeChain chain);
+	T visitFunctionType(FunctionType functionType);
 	T visitTypeParameterNode(TypeParameterNode node);
 	T visitTypeParameterReference(TypeParameterReference reference);
 	T visitVoidTypeReference(VoidTypeReference reference);

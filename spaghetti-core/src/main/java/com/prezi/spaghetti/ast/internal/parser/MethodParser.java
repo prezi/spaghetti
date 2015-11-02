@@ -39,7 +39,7 @@ public class MethodParser {
 				String name = pairCtx.Name().getText();
 				ModuleParser.ComplexTypeContext typeCtx = pairCtx.complexType();
 				TypeReference type = TypeParsers.parseComplexType(locator, resolver, typeCtx);
-				boolean optional = paramCtx.optional != null;
+				boolean optional = pairCtx.optional != null;
 
 				if (previousParameterWasOptional && !optional) {
 					throw new InternalAstParserException(paramCtx, "Only the last parameters of a method can be optional");

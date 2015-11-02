@@ -14,7 +14,7 @@ import com.prezi.spaghetti.ast.internal.VoidTypeReferenceInternal
 
 class MethodParserTest extends AstSpecification {
 	def "parse simple"() {
-		def locator = mockLocator("int add(int a, int b)")
+		def locator = mockLocator("add(a: int, b: int): int")
 		def context = AstParserSpecification.parser(locator).methodDefinition()
 		def resolver = Mock(TypeResolver)
 		def params = Mock(NamedNodeSetInternal)
@@ -33,7 +33,7 @@ class MethodParserTest extends AstSpecification {
 	}
 
 	def "parse struct and interface"() {
-		def locator = mockLocator("StructA method(MyInterface i)")
+		def locator = mockLocator("method(i: MyInterface): StructA")
 		def context = AstParserSpecification.parser(locator).methodDefinition()
 		def mockStructA = Mock(StructNode)
 		def mockIfaceI = Mock(InterfaceNode)
@@ -64,7 +64,7 @@ class MethodParserTest extends AstSpecification {
 	}
 
 	def "parse generic"() {
-		def locator = mockLocator("T method(T t)")
+		def locator = mockLocator("method(t: T): T")
 		def context = AstParserSpecification.parser(locator).methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
@@ -84,7 +84,7 @@ class MethodParserTest extends AstSpecification {
 	}
 
 	def "parse optional"() {
-		def locator = mockLocator("void method(string a, ?int b, ?string c)")
+		def locator = mockLocator("method(a: string, b?: int, c?: string): void")
 		def context = AstParserSpecification.parser(locator).methodDefinition()
 		def resolver = Mock(TypeResolver)
 		def method = Mock(MethodNodeInternal)
@@ -116,7 +116,7 @@ class MethodParserTest extends AstSpecification {
 	}
 
 	def "parse wrong optional"() {
-		def locator = mockLocator("void method(?int a, int b, ?int c)")
+		def locator = mockLocator("method(a?: int, b: int, c?: int): void")
 		def context = AstParserSpecification.parser(locator).methodDefinition()
 		def typeParam = Mock(TypeParameterNode)
 		def resolver = Mock(TypeResolver)
@@ -130,6 +130,6 @@ class MethodParserTest extends AstSpecification {
 		_ * method.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
 		_ * method.parameters >> params
 		def ex = thrown InternalAstParserException
-		ex.message == " at line 1:20: Only the last parameters of a method can be optional"
+		ex.message == " at line 1:16: Only the last parameters of a method can be optional"
 	}
 }

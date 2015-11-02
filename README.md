@@ -13,13 +13,14 @@ Because of the untyped nature of JavaScript, modularizing large, evolving JavaSc
 Spaghetti modules are written in compile-to-JS languages like [TypeScript](http://typescriptlang.org) and [Haxe](http://haxe.org). Each module's API is defined in a [Spaghetti Interface Definition file](/../../wiki/Spaghetti Syntax). Here's an example of a typical API definition:
 
 ```
-module com.example.greeter
+module com.example.greeter {
 
-interface Greeter {
-    string sayHello(string user)
+    interface Greeter {
+        sayHello(user: string): string;
+    }
+
+    createGreeter(): Greeter;
 }
-
-Greeter createGreeter()
 ```
 
 Based on this abstract definition, Spaghetti ensures type safety on both the implementor and the caller side of an API:

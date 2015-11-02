@@ -9,13 +9,13 @@ class TypeScriptConstGeneratorVisitorTest extends ConstGeneratorSpecification {
  * My dear constants.
  */
 const MyConstants {
-	int alma = 1
+	alma: int = 1;
 	/**
 	 * Bela is -123.
 	 */
-	int bela = -123
-	geza = -1.23
-	tibor = "tibor"
+	bela: int = -123;
+	geza = -1.23;
+	tibor = "tibor";
 }
 """
 

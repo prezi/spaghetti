@@ -1,28 +1,30 @@
 /**
  * Text renderer module.
  */
-module prezi.graphics.text.render
+module prezi.graphics.text.render {
 
-import prezi.graphics.core.JsEnum
-import prezi.graphics.text.Text as Texty
+	import prezi.graphics.core.JsEnum;
+	import prezi.graphics.text.Text as Texty;
 
-interface Renderer {
-	string render(Texty text)
+	interface Renderer {
+		render(text: Texty): string;
+	}
+
+	createRenderer(prefix: string, suffix: string): Renderer;
+
+	const Values {
+		/**
+		 * Some length
+		 */
+		MAX_LENGTH: int = 5;
+
+		/**
+		 * Some placeholder
+		 */
+		PLACEHOLDER: string = "string";
+	}
+
+	getResource(): string;
+	getEnumValue(value: JsEnum): string;
+
 }
-
-Renderer createRenderer(string prefix, string suffix)
-
-const Values {
-	/**
-	 * Some length
-	 */
-	int MAX_LENGTH = 5
-
-	/**
-	 * Some placeholder
-	 */
-	string PLACEHOLDER = "string"
-}
-
-string getResource()
-string getEnumValue(JsEnum value)

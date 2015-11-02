@@ -5,22 +5,23 @@ import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 class TypeScriptModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate"() {
 		def definition = """
-module com.example.test
+module com.example.test {
 
-interface MyInterface<T> {
+	interface MyInterface<T> {
+		/**
+		 * This should have nothing to do with the results.
+		 */
+		someDummyMethod(x: int): void;
+	}
 	/**
-	 * This should have nothing to do with the results.
+	 * Initializes module.
 	 */
-	void someDummyMethod(int x)
+	@deprecated("use doSomething() instead")
+	initModule(a: int, b?: int): void;
+	doSomething(): string;
+	doStatic(a: int, b: int): int;
+	returnT<T>(t: T): MyInterface<T>;
 }
-/**
- * Initializes module.
- */
-@deprecated("use doSomething() instead")
-void initModule(int a, ?int b)
-string doSomething()
-int doStatic(int a, int b)
-<T> MyInterface<T> returnT(T t)
 """
 
 		def result = parseAndVisitModule(definition, new TypeScriptModuleAccessorGeneratorVisitor())
