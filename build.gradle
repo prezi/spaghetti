@@ -128,7 +128,6 @@ ext.codeProjects = subprojects - project(":spaghetti-docs")
 ext.groovyProjects = [
 		project(":spaghetti-support-test-harness"),
 		project(":spaghetti-haxe-support"),
-		project(":spaghetti-kotlin-support"),
 		project(":spaghetti-typescript-support")
 ]
 ext.javaProjects = codeProjects - groovyProjects
