@@ -8,7 +8,6 @@ include "spaghetti-support-test-harness"
 include "spaghetti-haxe-support"
 include 'spaghetti-js-support'
 include "spaghetti-typescript-support"
-include "spaghetti-kotlin-support"
 
 include "gradle-spaghetti-plugin"
 include "gradle-spaghetti-haxe-plugin"
