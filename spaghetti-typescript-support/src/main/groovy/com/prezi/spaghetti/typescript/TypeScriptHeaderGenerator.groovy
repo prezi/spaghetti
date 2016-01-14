@@ -32,7 +32,7 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	}
 
 	/**
-	 * Copies Spaghetti.hx to the generated source directory.
+	 * Copies Spaghetti.ts to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
 		new File(outputDirectory, "${SPAGHETTI_CLASS}.ts") << TypeScriptHeaderGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.ts")
