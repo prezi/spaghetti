@@ -1,12 +1,12 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ast.EnumNode
-import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.ast.ModuleVisitorBase
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
-import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
+import com.prezi.spaghetti.haxe.type.enums.HaxeDependentEnumGeneratorVisitor
+import com.prezi.spaghetti.haxe.type.enums.HaxeOpaqueEnumGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.haxe.impl.HaxeModuleProxyGeneratorVisitor
 
@@ -85,36 +85,22 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 		// For direct dependencies, enum member access is by reference to the original definition site.
 		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.name) {
 			@Override
-			HaxeEnumGeneratorVisitor createHaxeEnumGeneratorVisitor() {
-				return new HaxeEnumGeneratorVisitor() {
-					HaxeEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
-						return new HaxeEnumGeneratorVisitor.EnumValueVisitor(enumName) {
-							@Override
-							String generateValueExpression(EnumValueNode node) {
-								return "untyped __js__('${GeneratorUtils.createModuleAccessor(module)}[\"${enumName}\"][\"${node.name}\"]')"
-							}
-						}
-					}
-				}
+			ModuleVisitorBase<String> createHaxeEnumGeneratorVisitor() {
+				return new HaxeDependentEnumGeneratorVisitor(module.name) {}
 			}
 		}.visit(module)
 	}
 
 	/**
-	 * Generates interfaces, abstract enum types, structs and constants for the foreign module.
+	 * Generates interfaces, opaque enum types, structs and constants for the foreign module.
 	 */
 	private static void generateTransitiveDependencyTypes(ModuleNode module, File outputDirectory, String header)
 	{
-		// For transitive dependencies, we consider enums only as abstract types without an option to access their members.
+		// For transitive dependencies, we consider enums only as opaque types without an option to access their members.
 		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.name) {
 			@Override
-			HaxeEnumGeneratorVisitor createHaxeEnumGeneratorVisitor() {
-				return new HaxeEnumGeneratorVisitor() {
-					@Override
-					String visitEnumNode(EnumNode enumNode) {
-						return """abstract ${enumNode.name}(Int) to Int {}"""
-					}
-				}
+			ModuleVisitorBase<String> createHaxeEnumGeneratorVisitor() {
+				return new HaxeOpaqueEnumGeneratorVisitor() {}
 			}
 		}.visit(module)
 	}

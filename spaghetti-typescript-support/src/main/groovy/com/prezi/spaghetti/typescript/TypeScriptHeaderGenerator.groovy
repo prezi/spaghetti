@@ -1,13 +1,14 @@
 package com.prezi.spaghetti.typescript
 
-import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
-import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
+import com.prezi.spaghetti.typescript.type.enums.TypeScriptDependentEnumGeneratorVisitor
+import com.prezi.spaghetti.typescript.type.enums.TypeScriptOpaqueEnumGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
@@ -56,33 +57,15 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 			contents += new TypeScriptModuleAccessorGeneratorVisitor().visit(module)
 			contents += new TypeScriptDefinitionIteratorVisitor() {
 				@Override
-				TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
-					return new TypeScriptEnumGeneratorVisitor() {
-						TypeScriptEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
-							return new TypeScriptEnumGeneratorVisitor.EnumValueVisitor() {
-								@Override
-								String generateValueExpression(EnumValueNode node) {
-									return "${GeneratorUtils.createModuleAccessor(module)}[\"${enumName}\"][\"${node.name}\"]"
-								}
-							}
-						}
-					}
+				ModuleVisitor<String> createTypeScriptEnumGeneratorVisitor() {
+					return new TypeScriptDependentEnumGeneratorVisitor(module.name) {}
 				}
 			}.visit(module)
 		} else {
 			contents += new TypeScriptDefinitionIteratorVisitor() {
 				@Override
-				TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
-					return new TypeScriptEnumGeneratorVisitor() {
-						TypeScriptEnumGeneratorVisitor.EnumValueVisitor createEnumValueVisitor(String enumName) {
-							return new TypeScriptEnumGeneratorVisitor.EnumValueVisitor() {
-								@Override
-								String visitEnumValueNode(EnumValueNode node) {
-									return ""
-								}
-							}
-						}
-					}
+				ModuleVisitor<String>createTypeScriptEnumGeneratorVisitor() {
+					return new TypeScriptOpaqueEnumGeneratorVisitor() {}
 				}
 			}.visit(module)
 		}

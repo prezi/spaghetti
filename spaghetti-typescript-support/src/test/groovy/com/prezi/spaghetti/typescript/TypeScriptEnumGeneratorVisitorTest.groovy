@@ -1,10 +1,11 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.generator.EnumGeneratorSpecification
+import com.prezi.spaghetti.typescript.type.enums.TypeScriptDependentEnumGeneratorVisitor
+import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
 
 class TypeScriptEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
-	def "generate"() {
-		def definition = """
+	def definition = """
 enum MyEnum {
 	/**
 	 * Alma.
@@ -13,15 +14,32 @@ enum MyEnum {
 	BELA
 }
 """
+
+	def "generate local definition"() {
+
 		def result = parseAndVisitEnum(definition, new TypeScriptEnumGeneratorVisitor())
 
 		expect:
-		result == """export enum MyEnum {
+		result == expectedWith("0", "1")
+	}
+
+	def "generate proxied definition"() {
+
+		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test"))
+
+		expect:
+		result == expectedWith(
+				"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"ALMA\"]",
+				"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"BELA\"]")
+	}
+
+	private static String expectedWith(String first, String second) {
+		return """export enum MyEnum {
 	/**
 	 * Alma.
 	 */
-	ALMA = 0,
-	BELA = 1
+	ALMA = ${first},
+	BELA = ${second}
 }
 """
 	}
