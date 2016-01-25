@@ -8,6 +8,9 @@ import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
 class HaxeOpaqueEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
 	String visitEnumNode(EnumNode node) {
-		return """abstract ${node.name}(Int) to Int {}"""
+		return """abstract ${node.name}(Int) to Int {
+	// Enum members are not generated for transitive dependencies. To generate
+	// the enum type with members, depend directly on the containing module.
+}"""
 	}
 }
