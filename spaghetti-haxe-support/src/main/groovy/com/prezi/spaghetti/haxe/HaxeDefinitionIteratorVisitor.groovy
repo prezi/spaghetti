@@ -6,6 +6,7 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleVisitorBase
 import com.prezi.spaghetti.ast.NamedNode
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.haxe.type.enums.HaxeEnumGeneratorVisitor
 
 class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
@@ -36,7 +37,7 @@ class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 		return null
 	}
 
-	HaxeEnumGeneratorVisitor createHaxeEnumGeneratorVisitor() {
+	ModuleVisitorBase<String> createHaxeEnumGeneratorVisitor() {
 		return new HaxeEnumGeneratorVisitor()
 	}
 

@@ -1,8 +1,9 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.haxe.type.enums
 
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
+import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
 
 class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 	@Override
@@ -68,7 +69,7 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 		}
 
 		String generateValueExpression(EnumValueNode node) {
-			return node.value.toString();
+			return node.value.toString()
 		}
 	}
 }

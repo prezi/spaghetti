@@ -3,8 +3,10 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.InterfaceNode
+import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
 
 class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
 
@@ -18,7 +20,7 @@ class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
 		return createTypeScriptEnumGeneratorVisitor().visit(node)
 	}
 
-	TypeScriptEnumGeneratorVisitor createTypeScriptEnumGeneratorVisitor() {
+	ModuleVisitor<String> createTypeScriptEnumGeneratorVisitor() {
 		return new TypeScriptEnumGeneratorVisitor()
 	}
 

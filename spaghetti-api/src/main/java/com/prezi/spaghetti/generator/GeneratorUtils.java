@@ -7,16 +7,16 @@ import com.prezi.spaghetti.ast.ModuleNode;
  */
 public class GeneratorUtils {
 	/**
-	 * Create JavaScript code for accessing the exported module of a dependency.
+	 * Generate JavaScript code for accessing the exported module of a dependency.
 	 *
-	 * @param node The module dependency to create an accessor for
-	 * @return JS expression to access foreign module
+	 * @param moduleName The name of the module dependency to create an accessor for
+	 * @return JavaScript expression to access foreign module
 	 */
-	public static String createModuleAccessor(ModuleNode node) {
+	public static String createModuleAccessor(String moduleName) {
 		return String.format("%s[\"%s\"][\"%s\"][\"%s\"]",
 				ReservedWords.SPAGHETTI_CLASS,
 				ReservedWords.DEPENDENCIES,
-				node.getName(),
+				moduleName,
 				ReservedWords.MODULE);
 	}
 }

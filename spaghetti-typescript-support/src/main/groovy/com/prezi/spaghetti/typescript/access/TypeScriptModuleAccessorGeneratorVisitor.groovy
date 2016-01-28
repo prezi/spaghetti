@@ -14,7 +14,7 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGenerat
 	String visitModuleNode(ModuleNode node) {
 """export class ${node.alias} {
 
-	private static ${MODULE}:any = ${GeneratorUtils.createModuleAccessor(node)};
+	private static ${MODULE}:any = ${GeneratorUtils.createModuleAccessor(node.name)};
 
 ${node.methods*.accept(new MethodVisitor(node)).join("")}
 }

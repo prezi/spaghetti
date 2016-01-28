@@ -1,10 +1,10 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.haxe.type.enums
 
 import com.prezi.spaghetti.generator.EnumGeneratorSpecification
+import com.prezi.spaghetti.haxe.type.enums.HaxeEnumGeneratorVisitor
 
 class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
-	def "generate"() {
-		def definition = """enum MyEnum {
+	def definition = """enum MyEnum {
 	/**
 	 * Alma.
 	 */
@@ -14,17 +14,33 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	GEZA = 4
 }
 """
+
+	def "generate local definition"() {
 		def result = parseAndVisitEnum(definition, new HaxeEnumGeneratorVisitor())
 
 		expect:
-		result == """abstract MyEnum(Int) {
+		result == expectedWith("1", "2", "4")
+	}
+
+	def "generate dependent definition"() {
+		def result = parseAndVisitEnum(definition, new HaxeDependentEnumGeneratorVisitor("test"))
+
+		expect:
+		result == expectedWith(
+				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"ALMA\"]')",
+				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"BELA\"]')",
+				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"GEZA\"]')")
+	}
+
+	private static String expectedWith(String first, String second, String third) {
+		return """abstract MyEnum(Int) {
 	/**
 	 * Alma.
 	 */
-	public static var ALMA = new MyEnum(1);
+	public static var ALMA = new MyEnum(${first});
 	@:deprecated("escape \\"this\\"!")
-	public static var BELA = new MyEnum(2);
-	public static var GEZA = new MyEnum(4);
+	public static var BELA = new MyEnum(${second});
+	public static var GEZA = new MyEnum(${third});
 
 	static var _values = [Std.string(ALMA) => ALMA, Std.string(BELA) => BELA, Std.string(GEZA) => GEZA];
 	static var _names = [Std.string(ALMA) => "ALMA", Std.string(BELA) => "BELA", Std.string(GEZA) => "GEZA"];
