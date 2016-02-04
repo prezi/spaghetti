@@ -1,7 +1,9 @@
 package com.prezi.spaghetti.haxe
 
 /**
- * Generated Haxe externs from the js.html package. Generator below, usage:
+ * Haxe externs from the js.html package.
+ *
+ * Partially generated with below script, usage:
  *
  * $ find /usr/lib/haxe/std/js/html -name "*.hx" | perl process.pl | sort
  */
@@ -39,6 +41,11 @@ foreach my $undef (@undefs) {
  */
 final class HaxeJsHtmlExterns {
 	public static final def EXTERNS = [
+			// Added manually to correct for stdlib mixup in Haxe 3.1
+			// https://github.com/HaxeFoundation/haxe/issues/3644
+			HTMLElement: "js.html.Element",
+
+			// Generated from js.html stdlib
 			AbstractWorker: "js.html.AbstractWorker",
 			AnalyserNode: "js.html.audio.AnalyserNode",
 			Animation: "js.html.Animation",
