@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.typescript
+package com.prezi.spaghetti.typescript.type.enums
 
 import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptDependentEnumGeneratorVisitor

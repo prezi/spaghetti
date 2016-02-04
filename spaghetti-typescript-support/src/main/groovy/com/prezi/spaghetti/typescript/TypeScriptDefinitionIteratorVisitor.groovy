@@ -6,6 +6,7 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.typescript.type.consts.TypeScriptConstGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
 
 class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
@@ -17,11 +18,7 @@ class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
 
 	@Override
 	String visitEnumNode(EnumNode node) {
-		return createTypeScriptEnumGeneratorVisitor().visit(node)
-	}
-
-	ModuleVisitor<String> createTypeScriptEnumGeneratorVisitor() {
-		return new TypeScriptEnumGeneratorVisitor()
+		return new TypeScriptEnumGeneratorVisitor().visit(node)
 	}
 
 	@Override

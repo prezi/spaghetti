@@ -6,6 +6,7 @@ import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.ast.ModuleVisitorBase
 import com.prezi.spaghetti.ast.NamedNode
 import com.prezi.spaghetti.ast.StructNode
+import com.prezi.spaghetti.haxe.type.consts.HaxeConstGeneratorVisitor
 import com.prezi.spaghetti.haxe.type.enums.HaxeEnumGeneratorVisitor
 
 class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
@@ -49,7 +50,11 @@ class HaxeDefinitionIteratorVisitor extends ModuleVisitorBase<Void> {
 
 	@Override
 	Void visitConstNode(ConstNode node) {
-		createSourceFile(node, new HaxeConstGeneratorVisitor())
+		createSourceFile(node, createHaxeConstGeneratorVisitor())
 		return null
+	}
+
+	ModuleVisitorBase<String> createHaxeConstGeneratorVisitor() {
+		new HaxeConstGeneratorVisitor()
 	}
 }

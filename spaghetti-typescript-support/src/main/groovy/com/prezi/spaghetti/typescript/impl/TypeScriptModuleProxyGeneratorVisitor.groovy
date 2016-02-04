@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.typescript.impl
 
 import com.prezi.spaghetti.ast.AstNode
+import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
@@ -14,9 +15,30 @@ class TypeScriptModuleProxyGeneratorVisitor extends AbstractTypeScriptGeneratorV
 	@Override
 	String visitModuleNode(ModuleNode node) {
 """export class __${node.alias}Proxy {
-${node.methods*.accept(new MethodVisitor(node)).join("")}
-${node.accept(new QualifiedEnumVisitor(node))}}
+${
+	node.methods*.accept(new MethodVisitor(node)).join("") +
+	node.accept(new QualifiedConstVisitor(node)) +
+	node.accept(new QualifiedEnumVisitor(node))
+}}
 """
+	}
+
+	private static class QualifiedConstVisitor extends StringModuleVisitorBase {
+		private ModuleNode qualifyingNode
+
+		public QualifiedConstVisitor(ModuleNode qualifyingNode) {
+			this.qualifyingNode = qualifyingNode
+		}
+
+		@Override
+		String visitConstNode(ConstNode constNode) {
+			return "\tpublic ${constNode.name} = ${qualifyingNode.name}.${constNode.name};\n"
+		}
+
+		@Override
+		String afterVisit(AstNode n, String result) {
+			return result
+		}
 	}
 
 	private static class QualifiedEnumVisitor extends StringModuleVisitorBase {
@@ -28,7 +50,7 @@ ${node.accept(new QualifiedEnumVisitor(node))}}
 
 		@Override
 		String visitEnumNode(EnumNode enumNode) {
-			return "public ${enumNode.name} = ${qualifyingNode.name}.${enumNode.name};\n"
+			return "\tpublic ${enumNode.name} = ${qualifyingNode.name}.${enumNode.name};\n"
 		}
 
 		@Override
