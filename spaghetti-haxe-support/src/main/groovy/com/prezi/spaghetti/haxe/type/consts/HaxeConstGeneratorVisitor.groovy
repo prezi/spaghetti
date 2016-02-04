@@ -1,7 +1,9 @@
-package com.prezi.spaghetti.haxe
+package com.prezi.spaghetti.haxe.type.consts
 
 import com.prezi.spaghetti.ast.ConstEntryNode
 import com.prezi.spaghetti.ast.ConstNode
+import com.prezi.spaghetti.haxe.AbstractHaxeGeneratorVisitor
+import com.prezi.spaghetti.haxe.HaxeUtils
 
 class HaxeConstGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 

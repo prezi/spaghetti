@@ -7,6 +7,14 @@ class HaxeModuleProxyGeneratorVisitorTest extends ModuleGeneratorSpecification {
 		def definition = """
 module com.example.test {
 
+	enum MyEnum {
+		Apple
+	}
+
+	const MyConst {
+		apple: string = "apple";
+	}
+
 	interface MyInterface<T> {
 		/**
 		 * This should have nothing to do with the results.
@@ -52,7 +60,8 @@ module com.example.test {
 	public function returnT<T>(t:T):com.example.test.MyInterface<T> {
 		return com.example.test.TestModule.returnT(t);
 	}
-
+	public var MyConst = com.example.test.MyConst;
+	public var MyEnum = com.example.test.MyEnum;
 }
 """
 	}

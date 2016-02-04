@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.haxe.impl
 
 import com.prezi.spaghetti.ast.AstNode
+import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.ModuleNode
@@ -14,9 +15,30 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		return \
 """@:final class __${node.alias}Proxy {
 	public function new() {}
-${node.methods*.accept(new MethodVisitor(node)).join("")}
-${node.accept(new QualifiedEnumVisitor(node))}}
+${
+	node.methods*.accept(new MethodVisitor(node)).join("") +
+	node.accept(new QualifiedConstVisitor(node)) +
+	node.accept(new QualifiedEnumVisitor(node))
+}}
 """
+	}
+
+	private static class QualifiedConstVisitor extends StringModuleVisitorBase {
+		private ModuleNode qualifyingNode
+
+		public QualifiedConstVisitor(ModuleNode qualifyingNode) {
+			this.qualifyingNode = qualifyingNode
+		}
+
+		@Override
+		String visitConstNode(ConstNode constNode) {
+			return "	public var ${constNode.name} = ${qualifyingNode.name}.${constNode.name};\n"
+		}
+
+		@Override
+		String afterVisit(AstNode n, String result) {
+			return result
+		}
 	}
 
 	private static class QualifiedEnumVisitor extends StringModuleVisitorBase {

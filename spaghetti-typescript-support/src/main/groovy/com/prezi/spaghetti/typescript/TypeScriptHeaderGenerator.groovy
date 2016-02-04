@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.ast.ConstNode
+import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
@@ -7,7 +9,9 @@ import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorVisitor
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
+import com.prezi.spaghetti.typescript.type.consts.TypeScriptDependentConstGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptDependentEnumGeneratorVisitor
+import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptOpaqueEnumGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
@@ -57,15 +61,23 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 			contents += new TypeScriptModuleAccessorGeneratorVisitor().visit(module)
 			contents += new TypeScriptDefinitionIteratorVisitor() {
 				@Override
-				ModuleVisitor<String> createTypeScriptEnumGeneratorVisitor() {
-					return new TypeScriptDependentEnumGeneratorVisitor(module.name) {}
+				String visitEnumNode(EnumNode node) {
+					return new TypeScriptDependentEnumGeneratorVisitor(module.name).visit(node)
+				}
+				@Override
+				String visitConstNode(ConstNode node) {
+					return new TypeScriptDependentConstGeneratorVisitor(module.name).visit(node)
 				}
 			}.visit(module)
 		} else {
 			contents += new TypeScriptDefinitionIteratorVisitor() {
 				@Override
-				ModuleVisitor<String>createTypeScriptEnumGeneratorVisitor() {
-					return new TypeScriptOpaqueEnumGeneratorVisitor() {}
+				String visitEnumNode(EnumNode node) {
+					return new TypeScriptOpaqueEnumGeneratorVisitor().visit(node)
+				}
+				@Override
+				String visitConstNode(ConstNode node) {
+					return ""
 				}
 			}.visit(module)
 		}
