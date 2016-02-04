@@ -2,6 +2,7 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.generator.AbstractJavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters
+import com.prezi.spaghetti.typescript.bundle.TypeScriptEnumDenormalizer
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
@@ -14,7 +15,7 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 
 	@Override
 	String processModuleJavaScript(JavaScriptBundleProcessorParameters params, String javaScript) {
-"""${javaScript}
+"""${TypeScriptEnumDenormalizer.denormalize(javaScript)}
 return ${params.moduleConfiguration.localModule.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});
 """
 	}
