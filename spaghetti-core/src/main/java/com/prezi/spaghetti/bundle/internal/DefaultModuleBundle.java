@@ -61,7 +61,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final String RESOURCES_PREFIX = "resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
-	private static final String MIN_VERSION_PREFIX = "2.";
+	private static final String MIN_VERSION_PREFIX = "3.";
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");

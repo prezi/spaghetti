@@ -83,7 +83,7 @@ class ModuleBundleTest extends Specification {
 			FileProcessor handler = it
 			handler.processFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
-					"Spaghetti-Version: 2.5",
+					"Spaghetti-Version: 3.5",
 					"Module-Name: com.example.test",
 					"Module-Version: 3.7",
 					"External-Dependencies: ",
@@ -114,7 +114,7 @@ class ModuleBundleTest extends Specification {
 			FileProcessor handler = it
 			handler.processFile("META-INF/MANIFEST.MF", content(
 					"Manifest-Version: 1.0",
-					"Spaghetti-Version: 2.5",
+					"Spaghetti-Version: 3.5",
 					"Module-Name: com.example.test",
 					"Module-Version: 3.7",
 					"External-Dependencies: React:react,\$:jquery,shorthand",
