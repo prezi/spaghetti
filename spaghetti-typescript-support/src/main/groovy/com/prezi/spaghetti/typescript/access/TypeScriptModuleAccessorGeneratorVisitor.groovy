@@ -12,35 +12,13 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGenerat
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
-"""export class ${node.alias} {
-
-	private static ${MODULE}:any = ${GeneratorUtils.createModuleAccessor(node.name)};
-
-${node.methods*.accept(new MethodVisitor(node)).join("")}
+"""interface ${node.alias} {
+${node.methods*.accept(new MethodVisitor()).join("")}
 }
+export var ${node.alias}:${node.alias} = ${GeneratorUtils.createModuleAccessor(node.name)};
 """
 	}
 
 	private static class MethodVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
-
-		private final ModuleNode module
-
-		MethodVisitor(ModuleNode module) {
-			this.module = module
-		}
-
-		@Override
-		String visitMethodNode(MethodNode node) {
-			def returnType = node.returnType.accept(this)
-			def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
-			def params = node.parameters*.accept(this).join(", ")
-			def paramNames = node.parameters*.name.join(", ")
-
-			return \
-"""	static ${node.name}${typeParams}(${params}):${returnType} {
-		${returnType == "void" ? "" : "return "}${module.alias}.module.${node.name}(${paramNames});
-	}
-"""
-		}
 	}
 }
