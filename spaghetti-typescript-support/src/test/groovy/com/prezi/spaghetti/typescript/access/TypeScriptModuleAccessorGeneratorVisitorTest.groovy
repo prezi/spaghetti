@@ -27,27 +27,17 @@ module com.example.test {
 		def result = parseAndVisitModule(definition, new TypeScriptModuleAccessorGeneratorVisitor())
 
 		expect:
-		result == """export class TestModule {
-
-	private static module:any = Spaghetti["dependencies"]["com.example.test"]["module"];
-
+		result == """interface TestModule {
 	/**
 	 * Initializes module.
 	 */
-	static initModule(a:number, b?:number):void {
-		TestModule.module.initModule(a, b);
-	}
-	static doSomething():string {
-		return TestModule.module.doSomething();
-	}
-	static doStatic(a:number, b:number):number {
-		return TestModule.module.doStatic(a, b);
-	}
-	static returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return TestModule.module.returnT(t);
-	}
+	initModule(a:number, b?:number):void;
+	doSomething():string;
+	doStatic(a:number, b:number):number;
+	returnT<T>(t:T):com.example.test.MyInterface<T>;
 
 }
+export var TestModule:TestModule = Spaghetti["dependencies"]["com.example.test"]["module"];
 """
 	}
 }
