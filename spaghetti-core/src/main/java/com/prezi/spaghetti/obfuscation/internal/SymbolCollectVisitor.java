@@ -54,7 +54,7 @@ public class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> 
 
 	@Override
 	public Collection<String> visitConstNode(ConstNode node) {
-		return extractNames(node.getEntries());
+		return ImmutableList.<String>builder().add(node.getName()).addAll(extractNames(node.getEntries())).build();
 	}
 
 	@Override

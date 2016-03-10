@@ -60,7 +60,7 @@ class SymbolCollectVisitorTest extends Specification {
 }
 """
 		expect:
-		result == ["alpha", "beta"]
+		result == ["Constants", "alpha", "beta"]
 	}
 
 	def "enum values are found"() {
