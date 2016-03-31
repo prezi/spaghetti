@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.gradle.internal;
 
-import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Lists;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import org.gradle.api.Nullable;
 
