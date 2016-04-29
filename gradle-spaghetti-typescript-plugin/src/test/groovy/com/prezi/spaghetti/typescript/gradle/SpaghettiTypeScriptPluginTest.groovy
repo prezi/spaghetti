@@ -15,7 +15,6 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"bundleJsModule",
 				"bundleTestJsModule",
 				"check",
-				"clean",
 				"compileJs",
 				"compileTestJs",
 				"generateHeaders",
