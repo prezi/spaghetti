@@ -54,10 +54,10 @@ module com.example.test {
 		com.example.test.TestModule.doSomethingVoid(x);
 	}
 	hello<T, U>(t:T, y:U):Array<T> {
-		return com.example.test.TestModule.hello(t, y);
+		return com.example.test.TestModule.hello<T, U>(t, y);
 	}
 	returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return com.example.test.TestModule.returnT(t);
+		return com.example.test.TestModule.returnT<T>(t);
 	}
 	public MyConst = com.example.test.MyConst;
 	public MyEnum = com.example.test.MyEnum;

@@ -75,7 +75,7 @@ ${
 
 			return \
 """	${node.name}${typeParams}(${params}):${returnType} {
-		${node.returnType instanceof VoidTypeReference ? "" : "return "}${module.name}.${module.alias}.${node.name}(${paramNames});
+		${node.returnType instanceof VoidTypeReference ? "" : "return "}${module.name}.${module.alias}.${node.name}${typeParams}(${paramNames});
 	}
 """
 		}
