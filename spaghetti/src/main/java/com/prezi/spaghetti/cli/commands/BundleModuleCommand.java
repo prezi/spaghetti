@@ -9,9 +9,11 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.cli.SpaghettiCliException;
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters;
@@ -114,8 +116,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript));
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();
-		for (ModuleNode dependentModule : config.getDirectDependentModules()) {
-			dependentModules.add(dependentModule.getName());
+		for (EntityWithModuleMetaData<ModuleNode> dependentModule : config.getDirectDependentModules()) {
+			dependentModules.add(dependentModule.getEntity().getName());
 		}
 
 		// Transform list of externals to map from variable name to dependency name
@@ -136,6 +138,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				moduleNode.getName(),
 				moduleNode.getSource().getContents(),
 				!Strings.isNullOrEmpty(version) ? version : "unspecified",
+				ModuleFormat.UMD,
 				sourceBaseUrl,
 				processedJavaScript,
 				sourceMap,

@@ -20,14 +20,14 @@ public interface ModuleConfiguration {
 	 *
 	 * @return direct dependencies of the local module.
 	 */
-	SortedSet<ModuleNode> getDirectDependentModules();
+	SortedSet<EntityWithModuleMetaData<ModuleNode>> getDirectDependentModules();
 
 	/**
 	 * Returns transitive dependencies of the local module.
 	 *
 	 * @return transitive dependencies of the local module.
 	 */
-	SortedSet<ModuleNode> getTransitiveDependentModules();
+	SortedSet<EntityWithModuleMetaData<ModuleNode>> getTransitiveDependentModules();
 
 	/**
 	 * Returns all dependencies of the local module, including both direct and transitive dependencies.

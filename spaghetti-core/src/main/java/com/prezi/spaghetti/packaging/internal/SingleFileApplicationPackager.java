@@ -82,6 +82,7 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 							}
 						});
 						try {
+							// TODO Update wrapper generation to allow returning of modules
 							String wrappedModule = wrapper.wrap(new ModuleWrapperParameters(bundle));
 							dependencyInitializers.add(
 									String.format(
@@ -100,7 +101,7 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 				IOUtils.write(Joiner.on('\n').join(dependencyInitializers), out, Charsets.UTF_8);
 				IOUtils.write("\n", out);
 
-				String wrappedApplication = wrapper.makeApplication(dependencyTree, params.mainModule, params.execute, params.externals);
+				String wrappedApplication = wrapper.makeApplication(dependencyTree, null, params.mainModule, params.execute, params.externals);
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 
 				for (String suffix : params.suffixes) {

@@ -19,6 +19,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	String getVersion();
 
 	/**
+	 * Returns the module's format.
+	 */
+	ModuleFormat getFormat();
+
+	/**
 	 * Returns the source URL of the module.
 	 */
 	String getSourceBaseUrl();

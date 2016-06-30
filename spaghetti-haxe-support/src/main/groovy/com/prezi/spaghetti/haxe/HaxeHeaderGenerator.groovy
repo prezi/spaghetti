@@ -3,6 +3,8 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.ModuleVisitorBase
+import com.prezi.spaghetti.bundle.ModuleFormat
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.haxe.access.HaxeModuleAccessorGeneratorVisitor
@@ -29,10 +31,10 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
 		generateModuleTypes(config.localModule, outputDirectory, header)
 		config.transitiveDependentModules.each { dependentModule ->
-			generateTransitiveDependencyTypes(dependentModule, outputDirectory, header)
+			generateTransitiveDependencyTypes(dependentModule.getEntity(), outputDirectory, header)
 		}
 		config.directDependentModules.each { dependentModule ->
-			generateModuleAccessor(dependentModule, outputDirectory, header)
+			generateModuleAccessor(dependentModule.getEntity(), dependentModule.getFormat(), outputDirectory, header)
 			generateDirectDependencyTypes(dependentModule, outputDirectory, header)
 		}
 	}
@@ -66,9 +68,9 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 	/**
 	 * Generates accessor class for module.
 	 */
-	private static void generateModuleAccessor(ModuleNode module, File outputDirectory, String header)
+	private static void generateModuleAccessor(ModuleNode module, ModuleFormat format, File outputDirectory, String header)
 	{
-		def contents = new HaxeModuleAccessorGeneratorVisitor().visit(module)
+		def contents = new HaxeModuleAccessorGeneratorVisitor(format).visit(module)
 		HaxeUtils.createHaxeSourceFile(header, module.name, module.alias, outputDirectory, contents)
 	}
 
@@ -83,20 +85,20 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 	/**
 	 * Generates interfaces, enum proxies, structs and constants for the foreign module.
 	 */
-	private static void generateDirectDependencyTypes(ModuleNode module, File outputDirectory, String header)
+	private static void generateDirectDependencyTypes(EntityWithModuleMetaData<ModuleNode> module, File outputDirectory, String header)
 	{
 		// For direct dependencies, enum member and const entry access is by reference
 		// to the original definition site.
-		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.name) {
+		new HaxeDefinitionIteratorVisitor(outputDirectory, header, module.entity.name) {
 			@Override
 			ModuleVisitorBase<String> createHaxeEnumGeneratorVisitor() {
-				return new HaxeDependentEnumGeneratorVisitor(module.name) {}
+				return new HaxeDependentEnumGeneratorVisitor(module.entity.name, module.format) {}
 			}
 			@Override
 			ModuleVisitorBase<String> createHaxeConstGeneratorVisitor() {
-				new HaxeDependentConstGeneratorVisitor(module.name)
+				new HaxeDependentConstGeneratorVisitor(module.entity.name, module.format)
 			}
-		}.visit(module)
+		}.visit(module.entity)
 	}
 
 	/**

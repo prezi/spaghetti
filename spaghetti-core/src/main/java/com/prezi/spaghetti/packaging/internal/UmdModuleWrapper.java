@@ -2,26 +2,44 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.SortedSet;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
 
-public class AmdModuleWrapper extends AbstractModuleWrapper {
+public class UmdModuleWrapper extends AbstractModuleWrapper {
 
 	@Override
 	public String wrap(ModuleWrapperParameters params) throws IOException {
 		StringBuilder result = new StringBuilder();
 
+		result.append(";(function(){");
+		result.append("var baseUrl;");
+		result.append("var __factory=");
+		wrapModuleObject(
+				result,
+				params,
+				params.dependencies,
+				params.externalDependencies.keySet()
+		);
+		result.append(";");
+
+		// AMD
+		result.append("if(typeof define===\"function\"&&define.amd){");
+		String baseUrlDeclaration = "var moduleUrl=arguments[0][\"toUrl\"](\"" + params.name + ".js\");"
+			+ "baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));";
 		result
 				.append("define([\"")
 				.append(Joiner.on("\",\"").join(Iterables.concat(
@@ -30,30 +48,54 @@ public class AmdModuleWrapper extends AbstractModuleWrapper {
 						Sets.newTreeSet(params.dependencies)))
 				)
 				.append("\"],function(){");
-
-		result.append("var moduleUrl=arguments[0][\"toUrl\"](\"" + params.name + ".js\");");
-		result.append("var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));");
+		result.append(baseUrlDeclaration);
 		result.append("return");
-		result.append("(");
-		wrapModuleObject(
-				result,
-				params,
-				params.dependencies,
-				params.externalDependencies.keySet()
-		);
-		result.append(").apply({},[].slice.call(arguments,1));");
+		result.append("(__factory).apply({},[].slice.call(arguments,1));");
 		result.append("});");
+
+		// CommonJS
+		Iterable<String> dependencies = Iterables.concat(
+				params.externalDependencies.values(),
+				Sets.newTreeSet(params.dependencies)
+		);
+
+		result.append("}else if(typeof exports===\"object\"&&typeof exports.nodeName!==\"string\"){");
+		result.append("baseUrl=__dirname;");
+		result.append("module.exports=(__factory)");
+		result
+				.append("(")
+				.append(Joiner.on(",").join(Iterables.transform(dependencies, new Function<String, String>() {
+					@Nullable
+					@Override
+					public String apply(String name) {
+						return "require(\"" + name + "\")";
+					}
+				})))
+				.append(");");
+		//result.append("return module.exports;");
+		result.append("}");
+
+		result.append("})();");
 
 		return result.toString();
 	}
 
 	@Override
 	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+		result.append("if(typeof define===\"function\"&&define.amd){");
 		result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 		if (execute) {
-            result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
-        }
-		result.append("});\n");
+			result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
+		}
+		result.append("});");
+		result.append("}else if(typeof exports===\"object\"&&typeof exports.nodeName!==\"string\"){");
+		result.append("require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"]");
+		if (execute) {
+			result.append("[\"main\"]()");
+		}
+		result.append(";");
+		result.append("}\n");
+
 		return result;
 	}
 
@@ -67,11 +109,13 @@ public class AmdModuleWrapper extends AbstractModuleWrapper {
 			}
 		});
 		// Begin config
+		result.append("if(typeof define===\"function\"&&define.amd){");
 		result.append("require[\"config\"]({\"baseUrl\":\".\",\"paths\":{");
 		// Append path definitions
 		Joiner.on(',').appendTo(result, Iterables.concat(moduleDependencyPaths, externalDependencyPaths));
 		// End config
 		result.append("}});");
+		result.append("}");
 		return result;
 	}
 

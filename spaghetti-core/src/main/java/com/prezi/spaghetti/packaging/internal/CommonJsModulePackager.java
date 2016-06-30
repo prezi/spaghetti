@@ -4,7 +4,7 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 
 public class CommonJsModulePackager extends AbstractModulePackager {
 	public CommonJsModulePackager() {
-		super(new CommonJsModuleWrapper());
+		super(new UmdModuleWrapper());
 	}
 
 	@Override

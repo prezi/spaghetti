@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
@@ -19,15 +20,15 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class AbstractStructuredApplicationPackager extends AbstractApplicationPackager {
-	protected final StructuredModuleWrapper wrapper;
+	protected final AbstractModuleWrapper wrapper;
 
-	public AbstractStructuredApplicationPackager(StructuredModuleWrapper wrapper) {
+	public AbstractStructuredApplicationPackager(AbstractModuleWrapper wrapper) {
 		this.wrapper = wrapper;
 	}
 
 	@Override
 	public void packageApplicationInternal(StructuredWriter writer, final ApplicationPackageParameters params) throws IOException {
-		StructuredAppender modulesAppender = writer.subAppender(wrapper.getModulesDirectory());
+		StructuredAppender modulesAppender = writer.subAppender(getModulesDirectory());
 
 		for (ModuleBundle bundle : params.bundles) {
 			// Extract resources
@@ -35,7 +36,9 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 			((ModuleBundleInternal) bundle).extract(moduleAppender, EnumSet.of(ModuleBundleElement.RESOURCES, ModuleBundleElement.SOURCE_MAP));
 
 			// Add JavaScript
-			String wrappedJavaScript = wrapper.wrap(new ModuleWrapperParameters(bundle));
+			String wrappedJavaScript = bundle.getFormat() == ModuleFormat.Wrapperless
+				? wrapper.wrap(new ModuleWrapperParameters(bundle))
+				: bundle.getJavaScript();
 			String moduleFile = getModuleFileName(bundle);
 			moduleAppender.appendFile(moduleFile, wrappedJavaScript);
 		}
@@ -53,7 +56,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 					IOUtils.write(prefix, out, Charsets.UTF_8);
 				}
 
-				String wrappedApplication = wrapper.makeApplication(dependencyTree, params.mainModule, params.execute, params.externals);
+				String wrappedApplication = wrapper.makeApplication(dependencyTree, getModulesDirectory(), params.mainModule, params.execute, params.externals);
 
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 				for (String suffix : params.suffixes) {
@@ -64,4 +67,5 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 	}
 
 	protected abstract String getModuleFileName(ModuleBundle bundle);
+	protected abstract String getModulesDirectory();
 }

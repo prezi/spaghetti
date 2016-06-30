@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe.type.consts
 
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.ConstGeneratorSpecification
 import com.prezi.spaghetti.haxe.type.consts.HaxeConstGeneratorVisitor
 
@@ -29,8 +30,8 @@ const MyConstants {
 		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
 	}
 
-	def "generate proxied definition"() {
-		def result = parseAndVisitConst(definition, new HaxeDependentConstGeneratorVisitor("test"))
+	def "generate proxied definition in wrapperless format"() {
+		def result = parseAndVisitConst(definition, new HaxeDependentConstGeneratorVisitor("test", ModuleFormat.Wrapperless))
 
 		expect:
 		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
@@ -40,6 +41,19 @@ const MyConstants {
 		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"bela\"]')",
 		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"geza\"]')",
 		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"tibor\"]')")
+	}
+
+	def "generate proxied definition in UMD format"() {
+		def result = parseAndVisitConst(definition, new HaxeDependentConstGeneratorVisitor("test", ModuleFormat.UMD))
+
+		expect:
+		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
+		// TODO [knuton] Enable after migratory period
+		// result == expectedWith(
+		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"alma\"]')",
+		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"bela\"]')",
+		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"geza\"]')",
+		//		"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"tibor\"]')")
 	}
 
 	private static String expectedWith(String first, String second, String third, String fourth) {

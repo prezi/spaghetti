@@ -6,9 +6,12 @@ import com.google.common.io.Resources
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
 import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultEntityWithModuleMetaData
 import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser
 import com.prezi.spaghetti.generator.GeneratorParameters
@@ -22,6 +25,8 @@ import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
 import com.prezi.spaghetti.packaging.ApplicationType
 import org.apache.commons.io.FileUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
 import java.util.zip.ZipInputStream
@@ -30,6 +35,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 	File rootDir
 	HeaderGenerator headerGenerator
 	JavaScriptBundleProcessor bundleProcessor
+
+	static final Logger logger = LoggerFactory.getLogger(LanguageSupportSpecification)
 
 	def setup() {
 		this.rootDir = Files.createTempDir();
@@ -50,7 +57,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		// Build the module
 		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
-		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [testDependencyDefinition], [])
+		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.Wrapperless)], [])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
 		def headersDir = new File(rootDir, "headers")
@@ -67,11 +74,11 @@ public abstract class LanguageSupportSpecification extends Specification {
 		processedJs << processJavaScript(bundleProcessor, moduleConfig, compiledJs.text)
 
 		// Make the module bundle
-		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion": "libName"])
+		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion": "chai"])
 
 		// Make the app bundle
 		def testAppDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
-		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [testModuleDefinition, testDependencyDefinition], [])
+		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testModuleDefinition, ModuleFormat.Wrapperless), new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.Wrapperless)], [])
 		def appModule = appConfig.localModule
 
 		def processedAppJs = processJavaScript(new VerbatimJavaScriptBundleProcessor("js"), appConfig, Resources.getResource(this.class, "/app.js").text)
@@ -91,11 +98,12 @@ public abstract class LanguageSupportSpecification extends Specification {
 				true,
 				[],
 				[],
-				["libName": "chai"]
+				["chai": "chai"]
 		)
 		ApplicationType.COMMON_JS.packager.packageApplicationDirectory(appDir, applicationPackagingParams)
 
 		// Execute the application
+		logger.info("Executing in: " + appDir);
 		new File(appDir, "package.json") << Resources.getResource(this.class, "/package.json").text
 		executeIn(appDir, "npm", "install")
 		executeIn(appDir, "node_modules/.bin/mocha")
@@ -137,6 +145,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 				name,
 				definition,
 				"1.0",
+				ModuleFormat.UMD,
 				null,
 				InternalGeneratorUtils.bundleJavaScript(javaScript),
 				null,

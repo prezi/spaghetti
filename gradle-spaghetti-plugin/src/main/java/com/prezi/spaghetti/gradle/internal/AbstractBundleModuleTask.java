@@ -7,9 +7,11 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters;
@@ -216,14 +218,15 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);
 		TreeSet<String> dependentModuleNames = Sets.newTreeSet();
-		for (ModuleNode moduleNode : config.getDirectDependentModules()) {
-			dependentModuleNames.add(moduleNode.getName());
+		for (EntityWithModuleMetaData<ModuleNode> moduleNode : config.getDirectDependentModules()) {
+			dependentModuleNames.add(moduleNode.getEntity().getName());
 		}
 
 		return ModuleBundleFactory.createDirectory(getOutputDirectory(), new ModuleBundleParameters(
 				module.getName(),
 				module.getSource().getContents(),
 				String.valueOf(getProject().getVersion()),
+				ModuleFormat.UMD,
 				getSourceBaseUrl(),
 				javaScript,
 				sourceMap,
