@@ -1,10 +1,8 @@
 package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
@@ -23,6 +21,7 @@ import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import com.prezi.spaghetti.obfuscation.ObfuscationResult;
+import com.prezi.spaghetti.packaging.internal.ExternalDependencyGenerator;
 import com.prezi.spaghetti.structure.OutputType;
 import io.airlift.command.Command;
 import io.airlift.command.Option;
@@ -113,7 +112,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		String javaScript = Files.asCharSource(sourceFile, Charsets.UTF_8).read();
 		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, language);
 		JavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
-		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript));
+		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencyList);
+		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript), importedExternalDependencyVars);
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();
 		for (EntityWithModuleMetaData<ModuleNode> dependentModule : config.getDirectDependentModules()) {

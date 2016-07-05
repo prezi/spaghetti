@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
@@ -39,8 +38,8 @@ public class AmdModuleWrapper extends AbstractModuleWrapper {
 				result,
 				params,
 				params.dependencies,
-				params.externalDependencies.keySet()
-		);
+				params.externalDependencies.keySet(),
+				true);
 		result.append(").apply({},[].slice.call(arguments,1));");
 		result.append("});");
 

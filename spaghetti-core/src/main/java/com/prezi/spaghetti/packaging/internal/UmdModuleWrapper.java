@@ -2,7 +2,6 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
@@ -14,8 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.SortedSet;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
 
@@ -32,8 +29,8 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 				result,
 				params,
 				params.dependencies,
-				params.externalDependencies.keySet()
-		);
+				params.externalDependencies.keySet(),
+				false);
 		result.append(";");
 
 		// AMD
@@ -85,11 +82,11 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 		result.append("if(typeof define===\"function\"&&define.amd){");
 		result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 		if (execute) {
-			result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
+			result.append("__mainModule[\"main\"]();");
 		}
 		result.append("});");
 		result.append("}else if(typeof exports===\"object\"&&typeof exports.nodeName!==\"string\"){");
-		result.append("require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"]");
+		result.append("require(\"").append(mainModule).append("\")");
 		if (execute) {
 			result.append("[\"main\"]()");
 		}

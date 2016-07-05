@@ -2,19 +2,14 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
 
@@ -35,8 +30,8 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper {
 				result,
 				params,
 				params.dependencies,
-				params.externalDependencies.keySet()
-		);
+				params.externalDependencies.keySet(),
+				true);
 		result
 				.append(")(")
 				.append(Joiner.on(",").join(Iterables.transform(dependencies, new Function<String, String>() {

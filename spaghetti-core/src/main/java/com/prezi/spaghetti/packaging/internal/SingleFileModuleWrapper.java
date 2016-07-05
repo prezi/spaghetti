@@ -1,11 +1,8 @@
 package com.prezi.spaghetti.packaging.internal;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,8 +20,8 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 				result,
 				params,
 				params.dependencies,
-				params.externalDependencies.keySet()
-		);
+				params.externalDependencies.keySet(),
+				true);
 		result.append(").call({},arguments);");
 		result.append("}");
 		return result.toString();

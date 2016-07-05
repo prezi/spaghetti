@@ -2,8 +2,8 @@ var expect = require("chai").expect;
 
 return {
 	main: function () {
-		var module = Spaghetti["dependencies"]["spaghetti.test"]["module"];
-		var dependencyModule = Spaghetti["dependencies"]["spaghetti.test.dependency"]["module"];
+		var module = Spaghetti["dependencies"]["spaghetti.test"];
+		var dependencyModule = Spaghetti["dependencies"]["spaghetti.test.dependency"];
 		describe("Module", function () {
 
 			describe("#addTwoNumbers()", function () {

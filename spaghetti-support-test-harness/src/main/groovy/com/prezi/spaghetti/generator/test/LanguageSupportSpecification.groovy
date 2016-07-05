@@ -24,6 +24,7 @@ import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorPa
 import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
 import com.prezi.spaghetti.packaging.ApplicationType
+import com.prezi.spaghetti.packaging.internal.ExternalDependencyGenerator
 import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -57,7 +58,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		// Build the module
 		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
-		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.Wrapperless)], [])
+		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.UMD)], [])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
 		def headersDir = new File(rootDir, "headers")
@@ -141,13 +142,14 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 	private ModuleBundle bundle(String name, String definition, String javaScript, Collection<String> moduleDependencies, Map<String, String> externalDependencies) {
 		def bundleDir = new File(rootDir, "bundles/" + name)
+		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencies.keySet());
 		return ModuleBundleFactory.createDirectory(bundleDir, new ModuleBundleParameters(
 				name,
 				definition,
 				"1.0",
 				ModuleFormat.UMD,
 				null,
-				InternalGeneratorUtils.bundleJavaScript(javaScript),
+				InternalGeneratorUtils.bundleJavaScript(javaScript, importedExternalDependencyVars),
 				null,
 				moduleDependencies,
 				externalDependencies,
