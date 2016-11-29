@@ -106,6 +106,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		// Execute the application
 		logger.info("Executing in: " + appDir);
 		new File(appDir, "package.json") << Resources.getResource(this.class, "/package.json").text
+		new File(appDir, "npm-shrinkwrap.json") << Resources.getResource(this.class, "/npm-shrinkwrap.json").text
 		executeIn(appDir, "npm", "install")
 		executeIn(appDir, "node_modules/.bin/mocha")
 
