@@ -218,7 +218,7 @@ configure(codeProjects) {
 
 	String[] apis = [
 		"https://docs.oracle.com/javase/8/docs/api/",
-		"http://groovy.codehaus.org/gapi/",
+		"http://www.groovy-lang.org/gapi/",
 		"https://gradle.org/docs/${gradleVer}/javadoc",
 		// "http://prezi.github.io/gradle-haxe-plugin/javadoc/",
 		// "http://prezi.github.io/gradle-typescript-plugin/javadoc/",
