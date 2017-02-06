@@ -63,6 +63,10 @@ class UmdModuleWrapperTest extends WrapperTestBase {
 				'}else if(typeof exports==="object"&&typeof exports.nodeName!=="string"){',
 					'baseUrl=__dirname;',
 					'module.exports=(__factory)(require("jquery"),require("react"),require("example.test.name"),require("com.example.alma"),require("com.example.bela"));',
+				'}else{',
+					'var moduleUrl=(document.getElementById("com.example.test")||{src:""}).src;',
+					'baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf("/"));',
+					'this["com.example.test"]=__factory(this["\$"],this["React"],this["example.test.name"],this["com.example.alma"],this["com.example.bela"]);',
 				'}',
 				'})();'
 		].join("")
@@ -98,6 +102,8 @@ class UmdModuleWrapperTest extends WrapperTestBase {
 					'});',
 				'}else if(typeof exports==="object"&&typeof exports.nodeName!=="string"){',
 					'require("com.example.test")["main"]();',
+				'}else{',
+					'this["com.example.test"]["main"]();',
 				'}',
 				'\n'
 		].join("")
