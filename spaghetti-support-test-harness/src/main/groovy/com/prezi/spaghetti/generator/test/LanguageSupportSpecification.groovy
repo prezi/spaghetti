@@ -90,8 +90,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 				[module.name, testDependencyModule.name],
                 [:])
 
+		def packageDir = new File(rootDir, "package")
 		// Package the application
-		def appDir = new File(rootDir, "application")
 		ApplicationPackageParameters applicationPackagingParams = new ApplicationPackageParameters(
 				new DefaultModuleBundleSet([appBundle] as Set, [moduleBundle, testDependencyBundle] as Set),
 				"test.js",
@@ -101,13 +101,18 @@ public abstract class LanguageSupportSpecification extends Specification {
 				[],
 				["chai": "chai"]
 		)
-		ApplicationType.COMMON_JS.packager.packageApplicationDirectory(appDir, applicationPackagingParams)
+		ApplicationType.COMMON_JS.packager.packageApplicationDirectory(packageDir, applicationPackagingParams)
 
-		// Execute the application
-		logger.info("Executing in: " + appDir);
+		def appDir = new File(rootDir, "application")
+		appDir.mkdirs()
 		new File(appDir, "package.json") << Resources.getResource(this.class, "/package.json").text
 		new File(appDir, "npm-shrinkwrap.json") << Resources.getResource(this.class, "/npm-shrinkwrap.json").text
 		executeIn(appDir, "npm", "install")
+
+		// Merge the two node_modules folders together
+		FileUtils.copyDirectory(packageDir, appDir)
+		// Execute the application
+		logger.info("Executing in: " + appDir);
 		executeIn(appDir, "node_modules/.bin/mocha")
 
 		then:
