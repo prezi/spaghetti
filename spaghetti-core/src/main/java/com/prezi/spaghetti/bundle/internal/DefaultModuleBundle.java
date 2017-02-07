@@ -64,7 +64,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final String RESOURCES_PREFIX = "resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
-	private static final String MIN_VERSION_PREFIX = "3.";
+	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4."};
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
@@ -209,8 +209,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
 			throw new IllegalArgumentException(
-				String.format("Spaghetti version mismatch (should be %sx, but was \"%s\"): %s",
-					MIN_VERSION_PREFIX,
+				String.format("Spaghetti version mismatch (should be any of %s, but was \"%s\"): %s",
+						Arrays.toString(SUPPORTED_VERSIONS_PREFIX),
 					spaghettiVersion,
 					String.valueOf(source)
 				)
@@ -307,7 +307,12 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
-		return spaghettiVersion.startsWith(MIN_VERSION_PREFIX);
+		for (String supportedVersion : SUPPORTED_VERSIONS_PREFIX) {
+			if (spaghettiVersion.startsWith(supportedVersion)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override
