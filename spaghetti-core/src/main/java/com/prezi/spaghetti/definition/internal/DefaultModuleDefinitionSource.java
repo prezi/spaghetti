@@ -24,13 +24,20 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 		this.definitionLang = definitionLang;
 	}
 
+	private static DefinitionLanguage detectDefinitionLanguage(String path) {
+		if (path.endsWith(".d.ts")) {
+			return DefinitionLanguage.TypeScript;
+		}
+		return DefinitionLanguage.Spaghetti;
+	}
+
 	/**
 	 * Create a source from a file.
 	 *
 	 * @param file the file containing the definition.
 	 */
 	public static ModuleDefinitionSource fromFile(File file) throws IOException {
-		DefinitionLanguage lang = DefinitionLanguage.Spaghetti;
+		DefinitionLanguage lang = detectDefinitionLanguage(file.getPath());
 		return new DefaultModuleDefinitionSource(file.getPath(), Files.asCharSource(file, Charsets.UTF_8).read(), lang);
 	}
 
@@ -40,7 +47,7 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	 * @param url the URL pointing to the definition resource.
 	 */
 	public static ModuleDefinitionSource fromUrl(URL url) throws IOException {
-		DefinitionLanguage lang = DefinitionLanguage.Spaghetti;
+		DefinitionLanguage lang = detectDefinitionLanguage(url.getPath());
 		return new DefaultModuleDefinitionSource(url.toString(), Resources.asCharSource(url, Charsets.UTF_8).read(), lang);
 	}
 
