@@ -70,6 +70,27 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 				})))
 				.append(");");
 		//result.append("return module.exports;");
+
+		// Browser Globals
+		Iterable<String> browserGlobalDependencies = Iterables.concat(
+				params.externalDependencies.keySet(),
+				Sets.newTreeSet(params.dependencies)
+		);
+
+		result.append("}else{");
+		result.append("var moduleUrl=(document.getElementById(\"" + params.name + "\")||{src:\"\"}).src;");
+		result.append("baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));");
+		result.append("this[\"" + params.name + "\"]=");
+		result
+				.append("__factory(")
+				.append(Joiner.on(",").join(Iterables.transform(browserGlobalDependencies, new Function<String, String>() {
+					@Nullable
+					@Override
+					public String apply(String name) {
+						return "this[\"" + name + "\"]";
+					}
+				})))
+				.append(");");
 		result.append("}");
 
 		result.append("})();");
@@ -91,6 +112,11 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 			result.append("[\"main\"]()");
 		}
 		result.append(";");
+		if (execute) {
+			result.append("}else{");
+			result.append("this[\"").append(mainModule).append("\"]");
+			result.append("[\"main\"]();");
+		}
 		result.append("}\n");
 
 		return result;
