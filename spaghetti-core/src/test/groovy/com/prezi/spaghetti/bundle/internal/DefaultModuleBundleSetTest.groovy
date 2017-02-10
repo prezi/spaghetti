@@ -3,6 +3,7 @@ package com.prezi.spaghetti.bundle.internal
 import com.google.common.collect.ImmutableSortedMap
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleFormat
+import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.structure.internal.StructuredProcessor
 import spock.lang.Specification
 
@@ -62,6 +63,7 @@ class DefaultModuleBundleSetTest extends Specification {
 				name,
 				"1.0",
 				ModuleFormat.UMD,
+				DefinitionLanguage.Spaghetti,
 				"",
 				[] as Set,
 				extDeps,

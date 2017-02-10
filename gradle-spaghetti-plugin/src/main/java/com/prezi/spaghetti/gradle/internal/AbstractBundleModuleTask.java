@@ -226,6 +226,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		return ModuleBundleFactory.createDirectory(getOutputDirectory(), new ModuleBundleParameters(
 				module.getName(),
 				module.getSource().getContents(),
+				module.getSource().getDefinitionLanguage(),
 				String.valueOf(getProject().getVersion()),
 				ModuleFormat.UMD,
 				getSourceBaseUrl(),

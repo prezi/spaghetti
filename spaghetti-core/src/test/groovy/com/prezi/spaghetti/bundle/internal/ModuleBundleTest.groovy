@@ -3,6 +3,7 @@ package com.prezi.spaghetti.bundle.internal
 import com.google.common.collect.ImmutableSortedMap
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleFormat
+import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.internal.Version
 import com.prezi.spaghetti.structure.internal.FileProcessor
 import com.prezi.spaghetti.structure.internal.IOAction
@@ -26,6 +27,7 @@ class ModuleBundleTest extends Specification {
 				new ModuleBundleParameters(
 						"test",
 						"definition",
+						DefinitionLanguage.Spaghetti,
 						"3.7",
 						ModuleFormat.Wrapperless,
 						"http://git.example.com/test",
@@ -51,6 +53,7 @@ class ModuleBundleTest extends Specification {
 				"Module-Name: test",
 				"Module-Version: 3.7",
 				"Module-Format: Wrapperless",
+				"Definition-Language: Spaghetti",
 				"Module-Dependencies: com.example.alma,com.example.bela",
 				"External-Dependencies: \$:jquery,React:react",
 				"Module-Source: http://git.example.com/test",
@@ -190,7 +193,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", ModuleFormat.UMD, null, [] as Set, [:], [] as Set)
+		return new DefaultModuleBundle(source, "test", "3.7", ModuleFormat.UMD, DefinitionLanguage definitionLang, null, [] as Set, [:], [] as Set)
 	}
 
 	private static String get(IOAction<OutputStream> action) {

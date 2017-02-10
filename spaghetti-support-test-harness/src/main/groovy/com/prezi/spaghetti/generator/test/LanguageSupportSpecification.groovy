@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
 import com.prezi.spaghetti.bundle.ModuleFormat
+import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
 import com.prezi.spaghetti.definition.ModuleConfiguration
@@ -152,6 +153,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		return ModuleBundleFactory.createDirectory(bundleDir, new ModuleBundleParameters(
 				name,
 				definition,
+				DefinitionLanguage.Spaghetti,
 				"1.0",
 				ModuleFormat.UMD,
 				null,
