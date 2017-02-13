@@ -3,6 +3,7 @@ package com.prezi.spaghetti.haxe
 import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.ModuleVisitorBase
+import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
@@ -26,6 +27,7 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 	void generateHeaders(GeneratorParameters params, File outputDirectory) throws IOException {
 		def config = params.moduleConfiguration
 		def header = params.header
+		checkDefinitionLanguageCompatibility(config.allModules);
 		copySpaghettiClass(outputDirectory)
 		generateModuleInitializer(config.localModule, outputDirectory, header)
 		generateModuleStaticProxy(config.localModule, outputDirectory, header)
@@ -119,5 +121,13 @@ class HaxeHeaderGenerator extends AbstractHeaderGenerator {
 				return null
 			}
 		}.visit(module)
+	}
+
+	private static void checkDefinitionLanguageCompatibility(Set<ModuleNode> modules) {
+		modules.each { module ->
+			if (module.source.definitionLanguage != DefinitionLanguage.Spaghetti) {
+				throw new RuntimeException("Dependency " + module.getName() + " cannot be used with Haxe modules because it uses a TypeScript module definition");
+			}
+		}
 	}
 }
