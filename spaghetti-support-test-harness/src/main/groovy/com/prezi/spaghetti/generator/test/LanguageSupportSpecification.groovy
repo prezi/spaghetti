@@ -3,6 +3,7 @@ package com.prezi.spaghetti.generator.test
 import com.google.common.io.ByteStreams
 import com.google.common.io.Files
 import com.google.common.io.Resources
+import com.prezi.spaghetti.ast.internal.parser.AstParserException
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
@@ -26,6 +27,7 @@ import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters
 import com.prezi.spaghetti.packaging.ApplicationType
 import com.prezi.spaghetti.packaging.internal.ExternalDependencyGenerator
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.FileUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -46,19 +48,96 @@ public abstract class LanguageSupportSpecification extends Specification {
 		this.bundleProcessor = createBundleProcessor()
 	}
 
-	def "test harness"() {
+	def "test spaghetti application"() {
 		println "Building test module in ${rootDir}"
 
 		when:
+		setupAndRunSpaghettiApplication("/DependencyModule.module", "/TestModule.module", [])
+
+		then:
+		1 == 1
+	}
+
+	def "test spaghetti application mixed with one typescript module definition"() {
+		when:
+		if (isTypeScriptDefinitionSupported()) {
+			setupAndRunMixedTypeScriptDtsApp()
+		}
+
+		then:
+		1 == 1
+	}
+
+	def "test unsupported typescript module definition throws exception"() {
+		when:
+		if (!isTypeScriptDefinitionSupported()) {
+			setupAndRunMixedTypeScriptDtsApp()
+		} else {
+			throw new RuntimeException("because it uses a TypeScript module definition")
+		}
+
+		then:
+		def e = thrown(RuntimeException)
+		e.message.contains("because it uses a TypeScript module definition")
+	}
+
+	def "test spaghetti application with all typescript module definitions"() {
+		when:
+		if (isTypeScriptDefinitionSupported()) {
+			// A spaghetti app,
+			// which depends on a TypeScript module definition,
+			// which depends on a TypeScript module definition.
+			setupAndRunSpaghettiApplication(
+				"/DependencyModule.module.d.ts",
+				"/TestModule.module.d.ts",
+				[ Resources.getResource(this.class, "/TestModule.module.ts") ])
+		}
+
+		then:
+		1 == 1
+	}
+
+	def "test app with spaghetti def depending on typescript def throws exception"() {
+		when:
+		if (isTypeScriptDefinitionSupported()) {
+			// A spaghetti app,
+			// which depends on a Spaghetti module definition,
+			// which depends on a TypeScript module definition.
+			setupAndRunSpaghettiApplication(
+				"/DependencyModule.module.d.ts",
+				"/TestModule.module",
+				[ Resources.getResource(this.class, "/TestModule.module.ts") ])
+		} else {
+			throw new AstParserException(DefaultModuleDefinitionSource.fromString("", ""), "");
+		}
+
+		then:
+		thrown(AstParserException)
+	}
+
+	private void setupAndRunMixedTypeScriptDtsApp() {
+		// A spaghetti app,
+		// which depends on a TypeScript module definition,
+		// which depends on a Spaghetti module definition.
+		setupAndRunSpaghettiApplication(
+			"/DependencyModule.module",
+			"/TestModule.module.d.ts",
+			[ Resources.getResource(this.class, "/TestModule.module.ts") ])
+	}
+
+	private void setupAndRunSpaghettiApplication(
+			String dependencyModuleDefResourcePath,
+			String testModuleDefResourcePath,
+			List<URL> extraTestSources) {
 		// Build the dependency module
-		def testDependencyDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/DependencyModule.module"))
+		def testDependencyDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, dependencyModuleDefResourcePath))
 		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, new DefaultModuleBundleSet([], []))
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
-		def testDependencyBundle = bundle(testDependencyModule.name, testDependencyModule.source.contents, Resources.getResource(this.class, "/dependency.js").text, [], [:])
+		def testDependencyBundle = bundle(testDependencyModule, Resources.getResource(this.class, "/dependency.js").text, [], [:])
 
 		// Build the module
-		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestModule.module"))
+		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, testModuleDefResourcePath))
 		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.UMD)], [])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
@@ -68,6 +147,9 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		def sourcesDir = new File(rootDir, "sources")
 		extractSources(sourcesDir)
+		for (URL url: extraTestSources) {
+			FileUtils.copyURLToFile(url, new File(sourcesDir, FilenameUtils.getName(url.getPath())))
+		}
 
 		def compiledJs = new File(rootDir, "compiled.js")
 		compile(module, compiledJs, headersDir, sourcesDir)
@@ -76,7 +158,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		processedJs << processJavaScript(bundleProcessor, moduleConfig, compiledJs.text)
 
 		// Make the module bundle
-		def moduleBundle = bundle(module.name, module.source.contents, processedJs.text, [testDependencyModule.name], ["libWithVersion": "chai"])
+		def moduleBundle = bundle(module, processedJs.text, [testDependencyModule.name], ["libWithVersion": "chai"])
 
 		// Make the app bundle
 		def testAppDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
@@ -85,8 +167,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		def processedAppJs = processJavaScript(new VerbatimJavaScriptBundleProcessor("js"), appConfig, Resources.getResource(this.class, "/app.js").text)
 
-		def appBundle = bundle(appModule.name,
-				testAppDefinition.contents,
+		def appBundle = bundle(appModule,
 				processedAppJs,
 				[module.name, testDependencyModule.name],
                 [:])
@@ -115,9 +196,6 @@ public abstract class LanguageSupportSpecification extends Specification {
 		// Execute the application
 		logger.info("Executing in: " + appDir);
 		executeIn(appDir, "node_modules/.bin/mocha")
-
-		then:
-		1 == 1
 	}
 
 	public static void execute(Object... args) {
@@ -147,7 +225,10 @@ public abstract class LanguageSupportSpecification extends Specification {
 		return processor.processModuleJavaScript(bundleProcessorParams, javaScript)
 	}
 
-	private ModuleBundle bundle(String name, String definition, String javaScript, Collection<String> moduleDependencies, Map<String, String> externalDependencies) {
+	private ModuleBundle bundle(ModuleNode module, String javaScript, Collection<String> moduleDependencies, Map<String, String> externalDependencies) {
+		String name = module.name
+		String definition = module.source.contents
+		DefinitionLanguage defLang = module.source.definitionLanguage
 		def bundleDir = new File(rootDir, "bundles/" + name)
 		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencies.keySet());
 		return ModuleBundleFactory.createDirectory(bundleDir, new ModuleBundleParameters(
@@ -188,4 +269,6 @@ public abstract class LanguageSupportSpecification extends Specification {
 	abstract protected HeaderGenerator createHeaderGenerator()
 
 	abstract protected JavaScriptBundleProcessor createBundleProcessor()
+
+	abstract protected boolean isTypeScriptDefinitionSupported()
 }
