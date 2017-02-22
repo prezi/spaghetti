@@ -45,12 +45,13 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 	}
 
 	@Override
-	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+
 		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
 		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
 		ObfuscationResult result = obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
-				module,
+				config.getLocalModule(),
 				javaScript,
 				sourceMap,
 				null,
@@ -60,7 +61,7 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 				getWorkDir(),
 				getCompilationLevel()
 		));
-		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDir);
+		return super.createBundle(config, result.javaScript, result.sourceMap, resourceDir);
 	}
 
 	public File getWorkDir() {

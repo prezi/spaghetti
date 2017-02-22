@@ -193,7 +193,6 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException {
 		ModuleConfiguration config = readConfig(getDefinition());
-		ModuleNode module = config.getLocalModule();
 
 		String inputContents = "";
 		for (File prefixFile : getPrefixes()) {
@@ -212,10 +211,11 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		File sourceMap = getSourceMap();
 		String sourceMapText = sourceMap != null ? Files.asCharSource(sourceMap, Charsets.UTF_8).read() : null;
 
-		return createBundle(config, module, processedJavaScript, sourceMapText, getResourcesDirectory());
+		return createBundle(config, processedJavaScript, sourceMapText, getResourcesDirectory());
 	}
 
-	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+		ModuleNode module = config.getLocalModule();
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);
 		TreeSet<String> dependentModuleNames = Sets.newTreeSet();
