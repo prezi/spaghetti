@@ -108,4 +108,30 @@ constructor() {
 		def e = thrown(AstParserException)
 		e.message.contains("Cannot find module namespace")
 	}
+
+	def "parse non-definition .ts module"() {
+		def definition = """/// comment
+module com.example.test {
+
+declare enum MyEnum {
+	alma,
+	bela
+}
+
+declare module submodule {
+	interface Test {}
+}
+}
+"""
+		def source = DefaultModuleDefinitionSource.fromStringWithLang("test.ts", definition, DefinitionLanguage.TypeScript);
+
+		when:
+		def parser = ModuleParser.create(source)
+		def module = parser.parse(null)
+
+		then:
+		module.name == "com.example.test"
+		module.alias == "com_example_test"
+		module.source.contents == SimpleTypeScriptDefinitionParser.DEFERRED_DTS_CONTENTS
+	}
 }

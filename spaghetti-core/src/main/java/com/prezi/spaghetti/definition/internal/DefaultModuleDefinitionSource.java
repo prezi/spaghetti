@@ -25,7 +25,7 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	}
 
 	private static DefinitionLanguage detectDefinitionLanguage(String path) {
-		if (path.endsWith(".d.ts")) {
+		if (path.endsWith(".ts")) {
 			return DefinitionLanguage.TypeScript;
 		}
 		return DefinitionLanguage.Spaghetti;

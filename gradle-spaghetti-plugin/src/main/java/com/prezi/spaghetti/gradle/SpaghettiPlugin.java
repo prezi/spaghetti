@@ -41,7 +41,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
 
-	private static final Pattern MODULE_FILE_PATTERN = Pattern.compile(".+\\.module(\\.d\\.ts)?$");
+	private static final Pattern MODULE_FILE_PATTERN = Pattern.compile(".+\\.module((\\.d)?\\.ts)?$");
 
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
