@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.typescript.gradle;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
@@ -28,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -55,7 +60,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		project.getPlugins().apply(TypeScriptBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
 
-		TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
+		final TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
 
 		// Add Spaghetti generated sources to compile and source tasks
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
@@ -83,6 +88,18 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
 				registerSpaghettiModule(project, testBinary, true);
+			}
+		});
+
+		spaghettiExtension.registerDefinitionSearchSourceDirs(new Function<Void, Iterable<File>>() {
+			public Iterable<File> apply(Void input) {
+				Set<TypeScriptSourceSet> sources = typeScriptExtension.getSources().getByName("main").withType(TypeScriptSourceSet.class);
+
+				Collection<Iterable<File>> sourceDirs = new HashSet<Iterable<File>>();
+				for (TypeScriptSourceSet sourceSet : sources) {
+					sourceDirs.add(sourceSet.getSource().getSrcDirs());
+				}
+				return Iterables.concat(sourceDirs);
 			}
 		});
 

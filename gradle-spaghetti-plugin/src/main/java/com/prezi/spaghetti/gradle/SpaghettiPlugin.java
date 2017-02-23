@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
@@ -284,22 +286,29 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	private static File findDefinition(Project project) {
-		Set<SpaghettiSourceSet> sources = project.getExtensions().getByType(SpaghettiExtension.class).getSources().getByName("main").withType(SpaghettiSourceSet.class);
-		Set<File> definitions = Sets.newLinkedHashSet();
+		SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
+		Set<SpaghettiSourceSet> sources = extension.getSources().getByName("main").withType(SpaghettiSourceSet.class);
+
+		List<Iterable<File>> sourceDirs = new ArrayList<Iterable<File>>();
 		for (SpaghettiSourceSet sourceSet : sources) {
-			for (File sourceDir : sourceSet.getSource().getSrcDirs()) {
-				if (sourceDir.isDirectory()) {
-					File[] files = sourceDir.listFiles();
-					if (files != null) {
-						for (File file : files) {
-							if (MODULE_FILE_PATTERN.matcher(file.getName()).matches()) {
-								definitions.add(file);
-							}
+			sourceDirs.add(sourceSet.getSource().getSrcDirs());
+		}
+		sourceDirs.addAll(extension.getDefinitionSearchSourceDirs());
+
+		Set<File> definitions = Sets.newLinkedHashSet();
+		for (File sourceDir : Iterables.concat(sourceDirs)) {
+			if (sourceDir.isDirectory()) {
+				File[] files = sourceDir.listFiles();
+				if (files != null) {
+					for (File file : files) {
+						if (MODULE_FILE_PATTERN.matcher(file.getName()).matches()) {
+							definitions.add(file);
 						}
 					}
 				}
 			}
 		}
+
 		if (definitions.isEmpty()) {
 			return null;
 		} else if (definitions.size() == 1) {

@@ -1,10 +1,15 @@
 package com.prezi.spaghetti.gradle.internal;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryContainer;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryInternal;
 import com.prezi.spaghetti.gradle.internal.incubating.DefaultBinaryContainer;
 import com.prezi.spaghetti.gradle.internal.incubating.DefaultProjectSourceSet;
 import com.prezi.spaghetti.gradle.internal.incubating.ProjectSourceSet;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -22,6 +27,7 @@ public class SpaghettiExtension {
 	private Configuration testObfuscatedConfiguration;
 	private String sourceBaseUrl;
 	private boolean publishTestArtifacts;
+	private Collection<Function<Void, Iterable<File>>> definitionSearchSourceDirProviders;
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
@@ -30,6 +36,7 @@ public class SpaghettiExtension {
 		this.obfuscatedConfiguration = defaultObfuscatedConfiguration;
 		this.testConfiguration = defaultTestConfiguration;
 		this.testObfuscatedConfiguration = defaultTestObfuscatedConfiguration;
+		this.definitionSearchSourceDirProviders = new ArrayList<Function<Void, Iterable<File>>>();
 
 		binaries.withType(BinaryInternal.class).all(new Action<BinaryInternal>() {
 			public void execute(BinaryInternal binary) {
@@ -140,5 +147,18 @@ public class SpaghettiExtension {
 
 	public void publishTestArtifacts(boolean publishTestArtifacts) {
 		setPublishTestArtifacts(publishTestArtifacts);
+	}
+
+	public void registerDefinitionSearchSourceDirs(Function<Void, Iterable<File>> callback) {
+		definitionSearchSourceDirProviders.add(callback);
+	}
+
+	public Collection<Iterable<File>> getDefinitionSearchSourceDirs() {
+		Collection<Iterable<File>> iterables = new ArrayList<Iterable<File>>();
+
+		for (Function<Void, Iterable<File>> callback : definitionSearchSourceDirProviders) {
+			iterables.add(callback.apply(null));
+		}
+		return iterables;
 	}
 }
