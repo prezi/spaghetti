@@ -205,7 +205,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				return binary.getCompileTask().getOutputFile();
 			}
 		};
-		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, dependencies, binary, new SpaghettiModuleFactory<HaxeBinaryBase<?>>() {
+		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, null, dependencies, binary, new SpaghettiModuleFactory<HaxeBinaryBase<?>>() {
 			@Override
 			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, HaxeBinaryBase<?> original) {
 				return new HaxeSpaghettiModule(namingScheme, data, original, testing);

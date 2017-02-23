@@ -160,7 +160,14 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				return binary.getCompileTask().getOutputFile();
 			}
 		};
-		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
+		Callable<File> definitionOverride = new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				File dir = binary.getCompileDtsTask().getOutputDir();
+				return Iterables.getOnlyElement(Arrays.asList(dir.listFiles()));
+			}
+		};
+		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, definitionOverride, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
 			@Override
 			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, TypeScriptBinaryBase original) {
 				TypeScriptSpaghettiModule moduleBinary = new TypeScriptSpaghettiModule(namingScheme, data, original, testing);
