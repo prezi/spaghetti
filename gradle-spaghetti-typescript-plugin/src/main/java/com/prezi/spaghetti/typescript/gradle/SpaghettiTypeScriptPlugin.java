@@ -10,6 +10,7 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModule;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
+import com.prezi.spaghetti.typescript.gradle.internal.DefinitionAwareTypeScriptCompileDtsTask;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
 import com.prezi.typescript.gradle.TypeScriptBasePlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
@@ -19,6 +20,9 @@ import com.prezi.typescript.gradle.TypeScriptPlugin;
 import com.prezi.typescript.gradle.TypeScriptSourceSet;
 import com.prezi.typescript.gradle.TypeScriptTestBinary;
 import com.prezi.typescript.gradle.incubating.FunctionalSourceSet;
+import com.prezi.typescript.gradle.incubating.LanguageSourceSet;
+
+
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -81,6 +85,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
+				addCompileDtsTask(project, binary);
 				registerSpaghettiModule(project, binary, false);
 			}
 		});
@@ -120,6 +125,32 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				logger.debug("Added {} to {} in {}", spaghettiGeneratedSourceSet, compiledBinary, project.getPath());
 			}
 		});
+	}
+
+	private void addCompileDtsTask(final Project project, TypeScriptBinary binary) {
+		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
+		final DefinitionAwareTypeScriptCompileDtsTask compileDtsTask = project.getTasks().create(
+			namingScheme.getTaskName("compileDtsFor"),
+			DefinitionAwareTypeScriptCompileDtsTask.class);
+		compileDtsTask.setDescription("Compiles .d.ts for " + binary);
+		binary.getSource().all(new Action<LanguageSourceSet>() {
+			@Override
+			public void execute(LanguageSourceSet it) {
+				compileDtsTask.source(it.getSource());
+			}
+		});
+		compileDtsTask.source(binary.getConfiguration());
+		compileDtsTask.dependsOn(binary.getSource());
+		compileDtsTask.getConventionMapping().map("outputDir", new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return project.file(project.getBuildDir() + "/compiled-typescript/"
+						+ namingScheme.getOutputDirectoryBase() + "-dts/");
+			}
+		});
+		binary.setCompileDtsTask(compileDtsTask);
+		binary.builtBy(compileDtsTask);
+		logger.debug("Added compile dts task {} for binary {} in {}", compileDtsTask, binary, project.getPath());
 	}
 
 	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final boolean testing) {
