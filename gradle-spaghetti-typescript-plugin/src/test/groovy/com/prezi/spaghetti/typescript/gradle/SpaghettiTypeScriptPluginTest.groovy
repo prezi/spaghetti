@@ -28,6 +28,8 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"processSpaghettiResources",
 				"testJs",
 				"testJsModule",
+				"verifyDtsForJsModule",
+				"verifyDtsForTestJsModule",
 				"zipJsModule",
 				"zipJsModuleObfuscated",
 				"zipTestJsModule",

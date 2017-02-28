@@ -8,22 +8,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.logging.Logger;
-
 import com.google.common.base.Joiner;
-
-
 import com.google.common.base.Splitter;
-
-
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Resources;
 
 public class TypeScriptAstParserService {
 	public static Set<String> collectExportedSymbols(File workDir, File tsCompilerPath, String tsContent, Logger logger) throws IOException, InterruptedException {
-		List<String> output = executeTsApiParser(
+		List<String> output = executeTsApiParserWithContent(
 			logger,
 			workDir,
 			tsCompilerPath,
@@ -33,20 +27,24 @@ public class TypeScriptAstParserService {
 		return new HashSet<String>(Splitter.on(',').splitToList(output.get(0).trim()));
 	}
 
-	public static List<String> verifyModuleDefinition(File workDir, File tsCompilerPath, String tsContent, Logger logger) throws IOException, InterruptedException {
+	public static List<String> verifyModuleDefinition(File workDir, File tsCompilerPath, File definitionFile, Logger logger) throws IOException, InterruptedException {
 		List<String> output = executeTsApiParser(
 			logger,
 			workDir,
 			tsCompilerPath,
 			"--verifyModuleDefinition",
-			tsContent);
+			definitionFile);
 
 		return output;
 	}
 
-	private static List<String> executeTsApiParser(Logger logger, File workDir, File tsCompilerPath, String param, String tsContent) throws IOException, InterruptedException {
+	private static List<String> executeTsApiParserWithContent(Logger logger, File workDir, File tsCompilerPath, String param, String tsContent) throws IOException, InterruptedException {
 		File definitionFile = new File(workDir, "definition.d.ts");
 		FileUtils.write(definitionFile, tsContent);
+		return executeTsApiParser(logger, workDir, tsCompilerPath, param, definitionFile);
+	}
+
+	private static List<String> executeTsApiParser(Logger logger, File workDir, File tsCompilerPath, String param, File definitionFile) throws IOException, InterruptedException {
 
 		File tsAstParser = new File(workDir, "tsAstParser.js");
 		FileUtils.copyURLToFile(
@@ -79,11 +77,11 @@ public class TypeScriptAstParserService {
 			}
 			process.waitFor();
 			if (process.exitValue() != 0) {
-				throw new TypeScriptAstParserException("TypeScript compilation failed: " + process.exitValue(), lines);
+				throw new TypeScriptAstParserException("tsAstParser failure: " + process.exitValue(), lines);
 			}
 			return lines;
 		} catch (IOException e) {
-			throw new IOException("Cannot run tsc. Try installing it with\n\n\tnpm install -g typescript", e);
+			throw new IOException("Cannot run node.", e);
 		}
 	}
 }

@@ -1,9 +1,10 @@
 package com.prezi.spaghetti.gradle.internal
 
 import java.nio.file.Files
-import spock.lang.Specification
+import org.apache.commons.io.FileUtils
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import spock.lang.Specification
 
 class TypeScriptAstParserServiceTest extends Specification {
     def "extract symbols from .d.ts"() {
@@ -179,8 +180,13 @@ module test {
     def runVerify(String content) {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
+
+        File definitionFile = new File(dir, "definition.d.ts");
+        FileUtils.write(definitionFile, content);
+
         Logger logger = Logging.getLogger(TypeScriptAstParserServiceTest.class);
         File compilerPath = new File("build/typescript/node_modules/typescript");
-        return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, content, logger);
+
+        return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
     }
 }
