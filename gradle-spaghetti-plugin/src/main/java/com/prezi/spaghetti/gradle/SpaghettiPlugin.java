@@ -88,15 +88,20 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		resourcesTask.from(spaghettiResourceSet.getSource());
 
 		project.getTasks().withType(DefinitionAwareSpaghettiTask.class).all(new Action<DefinitionAwareSpaghettiTask>() {
+			private Callable<File> callable = new Callable<File>() {
+				private File definition = null;
+				@Override
+				public File call() throws Exception {
+					if (this.definition == null) {
+						this.definition = findDefinition(project);
+					}
+					return this.definition;
+				}
+			};
+
 			@Override
 			public void execute(DefinitionAwareSpaghettiTask task) {
-				task.getConventionMapping().map("definition", new Callable<File>() {
-					@Override
-					public File call() throws Exception {
-						return findDefinition(project);
-					}
-
-				});
+				task.getConventionMapping().map("definition", callable);
 			}
 		});
 		project.getTasks().withType(AbstractBundleModuleTask.class).all(new Action<AbstractBundleModuleTask>() {
