@@ -17,7 +17,7 @@ class Linter {
     }
 
     printErrors() {
-        this.errors.forEach((e) => process.stderr.write(e + '\n'));
+        this.errors.forEach((e) => process.stdout.write(e + '\n'));
     }
 
     lintError(message: string, node: ts.Node) {
@@ -39,12 +39,13 @@ class Linter {
             this.lintError("Expecting only one module declaration at the top level.", sourceFile);
             return;
         }
-        var statement: ts.Node = sourceFile.statements[0];
-        if (statement.kind !== ts.SyntaxKind.ModuleDeclaration) {
+        if (sourceFile.statements.length === 0
+            || sourceFile.statements[0].kind !== ts.SyntaxKind.ModuleDeclaration) {
             this.lintError("Expecting a single module declaration at the top level.", sourceFile);
             return;
         }
 
+        var statement: ts.Node = sourceFile.statements[0];
         while (statement.kind === ts.SyntaxKind.ModuleDeclaration) {
             var body = (<ts.ModuleDeclaration>statement).body
             if (body == null) {

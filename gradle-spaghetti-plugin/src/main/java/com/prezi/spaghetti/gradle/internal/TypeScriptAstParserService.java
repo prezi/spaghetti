@@ -23,6 +23,28 @@ import com.google.common.io.Resources;
 
 public class TypeScriptAstParserService {
 	public static Set<String> collectExportedSymbols(File workDir, File tsCompilerPath, String tsContent, Logger logger) throws IOException, InterruptedException {
+		List<String> output = executeTsApiParser(
+			logger,
+			workDir,
+			tsCompilerPath,
+			"--collectExportedIdentifiers",
+			tsContent);
+
+		return new HashSet<String>(Splitter.on(',').splitToList(output.get(0).trim()));
+	}
+
+	public static List<String> verifyModuleDefinition(File workDir, File tsCompilerPath, String tsContent, Logger logger) throws IOException, InterruptedException {
+		List<String> output = executeTsApiParser(
+			logger,
+			workDir,
+			tsCompilerPath,
+			"--verifyModuleDefinition",
+			tsContent);
+
+		return output;
+	}
+
+	private static List<String> executeTsApiParser(Logger logger, File workDir, File tsCompilerPath, String param, String tsContent) throws IOException, InterruptedException {
 		File definitionFile = new File(workDir, "definition.d.ts");
 		FileUtils.write(definitionFile, tsContent);
 
@@ -34,15 +56,13 @@ public class TypeScriptAstParserService {
 		List<String> command = new ArrayList<String>();
 		command.add("node");
 		command.add(tsAstParser.getAbsolutePath());
-		command.add("--collectExportedIdentifiers");
+		command.add(param);
 		command.add(definitionFile.getAbsolutePath());
 		String nodePath = tsCompilerPath.getParentFile().getAbsolutePath();
-		String output = executeCommand(command, nodePath, logger);
-
-		return new HashSet<String>(Splitter.on(',').splitToList(output.trim()));
+		return executeCommand(command, nodePath, logger);
 	}
 
-	private static String executeCommand(List<String> command, String nodePath, Logger logger) throws IOException, InterruptedException {
+	private static List<String> executeCommand(List<String> command, String nodePath, Logger logger) throws IOException, InterruptedException {
 		try {
 			logger.info("Executing: NODE_PATH={} {}", nodePath, Joiner.on(" ").join(command));
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -52,17 +72,16 @@ public class TypeScriptAstParserService {
 			ByteStreams.copy(process.getErrorStream(), System.out);
 			BufferedReader reader =
 				new BufferedReader(new InputStreamReader(process.getInputStream()));
-			StringBuilder builder = new StringBuilder();
+			List<String> lines = new ArrayList<String>();
 			String line = null;
 			while ( (line = reader.readLine()) != null) {
-				builder.append(line);
-				builder.append("\n");
+				lines.add(line);
 			}
 			process.waitFor();
 			if (process.exitValue() != 0) {
-				throw new RuntimeException("TypeScript compilation failed: " + process.exitValue());
+				throw new TypeScriptAstParserException("TypeScript compilation failed: " + process.exitValue(), lines);
 			}
-			return builder.toString();
+			return lines;
 		} catch (IOException e) {
 			throw new IOException("Cannot run tsc. Try installing it with\n\n\tnpm install -g typescript", e);
 		}
