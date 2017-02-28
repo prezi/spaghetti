@@ -80,7 +80,6 @@ class Linter {
     }
 
     lintNode(node: ts.Node) {
-
         switch (node.kind) {
             case ts.SyntaxKind.VariableStatement:
                 let varDecl = (<ts.VariableStatement>node).declarationList;
@@ -88,22 +87,42 @@ class Linter {
                 if (!(varDecl.flags & ts.NodeFlags.Const)) {
                     this.lintError("'var' and 'let' are not allowed. Please use 'const' instead.", node);
                 }
-                return;
+                break;
+
             case ts.SyntaxKind.ClassDeclaration:
                 this.lintError("Classes are not allowed. Use a factory function and an interface instead.", node);
-                return;
+                break;
+
+            case ts.SyntaxKind.ModuleBlock:
+                ts.forEachChild(node, (n) => this.lintStatements(n))
+                break;
+
             default:
                 ts.forEachChild(node, (n) => this.lintNode(n));
         }
     }
 }
 
+function hasModifier(node: ts.Node, kind: ts.SyntaxKind) {
+    return node.modifiers != null && node.modifiers.some(
+            (modifier: ts.Modifier) => modifier.kind === kind);
+}
+
 function isNodeExported(node: ts.Node): boolean {
-    if (node.modifiers == null) {
-        return false;
+    if (hasModifier(node, ts.SyntaxKind.ExportKeyword)) {
+        return true;
     }
-    return node.modifiers.some((modifier: ts.Modifier) =>
-        modifier.kind === ts.SyntaxKind.ExportKeyword );
+
+    let ancestor: ts.Node = node;
+    while (ancestor.parent != null) {
+        ancestor = ancestor.parent;
+        if (ancestor.kind === ts.SyntaxKind.ModuleDeclaration
+                && hasModifier(ancestor, ts.SyntaxKind.DeclareKeyword)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 
@@ -125,6 +144,7 @@ function getProtectedIdentifiers(sourceFile: ts.SourceFile) {
                 let text = (<ts.Identifier>node).text;
                 idents[text] = text;
                 break;
+
             default:
                 ts.forEachChild(node, visitAst);
         }
