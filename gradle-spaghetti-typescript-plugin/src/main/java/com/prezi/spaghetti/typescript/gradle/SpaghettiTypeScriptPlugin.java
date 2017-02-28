@@ -172,7 +172,12 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			@Override
 			public File call() throws Exception {
 				File dir = binary.getCompileDtsTask().getOutputDir();
-				return Iterables.getOnlyElement(Arrays.asList(dir.listFiles()));
+				File[] files = dir.listFiles();
+				if (files == null || files.length == 0) {
+					return null;
+				} else {
+					return files[0];
+				}
 			}
 		};
 		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, definitionOverride, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
