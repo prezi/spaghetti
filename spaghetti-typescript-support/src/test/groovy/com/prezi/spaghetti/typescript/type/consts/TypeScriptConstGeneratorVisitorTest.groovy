@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.typescript.type.consts
 
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.ConstGeneratorSpecification
 import com.prezi.spaghetti.typescript.type.consts.TypeScriptConstGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.consts.TypeScriptDependentConstGeneratorVisitor
@@ -27,8 +28,22 @@ const MyConstants {
 		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
 	}
 
-	def "generate proxied definition"() {
-		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test"))
+	def "generate proxied definition for UMD format"() {
+		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test", ModuleFormat.UMD))
+
+		expect:
+		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
+		// TODO [knuton] Enable after migratory period
+		// result == expectedWith(
+		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"alma\"]",
+		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"bela\"]",
+		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"geza\"]",
+		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"tibor\"]")
+
+	}
+
+	def "generate proxied definition for wrapperless format"() {
+		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test", ModuleFormat.Wrapperless))
 
 		expect:
 		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")

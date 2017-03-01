@@ -4,7 +4,7 @@ import com.prezi.spaghetti.bundle.ModuleBundle;
 
 public class AmdModulePackager extends AbstractModulePackager {
 	public AmdModulePackager() {
-		super(new AmdModuleWrapper());
+		super(new UmdModuleWrapper());
 	}
 
 	@Override

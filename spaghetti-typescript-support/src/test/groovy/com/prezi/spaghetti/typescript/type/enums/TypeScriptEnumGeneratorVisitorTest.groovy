@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.typescript.type.enums
 
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptDependentEnumGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
@@ -23,9 +24,19 @@ enum MyEnum {
 		result == expectedWith("0", "1")
 	}
 
-	def "generate proxied definition"() {
+	def "generate proxied definition for UMD format"() {
 
-		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test"))
+		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test", ModuleFormat.UMD))
+
+		expect:
+		result == expectedWith(
+				"Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"ALMA\"]",
+				"Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"BELA\"]")
+	}
+
+	def "generate proxied definition for wrapperless format"() {
+
+		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test", ModuleFormat.Wrapperless))
 
 		expect:
 		result == expectedWith(

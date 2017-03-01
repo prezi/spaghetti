@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe.type.enums
 
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.EnumGeneratorSpecification
 import com.prezi.spaghetti.haxe.type.enums.HaxeEnumGeneratorVisitor
 
@@ -22,8 +23,18 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 		result == expectedWith("1", "2", "4")
 	}
 
-	def "generate dependent definition"() {
-		def result = parseAndVisitEnum(definition, new HaxeDependentEnumGeneratorVisitor("test"))
+	def "generate dependent definition for UMD format"() {
+		def result = parseAndVisitEnum(definition, new HaxeDependentEnumGeneratorVisitor("test", ModuleFormat.UMD))
+
+		expect:
+		result == expectedWith(
+				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"ALMA\"]')",
+				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"BELA\"]')",
+				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"GEZA\"]')")
+	}
+
+	def "generate dependent definition for wrapperless format"() {
+		def result = parseAndVisitEnum(definition, new HaxeDependentEnumGeneratorVisitor("test", ModuleFormat.Wrapperless))
 
 		expect:
 		result == expectedWith(

@@ -1,9 +1,11 @@
 package com.prezi.spaghetti.generator.internal;
 
+import com.google.common.base.Joiner;
 import com.prezi.spaghetti.internal.Version;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE_WRAPPER_FUNCTION;
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS;
@@ -17,7 +19,11 @@ public class InternalGeneratorUtils {
 		return header = ".";
 	}
 
-	public static String bundleJavaScript(String javaScript) {
-		return MODULE_WRAPPER_FUNCTION + "(function(" + SPAGHETTI_CLASS + ") {\n" + javaScript + "\n})\n";
+	public static String bundleJavaScript(String javaScript, List<String> importedExternalDependencyVars) {
+		String extravars = "";
+		if (importedExternalDependencyVars.size() > 0) {
+			extravars = "," + Joiner.on(",").join(importedExternalDependencyVars);
+		}
+		return MODULE_WRAPPER_FUNCTION + "(function(" + SPAGHETTI_CLASS + extravars + ") {\n" + javaScript + "\n})\n";
 	}
 }

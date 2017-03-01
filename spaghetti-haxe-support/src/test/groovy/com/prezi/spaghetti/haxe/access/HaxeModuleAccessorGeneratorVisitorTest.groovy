@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.haxe.access
 
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
 
 class HaxeModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
@@ -27,7 +28,7 @@ module com.example.test {
 }
 """
 
-		def result = parseAndVisitModule(definition, new HaxeModuleAccessorGeneratorVisitor())
+		def result = parseAndVisitModule(definition, new HaxeModuleAccessorGeneratorVisitor(ModuleFormat.Wrapperless))
 
 		expect:
 		result == """@:final class TestModule {

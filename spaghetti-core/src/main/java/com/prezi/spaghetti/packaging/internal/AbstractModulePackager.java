@@ -3,6 +3,7 @@ package com.prezi.spaghetti.packaging.internal;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ModulePackageParameters;
 import com.prezi.spaghetti.packaging.ModulePackager;
@@ -52,8 +53,12 @@ public abstract class AbstractModulePackager implements ModulePackager {
 							IOUtils.write(prefix, out, Charsets.UTF_8);
 						}
 
-						String wrappedModule = wrapper.wrap(new ModuleWrapperParameters(bundle));
-						IOUtils.write(wrappedModule, out, Charsets.UTF_8);
+						if (bundle.getFormat() == ModuleFormat.Wrapperless) {
+							String wrappedModule = wrapper.wrap(new ModuleWrapperParameters(bundle));
+							IOUtils.write(wrappedModule, out, Charsets.UTF_8);
+						} else {
+							IOUtils.write(bundle.getJavaScript(), out, Charsets.UTF_8);
+						}
 
 						for (String suffix : params.suffixes) {
 							IOUtils.write(suffix, out, Charsets.UTF_8);

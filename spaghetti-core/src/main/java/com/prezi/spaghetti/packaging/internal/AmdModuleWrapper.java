@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
@@ -16,32 +15,34 @@ import java.util.Set;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
 
-public class AmdModuleWrapper extends AbstractModuleWrapper implements StructuredModuleWrapper {
+public class AmdModuleWrapper extends AbstractModuleWrapper {
 
 	@Override
 	public String wrap(ModuleWrapperParameters params) throws IOException {
-		Iterable<String> moduleNamesWithRequire = Iterables.concat(Arrays.asList("require"), Sets.newTreeSet(params.bundle.getDependentModules()));
-		Map<String, String> modules = Maps.newLinkedHashMap();
-		int requireDependencyIndex = params.bundle.getExternalDependencies().size();
-		int index = requireDependencyIndex;
-		for (String name : moduleNamesWithRequire) {
-			modules.put(name, "dependencies[" + index + "]");
-			index++;
-		}
-
-		String baseUrlDeclaration = "var moduleUrl=dependencies[" + requireDependencyIndex + "][\"toUrl\"](\"" + params.bundle.getName() + ".js\");"
-			+ "var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));";
-
 		StringBuilder result = new StringBuilder();
-		result.append("define([\"").append(Joiner.on("\",\"").join(Iterables.concat(params.bundle.getExternalDependencies().values(), moduleNamesWithRequire))).append("\"],function(){");
-		StringBuilder externalDependenciesDeclaration = new StringBuilder();
-		int externalDependencyIdx = 0;
-		for (String externalDependency : params.bundle.getExternalDependencies().keySet()) {
-			externalDependenciesDeclaration.append(String.format("var %s=arguments[%d];", externalDependency, externalDependencyIdx));
-			externalDependencyIdx++;
-		}
-		wrapModuleObject(result, params, baseUrlDeclaration, externalDependenciesDeclaration, modules);
+
+		result
+				.append("define([\"")
+				.append(Joiner.on("\",\"").join(Iterables.concat(
+						Arrays.asList("require"),
+						params.externalDependencies.values(),
+						Sets.newTreeSet(params.dependencies)))
+				)
+				.append("\"],function(){");
+
+		result.append("var moduleUrl=arguments[0][\"toUrl\"](\"" + params.name + ".js\");");
+		result.append("var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));");
+		result.append("return");
+		result.append("(");
+		wrapModuleObject(
+				result,
+				params,
+				params.dependencies,
+				params.externalDependencies.keySet(),
+				true);
+		result.append(").apply({},[].slice.call(arguments,1));");
 		result.append("});");
+
 		return result.toString();
 	}
 
@@ -56,8 +57,8 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 	}
 
 	@Override
-	protected StringBuilder makeConfig(StringBuilder result, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
-		Iterable<String> moduleDependencyPaths = makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), getModulesDirectory());
+	protected StringBuilder makeConfig(StringBuilder result, String modulesDirectory, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
+		Iterable<String> moduleDependencyPaths = makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), modulesDirectory);
 		Iterable<String> externalDependencyPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
 			@Override
 			public String apply(Map.Entry<String, String> external) {
@@ -81,10 +82,6 @@ public class AmdModuleWrapper extends AbstractModuleWrapper implements Structure
 				return String.format("\"%s\":\"%s%s/%s\"", moduleName, normalizedModulesRoot, moduleName, moduleName);
 			}
 		});
-	}
-	@Override
-	public String getModulesDirectory() {
-		return "modules";
 	}
 
 }

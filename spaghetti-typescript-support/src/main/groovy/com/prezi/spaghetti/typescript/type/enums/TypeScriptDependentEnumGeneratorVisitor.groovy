@@ -2,14 +2,17 @@ package com.prezi.spaghetti.typescript.type.enums
 
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.EnumValueNode
+import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 
 class TypeScriptDependentEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	protected final String foreignModuleName
+	protected final ModuleFormat format
 
-	TypeScriptDependentEnumGeneratorVisitor(String foreignModuleName) {
+	TypeScriptDependentEnumGeneratorVisitor(String foreignModuleName, ModuleFormat format) {
 		this.foreignModuleName = foreignModuleName
+		this.format = format
 	}
 
 	@Override
@@ -29,7 +32,7 @@ ${node.values*.accept(new EnumValueVisitor(node.name)).join(",\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			String moduleAccessor = GeneratorUtils.createModuleAccessor(foreignModuleName)
+			String moduleAccessor = GeneratorUtils.createModuleAccessor(foreignModuleName, format)
 			return "\t${node.name} = ${moduleAccessor}[\"${enumName}\"][\"${node.name}\"]"
 		}
 	}

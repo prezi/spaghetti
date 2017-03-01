@@ -7,14 +7,17 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters;
 import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.generator.internal.InternalGeneratorUtils;
+import com.prezi.spaghetti.packaging.internal.ExternalDependencyGenerator;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -26,8 +29,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -204,7 +206,8 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 
 		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
 		DefaultJavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
-		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, inputContents));
+		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencies.keySet());
+		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, inputContents), importedExternalDependencyVars);
 
 		File sourceMap = getSourceMap();
 		String sourceMapText = sourceMap != null ? Files.asCharSource(sourceMap, Charsets.UTF_8).read() : null;
@@ -216,14 +219,15 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);
 		TreeSet<String> dependentModuleNames = Sets.newTreeSet();
-		for (ModuleNode moduleNode : config.getDirectDependentModules()) {
-			dependentModuleNames.add(moduleNode.getName());
+		for (EntityWithModuleMetaData<ModuleNode> moduleNode : config.getDirectDependentModules()) {
+			dependentModuleNames.add(moduleNode.getEntity().getName());
 		}
 
 		return ModuleBundleFactory.createDirectory(getOutputDirectory(), new ModuleBundleParameters(
 				module.getName(),
 				module.getSource().getContents(),
 				String.valueOf(getProject().getVersion()),
+				ModuleFormat.UMD,
 				getSourceBaseUrl(),
 				javaScript,
 				sourceMap,

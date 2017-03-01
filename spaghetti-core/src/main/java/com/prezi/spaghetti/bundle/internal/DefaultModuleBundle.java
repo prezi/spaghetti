@@ -7,7 +7,10 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.internal.Version;
+import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
+import com.prezi.spaghetti.packaging.internal.UmdModuleWrapper;
 import com.prezi.spaghetti.structure.internal.FileProcessor;
 import com.prezi.spaghetti.structure.internal.IOAction;
 import com.prezi.spaghetti.structure.internal.IOCallable;
@@ -61,17 +64,18 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final String RESOURCES_PREFIX = "resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
-	private static final String MIN_VERSION_PREFIX = "3.";
+	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4."};
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
+	private static final Attributes.Name MANIFEST_ATTR_MODULE_FORMAT = new Attributes.Name("Module-Format");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies");
 	private static final Attributes.Name MANIFEST_ATTR_EXTERNAL_DEPENDENCIES = new Attributes.Name("External-Dependencies");
 	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
-		super(name, version, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
+		super(name, version, format, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
 		this.source = source;
 	}
 
@@ -107,6 +111,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_NAME, params.name);
 			String version = params.version;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_VERSION, version != null ? version : "");
+			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_FORMAT, params.format.name());
 			String url = params.sourceBaseUrl;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_SOURCE, url != null ? url : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_DEPENDENCIES,
@@ -124,7 +129,20 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			builder.appendFile(DEFINITION_PATH, params.definition);
 
 			// Store module itself
-			builder.appendFile(JAVASCRIPT_PATH, params.javaScript);
+			if (params.format == ModuleFormat.Wrapperless) {
+				builder.appendFile(JAVASCRIPT_PATH, params.javaScript);
+			} else {
+				String javaScript = new UmdModuleWrapper().wrap(
+						new ModuleWrapperParameters(
+								params.name,
+								params.version,
+								params.javaScript,
+								params.dependentModules,
+								params.externalDependencies
+						)
+				);
+				builder.appendFile(JAVASCRIPT_PATH, javaScript);
+			}
 
 			// Store sourcemap
 			if (params.sourceMap != null) {
@@ -143,7 +161,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			StructuredProcessor source = builder.create();
-			return new DefaultModuleBundle(source, params.name, params.version, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
+			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
 		} finally {
 			builder.close();
 		}
@@ -191,8 +209,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
 			throw new IllegalArgumentException(
-				String.format("Spaghetti version mismatch (should be %sx, but was \"%s\"): %s",
-					MIN_VERSION_PREFIX,
+				String.format("Spaghetti version mismatch (should be any of %s, but was \"%s\"): %s",
+						Arrays.toString(SUPPORTED_VERSIONS_PREFIX),
 					spaghettiVersion,
 					String.valueOf(source)
 				)
@@ -204,6 +222,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String versionString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_VERSION);
 		String version = versionString != null ? versionString : "unknown-version";
 
+		String formatString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_FORMAT);
+		ModuleFormat format = formatString != null ? ModuleFormat.valueOf(formatString) : ModuleFormat.Wrapperless;
+
 		String moduleSourceString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_SOURCE);
 		String sourceUrl = moduleSourceString != null ? moduleSourceString : "unknown-source";
 
@@ -213,7 +234,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
 		Map<String, String> externalDependencies = BundleUtils.parseExternalDependencies(externalDependenciesString);
 
-		return new DefaultModuleBundle(source, name, version, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
+		return new DefaultModuleBundle(source, name, version, format, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}
 
 	private String getString(String path) throws IOException {
@@ -286,7 +307,12 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	}
 
 	private static boolean isSpaghettiVersionSupported(String spaghettiVersion) {
-		return spaghettiVersion.startsWith(MIN_VERSION_PREFIX);
+		for (String supportedVersion : SUPPORTED_VERSIONS_PREFIX) {
+			if (spaghettiVersion.startsWith(supportedVersion)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

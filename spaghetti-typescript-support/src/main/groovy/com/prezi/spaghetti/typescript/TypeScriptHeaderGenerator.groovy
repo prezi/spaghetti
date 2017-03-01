@@ -4,6 +4,7 @@ import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.ast.ModuleVisitor
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
 import com.prezi.spaghetti.typescript.access.TypeScriptModuleAccessorGeneratorVisitor
@@ -55,20 +56,20 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 	}
 
-	private static void generateDependentModule(ModuleNode module, File outputDirectory, String header, boolean generateAccessor) {
+	private static void generateDependentModule(EntityWithModuleMetaData<ModuleNode> module, File outputDirectory, String header, boolean generateAccessor) {
 		def contents = "declare var ${SPAGHETTI_CLASS}:any;\n"
 		if (generateAccessor) {
-			contents += new TypeScriptModuleAccessorGeneratorVisitor().visit(module)
+			contents += new TypeScriptModuleAccessorGeneratorVisitor(module.format).visit(module.entity)
 			contents += new TypeScriptDefinitionIteratorVisitor() {
 				@Override
 				String visitEnumNode(EnumNode node) {
-					return new TypeScriptDependentEnumGeneratorVisitor(module.name).visit(node)
+					return new TypeScriptDependentEnumGeneratorVisitor(module.entity.name, module.format).visit(node)
 				}
 				@Override
 				String visitConstNode(ConstNode node) {
-					return new TypeScriptDependentConstGeneratorVisitor(module.name).visit(node)
+					return new TypeScriptDependentConstGeneratorVisitor(module.entity.name, module.format).visit(node)
 				}
-			}.visit(module)
+			}.visit(module.entity)
 		} else {
 			contents += new TypeScriptDefinitionIteratorVisitor() {
 				@Override
@@ -79,8 +80,8 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 				String visitConstNode(ConstNode node) {
 					return ""
 				}
-			}.visit(module)
+			}.visit(module.entity)
 		}
-		TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
+		TypeScriptUtils.createSourceFile(header, module.entity, module.entity.alias, outputDirectory, contents)
 	}
 }

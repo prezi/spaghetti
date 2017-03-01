@@ -1,6 +1,9 @@
 package com.prezi.spaghetti.config
 
 import com.prezi.spaghetti.ast.internal.parser.AstParserException
+import com.prezi.spaghetti.bundle.ModuleFormat
+import com.prezi.spaghetti.definition.ModuleDefinitionSource
+import com.prezi.spaghetti.definition.internal.DefaultEntityWithModuleMetaData
 import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.ModuleConfigurationParser
 import spock.lang.Specification
@@ -10,8 +13,8 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		ModuleConfigurationParser.parse(
 				DefaultModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test {}"),
-				[DefaultModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test {}")],
-				[DefaultModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test {}")]
+				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test {}"), ModuleFormat.Wrapperless)],
+				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test {}"), ModuleFormat.Wrapperless)]
 		)
 
 		then:
@@ -23,13 +26,13 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		def config = ModuleConfigurationParser.parse(
 				DefaultModuleDefinitionSource.fromString("A", "module com.example.testA {}"),
-				[DefaultModuleDefinitionSource.fromString("B", "module com.example.testB { struct Point { x: int; y: int; } }")],
-				[DefaultModuleDefinitionSource.fromString("C", "module com.example.testC { origin(): com.example.testB.Point; }")]
+				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("B", "module com.example.testB { struct Point { x: int; y: int; } }"), ModuleFormat.Wrapperless)],
+				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("C", "module com.example.testC { origin(): com.example.testB.Point; }"), ModuleFormat.Wrapperless)]
 		)
 		then:
 		config.localModule.name == "com.example.testA"
-		config.directDependentModules*.name == ["com.example.testB"]
-		config.transitiveDependentModules*.name == ["com.example.testC"]
+		config.directDependentModules*.entity.name == ["com.example.testB"]
+		config.transitiveDependentModules*.entity.name == ["com.example.testC"]
 		config.allDependentModules*.name == ["com.example.testB", "com.example.testC"]
 		config.allModules*.name == ["com.example.testA", "com.example.testB", "com.example.testC"]
 	}
