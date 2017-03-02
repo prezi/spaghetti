@@ -28,7 +28,7 @@ module com.example.test {
 		def result = parseAndVisitModule(definition, new TypeScriptModuleAccessorGeneratorVisitor(ModuleFormat.UMD))
 
 		expect:
-		result == """interface TestModule {
+		result == """export interface TestModule {
 	/**
 	 * Initializes module.
 	 */
@@ -66,7 +66,7 @@ module com.example.test {
 		def result = parseAndVisitModule(definition, new TypeScriptModuleAccessorGeneratorVisitor(ModuleFormat.Wrapperless))
 
 		expect:
-		result == """interface TestModule {
+		result == """export interface TestModule {
 	/**
 	 * Initializes module.
 	 */
