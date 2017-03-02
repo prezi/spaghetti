@@ -114,7 +114,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		typeScriptExtension.getBinaries().withType(TypeScriptBinaryBase.class).all(new Action<TypeScriptBinaryBase>() {
 			@Override
 			public void execute(TypeScriptBinaryBase binary) {
-				binary.getCompileTask().setSerializableFileComparator(new DefinitionFileComparator());
+				binary.getCompileTask().setSerializableFileComparator(DefinitionFileComparator.INSTANCE);
 			}
 		});
 	}

@@ -5,6 +5,12 @@ import com.prezi.typescript.gradle.SerializableFileComparator;
 
 public class DefinitionFileComparator extends SerializableFileComparator {
     private static final long serialVersionUID = 1L;
+
+    public static DefinitionFileComparator INSTANCE = new DefinitionFileComparator();
+
+    private DefinitionFileComparator() {
+    }
+
     public int compare(File a, File b) {
         if (a.getPath().endsWith(".module.ts")) {
             return 1;
@@ -12,5 +18,12 @@ public class DefinitionFileComparator extends SerializableFileComparator {
             return -1;
         }
         return 0;
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof DefinitionFileComparator) {
+            return true;
+        }
+        return super.equals(o);
     }
 }

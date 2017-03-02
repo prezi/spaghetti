@@ -26,7 +26,7 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
     private File definition = null;
 
     public DefinitionAwareTypeScriptCompileDtsTask() {
-        setSerializableFileComparator(new DefinitionFileComparator());
+        setSerializableFileComparator(DefinitionFileComparator.INSTANCE);
         this.onlyIf(new Spec<Task>() {
             public boolean isSatisfiedBy(Task task) {
                 String path = ((DefinitionAwareTypeScriptCompileDtsTask)task).getDefinition().getPath();
