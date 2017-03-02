@@ -19,6 +19,11 @@ import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.gradle.internal.incubating.FunctionalSourceSet;
 import com.prezi.spaghetti.gradle.internal.incubating.LanguageSourceSet;
 import groovy.lang.Closure;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -45,7 +50,8 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
 
-	private static final Pattern MODULE_FILE_PATTERN = Pattern.compile(".+\\.module((\\.d)?\\.ts)?$");
+	private static final String[] MODULE_SUFFIXES = { ".module", ".module.d.ts", ".module.ts" };
+	private static final IOFileFilter MODULE_FILE_FILTER = new SuffixFileFilter(MODULE_SUFFIXES);
 
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
@@ -313,12 +319,10 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		Set<File> definitions = Sets.newLinkedHashSet();
 		for (File sourceDir : Iterables.concat(sourceDirs)) {
 			if (sourceDir.isDirectory()) {
-				File[] files = sourceDir.listFiles();
-				if (files != null) {
-					for (File file : files) {
-						if (MODULE_FILE_PATTERN.matcher(file.getName()).matches()) {
-							definitions.add(file);
-						}
+				Collection<File> files = FileUtils.listFiles(sourceDir, MODULE_FILE_FILTER, TrueFileFilter.TRUE);
+				for (File file : files) {
+					if (!file.getName().startsWith(".")) {
+						definitions.add(file);
 					}
 				}
 			}
