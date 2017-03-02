@@ -133,5 +133,40 @@ declare module submodule {
 		module.name == "com.example.test"
 		module.alias == "com_example_test"
 		module.source.contents == SimpleTypeScriptDefinitionParser.DEFERRED_DTS_CONTENTS
+		module.source.location == "test.ts"
+	}
+
+	def "parse non-definition from bundle throws error"() {
+		def definition = """/// comment
+module com.example.test {
+
+}
+"""
+		def source = DefaultModuleDefinitionSource.fromStringWithLang("internal bundle", definition, DefinitionLanguage.TypeScript);
+
+		when:
+		def parser = ModuleParser.create(source)
+
+		then:
+		def e = thrown(AstParserException)
+		e.message.contains("must be prefixed with 'declare'")
+	}
+
+	def "parse definition from bundle has right contents"() {
+		def definition = """/// comment
+declare module com.example.test {
+	interface A {}
+}
+"""
+		def source = DefaultModuleDefinitionSource.fromStringWithLang("internal bundle", definition, DefinitionLanguage.TypeScript);
+
+		when:
+		def parser = ModuleParser.create(source)
+		def module = parser.parse(null)
+
+		then:
+		module.name == "com.example.test"
+		module.alias == "com_example_test"
+		module.source.contents == definition
 	}
 }

@@ -28,19 +28,19 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
         String namespace = m.group(1);
         String name = namespace.replace(".", "_");
 
-        if (source.getLocation().endsWith(".d.ts")) {
-            if (!m.group().startsWith("declare ")) {
-                throw new AstParserException(source, ": TypeScript module must be prefixed with 'declare'");
-            }
-
-            DefaultLocation location = new DefaultLocation(source, 0, 0);
-            return new DefaultModuleNode(location, namespace, name);
-        } else {
+        if (source.getLocation().endsWith(".ts") && !source.getLocation().endsWith(".d.ts")) {
             ModuleDefinitionSource deferredSource = DefaultModuleDefinitionSource.fromStringWithLang(
                 source.getLocation(),
                 DEFERRED_DTS_CONTENTS,
                 source.getDefinitionLanguage());
             DefaultLocation location = new DefaultLocation(deferredSource, 0, 0);
+            return new DefaultModuleNode(location, namespace, name);
+        } else {
+            if (!m.group().startsWith("declare ")) {
+                throw new AstParserException(source, ": TypeScript definition must be prefixed with 'declare'");
+            }
+
+            DefaultLocation location = new DefaultLocation(source, 0, 0);
             return new DefaultModuleNode(location, namespace, name);
         }
     }
