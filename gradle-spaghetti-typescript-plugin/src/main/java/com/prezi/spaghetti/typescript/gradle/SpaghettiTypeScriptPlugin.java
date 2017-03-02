@@ -115,6 +115,15 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			@Override
 			public void execute(TypeScriptBinaryBase binary) {
 				binary.getCompileTask().setSerializableFileComparator(DefinitionFileComparator.INSTANCE);
+
+			}
+		});
+		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
+			@Override
+			public void execute(final TypeScriptBinary binary) {
+				// compileDts task should depend on compile task so any dependencies added later
+				// to the compile task don't have to also be added to the compileDts task.
+				binary.getCompileDtsTask().dependsOn(binary.getCompileTask());
 			}
 		});
 	}
