@@ -7,6 +7,9 @@ env:
   global:
     - GRADLE_OPTS=-Xmx1g
 before_install:
+  # NPM
+  - npm install -g npm@3.10.8
+
   # Haxe
   - curl http://old.haxe.org/file/haxe-3.1.3-linux64.tar.gz | tar xz
   - export HAXE_HOME=$PWD/haxe-3.1.3
