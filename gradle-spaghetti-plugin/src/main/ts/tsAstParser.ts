@@ -97,6 +97,14 @@ class Linter {
                 ts.forEachChild(node, (n) => this.lintStatements(n))
                 break;
 
+            case ts.SyntaxKind.Block:
+                if (node.parent && node.parent.kind === ts.SyntaxKind.FunctionDeclaration) {
+                    break;
+                } else {
+                    ts.forEachChild(node, (n) => this.lintNode(n));
+                }
+                break;
+
             default:
                 ts.forEachChild(node, (n) => this.lintNode(n));
         }

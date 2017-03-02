@@ -177,6 +177,21 @@ module test {
         lines == []
     }
 
+    def "var, let inside functions bodies are ignored"() {
+        when:
+        def lines = runVerify("""
+module test {
+    export function a(): number {
+        var b = 1;
+        let c = 2;
+        return b + c;
+    }
+}
+""")
+        then:
+        lines == []
+    }
+
     def runVerify(String content) {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
