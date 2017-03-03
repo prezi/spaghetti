@@ -11,13 +11,20 @@ public class DefinitionFileComparator extends SerializableFileComparator {
     private DefinitionFileComparator() {
     }
 
+    /*
+     * The .module.ts file should always be the last argument to "tsc"
+     * because it references other code in other files and needs to be
+     * the at the bottom of the concatenated JavaScript. */
     public int compare(File a, File b) {
-        if (a.getPath().endsWith(".module.ts")) {
+        boolean isAModule = a.getPath().endsWith(".module.ts");
+        boolean isBModule = b.getPath().endsWith(".module.ts");
+        if (isAModule && !isBModule) {
             return 1;
-        } else if (b.getPath().endsWith(".module.ts")) {
+        } else if (isBModule && !isAModule) {
             return -1;
+        } else {
+            return a.getAbsolutePath().compareTo(b.getAbsolutePath());
         }
-        return 0;
     }
 
     public boolean equals(Object o) {

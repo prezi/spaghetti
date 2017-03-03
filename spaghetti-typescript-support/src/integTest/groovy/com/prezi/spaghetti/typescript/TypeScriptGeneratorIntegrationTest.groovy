@@ -40,14 +40,12 @@ class TypeScriptGeneratorIntegrationTest extends LanguageSupportSpecification {
 		return files.sort { a, b ->
 			def isAModuleDef = a.name.endsWith(".module.ts")
 			def isBModuleDef = b.name.endsWith(".module.ts")
-			if (isAModuleDef && isBModuleDef) {
-				return 0
-			} else if (isAModuleDef) {
+			if (isAModuleDef && !isBModuleDef) {
 				return 1
-			} else if (isBModuleDef) {
+			} else if (isBModuleDef && !isAModuleDef) {
 				return -1
 			} else {
-				return a.name <=> b.name
+				return a.path <=> b.path
 			}
 		}
 	}
