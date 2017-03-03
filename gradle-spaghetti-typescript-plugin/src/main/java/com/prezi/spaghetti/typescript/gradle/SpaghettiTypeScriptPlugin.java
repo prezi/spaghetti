@@ -180,6 +180,9 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		Callable<File> definitionOverride = new Callable<File>() {
 			@Override
 			public File call() throws Exception {
+				if (binary.getCompileDtsTask() == null) {
+					return null;
+				}
 				File dir = binary.getCompileDtsTask().getOutputDir();
 				File[] files = dir.listFiles();
 				if (files == null || files.length == 0) {
