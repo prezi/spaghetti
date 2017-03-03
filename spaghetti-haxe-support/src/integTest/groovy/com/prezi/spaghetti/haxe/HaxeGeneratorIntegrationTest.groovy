@@ -17,6 +17,11 @@ class HaxeGeneratorIntegrationTest extends LanguageSupportSpecification {
 	}
 
 	@Override
+	protected boolean isTypeScriptDefinitionSupported() {
+		return false;
+	}
+
+	@Override
 	protected void compile(ModuleNode module, File compiledJs, File headersDir, File sourceDir) {
 		execute "haxe",
 				"-js", compiledJs,

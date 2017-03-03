@@ -2,6 +2,7 @@ package com.prezi.spaghetti.bundle.internal;
 
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import java.util.SortedSet;
 public class ModuleBundleParameters {
 	public final String name;
 	public final String definition;
+	public final DefinitionLanguage definitionLang;
 	public final String version;
 	public final ModuleFormat format;
 	public final String sourceBaseUrl;
@@ -25,9 +27,10 @@ public class ModuleBundleParameters {
 	public final SortedMap<String, String> externalDependencies;
 	public final File resourcesDirectory;
 
-	public ModuleBundleParameters(String name, String definition, String version, ModuleFormat format, String sourceBaseUrl, String javaScript, String sourceMap, Collection<String> dependentModules, Map<String, String> externalDependencies, File resourcesDirectory) {
+	public ModuleBundleParameters(String name, String definition, DefinitionLanguage definitionLang, String version, ModuleFormat format, String sourceBaseUrl, String javaScript, String sourceMap, Collection<String> dependentModules, Map<String, String> externalDependencies, File resourcesDirectory) {
 		this.name = name;
 		this.definition = definition;
+		this.definitionLang = definitionLang;
 		this.version = version;
 		this.format = format;
 		this.sourceBaseUrl = sourceBaseUrl;

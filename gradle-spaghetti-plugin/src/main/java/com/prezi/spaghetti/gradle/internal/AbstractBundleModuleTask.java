@@ -40,6 +40,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private File outputDirectory;
 	private String sourceBaseUrl;
 	private File sourceMap;
+	private File definitionOverride;
 	private File resourcesDirectoryInternal;
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
@@ -106,6 +107,19 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	@SuppressWarnings("UnusedDeclaration")
 	public void sourceMap(Object sourceMap) {
 		setSourceMap(sourceMap);
+	}
+
+	public void setDefinitionOverride(File definitionOverride) {
+		this.definitionOverride = definitionOverride;
+	}
+
+	public File getDefinitionOverride() {
+		return definitionOverride;
+	}
+
+	protected File getOriginalDefinitionOrOverride() {
+		File def = getDefinitionOverride();
+		return def == null ? getDefinition() : def;
 	}
 
 	protected File getResourcesDirectoryInternal() {
@@ -192,8 +206,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException {
-		ModuleConfiguration config = readConfig(getDefinition());
-		ModuleNode module = config.getLocalModule();
+		ModuleConfiguration config = readConfig(getOriginalDefinitionOrOverride());
 
 		String inputContents = "";
 		for (File prefixFile : getPrefixes()) {
@@ -212,10 +225,11 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		File sourceMap = getSourceMap();
 		String sourceMapText = sourceMap != null ? Files.asCharSource(sourceMap, Charsets.UTF_8).read() : null;
 
-		return createBundle(config, module, processedJavaScript, sourceMapText, getResourcesDirectory());
+		return createBundle(config, processedJavaScript, sourceMapText, getResourcesDirectory());
 	}
 
-	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+		ModuleNode module = config.getLocalModule();
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);
 		TreeSet<String> dependentModuleNames = Sets.newTreeSet();
@@ -226,6 +240,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		return ModuleBundleFactory.createDirectory(getOutputDirectory(), new ModuleBundleParameters(
 				module.getName(),
 				module.getSource().getContents(),
+				module.getSource().getDefinitionLanguage(),
 				String.valueOf(getProject().getVersion()),
 				ModuleFormat.UMD,
 				getSourceBaseUrl(),

@@ -2,30 +2,36 @@ package com.prezi.spaghetti.gradle;
 
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
+import com.prezi.spaghetti.gradle.internal.TypeScriptAstParserService;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import com.prezi.spaghetti.obfuscation.ObfuscationResult;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-public class ObfuscateModule extends AbstractBundleModuleTask {
+public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTypeScriptCompilerSpaghettiTask {
 	private final Set<String> additionalSymbols = Sets.newLinkedHashSet();
 	private final Set<Object> closureExterns = Sets.newLinkedHashSet();
 	private String compilationLevel = "advanced";
 	private File workDir;
 	private String nodeSourceMapRoot;
+	private File tsCompilerPath;
 
 	public ObfuscateModule() {
 		this.getConventionMapping().map("workDir", new Callable<File>() {
@@ -45,22 +51,46 @@ public class ObfuscateModule extends AbstractBundleModuleTask {
 	}
 
 	@Override
-	protected ModuleBundle createBundle(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+
 		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
 		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
+		Set<String> additionalSymbols = Sets.union(getAdditionalSymbols(), getTypeScriptDtsSymbols(config));
 		ObfuscationResult result = obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
-				module,
+				config.getLocalModule(),
 				javaScript,
 				sourceMap,
 				null,
 				getNodeSourceMapRoot(),
 				getClosureExterns(),
-				getAdditionalSymbols(),
-				getWorkDir(),
+				additionalSymbols,
+				new File(getWorkDir(), "obf"),
 				getCompilationLevel()
 		));
-		return super.createBundle(config, module, result.javaScript, result.sourceMap, resourceDir);
+		return super.createBundle(config, result.javaScript, result.sourceMap, resourceDir);
+	}
+
+	protected Set<String> getTypeScriptDtsSymbols(ModuleConfiguration config) {
+		ModuleDefinitionSource source = config.getLocalModule().getSource();
+		if (source.getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
+			try {
+				return TypeScriptAstParserService.collectExportedSymbols(new File(getWorkDir(), "dts"), getCompilerPath(), source.getContents(), getLogger());
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return Collections.emptySet();
+	}
+
+	@InputDirectory
+	public File getCompilerPath() {
+		return tsCompilerPath;
+	}
+
+
+	public void setCompilerPath(File compilerPath) {
+		this.tsCompilerPath = compilerPath;
 	}
 
 	public File getWorkDir() {

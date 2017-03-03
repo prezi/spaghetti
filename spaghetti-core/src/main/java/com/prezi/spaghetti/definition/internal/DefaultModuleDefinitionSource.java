@@ -3,6 +3,7 @@ package com.prezi.spaghetti.definition.internal;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 
 import java.io.File;
@@ -15,10 +16,19 @@ import java.net.URL;
 public final class DefaultModuleDefinitionSource implements ModuleDefinitionSource {
 	private final String location;
 	private final String contents;
+	private final DefinitionLanguage definitionLang;
 
-	private DefaultModuleDefinitionSource(String location, String contents) {
+	private DefaultModuleDefinitionSource(String location, String contents, DefinitionLanguage definitionLang) {
 		this.location = location;
 		this.contents = contents;
+		this.definitionLang = definitionLang;
+	}
+
+	private static DefinitionLanguage detectDefinitionLanguage(String path) {
+		if (path.endsWith(".ts")) {
+			return DefinitionLanguage.TypeScript;
+		}
+		return DefinitionLanguage.Spaghetti;
 	}
 
 	/**
@@ -27,7 +37,8 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	 * @param file the file containing the definition.
 	 */
 	public static ModuleDefinitionSource fromFile(File file) throws IOException {
-		return new DefaultModuleDefinitionSource(file.getPath(), Files.asCharSource(file, Charsets.UTF_8).read());
+		DefinitionLanguage lang = detectDefinitionLanguage(file.getPath());
+		return new DefaultModuleDefinitionSource(file.getPath(), Files.asCharSource(file, Charsets.UTF_8).read(), lang);
 	}
 
 	/**
@@ -36,7 +47,8 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	 * @param url the URL pointing to the definition resource.
 	 */
 	public static ModuleDefinitionSource fromUrl(URL url) throws IOException {
-		return new DefaultModuleDefinitionSource(url.toString(), Resources.asCharSource(url, Charsets.UTF_8).read());
+		DefinitionLanguage lang = detectDefinitionLanguage(url.getPath());
+		return new DefaultModuleDefinitionSource(url.toString(), Resources.asCharSource(url, Charsets.UTF_8).read(), lang);
 	}
 
 	/**
@@ -46,7 +58,18 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	 * @param definition the definition for this source.
 	 */
 	public static ModuleDefinitionSource fromString(String location, String definition) {
-		return new DefaultModuleDefinitionSource(location, definition);
+		return new DefaultModuleDefinitionSource(location, definition, DefinitionLanguage.Spaghetti);
+	}
+
+	/**
+	 * Create a source from a string with non-default definition sytnax.
+	 *
+	 * @param location   the location to display for this source.
+	 * @param definition the definition for this source.
+	 * @param definitionLang the syntax language of the definition
+	 */
+	public static ModuleDefinitionSource fromStringWithLang(String location, String definition, DefinitionLanguage definitionLang) {
+		return new DefaultModuleDefinitionSource(location, definition, definitionLang);
 	}
 
 	/**
@@ -61,6 +84,13 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	 */
 	@Override public final String getContents() {
 		return contents;
+	}
+
+	/**
+	 * Returns the syntax language of the contents.
+	 */
+	@Override public final DefinitionLanguage getDefinitionLanguage() {
+		return definitionLang;
 	}
 
 	@Override

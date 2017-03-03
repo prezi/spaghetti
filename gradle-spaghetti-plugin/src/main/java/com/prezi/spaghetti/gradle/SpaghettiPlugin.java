@@ -14,13 +14,20 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleNamingScheme;
 import com.prezi.spaghetti.gradle.internal.SpaghettiSourceSet;
+import com.prezi.spaghetti.gradle.internal.VerifyDtsTask;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.gradle.internal.incubating.FunctionalSourceSet;
 import com.prezi.spaghetti.gradle.internal.incubating.LanguageSourceSet;
 import groovy.lang.Closure;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
@@ -31,7 +38,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
@@ -41,7 +50,8 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
 
-	private static final Pattern MODULE_FILE_PATTERN = Pattern.compile(".+\\.module");
+	private static final String[] MODULE_SUFFIXES = { ".module", ".module.d.ts", ".module.ts" };
+	private static final IOFileFilter MODULE_FILE_FILTER = new SuffixFileFilter(MODULE_SUFFIXES);
 
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
@@ -84,15 +94,20 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		resourcesTask.from(spaghettiResourceSet.getSource());
 
 		project.getTasks().withType(DefinitionAwareSpaghettiTask.class).all(new Action<DefinitionAwareSpaghettiTask>() {
+			private Callable<File> callable = new Callable<File>() {
+				private File definition = null;
+				@Override
+				public File call() throws Exception {
+					if (this.definition == null) {
+						this.definition = findDefinition(project);
+					}
+					return this.definition;
+				}
+			};
+
 			@Override
 			public void execute(DefinitionAwareSpaghettiTask task) {
-				task.getConventionMapping().map("definition", new Callable<File>() {
-					@Override
-					public File call() throws Exception {
-						return findDefinition(project);
-					}
-
-				});
+				task.getConventionMapping().map("definition", callable);
 			}
 		});
 		project.getTasks().withType(AbstractBundleModuleTask.class).all(new Action<AbstractBundleModuleTask>() {
@@ -184,17 +199,21 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiStubs.builtBy(generateStubsTask);
 	}
 
-	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
+	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		BinaryNamingScheme namingScheme = new SpaghettiModuleNamingScheme(moduleName);
 
+		// Verify .d.ts module definition
+		String verifyTaskName = namingScheme.getTaskName("verifyDtsFor");
+		VerifyDtsTask verifyDtsTask = project.getTasks().create(verifyTaskName, VerifyDtsTask.class);
+
 		// Bundle module
-		BundleModule bundleTask = createBundleTask(project, namingScheme, javaScriptFile, sourceMapFile, dependencies);
+		BundleModule bundleTask = createBundleTask(project, namingScheme, javaScriptFile, sourceMapFile, definitionOverride, dependencies, verifyDtsTask);
 		Zip zipModule = createZipTask(project, namingScheme, bundleTask, namingScheme.getLifecycleTaskName(), "");
 		logger.debug("Added bundle task {} with zip task {}", bundleTask, zipModule);
 
 		// Obfuscate bundle
-		ObfuscateModule obfuscateTask = createObfuscateTask(project, namingScheme, javaScriptFile, sourceMapFile, dependencies);
+		ObfuscateModule obfuscateTask = createObfuscateTask(project, namingScheme, javaScriptFile, sourceMapFile, definitionOverride, dependencies, verifyDtsTask);
 		Zip zipObfuscated = createZipTask(project, namingScheme, obfuscateTask, namingScheme.getLifecycleTaskName() + "-obfuscated", "obfuscated");
 		logger.debug("Added obfuscate task {} with zip artifact {}", obfuscateTask, zipObfuscated);
 
@@ -229,26 +248,29 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		});
 	}
 
-	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies) {
+	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, Task verifyDtsTask) {
 		String bundleTaskName = namingScheme.getTaskName("bundle");
 		BundleModule bundleTask = project.getTasks().create(bundleTaskName, BundleModule.class);
 		bundleTask.setDescription("Bundles " + namingScheme.getDescription() + " module.");
-		configureBundleTask(project, bundleTask, namingScheme, javaScriptFile, sourceMapFile, dependencies, "bundled");
+		configureBundleTask(project, bundleTask, namingScheme, javaScriptFile, sourceMapFile, definitionOverride, dependencies, verifyDtsTask, "bundled");
 		return bundleTask;
 	}
 
-	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies) {
+	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, Task verifyDtsTask) {
 		String obfuscateTaskName = namingScheme.getTaskName("obfuscate");
 		ObfuscateModule obfuscateTask = project.getTasks().create(obfuscateTaskName, ObfuscateModule.class);
 		obfuscateTask.setDescription("Obfuscates " + namingScheme.getDescription() + " module.");
-		configureBundleTask(project, obfuscateTask, namingScheme, javaScriptFile, sourceMapFile, dependencies, "obfuscated");
+		configureBundleTask(project, obfuscateTask, namingScheme, javaScriptFile, sourceMapFile, definitionOverride, dependencies, verifyDtsTask, "obfuscated");
 		return obfuscateTask;
 	}
 
-	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Collection<?> dependencies, final String outputDir) {
+	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, Task verifyDtsTask, final String outputDir) {
 		task.getConventionMapping().map("inputFile", javaScriptFile);
 		if (sourceMapFile != null) {
 			task.getConventionMapping().map("sourceMap", sourceMapFile);
+		}
+		if (definitionOverride != null) {
+			task.getConventionMapping().map("definitionOverride", definitionOverride);
 		}
 		task.getConventionMapping().map("outputDirectory", new Callable<File>() {
 			@Override
@@ -259,6 +281,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		if (dependencies != null && !dependencies.isEmpty()) {
 			task.dependsOn(dependencies);
 		}
+		task.dependsOn(verifyDtsTask);
 	}
 
 	private static Zip createZipTask(Project project, BinaryNamingScheme namingScheme, final AbstractBundleModuleTask bundleTask, final String name, String taskName) {
@@ -284,22 +307,27 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	}
 
 	private static File findDefinition(Project project) {
-		Set<SpaghettiSourceSet> sources = project.getExtensions().getByType(SpaghettiExtension.class).getSources().getByName("main").withType(SpaghettiSourceSet.class);
-		Set<File> definitions = Sets.newLinkedHashSet();
+		SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
+		Set<SpaghettiSourceSet> sources = extension.getSources().getByName("main").withType(SpaghettiSourceSet.class);
+
+		List<Iterable<File>> sourceDirs = new ArrayList<Iterable<File>>();
 		for (SpaghettiSourceSet sourceSet : sources) {
-			for (File sourceDir : sourceSet.getSource().getSrcDirs()) {
-				if (sourceDir.isDirectory()) {
-					File[] files = sourceDir.listFiles();
-					if (files != null) {
-						for (File file : files) {
-							if (MODULE_FILE_PATTERN.matcher(file.getName()).matches()) {
-								definitions.add(file);
-							}
-						}
+			sourceDirs.add(sourceSet.getSource().getSrcDirs());
+		}
+		sourceDirs.addAll(extension.getDefinitionSearchSourceDirs());
+
+		Set<File> definitions = Sets.newLinkedHashSet();
+		for (File sourceDir : Iterables.concat(sourceDirs)) {
+			if (sourceDir.isDirectory()) {
+				Collection<File> files = FileUtils.listFiles(sourceDir, MODULE_FILE_FILTER, TrueFileFilter.TRUE);
+				for (File file : files) {
+					if (!file.getName().startsWith(".")) {
+						definitions.add(file);
 					}
 				}
 			}
 		}
+
 		if (definitions.isEmpty()) {
 			return null;
 		} else if (definitions.size() == 1) {

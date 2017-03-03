@@ -2,6 +2,7 @@ package com.prezi.spaghetti.ast.internal;
 
 import com.google.common.base.Preconditions;
 import com.prezi.spaghetti.ast.Location;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
 

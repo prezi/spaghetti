@@ -63,7 +63,7 @@ public final class ModuleConfigurationParser {
 
 	private static ModuleDefinitionSource makeModuleSource(ModuleBundle bundle) {
 		try {
-			return DefaultModuleDefinitionSource.fromString("module: " + bundle.getName(), bundle.getDefinition());
+			return DefaultModuleDefinitionSource.fromStringWithLang("loaded from " + bundle.getName() + " bundle", bundle.getDefinition(), bundle.getDefinitionLanguage());
 		} catch (IOException e) {
 			throw Throwables.propagate(e);
 		}

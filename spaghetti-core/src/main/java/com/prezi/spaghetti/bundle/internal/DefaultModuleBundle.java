@@ -6,6 +6,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.internal.Version;
@@ -70,12 +71,13 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_FORMAT = new Attributes.Name("Module-Format");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
+	private static final Attributes.Name MANIFEST_ATTR_DEFINITION_LANGUAGE = new Attributes.Name("Definition-Language");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies");
 	private static final Attributes.Name MANIFEST_ATTR_EXTERNAL_DEPENDENCIES = new Attributes.Name("External-Dependencies");
 	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
-		super(name, version, format, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
+		super(name, version, format, definitionLang, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
 		this.source = source;
 	}
 
@@ -112,6 +114,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			String version = params.version;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_VERSION, version != null ? version : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_FORMAT, params.format.name());
+			manifest.getMainAttributes().put(MANIFEST_ATTR_DEFINITION_LANGUAGE, params.definitionLang.name());
 			String url = params.sourceBaseUrl;
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_SOURCE, url != null ? url : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_DEPENDENCIES,
@@ -161,7 +164,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			StructuredProcessor source = builder.create();
-			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
+			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.definitionLang, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
 		} finally {
 			builder.close();
 		}
@@ -225,6 +228,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String formatString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_FORMAT);
 		ModuleFormat format = formatString != null ? ModuleFormat.valueOf(formatString) : ModuleFormat.Wrapperless;
 
+		String definitionLangString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_DEFINITION_LANGUAGE);
+		DefinitionLanguage definitionLang = definitionLangString != null ? DefinitionLanguage.valueOf(definitionLangString) : DefinitionLanguage.Spaghetti;
+
 		String moduleSourceString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_SOURCE);
 		String sourceUrl = moduleSourceString != null ? moduleSourceString : "unknown-source";
 
@@ -234,7 +240,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
 		Map<String, String> externalDependencies = BundleUtils.parseExternalDependencies(externalDependenciesString);
 
-		return new DefaultModuleBundle(source, name, version, format, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
+		return new DefaultModuleBundle(source, name, version, format, definitionLang, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}
 
 	private String getString(String path) throws IOException {

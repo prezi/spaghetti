@@ -137,6 +137,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		ModuleBundleParameters params = new ModuleBundleParameters(
 				moduleNode.getName(),
 				moduleNode.getSource().getContents(),
+				moduleNode.getSource().getDefinitionLanguage(),
 				!Strings.isNullOrEmpty(version) ? version : "unspecified",
 				ModuleFormat.UMD,
 				sourceBaseUrl,

@@ -1,5 +1,7 @@
 package com.prezi.spaghetti.typescript.gradle;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
@@ -8,6 +10,8 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModule;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
+import com.prezi.spaghetti.typescript.gradle.internal.DefinitionAwareTypeScriptCompileDtsTask;
+import com.prezi.spaghetti.typescript.gradle.internal.DefinitionFileComparator;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
 import com.prezi.typescript.gradle.TypeScriptBasePlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
@@ -17,6 +21,9 @@ import com.prezi.typescript.gradle.TypeScriptPlugin;
 import com.prezi.typescript.gradle.TypeScriptSourceSet;
 import com.prezi.typescript.gradle.TypeScriptTestBinary;
 import com.prezi.typescript.gradle.incubating.FunctionalSourceSet;
+import com.prezi.typescript.gradle.incubating.LanguageSourceSet;
+
+
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -28,6 +35,9 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
@@ -55,7 +65,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		project.getPlugins().apply(TypeScriptBasePlugin.class);
 		project.getPlugins().apply(SpaghettiPlugin.class);
 
-		TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
+		final TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
 
 		// Add Spaghetti generated sources to compile and source tasks
 		spaghettiExtension.getSources().getByName("main").withType(SpaghettiGeneratedSourceSet.class).all(new Action<SpaghettiGeneratedSourceSet>() {
@@ -76,6 +86,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
+				addCompileDtsTask(project, binary);
 				registerSpaghettiModule(project, binary, false);
 			}
 		});
@@ -86,7 +97,35 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			}
 		});
 
+		spaghettiExtension.registerDefinitionSearchSourceDirs(new Function<Void, Iterable<File>>() {
+			public Iterable<File> apply(Void input) {
+				Set<TypeScriptSourceSet> sources = typeScriptExtension.getSources().getByName("main").withType(TypeScriptSourceSet.class);
+
+				Collection<Iterable<File>> sourceDirs = new HashSet<Iterable<File>>();
+				for (TypeScriptSourceSet sourceSet : sources) {
+					sourceDirs.add(sourceSet.getSource().getSrcDirs());
+				}
+				return Iterables.concat(sourceDirs);
+			}
+		});
+
 		project.getPlugins().apply(TypeScriptPlugin.class);
+
+		typeScriptExtension.getBinaries().withType(TypeScriptBinaryBase.class).all(new Action<TypeScriptBinaryBase>() {
+			@Override
+			public void execute(TypeScriptBinaryBase binary) {
+				binary.getCompileTask().setSerializableFileComparator(DefinitionFileComparator.INSTANCE);
+
+			}
+		});
+		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
+			@Override
+			public void execute(final TypeScriptBinary binary) {
+				// compileDts task should depend on compile task so any dependencies added later
+				// to the compile task don't have to also be added to the compileDts task.
+				binary.getCompileDtsTask().dependsOn(binary.getCompileTask());
+			}
+		});
 	}
 
 	private <T extends TypeScriptBinaryBase> void addSpaghettiSourceSet(final Project project, final SpaghettiGeneratedSourceSet spaghettiGeneratedSourceSet, Class<T> binaryType, String sourceSetName) {
@@ -105,6 +144,32 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		});
 	}
 
+	private void addCompileDtsTask(final Project project, TypeScriptBinary binary) {
+		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
+		final DefinitionAwareTypeScriptCompileDtsTask compileDtsTask = project.getTasks().create(
+			namingScheme.getTaskName("compileDtsFor"),
+			DefinitionAwareTypeScriptCompileDtsTask.class);
+		compileDtsTask.setDescription("Compiles .d.ts for " + binary);
+		binary.getSource().all(new Action<LanguageSourceSet>() {
+			@Override
+			public void execute(LanguageSourceSet it) {
+				compileDtsTask.source(it.getSource());
+			}
+		});
+		compileDtsTask.source(binary.getConfiguration());
+		compileDtsTask.dependsOn(binary.getSource());
+		compileDtsTask.getConventionMapping().map("outputDir", new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return project.file(project.getBuildDir() + "/compiled-typescript/"
+						+ namingScheme.getOutputDirectoryBase() + "-dts/");
+			}
+		});
+		binary.setCompileDtsTask(compileDtsTask);
+		binary.builtBy(compileDtsTask);
+		logger.debug("Added compile dts task {} for binary {} in {}", compileDtsTask, binary, project.getPath());
+	}
+
 	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final boolean testing) {
 		Callable<File> javaScriptFile = new Callable<File>() {
 			@Override
@@ -112,7 +177,19 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				return binary.getCompileTask().getOutputFile();
 			}
 		};
-		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
+		Callable<File> definitionOverride = new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				File dir = binary.getCompileDtsTask().getOutputDir();
+				File[] files = dir.listFiles();
+				if (files == null || files.length == 0) {
+					return null;
+				} else {
+					return files[0];
+				}
+			}
+		};
+		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, definitionOverride, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
 			@Override
 			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, TypeScriptBinaryBase original) {
 				TypeScriptSpaghettiModule moduleBinary = new TypeScriptSpaghettiModule(namingScheme, data, original, testing);

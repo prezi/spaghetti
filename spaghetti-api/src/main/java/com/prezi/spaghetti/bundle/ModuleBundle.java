@@ -24,6 +24,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	ModuleFormat getFormat();
 
 	/**
+	 * Returns the syntax language of the module's type definitions.
+	 */
+	DefinitionLanguage getDefinitionLanguage();
+
+	/**
 	 * Returns the source URL of the module.
 	 */
 	String getSourceBaseUrl();

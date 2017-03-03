@@ -2,6 +2,7 @@ package com.prezi.spaghetti.bundle.internal;
 
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 
@@ -14,15 +15,17 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final String name;
 	private final String version;
 	private final ModuleFormat format;
+	private final DefinitionLanguage definitionLang;
 	private final String sourceBaseUrl;
 	private final SortedSet<String> dependentModules;
 	private final SortedMap<String, String> externalDependencies;
 	private final SortedSet<String> resourcePaths;
 
-	public AbstractModuleBundle(String name, String version, ModuleFormat format, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
 		this.name = name;
 		this.version = version;
 		this.format = format;
+		this.definitionLang = definitionLang;
 		this.sourceBaseUrl = sourceBaseUrl;
 		this.dependentModules = ImmutableSortedSet.copyOf(dependentModules);
 		this.externalDependencies = ImmutableSortedMap.copyOf(externalDependencies);
@@ -60,6 +63,11 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	@Override
 	public final ModuleFormat getFormat() {
 		return format;
+	}
+
+	@Override
+	public final DefinitionLanguage getDefinitionLanguage() {
+		return definitionLang;
 	}
 
 	@Override
