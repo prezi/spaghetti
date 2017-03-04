@@ -1,17 +1,17 @@
-package com.prezi.spaghetti.gradle.internal;
+package com.prezi.spaghetti.tsast;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
-import org.gradle.api.logging.Logger;
+import org.slf4j.Logger;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Resources;
 
@@ -24,7 +24,7 @@ public class TypeScriptAstParserService {
 			"--collectExportedIdentifiers",
 			tsContent);
 
-		return new HashSet<String>(Splitter.on(',').splitToList(output.get(0).trim()));
+		return Sets.newHashSet(Splitter.on(',').split(output.get(0).trim()));
 	}
 
 	public static List<String> verifyModuleDefinition(File workDir, File tsCompilerPath, File definitionFile, Logger logger) throws IOException, InterruptedException {

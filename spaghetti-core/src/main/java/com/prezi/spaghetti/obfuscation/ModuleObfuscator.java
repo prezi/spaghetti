@@ -3,17 +3,24 @@ package com.prezi.spaghetti.obfuscation;
 import com.google.common.collect.ImmutableSet;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.prezi.spaghetti.ast.ModuleNode;
+import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.generator.ReservedWords;
 import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
 import com.prezi.spaghetti.obfuscation.internal.SourceMap;
 import com.prezi.spaghetti.obfuscation.internal.SymbolCollectVisitor;
+import com.prezi.spaghetti.tsast.TypeScriptAstParserService;
+
+
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -68,7 +75,11 @@ public class ModuleObfuscator {
 			ImmutableSet.Builder<String> builder = ImmutableSet.builder();
 			builder.addAll(protectedSymbols).addAll(params.additionalSymbols);
 			for (ModuleNode moduleNode : config.getAllModules()) {
-				builder.addAll(new SymbolCollectVisitor().visit(moduleNode));
+				if (moduleNode.getSource().getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
+					builder.addAll(getTypeScriptDtsSymbols(moduleNode.getSource(), workDir, params.tsCompilerPath, params.logger));
+				} else {
+					builder.addAll(new SymbolCollectVisitor().visit(moduleNode));
+				}
 			}
 			ImmutableSet<String> symbols = builder.build();
 
@@ -105,5 +116,16 @@ public class ModuleObfuscator {
 		}
 
 		return new ObfuscationResult(compressedJS.toString(), (String) finalSourceMap);
+	}
+
+	protected Set<String> getTypeScriptDtsSymbols(ModuleDefinitionSource source, File workDir, File compilerPath, Logger logger) {
+		if (source.getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
+			try {
+				return TypeScriptAstParserService.collectExportedSymbols(workDir, compilerPath, source.getContents(), logger);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return Collections.emptySet();
 	}
 }

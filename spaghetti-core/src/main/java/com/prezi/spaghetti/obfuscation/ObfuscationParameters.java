@@ -10,6 +10,8 @@ import java.net.URI;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.slf4j.Logger;
+
 /**
  * Parameter object for obfuscation.
  */
@@ -23,9 +25,11 @@ public class ObfuscationParameters {
 	public final SortedSet<File> closureExterns;
 	public final SortedSet<String> additionalSymbols;
 	public final File workingDirectory;
+	public final File tsCompilerPath;
+	public final Logger logger;
 	public final CompilationLevel compilationLevel;
 
-	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, CompilationLevel compilationLevel) {
+	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, File tsCompilerPath, Logger logger, CompilationLevel compilationLevel) {
 		this.config = config;
 		this.module = module;
 		this.javaScript = javaScript;
@@ -35,11 +39,13 @@ public class ObfuscationParameters {
 		this.closureExterns = ImmutableSortedSet.copyOf(closureExterns);
 		this.additionalSymbols = ImmutableSortedSet.copyOf(additionalSymbols);
 		this.workingDirectory = workingDirectory;
+		this.tsCompilerPath = tsCompilerPath;
+		this.logger = logger;
 		this.compilationLevel = compilationLevel;
 	}
 
-	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, String compilationLevel) {
-		this(config, module, javaScript, sourceMap, sourceMapRoot, nodeSourceMapRoot, closureExterns, additionalSymbols, workingDirectory, convertCompilationLevel(compilationLevel));
+	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, File tsCompilerPath, Logger logger, String compilationLevel) {
+		this(config, module, javaScript, sourceMap, sourceMapRoot, nodeSourceMapRoot, closureExterns, additionalSymbols, workingDirectory, tsCompilerPath, logger, convertCompilationLevel(compilationLevel));
 	}
 
 	private static CompilationLevel convertCompilationLevel(String compilationLevel) {
