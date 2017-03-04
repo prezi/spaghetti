@@ -72,7 +72,7 @@ public final class ModuleConfigurationParser {
 	private static EntityWithModuleMetaData<ModuleDefinitionSource> makeModuleSourceWithMetaData(ModuleBundle bundle) {
 		return new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(
 				makeModuleSource(bundle),
-				ModuleFormat.UMD
+				bundle.getFormat()
 		);
 	}
 
