@@ -30,6 +30,7 @@ allprojects {
 
 subprojects { subproject ->
 	apply plugin: 'maven'
+	apply plugin: 'maven-publish'
 	// For some reason this is needed ot have dependencies in POM files
 	apply plugin: "java"
 
@@ -94,13 +95,25 @@ subprojects { subproject ->
 						authentication(userName: user, password: password)
 					}
 				} else if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
-					def user = project.getProperty("nexusUser")
-					def password = project.getProperty("nexusPassword")
-					repository(url: "https://artifactory.prezi.com/plugins-release-local/") {
-						authentication(userName: user, password: password)
-					}
-					snapshotRepository(url: "https://artifactory.prezi.com/plugins-snapshot-local/") {
-						authentication(userName: user, password: password)
+					publishing {
+						repositories {
+							maven {
+								def repoUrl = project.version.endsWith('-SNAPSHOT') ?
+										"https://artifactory.prezi.com/plugins-snapshot-local/" :
+										"https://artifactory.prezi.com/plugins-release-local/"
+
+								url repoUrl
+								credentials {
+									username = nexusUser
+									password = nexusPassword
+								}
+							}
+						}
+						publications {
+							maven(MavenPublication) {
+								from components.java
+							}
+						}
 					}
 				}
 			}
