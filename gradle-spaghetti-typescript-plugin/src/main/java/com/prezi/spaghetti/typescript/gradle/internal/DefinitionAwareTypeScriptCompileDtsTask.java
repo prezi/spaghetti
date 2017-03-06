@@ -1,8 +1,6 @@
 package com.prezi.spaghetti.typescript.gradle.internal;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -12,13 +10,11 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.Task;
 import org.gradle.api.specs.Spec;
-import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
-import com.prezi.typescript.gradle.SerializableFileComparator;
 import com.prezi.typescript.gradle.TypeScriptCompileDts;
 
 public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDts implements DefinitionAwareSpaghettiTask {
@@ -48,6 +44,9 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
     @Override
     public void run() throws IOException, InterruptedException {
         File tempDir = getTemporaryDir();
+        FileUtils.deleteQuietly(tempDir);
+        FileUtils.forceMkdir(tempDir);
+
         List<String> command = compileCommand(tempDir, true);
         executeCommand(command);
 
