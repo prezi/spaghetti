@@ -1,16 +1,16 @@
-package com.prezi.spaghetti.gradle.internal
+package com.prezi.spaghetti.tsast
 
 import java.nio.file.Files
 import org.apache.commons.io.FileUtils
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
 class TypeScriptAstParserServiceTest extends Specification {
     def "extract symbols from .d.ts"() {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
-        Logger logger = Logging.getLogger(TypeScriptAstParserServiceTest.class);
+        Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class)
         File compilerPath = new File("build/typescript/node_modules/typescript");
 
         when:
@@ -35,7 +35,9 @@ declare module a.b.c {
         Set<String> symbols = TypeScriptAstParserService.collectExportedSymbols(dir, compilerPath, content, logger);
 
         then:
-        "a,b,c,d,e,f,g,hh,ii,jj,kk,ll" == symbols.toSorted().join(",")
+        def l = symbols.toList()
+        l.sort()
+        l.join(",") == "a,b,c,d,e,f,g,hh,ii,jj,kk,ll"
     }
 
     def "classes not allowed"() {
@@ -199,7 +201,7 @@ module test {
         File definitionFile = new File(dir, "definition.d.ts");
         FileUtils.write(definitionFile, content);
 
-        Logger logger = Logging.getLogger(TypeScriptAstParserServiceTest.class);
+        Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
         File compilerPath = new File("build/typescript/node_modules/typescript");
 
         return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);

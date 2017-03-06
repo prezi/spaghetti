@@ -1,15 +1,11 @@
 package com.prezi.spaghetti.gradle;
 
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.ast.ModuleNode;
-import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.internal.Generators;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
-import com.prezi.spaghetti.gradle.internal.TypeScriptAstParserService;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import com.prezi.spaghetti.obfuscation.ObfuscationResult;
@@ -21,7 +17,6 @@ import org.gradle.api.tasks.Optional;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -55,7 +50,6 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 
 		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
 		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
-		Set<String> additionalSymbols = Sets.union(getAdditionalSymbols(), getTypeScriptDtsSymbols(config));
 		ObfuscationResult result = obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
 				config.getLocalModule(),
@@ -64,30 +58,19 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 				null,
 				getNodeSourceMapRoot(),
 				getClosureExterns(),
-				additionalSymbols,
-				new File(getWorkDir(), "obf"),
+				getAdditionalSymbols(),
+				getWorkDir(),
+				getCompilerPath(),
+				getLogger(),
 				getCompilationLevel()
 		));
 		return super.createBundle(config, result.javaScript, result.sourceMap, resourceDir);
-	}
-
-	protected Set<String> getTypeScriptDtsSymbols(ModuleConfiguration config) {
-		ModuleDefinitionSource source = config.getLocalModule().getSource();
-		if (source.getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
-			try {
-				return TypeScriptAstParserService.collectExportedSymbols(new File(getWorkDir(), "dts"), getCompilerPath(), source.getContents(), getLogger());
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
-		return Collections.emptySet();
 	}
 
 	@InputDirectory
 	public File getCompilerPath() {
 		return tsCompilerPath;
 	}
-
 
 	public void setCompilerPath(File compilerPath) {
 		this.tsCompilerPath = compilerPath;

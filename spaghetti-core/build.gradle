@@ -74,6 +74,36 @@ task run(type: Exec) {
 	commandLine = ["gradle", "clean", "packApplication", "-is"]
 }
 
+task compileTsAstParser {
+
+	def outputDir = new File(project.buildDir, "typescript")
+	def outputFile = new File(outputDir, "tsAstParser.js")
+	def inputFile = project.file("src/main/ts/tsAstParser.ts")
+
+	outputs.file outputFile
+	inputs.file inputFile
+
+	doLast {
+		copy {
+			from "src/main/ts/"
+			into outputDir
+		}
+
+		exec {
+			workingDir outputDir
+			commandLine "npm", "install"
+		}
+
+		exec {
+			workingDir outputDir
+			executable new File(outputDir, "node_modules/typescript/bin/tsc")
+		}
+	}
+}
+
+processResources.dependsOn compileTsAstParser
+processResources.from compileTsAstParser.outputs.files
+
 artifacts {
 	testCompile(testJar)
 	archives(testJar)

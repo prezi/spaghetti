@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.gradle.internal;
+package com.prezi.spaghetti.tsast;
 
 import java.util.List;
 

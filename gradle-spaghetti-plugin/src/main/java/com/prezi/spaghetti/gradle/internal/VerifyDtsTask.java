@@ -2,16 +2,15 @@ package com.prezi.spaghetti.gradle.internal;
 
 import java.io.File;
 import java.io.IOException;
-
 import org.gradle.api.Task;
-
-
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 import com.prezi.spaghetti.gradle.NeedsTypeScriptCompilerSpaghettiTask;
+import com.prezi.spaghetti.tsast.TypeScriptAstParserException;
+import com.prezi.spaghetti.tsast.TypeScriptAstParserService;
 
 public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpaghettiTask, NeedsTypeScriptCompilerSpaghettiTask {
     private File definition = null;

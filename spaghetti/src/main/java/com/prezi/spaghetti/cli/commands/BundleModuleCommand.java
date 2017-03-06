@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import org.slf4j.LoggerFactory;
+
 @Command(name = "bundle", description = "Create a module bundle.")
 public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 	@Option(name = {"-T", "--type"},
@@ -176,16 +178,19 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 
 		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, language);
 		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
+		String nodePath = System.getenv("NODE_PATH");
 		return obfuscator.obfuscateModule(new ObfuscationParameters(
 				config,
 				config.getLocalModule(),
 				javaScript,
 				sourceMap,
 				null,
-				System.getenv("NODE_PATH"),
+				nodePath,
 				externs,
 				additionalSymbolsSet,
 				workDir,
+				new File(nodePath, "typescript"),
+				BundleModuleCommand.logger,
 				compilationLevel
 		));
 	}
