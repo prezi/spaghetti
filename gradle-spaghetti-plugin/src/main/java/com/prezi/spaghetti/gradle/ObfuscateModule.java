@@ -68,6 +68,7 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 	}
 
 	@InputDirectory
+	@Optional
 	public File getCompilerPath() {
 		return tsCompilerPath;
 	}
