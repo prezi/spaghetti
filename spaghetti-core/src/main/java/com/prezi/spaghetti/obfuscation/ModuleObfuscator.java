@@ -120,6 +120,9 @@ public class ModuleObfuscator {
 
 	protected Set<String> getTypeScriptDtsSymbols(ModuleDefinitionSource source, File workDir, File compilerPath, Logger logger) {
 		if (source.getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
+			if (compilerPath == null) {
+				throw new RuntimeException("Cannot extract symbols from .d.ts for obfuscation task: compilerPath is null");
+			}
 			try {
 				return TypeScriptAstParserService.collectExportedSymbols(workDir, compilerPath, source.getContents(), logger);
 			} catch (Exception e) {
