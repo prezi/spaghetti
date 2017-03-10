@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
@@ -82,16 +83,12 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 							}
 						});
 						try {
-							// TODO Update wrapper generation to allow returning of modules
-							String wrappedModule = wrapper.wrap(new ModuleWrapperParameters(bundle));
-							dependencyInitializers.add(
-									String.format(
-										"modules[\"%s\"] = (%s(%s));",
-										module,
-										wrappedModule,
-										Joiner.on(',').join(Iterables.concat(externalReferences, moduleReferences))
-									)
-							);
+							String wrappedModule = wrapModule(
+								bundle,
+								module,
+								externalReferences,
+								moduleReferences);
+							dependencyInitializers.add(wrappedModule);
 						} catch (IOException e) {
 							throw new RuntimeException(e);
 						}
@@ -109,5 +106,26 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 				}
 			}
 		});
+	}
+
+	private String wrapModule(ModuleBundle bundle, String moduleName, Iterable<String> externalReferences, Iterable<String> moduleReferences) throws IOException {
+		if (bundle.getFormat() == ModuleFormat.Wrapperless) {
+			// TODO Update wrapper generation to allow returning of modules
+			String wrappedModule = wrapper.wrap(new ModuleWrapperParameters(bundle));
+			return String.format(
+					"modules[\"%s\"] = (%s(%s));",
+					moduleName,
+					wrappedModule,
+					Joiner.on(',').join(Iterables.concat(externalReferences, moduleReferences))
+			);
+		} else {
+			String format =
+				"(function(){" +
+					"var exports=undefined;" +
+					"var define=undefined;" +
+					"%s;" +
+				"}).call(modules);";
+			return String.format(format, bundle.getJavaScript());
+		}
 	}
 }

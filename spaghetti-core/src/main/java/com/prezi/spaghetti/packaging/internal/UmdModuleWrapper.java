@@ -89,7 +89,7 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 				.append(");");
 		result.append("}");
 
-		result.append("})();");
+		result.append("}).call(this);");
 
 		return result.toString();
 	}

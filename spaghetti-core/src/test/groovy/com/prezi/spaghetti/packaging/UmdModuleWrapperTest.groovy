@@ -66,7 +66,7 @@ class UmdModuleWrapperTest extends WrapperTestBase {
 				'}else{',
 					'this["com.example.test"]=__factory($,React,example.test.name,this["com.example.alma"],this["com.example.bela"]);',
 				'}',
-				'})();'
+				'}).call(this);'
 		].join("")
 	}
 
