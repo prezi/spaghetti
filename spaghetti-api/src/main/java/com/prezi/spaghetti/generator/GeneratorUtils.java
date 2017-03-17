@@ -1,6 +1,8 @@
 package com.prezi.spaghetti.generator;
 
-import com.prezi.spaghetti.ast.ModuleNode;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.prezi.spaghetti.bundle.ModuleFormat;
 
 /**
@@ -26,5 +28,23 @@ public class GeneratorUtils {
 					ReservedWords.DEPENDENCIES,
 					moduleName);
 		}
+	}
+
+	public static List<String> createNamespaceMerge(String namespace, String value) {
+		List<String> lines = new ArrayList<String>();
+		if (namespace.contains(".")) {
+			String[] split = namespace.split("\\.");
+			String path = split[0];
+
+			lines.add(String.format("var %s=(%s||{});", path, path));
+			for (int i = 1; i < split.length - 1; i++) {
+				path += "." + split[i];
+				lines.add(String.format("%s=(%s||{});", path, path));
+			}
+			lines.add(String.format("%s=%s;", namespace, value));
+		} else {
+			lines.add(String.format("var %s=%s;", namespace, value));
+		}
+		return lines;
 	}
 }

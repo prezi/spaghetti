@@ -7,6 +7,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.prezi.spaghetti.generator.GeneratorUtils;
+
 public class ExternalDependencyGenerator {
 
 	public static List<String> getImportedVarNames(Collection<String> externalDependencies) {
@@ -26,19 +28,8 @@ public class ExternalDependencyGenerator {
 		int ix = 0;
 		LinkedList<String> externalDependencyLines = new LinkedList<String>();
 		for (String dep : sortExternalDependencies(externalDependencies)) {
-			if (dep.contains(".")) {
-				String[] split = dep.split("\\.");
-				String path = split[0];
-
-				externalDependencyLines.add(String.format("var %s = (%s || {});", path, path));
-				for (int i = 1; i < split.length - 1; i++) {
-					path += "." + split[i];
-					externalDependencyLines.add(String.format("%s = (%s || {});", path, path));
-				}
-				externalDependencyLines.add(String.format("%s = arguments[%d];", dep, ix++));
-			} else {
-				externalDependencyLines.add(String.format("var %s=arguments[%d];", dep, ix++));
-			}
+			String value = String.format("arguments[%d]", ix++);
+			externalDependencyLines.addAll(GeneratorUtils.createNamespaceMerge(dep, value));
 		}
 		return externalDependencyLines;
 	}
