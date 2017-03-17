@@ -25,29 +25,17 @@ public class ExternalDependencyGenerator {
 	static List<String> generateExternalDependencyLines(Collection<String> externalDependencies) {
 		int ix = 0;
 		LinkedList<String> externalDependencyLines = new LinkedList<String>();
-		List<String> sortedExpternalDependencies = sortExternalDependencies(externalDependencies);
-		for (String dep : sortedExpternalDependencies) {
+		for (String dep : sortExternalDependencies(externalDependencies)) {
 			if (dep.contains(".")) {
-				List<String> endLines = new ArrayList<String>();
 				String[] split = dep.split("\\.");
-				for (int i = 0; i < split.length; i++) {
-					String name = split[i];
-					String path = i == 0 ? name : split[i-1] + "." + split[i];
-					if (i == split.length - 1) {
-						externalDependencyLines.add(path + " = " + "dependencies[" + (ix++) + "];");
-					} else {
-						externalDependencyLines.add("var " + name + ";");
-						if (i == 0) {
-							externalDependencyLines.add("(function (" + name + ", dependencies) {");
-							endLines.add("})(" + name + " || (" + name + " = {}), arguments);");
-						} else {
-							externalDependencyLines.add("(function (" + name + ") {");
-							endLines.add("})(" + name + " = " + path + " || (" + path + " = {}));");
-						}
-					}
+				String path = split[0];
+
+				externalDependencyLines.add(String.format("var %s = (%s || {});", path, path));
+				for (int i = 1; i < split.length - 1; i++) {
+					path += "." + split[i];
+					externalDependencyLines.add(String.format("%s = (%s || {});", path, path));
 				}
-				Collections.reverse(endLines);
-				externalDependencyLines.addAll(endLines);
+				externalDependencyLines.add(String.format("%s = arguments[%d];", dep, ix++));
 			} else {
 				externalDependencyLines.add(String.format("var %s=arguments[%d];", dep, ix++));
 			}
