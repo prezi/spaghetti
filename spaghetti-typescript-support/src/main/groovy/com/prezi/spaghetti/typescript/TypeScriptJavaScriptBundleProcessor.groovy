@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.typescript
 
+import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.generator.AbstractJavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters
@@ -16,23 +17,25 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 
 	@Override
 	String processModuleJavaScript(JavaScriptBundleProcessorParameters params, String javaScript) {
-		def content = TypeScriptEnumDenormalizer.denormalize(javaScript);
 		def module = params.moduleConfiguration.localModule
-		if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
-			content += "\n"
-			content += "return ${module.name};"
-			content += "\n"
-		} else {
-			content += "\n"
-			content += "return ${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS});"
-			content += "\n"
-		}
+		def export = getModuleExport(module)
 
+		def content = ""
+		content += TypeScriptEnumDenormalizer.denormalize(javaScript)
+		content += "\n" + "return ${export};" + "\n"
 		return content
 	}
 
 	@Override
 	Set<String> getProtectedSymbols() {
 		return [].asImmutable()
+	}
+
+	private static String getModuleExport(ModuleNode module) {
+		if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
+			return module.name;
+		} else {
+			return "${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS})"
+		}
 	}
 }
