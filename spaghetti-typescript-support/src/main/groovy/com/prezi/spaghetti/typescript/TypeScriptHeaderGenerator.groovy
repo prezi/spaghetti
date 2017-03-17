@@ -116,6 +116,6 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 		lines.add("}")
 
 		def contents = module.entity.source.contents + "\n\n" + lines.join("\n");
-		TypeScriptUtils.createRawSourceFile(header, module.entity, module.entity.alias, outputDirectory, contents);
+		TypeScriptUtils.createRawSourceFile(header, module.entity.alias, outputDirectory, contents);
 	}
 }
