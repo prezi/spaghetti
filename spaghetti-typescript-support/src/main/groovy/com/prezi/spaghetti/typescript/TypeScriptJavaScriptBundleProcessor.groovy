@@ -61,6 +61,6 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		if (lines.isEmpty()) {
 			return ""
 		}
-		return String.join("\n", lines) + "\n";
+		return lines.join("\n") + "\n";
 	}
 }
