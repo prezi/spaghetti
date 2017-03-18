@@ -7,8 +7,8 @@ import com.prezi.spaghetti.generator.AbstractJavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters
 import com.prezi.spaghetti.typescript.bundle.TypeScriptEnumDenormalizer
-import java.util.ArrayList
-import java.util.List
+import java.util.Collection
+import java.util.LinkedHashSet
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
@@ -45,16 +45,22 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 	}
 
 	private static String generateAccessors(ModuleConfiguration config) {
-		List<String> lines = new ArrayList<String>();
+		// Use LinkedHashSet so the order of the lines is preserved,
+		// but duplicate (redundant) lines are not generated for namespaces
+		// which have a common prefix (ie. com.spaghetti.a, com.spaghetti.b).
+		LinkedHashSet<String> lines = new LinkedHashSet<String>();
 		for (def wrapper: config.getDirectDependentModules()) {
 			ModuleNode module = wrapper.entity;
 			if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
 				String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);
-				List<String> namespaceMerge = GeneratorUtils.createNamespaceMerge(module.name, value);
+				Collection<String> namespaceMerge = GeneratorUtils.createNamespaceMerge(module.name, value);
 				lines.addAll(namespaceMerge);
 			}
 		}
 
+		if (lines.isEmpty()) {
+			return ""
+		}
 		return String.join("\n", lines) + "\n";
 	}
 }
