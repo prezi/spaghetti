@@ -78,8 +78,6 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 		);
 
 		result.append("}else{");
-		result.append("var moduleUrl=(document.getElementById(\"" + params.name + "\")||{src:\"\"}).src;");
-		result.append("baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));");
 		result.append("this[\"" + params.name + "\"]=");
 		result
 				.append("__factory(")
