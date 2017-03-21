@@ -14,13 +14,13 @@ final class TypeScriptUtils {
 			def packageDir = createNamespacePath(outputDirectory, namespace)
 			packageDir.mkdirs()
 
-			return createRawSourceFile(header, module, name, packageDir, namespaceContent);
+			return createRawSourceFile(header, name, packageDir, namespaceContent);
 		} else {
-			return createRawSourceFile(header, module, name, outputDirectory, contents);
+			return createRawSourceFile(header, name, outputDirectory, contents);
 		}
 	}
 
-	public static File createRawSourceFile(String header, ModuleNode module, String name, File outputDirectory, String contents) {
+	public static File createRawSourceFile(String header, String name, File outputDirectory, String contents) {
 		def file = new File(outputDirectory, name + ".ts")
 		file.delete()
 		file << "/*\n"
