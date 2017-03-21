@@ -72,28 +72,24 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 		//result.append("return module.exports;");
 
 		// Browser Globals
-		Iterable<String> browserGlobalDependencies = Iterables.concat(
-				params.externalDependencies.keySet(),
-				Sets.newTreeSet(params.dependencies)
-		);
+		Iterable<String> globalModuleDependencies = Iterables.transform(params.dependencies,
+			new Function<String, String>() {
+				@Nullable
+				@Override
+				public String apply(String name) {
+					return "this[\"" + name + "\"]";
+				}
+			});
 
 		result.append("}else{");
-		result.append("var moduleUrl=(document.getElementById(\"" + params.name + "\")||{src:\"\"}).src;");
-		result.append("baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));");
 		result.append("this[\"" + params.name + "\"]=");
 		result
 				.append("__factory(")
-				.append(Joiner.on(",").join(Iterables.transform(browserGlobalDependencies, new Function<String, String>() {
-					@Nullable
-					@Override
-					public String apply(String name) {
-						return "this[\"" + name + "\"]";
-					}
-				})))
+				.append(Joiner.on(",").join(Iterables.concat(params.externalDependencies.keySet(), globalModuleDependencies)))	
 				.append(");");
 		result.append("}");
 
-		result.append("})();");
+		result.append("}).call(this);");
 
 		return result.toString();
 	}

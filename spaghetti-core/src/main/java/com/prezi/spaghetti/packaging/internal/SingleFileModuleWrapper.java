@@ -15,14 +15,14 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 		StringBuilder result = new StringBuilder();
 		result.append("function(){");
 		result.append("var baseUrl=__dirname;");
-		result.append("(");
+		result.append("return(");
 		wrapModuleObject(
 				result,
 				params,
 				params.dependencies,
 				params.externalDependencies.keySet(),
 				true);
-		result.append(").call({},arguments);");
+		result.append(").apply({},arguments);");
 		result.append("}");
 		return result.toString();
 	}

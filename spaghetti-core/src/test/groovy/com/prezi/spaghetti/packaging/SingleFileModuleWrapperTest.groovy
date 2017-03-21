@@ -16,7 +16,7 @@ class SingleFileModuleWrapperTest extends WrapperTestBase {
 		result == [
 				'function(){',
 					'var baseUrl=__dirname;',
-		        	'(function(){',
+		        	'return(function(){',
 						'var $=arguments[0];',
 						'var React=arguments[1];',
 						'var module=(function(dependencies){',
@@ -48,7 +48,7 @@ class SingleFileModuleWrapperTest extends WrapperTestBase {
 							'"version":"1.0",',
 							'"spaghettiVersion":"' + Version.SPAGHETTI_VERSION + '"',
 						'};',
-					'}).call({},arguments);',
+					'}).apply({},arguments);',
 					'}'
 		].join("")
 	}
