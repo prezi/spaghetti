@@ -1,14 +1,9 @@
 package com.prezi.spaghetti.generator.internal;
 
-import com.google.common.base.Joiner;
 import com.prezi.spaghetti.internal.Version;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-
-import static com.prezi.spaghetti.generator.ReservedWords.MODULE_WRAPPER_FUNCTION;
-import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS;
 
 public class InternalGeneratorUtils {
 	public static String createHeader(boolean timestamp) {
@@ -17,13 +12,5 @@ public class InternalGeneratorUtils {
 			header += " at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
 		}
 		return header = ".";
-	}
-
-	public static String bundleJavaScript(String javaScript, List<String> importedExternalDependencyVars) {
-		String extravars = "";
-		if (importedExternalDependencyVars.size() > 0) {
-			extravars = "," + Joiner.on(",").join(importedExternalDependencyVars);
-		}
-		return MODULE_WRAPPER_FUNCTION + "(function(" + SPAGHETTI_CLASS + extravars + ") {\n" + javaScript + "\n})\n";
 	}
 }

@@ -230,7 +230,6 @@ public abstract class LanguageSupportSpecification extends Specification {
 		String definition = module.source.contents
 		DefinitionLanguage defLang = module.source.definitionLanguage
 		def bundleDir = new File(rootDir, "bundles/" + name)
-		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencies.keySet());
 		return ModuleBundleFactory.createDirectory(bundleDir, new ModuleBundleParameters(
 				name,
 				definition,
@@ -238,7 +237,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 				"1.0",
 				ModuleFormat.UMD,
 				null,
-				InternalGeneratorUtils.bundleJavaScript(javaScript, importedExternalDependencyVars),
+				javaScript,
 				null,
 				moduleDependencies,
 				externalDependencies,

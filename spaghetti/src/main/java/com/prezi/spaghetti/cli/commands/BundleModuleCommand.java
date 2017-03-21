@@ -114,8 +114,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		String javaScript = Files.asCharSource(sourceFile, Charsets.UTF_8).read();
 		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, language);
 		JavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
-		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencyList);
-		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript), importedExternalDependencyVars);
+		String processedJavaScript = javaScriptBundleProcessor.processModuleJavaScript(processorParams, javaScript);
 
 		SortedSet<String> dependentModules = Sets.newTreeSet();
 		for (EntityWithModuleMetaData<ModuleNode> dependentModule : config.getDirectDependentModules()) {
