@@ -64,7 +64,7 @@ class UmdModuleWrapperTest extends WrapperTestBase {
 					'baseUrl=__dirname;',
 					'module.exports=(__factory)(require("jquery"),require("react"),require("example.test.name"),require("com.example.alma"),require("com.example.bela"));',
 				'}else{',
-					'this["com.example.test"]=__factory(this["\$"],this["React"],this["example.test.name"],this["com.example.alma"],this["com.example.bela"]);',
+					'this["com.example.test"]=__factory($,React,example.test.name,this["com.example.alma"],this["com.example.bela"]);',
 				'}',
 				'})();'
 		].join("")
