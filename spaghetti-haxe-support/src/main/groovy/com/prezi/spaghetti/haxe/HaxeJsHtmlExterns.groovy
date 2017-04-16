@@ -34,11 +34,13 @@ while (<>) {
 	}
 	close $file;
 }
-
 foreach my $undef (@undefs) {
 	# print "Problematic $undef"
 }
- */
+
+print 'Add if missing: HTMLElement: "js.html.Element",'
+
+*/
 final class HaxeJsHtmlExterns {
 	public static final def EXTERNS = [
 			// Added manually to correct for stdlib mixup in Haxe 3.1
@@ -189,6 +191,7 @@ final class HaxeJsHtmlExterns {
 			HTMLDetailsElement: "js.html.DetailsElement",
 			HTMLDirectoryElement: "js.html.DirectoryElement",
 			HTMLDivElement: "js.html.DivElement",
+			HTMLElement: "js.html.Element",
 			HTMLEmbedElement: "js.html.EmbedElement",
 			HTMLFieldSetElement: "js.html.FieldSetElement",
 			HTMLFontElement: "js.html.FontElement",
