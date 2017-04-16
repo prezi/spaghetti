@@ -19,10 +19,10 @@ while (<>) {
 		if ($line =~ m/^\s*package\s+([\w0-9_.]+)\s*;\s*$/) {
 			# print "Package: $1\n";
 			$package = $1;
-		} elsif ($line =~ m/^\@:native\("([\w0-9_]+)"\)$/) {
+		} elsif ($line =~ m/^\@:native\("([\w0-9_]+)"\)/) {
 			# print "Native: $1\n";
 			$native = $1;
-		} elsif ($line =~ m/^extern class ([\w0-9_]+)/) {
+		} elsif ($line =~ m/^.*class ([\w0-9_]+)/) {
 			# print "Class: $1\n";
 			$class = $1;
 		}
@@ -266,6 +266,7 @@ final class HaxeJsHtmlExterns {
 			Int16Array: "js.html.Int16Array",
 			Int32Array: "js.html.Int32Array",
 			Int8Array: "js.html.Int8Array",
+			JSON: "haxe.Json",
 			JavaScriptCallFrame: "js.html.JavaScriptCallFrame",
 			KeyboardEvent: "js.html.KeyboardEvent",
 			LocalMediaStream: "js.html.rtc.LocalMediaStream",
