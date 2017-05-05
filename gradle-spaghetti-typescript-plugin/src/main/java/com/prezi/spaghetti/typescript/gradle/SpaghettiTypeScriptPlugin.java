@@ -11,7 +11,6 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.typescript.gradle.internal.DefinitionAwareTypeScriptCompileDtsTask;
-import com.prezi.spaghetti.typescript.gradle.internal.DefinitionFileComparator;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
 import com.prezi.typescript.gradle.TypeScriptBasePlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
@@ -111,13 +110,6 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 		project.getPlugins().apply(TypeScriptPlugin.class);
 
-		typeScriptExtension.getBinaries().withType(TypeScriptBinaryBase.class).all(new Action<TypeScriptBinaryBase>() {
-			@Override
-			public void execute(TypeScriptBinaryBase binary) {
-				binary.getCompileTask().setSerializableFileComparator(DefinitionFileComparator.INSTANCE);
-
-			}
-		});
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
