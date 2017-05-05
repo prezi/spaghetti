@@ -31,10 +31,6 @@ class Linter {
         if (sourceFile.amdDependencies.length > 0) {
             this.lintError("Amd dependencies are not allowed", sourceFile);
         }
-        if (sourceFile.typeReferenceDirectives.length > 0
-                || sourceFile.referencedFiles.length > 0) {
-            this.lintError("Reference directives are not allowed", sourceFile);
-        }
         if (sourceFile.statements.length > 1) {
             this.lintError("Expecting only one module declaration at the top level.", sourceFile);
             return;
