@@ -12,8 +12,9 @@ import org.gradle.api.Task;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
-
+import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
+import com.google.common.io.Files;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.typescript.gradle.TypeScriptCompileDts;
 
@@ -56,6 +57,11 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
             throw new RuntimeException(definitionFilename + ".d.ts is not found");
         }
 
-        FileUtils.copyFileToDirectory(Iterables.getOnlyElement(files), this.getOutputDir());
+        File generatedDts = Iterables.getOnlyElement(files);
+        File finalOutputFile = new File(this.getOutputDir(), generatedDts.getName());
+        List<String> lines = Files.asCharSource(generatedDts, Charsets.UTF_8).readLines();
+        String content = ReferenceDirectiveStripper.stripAndJoin(lines);
+
+        Files.write(content, finalOutputFile, Charsets.UTF_8);
     }
 }
