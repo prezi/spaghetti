@@ -2,12 +2,8 @@ package com.prezi.spaghetti.obfuscation.internal;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.javascript.jscomp.CommandLineRunner;
-import com.google.javascript.jscomp.CompilationLevel;
+import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.Result;
-import com.google.javascript.jscomp.SourceFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +51,9 @@ public class ClosureCompiler {
 		options.setSourceMapOutputPath("dummy.map");
 		// ES5 relaxes some keywords
 		options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5);
+		// we don't care about these errors
+		options.setWarningLevel(new DiagnosticGroups().forName("undefinedVars"), CheckLevel.WARNING);
+		options.setWarningLevel(new DiagnosticGroups().forName("es5Strict"), CheckLevel.WARNING);
 
 		// Set default externs so that commonly used primitives are protected
 		List<SourceFile> externs = Lists.newArrayList(CommandLineRunner.getDefaultExterns());
