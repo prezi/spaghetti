@@ -113,7 +113,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
-				addCompileDtsTask(project, binary);
+				addCopyDtsTask(project, binary);
 			}
 		});
 	}
@@ -134,31 +134,31 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		});
 	}
 
-	private void addCompileDtsTask(final Project project, TypeScriptBinary binary) {
+	private void addCopyDtsTask(final Project project, TypeScriptBinary binary) {
 		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
-		final CopyDtsTask compileDtsTask = project.getTasks().create(
+		final CopyDtsTask copyDtsTask = project.getTasks().create(
 			namingScheme.getTaskName("copyDtsFor"),
 			CopyDtsTask.class);
-		compileDtsTask.setDescription("Copies .d.ts for " + binary);
-		compileDtsTask.dependsOn(binary.getCompileTask());
-		compileDtsTask.setCompileTask(binary.getCompileTask());
-		compileDtsTask.getConventionMapping().map("outputDir", new Callable<File>() {
+		copyDtsTask.setDescription("Copies .d.ts for " + binary);
+		copyDtsTask.dependsOn(binary.getCompileTask());
+		copyDtsTask.setCompileTask(binary.getCompileTask());
+		copyDtsTask.getConventionMapping().map("outputDir", new Callable<File>() {
 			@Override
 			public File call() throws Exception {
 				return project.file(project.getBuildDir() + "/compiled-typescript/"
 						+ namingScheme.getOutputDirectoryBase() + "-dts/");
 			}
 		});
-		binary.setCompileDtsTask(compileDtsTask);
-		binary.builtBy(compileDtsTask);
-		logger.debug("Added compile dts task {} for binary {} in {}", compileDtsTask, binary, project.getPath());
+		binary.setCompileDtsTask(copyDtsTask);
+		binary.builtBy(copyDtsTask);
+		logger.debug("Added compile dts task {} for binary {} in {}", copyDtsTask, binary, project.getPath());
 	}
 
 	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final boolean testing) {
 		Callable<File> javaScriptFile = new Callable<File>() {
 			@Override
 			public File call() throws Exception {
-				return binary.getCompileTask().getOutputFile();
+				return binary.getCompileTask().getConcatenatedOutputFile();
 			}
 		};
 		Callable<File> definitionOverride = new Callable<File>() {
