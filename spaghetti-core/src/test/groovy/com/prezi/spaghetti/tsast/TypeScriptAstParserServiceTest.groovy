@@ -66,14 +66,15 @@ module test {
         e.output[0].contains("'var' and 'let' are not allowed")
     }
 
-    def "references not allowed"() {
+    def "references are allowed"() {
         when:
         def lines = runVerify("""
 /// <reference path="internal/other.ts"/>
+/// <reference types="node" />
+module test {}
 """)
         then:
-        def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("Reference directives are not allowed")
+        lines == []
     }
 
     def "multiple top-level statements not allowed"() {
