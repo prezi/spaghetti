@@ -25,8 +25,13 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
     public DefinitionAwareTypeScriptCompileDtsTask() {
         this.onlyIf(new Spec<Task>() {
             public boolean isSatisfiedBy(Task task) {
-                String path = ((DefinitionAwareTypeScriptCompileDtsTask)task).getDefinition().getPath();
-                return path.endsWith(".ts") && !path.endsWith(".d.ts");
+                File def = ((DefinitionAwareTypeScriptCompileDtsTask)task).getDefinition();
+                if (def == null) {
+                    return false;
+                } else {
+                    String path = def.getPath();
+                    return path.endsWith(".ts") && !path.endsWith(".d.ts");
+                }
             }
         });
     }

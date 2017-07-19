@@ -21,8 +21,13 @@ public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpag
 
         this.onlyIf(new Spec<Task>() {
             public boolean isSatisfiedBy(Task task) {
-                String path = ((VerifyDtsTask)task).getDefinition().getPath();
-                return path.endsWith(".ts");
+                File def = ((VerifyDtsTask)task).getDefinition();
+                if (def == null) {
+                    return false;
+                } else {
+                    String path = def.getPath();
+                    return path.endsWith(".ts");
+                }
             }
         });
 
