@@ -2,6 +2,7 @@ package com.prezi.spaghetti.gradle.internal;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryContainer;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryInternal;
 import com.prezi.spaghetti.gradle.internal.incubating.DefaultBinaryContainer;
@@ -10,6 +11,13 @@ import com.prezi.spaghetti.gradle.internal.incubating.ProjectSourceSet;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -17,6 +25,10 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.internal.reflect.Instantiator;
 
 public class SpaghettiExtension {
+	private static final String[] MODULE_SUFFIXES = { ".module", ".module.d.ts", ".module.ts" };
+	private static final IOFileFilter MODULE_FILE_FILTER = new SuffixFileFilter(MODULE_SUFFIXES);
+
+
 	private final ProjectSourceSet sources;
 	private final BinaryContainer binaries;
 
@@ -28,6 +40,7 @@ public class SpaghettiExtension {
 	private String sourceBaseUrl;
 	private boolean publishTestArtifacts;
 	private Collection<Function<Void, Iterable<File>>> definitionSearchSourceDirProviders;
+	private File definition = null;
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
@@ -160,5 +173,42 @@ public class SpaghettiExtension {
 			iterables.add(callback.apply(null));
 		}
 		return iterables;
+	}
+
+	public File getDefinition() {
+		if (this.definition == null) {
+			this.definition = findDefinition();
+		}
+		return this.definition;
+	}
+
+	private File findDefinition() {
+		Set<SpaghettiSourceSet> sources = getSources().getByName("main").withType(SpaghettiSourceSet.class);
+
+		List<Iterable<File>> sourceDirs = new ArrayList<Iterable<File>>();
+		for (SpaghettiSourceSet sourceSet : sources) {
+			sourceDirs.add(sourceSet.getSource().getSrcDirs());
+		}
+		sourceDirs.addAll(getDefinitionSearchSourceDirs());
+
+		Set<File> definitions = Sets.newLinkedHashSet();
+		for (File sourceDir : Iterables.concat(sourceDirs)) {
+			if (sourceDir.isDirectory()) {
+				Collection<File> files = FileUtils.listFiles(sourceDir, MODULE_FILE_FILTER, TrueFileFilter.TRUE);
+				for (File file : files) {
+					if (!file.getName().startsWith(".")) {
+						definitions.add(file);
+					}
+				}
+			}
+		}
+
+		if (definitions.isEmpty()) {
+			return null;
+		} else if (definitions.size() == 1) {
+			return Iterables.getOnlyElement(definitions);
+		} else {
+			throw new IllegalStateException("More than one definition found: " + definitions);
+		}
 	}
 }

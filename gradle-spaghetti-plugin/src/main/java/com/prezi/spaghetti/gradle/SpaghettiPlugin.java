@@ -1,7 +1,5 @@
 package com.prezi.spaghetti.gradle;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiGeneratedSourceSet;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiModuleData;
@@ -13,17 +11,12 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModule;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleNamingScheme;
-import com.prezi.spaghetti.gradle.internal.SpaghettiSourceSet;
 import com.prezi.spaghetti.gradle.internal.VerifyDtsTask;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.gradle.internal.incubating.FunctionalSourceSet;
 import com.prezi.spaghetti.gradle.internal.incubating.LanguageSourceSet;
 import groovy.lang.Closure;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -38,20 +31,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 
 public class SpaghettiPlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiPlugin.class);
 
 	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
-
-	private static final String[] MODULE_SUFFIXES = { ".module", ".module.d.ts", ".module.ts" };
-	private static final IOFileFilter MODULE_FILE_FILTER = new SuffixFileFilter(MODULE_SUFFIXES);
 
 	private final Instantiator instantiator;
 	private final FileResolver fileResolver;
@@ -95,13 +81,9 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 		project.getTasks().withType(DefinitionAwareSpaghettiTask.class).all(new Action<DefinitionAwareSpaghettiTask>() {
 			private Callable<File> callable = new Callable<File>() {
-				private File definition = null;
 				@Override
 				public File call() throws Exception {
-					if (this.definition == null) {
-						this.definition = findDefinition(project);
-					}
-					return this.definition;
+					return extension.getDefinition();
 				}
 			};
 
@@ -304,36 +286,5 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 		});
 		return zipTask;
-	}
-
-	private static File findDefinition(Project project) {
-		SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
-		Set<SpaghettiSourceSet> sources = extension.getSources().getByName("main").withType(SpaghettiSourceSet.class);
-
-		List<Iterable<File>> sourceDirs = new ArrayList<Iterable<File>>();
-		for (SpaghettiSourceSet sourceSet : sources) {
-			sourceDirs.add(sourceSet.getSource().getSrcDirs());
-		}
-		sourceDirs.addAll(extension.getDefinitionSearchSourceDirs());
-
-		Set<File> definitions = Sets.newLinkedHashSet();
-		for (File sourceDir : Iterables.concat(sourceDirs)) {
-			if (sourceDir.isDirectory()) {
-				Collection<File> files = FileUtils.listFiles(sourceDir, MODULE_FILE_FILTER, TrueFileFilter.TRUE);
-				for (File file : files) {
-					if (!file.getName().startsWith(".")) {
-						definitions.add(file);
-					}
-				}
-			}
-		}
-
-		if (definitions.isEmpty()) {
-			return null;
-		} else if (definitions.size() == 1) {
-			return Iterables.getOnlyElement(definitions);
-		} else {
-			throw new IllegalStateException("More than one definition found: " + definitions);
-		}
 	}
 }
