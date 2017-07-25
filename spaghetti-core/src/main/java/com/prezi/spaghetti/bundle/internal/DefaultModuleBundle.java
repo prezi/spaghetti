@@ -65,7 +65,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final String RESOURCES_PREFIX = "resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
-	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4."};
+	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4.", "5."};
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
@@ -101,6 +101,15 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		Preconditions.checkNotNull(params.version, "version");
 		Preconditions.checkNotNull(params.definition, "definition");
 		Preconditions.checkNotNull(params.javaScript, "javaScript");
+
+		if (!isSpaghettiVersionSupported(Version.SPAGHETTI_VERSION)) {
+			throw new IllegalArgumentException(
+				String.format("Creating a bundle which Spaghetti does not support (\"%s\" should be included in %s).",
+					Version.SPAGHETTI_VERSION,
+					Arrays.toString(SUPPORTED_VERSIONS_PREFIX)
+				)
+			);
+		}
 
 		builder.init();
 		try {
