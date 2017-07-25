@@ -1,6 +1,8 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.DefinitionLanguage;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -70,6 +73,9 @@ public class ModuleObfuscator {
 		File closureFile = new File(workDir, "closure.js");
 		FileUtils.write(closureFile, params.javaScript);
 
+		Set<File> externs = Sets.newHashSet();
+		externs.addAll(params.closureExterns);
+
 		// Append @expose annotations for Closure Compiler
 		if (params.compilationLevel == CompilationLevel.ADVANCED_OPTIMIZATIONS) {
 			ImmutableSet.Builder<String> builder = ImmutableSet.builder();
@@ -83,15 +89,24 @@ public class ModuleObfuscator {
 			}
 			ImmutableSet<String> symbols = builder.build();
 
-			FileUtils.write(closureFile, "\nvar __a = {}\n", true);
+			List<String> lines = Lists.newArrayList();
+			lines.add("/**");
+			lines.add(" * @fileoverview externs file.");
+ 			lines.add(" * @externs");
+			lines.add(" */");
+			lines.add(String.format("var %s = {};", ReservedWords.MODULE_WRAPPER_FUNCTION));
+			lines.add("var __a = {};");
 			for (String symbol : symbols) {
-				FileUtils.write(closureFile, "/** @expose */\n__a." + symbol + " = {}\n", true);
+				lines.add("__a." + symbol + " = {};");
 			}
+			File externsFile = new File(workDir, "closure-externs.js");
+			externs.add(externsFile);
+			FileUtils.writeLines(externsFile, lines);
 		}
 
 		// Hand off for compilation
 		StringBuilder sourceMapBuilder = new StringBuilder();
-		Integer closureRet = ClosureCompiler.compile(closureFile.toString(), compressedJS, module.getName(), sourceMapBuilder, params.compilationLevel, params.closureExterns);
+		Integer closureRet = ClosureCompiler.compile(closureFile.toString(), compressedJS, module.getName(), sourceMapBuilder, params.compilationLevel, externs);
 		if (closureRet != 0) {
 			throw new RuntimeException("Closure returned with exit code " + closureRet);
 		}
