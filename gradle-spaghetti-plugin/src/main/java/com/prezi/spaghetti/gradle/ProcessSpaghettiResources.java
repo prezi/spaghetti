@@ -10,7 +10,7 @@ public class ProcessSpaghettiResources extends Copy {
 	protected void copy() {
 		Project project = getProject();
 		String prefix = getDestinationDir().getAbsolutePath() + File.separator;
-		for (File file : getOutputs().getPreviousFiles()) {
+		for (File file : getOutputs().getPreviousOutputFiles()) {
 			if (file.getAbsolutePath().startsWith(prefix)) {
 				project.delete(file);
 			}

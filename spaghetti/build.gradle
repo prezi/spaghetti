@@ -9,7 +9,7 @@ dependencies {
 
 mainClassName = "com.prezi.spaghetti.cli.SpaghettiCli"
 
-build { dependsOn installApp }
+build { dependsOn installDist }
 
 configure(applicationDistribution) {
 	from(rootProject.file("README.md")) {

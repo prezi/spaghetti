@@ -36,7 +36,7 @@ task aggregateJavadoc(type: Javadoc) {
 	].each {
 		def subproject = parent.project(it)
 		source += [subproject.sourceSets.main.allJava]
-		classpath += [subproject.sourceSets.main.compileClasspath]
+		classpath += subproject.sourceSets.main.compileClasspath
 	}
 
 	doFirst {
