@@ -52,7 +52,7 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
         FileUtils.deleteQuietly(tempDir);
         FileUtils.forceMkdir(tempDir);
 
-        List<String> command = compileCommand(tempDir, true);
+        List<String> command = compileCommand(tempDir, true, false);
         executeCommand(command);
 
         String definitionFilename = FilenameUtils.removeExtension(getDefinition().getName());
