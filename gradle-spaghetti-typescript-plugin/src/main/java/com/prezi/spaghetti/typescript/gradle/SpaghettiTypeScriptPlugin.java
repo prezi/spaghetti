@@ -166,7 +166,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		Callable<File> javaScriptFile = new Callable<File>() {
 			@Override
 			public File call() throws Exception {
-				return binary.getCompileTask().getOutputFile();
+				return binary.getCompileTask().getConcatenatedOutputFile();
 			}
 		};
 		Callable<File> definitionOverride = new Callable<File>() {

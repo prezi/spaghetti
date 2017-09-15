@@ -4,7 +4,7 @@ configurations {
 
 dependencies {
 	compile project(":spaghetti-api")
-	compile "com.google.javascript:closure-compiler:v20170521"
+	compile "com.google.javascript:closure-compiler:v20140814"
 
 	compile "org.antlr:antlr4-runtime:4.2"
 	compile "commons-lang:commons-lang:2.6"
