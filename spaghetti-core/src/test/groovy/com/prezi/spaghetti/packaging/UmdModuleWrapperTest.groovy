@@ -51,7 +51,7 @@ class UmdModuleWrapperTest extends WrapperTestBase {
 					'return moduleImpl;',
 				'};',
 				'if(typeof define==="function"&&define.amd){',
-					'define(["require","jquery","react","example.test.name","com.example.alma","com.example.bela"],function(){',
+					'define("com.example.test",["require","jquery","react","example.test.name","com.example.alma","com.example.bela"],function(){',
 						'var moduleUrl=arguments[0]["toUrl"]("com.example.test.js");',
 						'baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf("/"));',
 						'return(__factory).apply({},[].slice.call(arguments,1));',

@@ -38,7 +38,9 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 		String baseUrlDeclaration = "var moduleUrl=arguments[0][\"toUrl\"](\"" + params.name + ".js\");"
 			+ "baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf(\"/\"));";
 		result
-				.append("define([\"")
+				.append("define(")
+				.append("\"" + params.name + "\",")
+				.append("[\"")
 				.append(Joiner.on("\",\"").join(Iterables.concat(
 						Arrays.asList("require"),
 						params.externalDependencies.values(),
@@ -85,7 +87,7 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 		result.append("this[\"" + params.name + "\"]=");
 		result
 				.append("__factory(")
-				.append(Joiner.on(",").join(Iterables.concat(params.externalDependencies.keySet(), globalModuleDependencies)))	
+				.append(Joiner.on(",").join(Iterables.concat(params.externalDependencies.keySet(), globalModuleDependencies)))
 				.append(");");
 		result.append("}");
 

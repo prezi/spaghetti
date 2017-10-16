@@ -14,7 +14,7 @@ class AmdModuleWrapperTest extends WrapperTestBase {
 
 		expect:
 		result == [
-				'define(["require","jquery","react","com.example.alma","com.example.bela"],function(){',
+				'define("com.example.test",["require","jquery","react","com.example.alma","com.example.bela"],function(){',
 					'var moduleUrl=arguments[0]["toUrl"]("com.example.test.js");',
 					'var baseUrl=moduleUrl.substr(0,moduleUrl.lastIndexOf("/"));',
 					'return(function(){',
