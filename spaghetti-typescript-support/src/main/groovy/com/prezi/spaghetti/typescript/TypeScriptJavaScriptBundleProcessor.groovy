@@ -14,6 +14,7 @@ import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProcessor {
 	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
+	public static final String USE_STRICT = "\"use strict\";";
 
 	TypeScriptJavaScriptBundleProcessor() {
 		super("typescript")
@@ -25,6 +26,10 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		def export = getModuleExport(module)
 
 		def content = ""
+		if (javaScript.startsWith(USE_STRICT)) {
+			javaScript = javaScript.substring(USE_STRICT.length());
+			content += USE_STRICT + "\n";
+		}
 		content += generateAccessors(params.moduleConfiguration)
 		content += TypeScriptEnumDenormalizer.denormalize(javaScript)
 		content += "\n" + "return ${export};" + "\n"
