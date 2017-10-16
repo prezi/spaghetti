@@ -2,19 +2,23 @@ package com.prezi.spaghetti.obfuscation.internal;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.google.javascript.jscomp.CheckLevel;
-import com.google.javascript.jscomp.CommandLineRunner;
-import com.google.javascript.jscomp.CompilationLevel;
-import com.google.javascript.jscomp.Compiler;
-import com.google.javascript.jscomp.CompilerOptions;
-import com.google.javascript.jscomp.DiagnosticGroups;
-import com.google.javascript.jscomp.Result;
-import com.google.javascript.jscomp.SourceFile;
+import com.google.common.io.Resources;
+import com.prezi.spaghetti.obfuscation.CompilationLevel;
+
+import org.apache.commons.io.FileUtils;
+// import com.google.javascript.jscomp.CheckLevel;
+// import com.google.javascript.jscomp.CommandLineRunner;
+// import com.google.javascript.jscomp.Compiler;
+// import com.google.javascript.jscomp.CompilerOptions;
+// import com.google.javascript.jscomp.DiagnosticGroups;
+// import com.google.javascript.jscomp.Result;
+// import com.google.javascript.jscomp.SourceFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -37,47 +41,43 @@ import java.util.Set;
 public class ClosureCompiler {
 
 	private static Logger logger = LoggerFactory.getLogger(ClosureCompiler.class);
-	private static final int lineLengthThreshold = 1;
 
-	/**
-	 * compiles 'jsFileName', appends the obfuscated code to
-	 * 'obfuscated' and appends the source map to 'sourceMap' using
-	 * 'sourceMapName' (the 'file' field in the sourcemap)
-	 */
-	public static int compile(String jsFileName, Appendable obfuscated, String sourceMapName, Appendable sourceMap, CompilationLevel compilationLevel, Set<File> customExterns) throws IOException {
-		com.google.javascript.jscomp.Compiler compiler = new Compiler(System.err);
-		CompilerOptions options = new CompilerOptions();
+	private static void add(List<String> args, String a, String b) {
+		args.add(a);
+		args.add(b);
+	}
 
-		SourceFile js = SourceFile.fromFile(jsFileName, Charsets.UTF_8);
+	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Set<File> customExterns) throws IOException, InterruptedException {
 
-		// OPTIONS
-		compilationLevel.setOptionsForCompilationLevel(options);
-		options.setLineLengthThreshold(lineLengthThreshold);
-		// We need to set this so that Closure generates sourcemap info, it won't actually create a file.
-		options.setSourceMapOutputPath("dummy.map");
-		// ES5 relaxes some keywords
-		options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5);
-		options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.OFF);
-		options.setWarningLevel(DiagnosticGroups.CHECK_TYPES, CheckLevel.OFF);
+		File jarPath = new File(workDir, "closure.jar");
+		FileUtils.copyURLToFile(
+			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20170910.jar"),
+			jarPath);
 
-		// Set default externs so that commonly used primitives are protected
-		List<SourceFile> externs = Lists.newArrayList(CommandLineRunner.getDefaultExterns());
+		List<String> args = Lists.newArrayList();
+		args.add("java");
+		add(args, "-jar", jarPath.getAbsolutePath());
+
+		add(args, "--compilation_level", compilationLevel.name());
+
+		add(args, "--language_in", "ECMASCRIPT5");
+
+		add(args, "--jscomp_off", "checkVars");
+		add(args, "--jscomp_off", "checkTypes");
+
 		for (File customExtern : customExterns) {
-			externs.add(SourceFile.fromFile(customExtern, Charsets.UTF_8));
+			add(args, "--externs", customExtern.getAbsolutePath());
 		}
+		add(args, "--env", "BROWSER");
+		add(args, "--js", inputFile.getAbsolutePath());
+		add(args, "--create_source_map", outputSourceMapFile.getAbsolutePath());
+		add(args, "--js_output_file", outputFile.getAbsolutePath());
 
-		// COMPILE
-		logger.info("Closure compile with externs: {}", externs);
-		Result res = compiler.compile(externs, Arrays.asList(js), options);
-		Integer retCode = Math.min(res.errors.length, 0x7f);
-		if (retCode != 0) {
-			return retCode;
-		}
+		Process process = new ProcessBuilder(args)
+			.inheritIO()
+			.start();
 
-		// append results
-		obfuscated.append(compiler.toSource());
-		compiler.getSourceMap().appendTo(sourceMap, sourceMapName);
-
-		return 0;
+		int retCode = process.waitFor();
+		return retCode;
 	}
 }

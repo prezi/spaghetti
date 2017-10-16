@@ -205,7 +205,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	}
 
 	@TaskAction
-	public final ModuleBundle bundle() throws IOException {
+	public final ModuleBundle bundle() throws IOException, InterruptedException {
 		ModuleConfiguration config = readConfig(getOriginalDefinitionOrOverride());
 
 		String inputContents = "";
@@ -228,7 +228,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		return createBundle(config, processedJavaScript, sourceMapText, getResourcesDirectory());
 	}
 
-	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException, InterruptedException {
 		ModuleNode module = config.getLocalModule();
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);

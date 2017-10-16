@@ -35,9 +35,11 @@ task generateGrammar(type: JavaExec) {
 
 processResources {
 	inputs.property "version", version
-	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-			version: version
-	])
+	filesMatching('*.properties') {
+		filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+				version: version
+		])
+	}
 }
 
 idea.module {

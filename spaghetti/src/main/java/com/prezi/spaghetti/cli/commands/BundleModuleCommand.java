@@ -153,7 +153,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		return 0;
 	}
 
-	private ObfuscationResult obfuscate(ModuleConfiguration config, String javaScript, String sourceMap) throws IOException {
+	private ObfuscationResult obfuscate(ModuleConfiguration config, String javaScript, String sourceMap) throws IOException, InterruptedException {
 		if (workDir == null) {
 			workDir = Files.createTempDir();
 		}

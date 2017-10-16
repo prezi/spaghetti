@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.javascript.jscomp.CompilationLevel;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 
@@ -50,9 +49,9 @@ public class ObfuscationParameters {
 
 	private static CompilationLevel convertCompilationLevel(String compilationLevel) {
 		if (compilationLevel.equals("advanced")) {
-			return CompilationLevel.ADVANCED_OPTIMIZATIONS;
+			return CompilationLevel.ADVANCED;
 		} else if (compilationLevel.equals("simple")) {
-			return CompilationLevel.SIMPLE_OPTIMIZATIONS;
+			return CompilationLevel.SIMPLE;
 		} else if (compilationLevel.equals("whitespace")) {
 			return CompilationLevel.WHITESPACE_ONLY;
 		} else {

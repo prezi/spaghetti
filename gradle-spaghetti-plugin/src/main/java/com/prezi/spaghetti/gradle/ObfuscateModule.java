@@ -46,7 +46,7 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 	}
 
 	@Override
-	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException, InterruptedException {
 
 		JavaScriptBundleProcessor processor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
 		ModuleObfuscator obfuscator = new ModuleObfuscator(processor.getProtectedSymbols());
