@@ -22,7 +22,9 @@ public class AmdModuleWrapper extends AbstractModuleWrapper {
 		StringBuilder result = new StringBuilder();
 
 		result
-				.append("define([\"")
+				.append("define(")
+				.append("\"" + params.name + "\",")
+				.append("[\"")
 				.append(Joiner.on("\",\"").join(Iterables.concat(
 						Arrays.asList("require"),
 						params.externalDependencies.values(),
