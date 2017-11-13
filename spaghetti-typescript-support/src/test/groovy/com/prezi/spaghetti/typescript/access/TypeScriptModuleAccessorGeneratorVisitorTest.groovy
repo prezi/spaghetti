@@ -40,6 +40,7 @@ module com.example.test {
 
 }
 export var TestModule:TestModule;
+com.example.test = Spaghetti["dependencies"]["com.example.test"];
 """
 	}
 
@@ -78,6 +79,7 @@ module com.example.test {
 
 }
 export var TestModule:TestModule;
+com.example.test = Spaghetti["dependencies"]["com.example.test"]["module"];
 """
 	}
 }

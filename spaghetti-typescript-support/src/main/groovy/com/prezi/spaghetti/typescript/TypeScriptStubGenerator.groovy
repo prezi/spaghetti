@@ -21,7 +21,7 @@ class TypeScriptStubGenerator extends AbstractStubGenerator {
 					contents += new TypeScriptInterfaceStubGeneratorVisitor().visit(type)
 				}
 			}
-			TypeScriptUtils.createSourceFile(header, module, module.alias + "Stubs", outputDirectory, contents, null)
+			TypeScriptUtils.createSourceFile(header, module, module.alias + "Stubs", outputDirectory, contents)
 		}
 	}
 }

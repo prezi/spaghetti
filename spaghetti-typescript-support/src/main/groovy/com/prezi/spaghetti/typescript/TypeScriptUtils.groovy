@@ -3,16 +3,13 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.ModuleNode
 
 final class TypeScriptUtils {
-	public static File createSourceFile(String header, ModuleNode module, String name, File outputDirectory, String contents, String postNamespaceContent) {
+	public static File createSourceFile(String header, ModuleNode module, String name, File outputDirectory, String contents) {
 		def namespace = module.name
 		if (namespace)
 		{
 			def namespaceContent = "module ${namespace} {\n"
 			namespaceContent += contents
 			namespaceContent += "}"
-			if (postNamespaceContent != null) {
-				namespaceContent += postNamespaceContent
-			}
 
 			def packageDir = createNamespacePath(outputDirectory, namespace)
 			packageDir.mkdirs()
