@@ -2,6 +2,7 @@ package com.prezi.spaghetti.typescript.access
 
 import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
+import spock.lang.Ignore
 
 class TypeScriptModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate UMD"() {
@@ -38,7 +39,7 @@ module com.example.test {
 	returnT<T>(t:T):com.example.test.MyInterface<T>;
 
 }
-export var TestModule:TestModule = Spaghetti["dependencies"]["com.example.test"];
+export var TestModule:TestModule;
 """
 	}
 
@@ -76,7 +77,7 @@ module com.example.test {
 	returnT<T>(t:T):com.example.test.MyInterface<T>;
 
 }
-export var TestModule:TestModule = Spaghetti["dependencies"]["com.example.test"]["module"];
+export var TestModule:TestModule;
 """
 	}
 }

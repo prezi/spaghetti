@@ -1,21 +1,25 @@
-declare class Spaghetti {
-    /**
-     * Returns the module version.
-     */
-    public static getModuleVersion():string;
+interface Spaghetti {
+	[s: string]: any;
 
-    /**
-     * Returns the Spaghetti version used to build the module.
-     */
-    public static getSpaghettiVersion():string;
+	/**
+	 * Returns the module version.
+	 */
+	getModuleVersion():string;
 
-    /**
-   	 * Returns the name of the module.
-   	 */
-    public static getModuleName():string;
+	/**
+	 * Returns the Spaghetti version used to build the module.
+	 */
+	getSpaghettiVersion():string;
 
-    /**
-   	 * Returns a URL pointing to this module's given resource.
-   	 */
-    public static getResourceUrl(resource:string):string;
+	/**
+	 * Returns the name of the module.
+	 */
+	getModuleName():string;
+
+	/**
+	 * Returns a URL pointing to this module's given resource.
+	 */
+	getResourceUrl(resource:string):string;
 }
+
+declare var Spaghetti: Spaghetti;

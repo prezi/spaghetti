@@ -11,7 +11,7 @@ class SymbolCollectVisitorTest extends Specification {
 		def result = visit "module prezi.test.tibor as Tibor {}"
 
 		expect:
-		result == []
+		result == ["Tibor"]
 	}
 
 	def "interface methods"() {
@@ -22,7 +22,7 @@ class SymbolCollectVisitorTest extends Specification {
 }
 """
 		expect:
-		result == ["add"]
+		result == ["Tibor", "add"]
 	}
 
 	def "if same method is found twice, only one symbol should be found"() {
@@ -35,7 +35,7 @@ class SymbolCollectVisitorTest extends Specification {
 }
 """
 		expect:
-		result == ["add", "sub"]
+		result == ["Tibor", "add", "sub"]
 	}
 
 	def "struct properties and methods are found"() {
@@ -48,7 +48,7 @@ class SymbolCollectVisitorTest extends Specification {
 }
 """
 		expect:
-		result == ["add", "alpha", "beta"]
+		result == ["Tibor", "add", "alpha", "beta"]
 	}
 
 	def "constants are found"() {
@@ -60,7 +60,7 @@ class SymbolCollectVisitorTest extends Specification {
 }
 """
 		expect:
-		result == ["Constants", "alpha", "beta"]
+		result == ["Constants", "Tibor", "alpha", "beta"]
 	}
 
 	def "enum values are found"() {
@@ -72,7 +72,7 @@ class SymbolCollectVisitorTest extends Specification {
 }
 """
 		expect:
-		result == ["LeEnum", "alpha", "beta"]
+		result == ["LeEnum", "Tibor", "alpha", "beta"]
 	}
 
 	private List<String> visit(String what) {

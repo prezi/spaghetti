@@ -18,7 +18,8 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 ${
 	node.methods*.accept(new MethodVisitor(node)).join("") +
 	node.accept(new QualifiedConstVisitor(node)) +
-	node.accept(new QualifiedEnumVisitor(node))
+	node.accept(new QualifiedEnumVisitor(node)) + 
+	"\tpublic var ${node.alias} = this;\n"
 }}
 """
 	}

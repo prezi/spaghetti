@@ -22,7 +22,7 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGenerat
 """export interface ${node.alias} {
 ${node.methods*.accept(new MethodVisitor()).join("")}
 }
-export var ${node.alias}:${node.alias} = ${GeneratorUtils.createModuleAccessor(node.name, format)};
+export var ${node.alias}:${node.alias};
 """
 	}
 
