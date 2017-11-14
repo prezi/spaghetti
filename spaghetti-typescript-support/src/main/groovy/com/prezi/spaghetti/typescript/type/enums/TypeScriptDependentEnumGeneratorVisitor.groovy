@@ -17,7 +17,7 @@ class TypeScriptDependentEnumGeneratorVisitor extends AbstractTypeScriptGenerato
 
 	@Override
 	String visitEnumNode(EnumNode node) {
-		"""export declare enum ${node.name} {
+		"""export enum ${node.name} {
 ${node.values*.accept(new EnumValueVisitor(node.name)).join(",\n")}
 }
 """
@@ -32,7 +32,8 @@ ${node.values*.accept(new EnumValueVisitor(node.name)).join(",\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\t${node.name}"
+			String moduleAccessor = GeneratorUtils.createModuleAccessor(foreignModuleName, format)
+			return "\t${node.name} = ${moduleAccessor}[\"${enumName}\"][\"${node.name}\"]"
 		}
 	}
 }

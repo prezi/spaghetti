@@ -15,29 +15,13 @@ enum MyEnum {
 	BELA
 }
 """
-	def dependentExpected = """export declare enum MyEnum {
-	/**
-	 * Alma.
-	 */
-	ALMA,
-	BELA
-}
-"""
-	def localExpected = """export enum MyEnum {
-	/**
-	 * Alma.
-	 */
-	ALMA = 0,
-	BELA = 1
-}
-"""
 
 	def "generate local definition"() {
 
 		def result = parseAndVisitEnum(definition, new TypeScriptEnumGeneratorVisitor())
 
 		expect:
-		result == localExpected
+		result == expectedWith("0", "1")
 	}
 
 	def "generate proxied definition for UMD format"() {
@@ -45,7 +29,9 @@ enum MyEnum {
 		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test", ModuleFormat.UMD))
 
 		expect:
-		result == dependentExpected
+		result == expectedWith(
+				"Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"ALMA\"]",
+				"Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"BELA\"]")
 	}
 
 	def "generate proxied definition for wrapperless format"() {
@@ -53,6 +39,19 @@ enum MyEnum {
 		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test", ModuleFormat.Wrapperless))
 
 		expect:
-		result == dependentExpected
+		result == expectedWith(
+				"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"ALMA\"]",
+				"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"BELA\"]")
+	}
+
+	private static String expectedWith(String first, String second) {
+		return """export enum MyEnum {
+	/**
+	 * Alma.
+	 */
+	ALMA = ${first},
+	BELA = ${second}
+}
+"""
 	}
 }

@@ -19,11 +19,10 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGenerat
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
-"""export interface ${node.alias} {
+		"""export interface ${node.alias} {
 ${node.methods*.accept(new MethodVisitor()).join("")}
 }
-export var ${node.alias}:${node.alias};
-${node.name} = ${GeneratorUtils.createModuleAccessor(node.name, format)};
+export var ${node.alias}:${node.alias} = ${GeneratorUtils.createModuleAccessor(node.name, format)};
 """
 	}
 
