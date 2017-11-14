@@ -2,7 +2,6 @@ package com.prezi.spaghetti.typescript.access
 
 import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.generator.ModuleGeneratorSpecification
-import spock.lang.Ignore
 
 class TypeScriptModuleAccessorGeneratorVisitorTest extends ModuleGeneratorSpecification {
 	def "generate UMD"() {
