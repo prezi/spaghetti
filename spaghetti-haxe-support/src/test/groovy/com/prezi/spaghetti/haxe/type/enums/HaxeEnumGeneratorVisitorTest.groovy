@@ -54,10 +54,12 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	public static var GEZA = new MyEnum(${third});
 
 	static var _values = {
+		#if js
 		var thisValue = MyEnum;
 		untyped __js__("thisValue[thisValue.ALMA] = 'ALMA'");
 		untyped __js__("thisValue[thisValue.BELA] = 'BELA'");
 		untyped __js__("thisValue[thisValue.GEZA] = 'GEZA'");
+		#end
 		[Std.string(ALMA) => ALMA, Std.string(BELA) => BELA, Std.string(GEZA) => GEZA];
 	}
 	static var _names = [Std.string(ALMA) => "ALMA", Std.string(BELA) => "BELA", Std.string(GEZA) => "GEZA"];
