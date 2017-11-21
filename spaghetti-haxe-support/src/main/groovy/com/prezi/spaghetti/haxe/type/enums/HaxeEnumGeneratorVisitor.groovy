@@ -15,8 +15,10 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 ${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 
 	static var _values = {
+		#if js
 		var thisValue = ${enumName};
 		${node.values.collect { entry -> "untyped __js__(\"thisValue[thisValue.${entry.name}] = '${entry.name}'\");" }.join("\n\t\t")}
+		#end
 		[${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
 	}
 	static var _names = [${node.values.collect { entry -> "Std.string(${entry.name}) => \"${entry.name}\"" }.join(", ")}];
