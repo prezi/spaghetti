@@ -110,7 +110,7 @@ public class ClosureCompiler {
 	private static File copyJarFile(File workDir) throws IOException {
 		File jarPath = new File(workDir, "closure.jar");
 		FileUtils.copyURLToFile(
-			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-20171203.jar"),
+			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20171203.jar"),
 			jarPath
 		);
 
