@@ -78,7 +78,7 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
-	public static int concat(File workDir, File outputFile, Set<File> inputSources, Set<File> customExterns, CompilationLevel compilationLevel) {
+	public static int concat(File workDir, File outputFile, Set<File> inputSources, Set<File> customExterns, CompilationLevel compilationLevel) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir);
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -107,7 +107,7 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
-	private static File copyJarFile(File workDir) {
+	private static File copyJarFile(File workDir) throws IOException {
 		File jarPath = new File(workDir, "closure.jar");
 		FileUtils.copyURLToFile(
 			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-20171203.jar"),
