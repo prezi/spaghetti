@@ -10,6 +10,7 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModule;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleData;
 import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
+import com.prezi.spaghetti.typescript.gradle.internal.ClosureConcatenateTask;
 import com.prezi.spaghetti.typescript.gradle.internal.DefinitionAwareTypeScriptCompileDtsTask;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
 import com.prezi.typescript.gradle.TypeScriptBasePlugin;
@@ -82,17 +83,20 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			}
 		});
 
+		project.getPlugins().apply(TypeScriptPlugin.class);
+
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
 				addCompileDtsTask(project, binary);
-				registerSpaghettiModule(project, binary, false);
+				ClosureConcatenateTask concatTask = addConcatenateTask(project, binary);
+				registerSpaghettiModule(project, binary, concatTask, false);
 			}
 		});
 		typeScriptExtension.getBinaries().withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
-				registerSpaghettiModule(project, testBinary, true);
+				registerSpaghettiModule(project, testBinary, null, true);
 			}
 		});
 
@@ -105,17 +109,6 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 					sourceDirs.add(sourceSet.getSource().getSrcDirs());
 				}
 				return Iterables.concat(sourceDirs);
-			}
-		});
-
-		project.getPlugins().apply(TypeScriptPlugin.class);
-
-		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
-			@Override
-			public void execute(final TypeScriptBinary binary) {
-				// compileDts task should depend on compile task so any dependencies added later
-				// to the compile task don't have to also be added to the compileDts task.
-				binary.getCompileDtsTask().dependsOn(binary.getCompileTask());
 			}
 		});
 	}
@@ -150,6 +143,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		});
 		compileDtsTask.source(binary.getConfiguration());
 		compileDtsTask.dependsOn(binary.getSource());
+		compileDtsTask.dependsOn(binary.getCompileTask());
 		compileDtsTask.getConventionMapping().map("outputDir", new Callable<File>() {
 			@Override
 			public File call() throws Exception {
@@ -162,10 +156,34 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		logger.debug("Added compile dts task {} for binary {} in {}", compileDtsTask, binary, project.getPath());
 	}
 
-	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final boolean testing) {
+	private ClosureConcatenateTask addConcatenateTask(final Project project, final TypeScriptBinary binary) {
+		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
+		final ClosureConcatenateTask concatTask = project.getTasks().create(
+			namingScheme.getTaskName("concatenate"),
+			ClosureConcatenateTask.class);
+		concatTask.setDescription("Concatenates " + binary);
+		concatTask.dependsOn(binary.getCompileTask());
+		concatTask.setSource(project.fileTree(binary.getCompileTask().getOutputDir()));
+		concatTask.getConventionMapping().map("workDir", new Callable<File>() {
+			@Override
+			public File call() throws Exception {
+				return project.file(project.getBuildDir() + "/closure-concat/"
+						+ namingScheme.getOutputDirectoryBase() + "/");
+			}
+		});
+		binary.builtBy(concatTask);
+		concatTask.setEnabled(false);
+		return concatTask;
+	}
+
+
+	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final ClosureConcatenateTask concatTask, final boolean testing) {
 		Callable<File> javaScriptFile = new Callable<File>() {
 			@Override
 			public File call() throws Exception {
+				if (concatTask != null && concatTask.isEnabled()) {
+					return concatTask.getOutputFile();
+				}
 				return binary.getCompileTask().getConcatenatedOutputFile();
 			}
 		};
