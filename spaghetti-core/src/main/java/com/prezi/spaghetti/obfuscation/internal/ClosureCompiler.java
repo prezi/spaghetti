@@ -49,10 +49,7 @@ public class ClosureCompiler {
 
 	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Set<File> customExterns) throws IOException, InterruptedException {
 
-		File jarPath = new File(workDir, "closure.jar");
-		FileUtils.copyURLToFile(
-			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20170910.jar"),
-			jarPath);
+		File jarPath = copyJarFile(workDir);
 
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -79,5 +76,44 @@ public class ClosureCompiler {
 
 		int retCode = process.waitFor();
 		return retCode;
+	}
+
+	public static int concat(File workDir, File outputFile, Set<File> inputSources, Set<File> customExterns, CompilationLevel compilationLevel) {
+		File jarPath = copyJarFile(workDir);
+		List<String> args = Lists.newArrayList();
+		args.add("java");
+		add(args, "-jar", jarPath.getAbsolutePath());
+		args.add("--assume_function_wrapper");
+		args.add("--process_common_js_modules");
+		add(args, "--module_resolution", "NODE");
+		add(args, "--compilation_level", compilationLevel.name());
+		add(args, "--language_in", "ECMASCRIPT5");
+		add(args, "--language_out", "ECMASCRIPT5");
+		add(args, "--js_output_file", outputFile.getAbsolutePath());
+
+		for (File inputSource : inputSources) {
+			add(args, "--js", inputSource.getAbsolutePath());
+		}
+
+		for (File customExtern : customExterns) {
+			add(args, "--externs", customExtern.getAbsolutePath());
+		}
+
+		Process process = new ProcessBuilder(args)
+			.inheritIO()
+			.start();
+
+		int retCode = process.waitFor();
+		return retCode;
+	}
+
+	private static File copyJarFile(File workDir) {
+		File jarPath = new File(workDir, "closure.jar");
+		FileUtils.copyURLToFile(
+			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-20171203.jar"),
+			jarPath
+		);
+
+		return jarPath;
 	}
 }
