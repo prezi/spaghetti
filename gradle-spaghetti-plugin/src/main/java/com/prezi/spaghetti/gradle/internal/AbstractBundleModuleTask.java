@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
-public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
+public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask implements ExternalDependencyAwareTask {
 	private File inputFile;
 	private File outputDirectory;
 	private String sourceBaseUrl;
@@ -193,9 +193,6 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	}
 	public void externalDependencies(Map<String, String> externalDependencies) {
 		this.externalDependencies.putAll(externalDependencies);
-	}
-	public void externalDependencies(Set<String> externalDependencies) {
-		externalDependencies(BundleUtils.parseExternalDependencies(externalDependencies));
 	}
 	public void externalDependency(String importName, String dependencyName) {
 		externalDependencies(ImmutableSortedMap.of(importName, dependencyName));
