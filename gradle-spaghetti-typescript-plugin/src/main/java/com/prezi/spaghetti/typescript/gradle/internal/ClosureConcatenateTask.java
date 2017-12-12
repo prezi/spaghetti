@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceTask;
 import org.gradle.api.tasks.TaskAction;
@@ -15,6 +16,7 @@ import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
 
 public class ClosureConcatenateTask extends SourceTask {
 	private File workDir;
+	private File sourceDir;
 
 	@Input
 	public File getWorkDir() {
@@ -23,6 +25,15 @@ public class ClosureConcatenateTask extends SourceTask {
 
 	public void setWorkDir(File dir) {
 		workDir = dir;
+	}
+
+	@InputDirectory
+	public File getSourceDir() {
+		return sourceDir;
+	}
+
+	public void setSourceDir(File dir) {
+		sourceDir = dir;
 	}
 
 	@OutputFile
@@ -35,11 +46,15 @@ public class ClosureConcatenateTask extends SourceTask {
 		File workDir = getWorkDir();
 		FileUtils.deleteQuietly(workDir);
 		FileUtils.forceMkdir(workDir);
+		File jsFilesDir = new File(workDir, "js");
+		FileUtils.forceMkdir(jsFilesDir);
+		FileUtils.copyDirectory(getSourceDir(), jsFilesDir);
+
 
 		ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
-			getSource().getFiles(),
+			FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true),
 			Sets.<File>newHashSet(),
 			CompilationLevel.SIMPLE);
 	}

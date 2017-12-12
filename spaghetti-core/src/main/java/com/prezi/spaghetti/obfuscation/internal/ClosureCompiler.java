@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * lineLengthThreshold = 1 forces closure to insert a newline in the
@@ -48,7 +48,7 @@ public class ClosureCompiler {
 		args.add(b);
 	}
 
-	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Set<File> customExterns) throws IOException, InterruptedException {
+	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Collection<File> customExterns) throws IOException, InterruptedException {
 
 		File jarPath = copyJarFile(workDir);
 
@@ -80,7 +80,7 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
-	public static int concat(File workDir, File outputFile, Set<File> inputSources, Set<File> customExterns, CompilationLevel compilationLevel) throws IOException, InterruptedException   {
+	public static int concat(File workDir, File outputFile, Collection<File> inputSources, Collection<File> customExterns, CompilationLevel compilationLevel) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir);
 		List<String> args = Lists.newArrayList();
 		args.add("java");

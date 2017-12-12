@@ -163,14 +163,11 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			ClosureConcatenateTask.class);
 		concatTask.setDescription("Concatenates " + binary);
 		concatTask.dependsOn(binary.getCompileTask());
+		concatTask.setSourceDir(binary.getCompileTask().getOutputDir());
 		concatTask.setSource(project.fileTree(binary.getCompileTask().getOutputDir()));
-		concatTask.getConventionMapping().map("workDir", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return project.file(project.getBuildDir() + "/closure-concat/"
-						+ namingScheme.getOutputDirectoryBase() + "/");
-			}
-		});
+		concatTask.setWorkDir(
+				project.file(project.getBuildDir() + "/closure-concat/"
+					+ namingScheme.getOutputDirectoryBase() + "/"));
 		binary.builtBy(concatTask);
 		concatTask.setEnabled(false);
 		return concatTask;
