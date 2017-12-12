@@ -50,12 +50,15 @@ public class ClosureConcatenateTask extends SourceTask {
 		FileUtils.forceMkdir(jsFilesDir);
 		FileUtils.copyDirectory(getSourceDir(), jsFilesDir);
 
-
-		ClosureCompiler.concat(
+		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
 			FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true),
 			Sets.<File>newHashSet(),
 			CompilationLevel.SIMPLE);
+
+		if (exitValue != 0) {
+			throw new RuntimeException("Closure Compiler return an error code: " + exitValue);
+		}
 	}
 }
