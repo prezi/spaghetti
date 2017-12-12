@@ -18,6 +18,7 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"compileDtsForJs",
 				"compileJs",
 				"compileTestJs",
+				"concatenateJs",
 				"generateHeaders",
 				"generateStubs",
 				"generateTestHeaders",

@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.obfuscation.internal;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
@@ -70,6 +71,7 @@ public class ClosureCompiler {
 		add(args, "--create_source_map", outputSourceMapFile.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
 
+		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
 			.inheritIO()
 			.start();
@@ -99,6 +101,7 @@ public class ClosureCompiler {
 			add(args, "--externs", customExtern.getAbsolutePath());
 		}
 
+		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
 			.inheritIO()
 			.start();
