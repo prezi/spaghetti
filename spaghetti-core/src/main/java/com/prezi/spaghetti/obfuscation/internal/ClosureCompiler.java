@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.obfuscation.internal;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
@@ -21,7 +22,7 @@ import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * lineLengthThreshold = 1 forces closure to insert a newline in the
@@ -47,12 +48,9 @@ public class ClosureCompiler {
 		args.add(b);
 	}
 
-	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Set<File> customExterns) throws IOException, InterruptedException {
+	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Collection<File> customExterns) throws IOException, InterruptedException {
 
-		File jarPath = new File(workDir, "closure.jar");
-		FileUtils.copyURLToFile(
-			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20170910.jar"),
-			jarPath);
+		File jarPath = copyJarFile(workDir);
 
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -73,11 +71,52 @@ public class ClosureCompiler {
 		add(args, "--create_source_map", outputSourceMapFile.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
 
+		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
 			.inheritIO()
 			.start();
 
 		int retCode = process.waitFor();
 		return retCode;
+	}
+
+	public static int concat(File workDir, File outputFile, Collection<File> inputSources, Collection<File> customExterns, CompilationLevel compilationLevel) throws IOException, InterruptedException   {
+		File jarPath = copyJarFile(workDir);
+		List<String> args = Lists.newArrayList();
+		args.add("java");
+		add(args, "-jar", jarPath.getAbsolutePath());
+		args.add("--assume_function_wrapper");
+		args.add("--process_common_js_modules");
+		add(args, "--module_resolution", "NODE");
+		add(args, "--compilation_level", compilationLevel.name());
+		add(args, "--language_in", "ECMASCRIPT5");
+		add(args, "--language_out", "ECMASCRIPT5");
+		add(args, "--js_output_file", outputFile.getAbsolutePath());
+
+		for (File inputSource : inputSources) {
+			add(args, "--js", inputSource.getAbsolutePath());
+		}
+
+		for (File customExtern : customExterns) {
+			add(args, "--externs", customExtern.getAbsolutePath());
+		}
+
+		logger.info("Executing: {}", Joiner.on(" ").join(args));
+		Process process = new ProcessBuilder(args)
+			.inheritIO()
+			.start();
+
+		int retCode = process.waitFor();
+		return retCode;
+	}
+
+	private static File copyJarFile(File workDir) throws IOException {
+		File jarPath = new File(workDir, "closure.jar");
+		FileUtils.copyURLToFile(
+			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20171203.jar"),
+			jarPath
+		);
+
+		return jarPath;
 	}
 }
