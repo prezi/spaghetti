@@ -2,18 +2,22 @@ package com.prezi.spaghetti.gradle.internal;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.gradle.api.Task;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
+
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.gradle.NeedsTypeScriptCompilerSpaghettiTask;
 import com.prezi.spaghetti.tsast.TypeScriptAstParserException;
 import com.prezi.spaghetti.tsast.TypeScriptAstParserService;
 
 public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpaghettiTask, NeedsTypeScriptCompilerSpaghettiTask {
-    private File definition = null;
+    private DefinitionFile definition = null;
     private File tsCompilerPath = null;
 
     public VerifyDtsTask() {
@@ -21,11 +25,11 @@ public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpag
 
         this.onlyIf(new Spec<Task>() {
             public boolean isSatisfiedBy(Task task) {
-                File def = ((VerifyDtsTask)task).getDefinition();
+                DefinitionFile def = ((VerifyDtsTask)task).getDefinition();
                 if (def == null) {
                     return false;
                 } else {
-                    String path = def.getPath();
+                    String path = def.getFile().getPath();
                     return path.endsWith(".ts");
                 }
             }
@@ -42,12 +46,17 @@ public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpag
     }
 
     @InputFile
-    public File getDefinition() {
+    public File getDefinitionFile() {
+        return getDefinition().getFile();
+    }
+
+    @Input
+    public DefinitionFile getDefinition() {
         return definition;
     }
 
-    public void setDefinition(Object def) {
-        this.definition = getProject().file(def);
+    public void setDefinition(DefinitionFile def) {
+        this.definition = def;
     }
 
 	@InputDirectory
@@ -66,7 +75,7 @@ public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpag
             TypeScriptAstParserService.verifyModuleDefinition(
                 workDir,
                 getCompilerPath(),
-                getDefinition(),
+                getDefinition().getFile(),
                 getLogger());
         } catch (TypeScriptAstParserException e) {
             for (String line: e.getOutput()) {

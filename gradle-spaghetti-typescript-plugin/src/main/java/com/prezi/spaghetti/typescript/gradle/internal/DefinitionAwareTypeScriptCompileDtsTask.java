@@ -10,26 +10,28 @@ import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.Task;
 import org.gradle.api.specs.Spec;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.TaskAction;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.typescript.gradle.TypeScriptCompileDts;
 
 public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDts implements DefinitionAwareSpaghettiTask {
 
-    private File definition = null;
+    private DefinitionFile definition = null;
 
     public DefinitionAwareTypeScriptCompileDtsTask() {
         this.onlyIf(new Spec<Task>() {
             public boolean isSatisfiedBy(Task task) {
-                File def = ((DefinitionAwareTypeScriptCompileDtsTask)task).getDefinition();
+                DefinitionFile def = ((DefinitionAwareTypeScriptCompileDtsTask)task).getDefinition();
                 if (def == null) {
                     return false;
                 } else {
-                    String path = def.getPath();
+                    String path = def.getFile().getPath();
                     return path.endsWith(".ts") && !path.endsWith(".d.ts");
                 }
             }
@@ -37,12 +39,17 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
     }
 
     @InputFile
-    public File getDefinition() {
+    public File getDefinitionFile() {
+        return getDefinition().getFile();
+    }
+
+    @Input
+    public DefinitionFile getDefinition() {
         return definition;
     }
 
-    public void setDefinition(Object def) {
-        this.definition = getProject().file(def);
+    public void setDefinition(DefinitionFile def) {
+        this.definition = def;
     }
 
     @TaskAction
@@ -55,7 +62,7 @@ public class DefinitionAwareTypeScriptCompileDtsTask extends TypeScriptCompileDt
         List<String> command = compileCommand(tempDir, true, false);
         executeCommand(command);
 
-        String definitionFilename = FilenameUtils.removeExtension(getDefinition().getName());
+        String definitionFilename = FilenameUtils.removeExtension(getDefinition().getFile().getName());
         Collection<File> files = FileUtils.listFiles(tempDir, new NameFileFilter(definitionFilename + ".d.ts"), TrueFileFilter.TRUE);
         if (files.isEmpty()) {
             throw new RuntimeException(definitionFilename + ".d.ts is not found");

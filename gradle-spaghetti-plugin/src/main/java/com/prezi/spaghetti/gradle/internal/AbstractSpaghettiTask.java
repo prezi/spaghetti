@@ -3,6 +3,7 @@ package com.prezi.spaghetti.gradle.internal;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
@@ -91,10 +92,10 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		return dependentBundles;
 	}
 
-	public ModuleConfiguration readConfig(File definition) throws IOException {
+	public ModuleConfiguration readConfig(DefinitionFile definition) throws IOException {
 		ModuleDefinitionSource definitionSource;
 		try {
-			definitionSource = DefaultModuleDefinitionSource.fromFile(definition);
+			definitionSource = DefaultModuleDefinitionSource.fromFile(definition.getFile());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

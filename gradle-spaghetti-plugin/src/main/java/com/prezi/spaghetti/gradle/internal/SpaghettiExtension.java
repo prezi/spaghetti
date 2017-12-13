@@ -3,6 +3,8 @@ package com.prezi.spaghetti.gradle.internal;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.prezi.spaghetti.definition.DefinitionFile;
+import com.prezi.spaghetti.definition.internal.DefaultDefinitionFile;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryContainer;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryInternal;
 import com.prezi.spaghetti.gradle.internal.incubating.DefaultBinaryContainer;
@@ -40,7 +42,7 @@ public class SpaghettiExtension {
 	private String sourceBaseUrl;
 	private boolean publishTestArtifacts;
 	private Collection<Function<Void, Iterable<File>>> definitionSearchSourceDirProviders;
-	private File definition = null;
+	private DefinitionFile definition = null;
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
@@ -175,9 +177,10 @@ public class SpaghettiExtension {
 		return iterables;
 	}
 
-	public File getDefinition() {
+	public DefinitionFile getDefinition() {
 		if (this.definition == null) {
-			this.definition = findDefinition();
+			File file = findDefinition();
+			this.definition = new DefaultDefinitionFile(file, null);
 		}
 		return this.definition;
 	}

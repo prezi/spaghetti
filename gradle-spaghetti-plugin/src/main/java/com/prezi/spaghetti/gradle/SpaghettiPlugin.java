@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiGeneratedSourceSet;
 import com.prezi.spaghetti.gradle.internal.DefaultSpaghettiModuleData;
@@ -80,9 +81,9 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		resourcesTask.from(spaghettiResourceSet.getSource());
 
 		project.getTasks().withType(DefinitionAwareSpaghettiTask.class).all(new Action<DefinitionAwareSpaghettiTask>() {
-			private Callable<File> callable = new Callable<File>() {
+			private Callable<DefinitionFile> callable = new Callable<DefinitionFile>() {
 				@Override
-				public File call() throws Exception {
+				public DefinitionFile call() throws Exception {
 					return extension.getDefinition();
 				}
 			};
@@ -181,7 +182,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiStubs.builtBy(generateStubsTask);
 	}
 
-	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
+	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		BinaryNamingScheme namingScheme = new SpaghettiModuleNamingScheme(moduleName);
 
@@ -230,7 +231,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		});
 	}
 
-	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, Task verifyDtsTask) {
+	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies, Task verifyDtsTask) {
 		String bundleTaskName = namingScheme.getTaskName("bundle");
 		BundleModule bundleTask = project.getTasks().create(bundleTaskName, BundleModule.class);
 		bundleTask.setDescription("Bundles " + namingScheme.getDescription() + " module.");
@@ -238,7 +239,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		return bundleTask;
 	}
 
-	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, Task verifyDtsTask) {
+	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies, Task verifyDtsTask) {
 		String obfuscateTaskName = namingScheme.getTaskName("obfuscate");
 		ObfuscateModule obfuscateTask = project.getTasks().create(obfuscateTaskName, ObfuscateModule.class);
 		obfuscateTask.setDescription("Obfuscates " + namingScheme.getDescription() + " module.");
@@ -246,7 +247,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		return obfuscateTask;
 	}
 
-	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<File> definitionOverride, Collection<?> dependencies, Task verifyDtsTask, final String outputDir) {
+	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies, Task verifyDtsTask, final String outputDir) {
 		task.getConventionMapping().map("inputFile", javaScriptFile);
 		if (sourceMapFile != null) {
 			task.getConventionMapping().map("sourceMap", sourceMapFile);

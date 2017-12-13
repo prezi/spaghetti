@@ -2,6 +2,8 @@ package com.prezi.spaghetti.typescript.gradle;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.prezi.spaghetti.definition.DefinitionFile;
+import com.prezi.spaghetti.definition.internal.DefaultDefinitionFile;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
@@ -184,9 +186,9 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				return binary.getCompileTask().getConcatenatedOutputFile();
 			}
 		};
-		Callable<File> definitionOverride = new Callable<File>() {
+		Callable<DefinitionFile> definitionOverride = new Callable<DefinitionFile>() {
 			@Override
-			public File call() throws Exception {
+			public DefinitionFile call() throws Exception {
 				if (binary.getCompileDtsTask() == null) {
 					return null;
 				}
@@ -195,7 +197,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				if (files == null || files.length == 0) {
 					return null;
 				} else {
-					return files[0];
+					return new DefaultDefinitionFile(files[0], null);
 				}
 			}
 		};
