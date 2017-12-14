@@ -207,4 +207,47 @@ module test {
 
         return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
     }
+
+    def "commonJs with no import statements"() {
+        when:
+        def lines = runVerifyCommonJs("""
+export function foo(){};
+""")
+        then:
+        lines == []
+    }
+
+    def "commonJs with single import statement"() {
+        when:
+        def lines = runVerifyCommonJs("""
+import * as a from './b';
+export function foo(){};
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("missing export * from './b' statement")
+    }
+
+    def "commonJs with single import and export statement"() {
+        when:
+        def lines = runVerifyCommonJs("""
+import * as a from './b';
+export * from './b'
+""")
+        then:
+        lines == []
+    }
+
+    def runVerifyCommonJs(String content) {
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+
+        File definitionFile = new File(dir, "definition.d.ts");
+        FileUtils.write(definitionFile, content);
+
+        Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
+        File compilerPath = new File("build/typescript/node_modules/typescript");
+
+        return TypeScriptAstParserService.verifyCommonJsModuleDefinition(dir, compilerPath, definitionFile, logger);
+    }
 }

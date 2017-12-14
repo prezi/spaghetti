@@ -58,6 +58,34 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
+		lintCommonJs() {
+        const sourceFile = this.sourceFile;
+				const importDeclarations: Array<ts.ImportDeclaration> = [];
+				const exportModules: Array<string> = [];
+				ts.forEachChild(sourceFile, (node: ts.Node) => {
+					if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+						const importDeclaration = (<ts.ImportDeclaration>node);
+						if (importDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
+							importDeclarations.push(importDeclaration);
+						}
+					} else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+						const exportDeclaration = (<ts.ExportDeclaration>node);
+
+						if (exportDeclaration.moduleSpecifier != null &&
+								exportDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
+							const moduleText = exportDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
+							exportModules.push(moduleText);
+						}
+					}
+				});
+				importDeclarations.forEach((importDeclaration) => {
+					const moduleText = importDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
+					if (exportModules.indexOf(moduleText) == -1) {
+						this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
+					}
+				});
+		}
+
     lintVariableDeclaration(node: ts.VariableDeclaration) {
         if (node.type == null) {
             this.lintError("Variables without explicit types are not allowed.", node);
@@ -193,6 +221,17 @@ if (args[0] === "--collectExportedIdentifiers") {
     let sourceFile = getSourceFile(filename);
     let linter = new Linter(sourceFile);
     linter.lint();
+    if (linter.hasErrors()) {
+        linter.printErrors();
+        process.exit(1);
+    } else {
+        process.exit(0);
+    }
+} else if (args[0] === "--verifyCommonJsModuleDefinition") {
+    let filename = args[1];
+    let sourceFile = getSourceFile(filename);
+    let linter = new Linter(sourceFile);
+    linter.lintCommonJs();
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);
