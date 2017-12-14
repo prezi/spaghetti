@@ -58,33 +58,37 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
-		lintCommonJs() {
+    lintCommonJs() {
         const sourceFile = this.sourceFile;
-				const importDeclarations: Array<ts.ImportDeclaration> = [];
-				const exportModules: Array<string> = [];
-				ts.forEachChild(sourceFile, (node: ts.Node) => {
-					if (node.kind === ts.SyntaxKind.ImportDeclaration) {
-						const importDeclaration = (<ts.ImportDeclaration>node);
-						if (importDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
-							importDeclarations.push(importDeclaration);
-						}
-					} else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
-						const exportDeclaration = (<ts.ExportDeclaration>node);
+        const importDeclarations: Array<ts.ImportDeclaration> = [];
+        const exportModules: Array<string> = [];
+        ts.forEachChild(sourceFile, (node: ts.Node) => {
+            if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+                const importDeclaration = (<ts.ImportDeclaration>node);
+                if (importDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
+                    importDeclarations.push(importDeclaration);
+                }
+            } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+                const exportDeclaration = (<ts.ExportDeclaration>node);
 
-						if (exportDeclaration.moduleSpecifier != null &&
-								exportDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
-							const moduleText = exportDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
-							exportModules.push(moduleText);
-						}
-					}
-				});
-				importDeclarations.forEach((importDeclaration) => {
-					const moduleText = importDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
-					if (exportModules.indexOf(moduleText) == -1) {
-						this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
-					}
-				});
-		}
+                if (exportDeclaration.moduleSpecifier != null &&
+                    exportDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
+                    if (exportDeclaration.exportClause != null) {
+                        this.lintError(`named exports are not supported from relative modules: ${exportDeclaration.moduleSpecifier.getText()}`, exportDeclaration);
+                    } else {
+                        const moduleText = exportDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
+                        exportModules.push(moduleText);
+                    }
+                }
+            }
+        });
+        importDeclarations.forEach((importDeclaration) => {
+            const moduleText = importDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
+            if (exportModules.indexOf(moduleText) == -1) {
+                this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
+            }
+        });
+    }
 
     lintVariableDeclaration(node: ts.VariableDeclaration) {
         if (node.type == null) {

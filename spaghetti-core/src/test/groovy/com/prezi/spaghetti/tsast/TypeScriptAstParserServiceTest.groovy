@@ -238,6 +238,16 @@ export * from './b'
         lines == []
     }
 
+    def "commonJs with relative export statement and named exports"() {
+        when:
+        def lines = runVerifyCommonJs("""
+export { a } from './b'
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("named exports are not supported from relative modules: './b'");
+    }
+
     def runVerifyCommonJs(String content) {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
