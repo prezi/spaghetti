@@ -35,7 +35,7 @@ public final class ModuleConfigurationParser {
 	 * @param dependencies      the loaded bundles.
 	 * @return the parsed module configuration.
 	 */
-	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, ModuleBundleSet dependencies) {
+	public static ModuleConfiguration parse(ModuleDefinitionSource localModuleSource, String localNamespace, ModuleBundleSet dependencies) {
 		Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> directSources =
 			Collections2.transform(
 				dependencies.getDirectBundles(),
@@ -58,7 +58,7 @@ public final class ModuleConfigurationParser {
 					}
 				}
 			);
-		return parse(localModuleSource, directSources, transitiveSources);
+		return parse(localModuleSource, localNamespace, directSources, transitiveSources);
 	}
 
 	private static ModuleDefinitionSource makeModuleSource(ModuleBundle bundle) {
@@ -86,24 +86,28 @@ public final class ModuleConfigurationParser {
 	 */
 	public static ModuleConfiguration parse(
 			ModuleDefinitionSource localModuleSource,
+			String localNamespace,
 			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> directModuleSources,
 			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> transitiveModuleSources
 	) {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
 
-		Iterable<EntityWithModuleMetaData<ModuleParser>> localParsers = createParsersFor(
-				Collections.singleton((EntityWithModuleMetaData<ModuleDefinitionSource>)new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(localModuleSource, null)));
+		EntityWithModuleMetaData<ModuleParser> localParser = createParser(
+				new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(localModuleSource, null), localNamespace);
 		Iterable<EntityWithModuleMetaData<ModuleParser>> directParsers = createParsersFor(directModuleSources);
 		Iterable<EntityWithModuleMetaData<ModuleParser>> transitiveParsers = createParsersFor(transitiveModuleSources);
 
-		TypeResolver resolver = createResolverFor(Iterables.concat(localParsers, directParsers, transitiveParsers));
+		TypeResolver resolver = createResolverFor(Iterables.concat(
+			Collections.singleton(localParser),
+			directParsers,
+			transitiveParsers));
 
 		Set<EntityWithModuleMetaData<ModuleNode>> localModules = Sets.newLinkedHashSet();
 		Set<EntityWithModuleMetaData<ModuleNode>> directDependentModules = Sets.newLinkedHashSet();
 		Set<EntityWithModuleMetaData<ModuleNode>> transitiveDependentModules = Sets.newLinkedHashSet();
 		parseModules(resolver, transitiveParsers, transitiveDependentModules, parsedModules);
 		parseModules(resolver, directParsers, directDependentModules, parsedModules);
-		parseModules(resolver, localParsers, localModules, parsedModules);
+		parseModules(resolver, Collections.singleton(localParser), localModules, parsedModules);
 		if (localModules.isEmpty()) {
 			throw new IllegalStateException("No local module found");
 		}
@@ -120,14 +124,18 @@ public final class ModuleConfigurationParser {
 	private static Iterable<EntityWithModuleMetaData<ModuleParser>> createParsersFor(Iterable<EntityWithModuleMetaData<ModuleDefinitionSource>> sources) {
 		Set<EntityWithModuleMetaData<ModuleParser>> parsers = Sets.newLinkedHashSet();
 		for (EntityWithModuleMetaData<ModuleDefinitionSource> source : sources) {
-			parsers.add(
-				new DefaultEntityWithModuleMetaData<ModuleParser>(
-					ModuleParser.create(source.getEntity()),
-					source.getFormat()
-				)
-			);
+			parsers.add(createParser(source, null));
 		}
 		return parsers;
+	}
+
+	private static EntityWithModuleMetaData<ModuleParser> createParser(
+			EntityWithModuleMetaData<ModuleDefinitionSource> source,
+			String namespaceOverride) {
+		return new DefaultEntityWithModuleMetaData<ModuleParser>(
+			ModuleParser.create(source.getEntity(), namespaceOverride),
+			source.getFormat()
+		);
 	}
 
 	private static TypeResolver createResolverFor(Iterable<EntityWithModuleMetaData<ModuleParser>> parsers) {

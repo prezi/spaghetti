@@ -99,12 +99,12 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return readConfigInternal(definitionSource);
-	}
 
-	private ModuleConfiguration readConfigInternal(ModuleDefinitionSource localDefinition) throws IOException {
 		ModuleBundleSet bundles = lookupBundles();
-		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, bundles);
+		ModuleConfiguration config = ModuleConfigurationParser.parse(
+				definitionSource,
+				definition.getNamespaceOverride(),
+				bundles);
 		getLogger().info("Loaded configuration: {}", config);
 		return config;
 	}
