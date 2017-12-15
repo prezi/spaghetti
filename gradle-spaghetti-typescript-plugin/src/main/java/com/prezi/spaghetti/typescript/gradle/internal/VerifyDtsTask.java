@@ -1,4 +1,4 @@
-package com.prezi.spaghetti.gradle.internal;
+package com.prezi.spaghetti.typescript.gradle.internal;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import org.gradle.api.tasks.TaskAction;
 
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.gradle.NeedsTypeScriptCompilerSpaghettiTask;
+import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.tsast.TypeScriptAstParserException;
 import com.prezi.spaghetti.tsast.TypeScriptAstParserService;
 

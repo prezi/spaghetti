@@ -15,6 +15,7 @@ import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.typescript.gradle.internal.ClosureConcatenateTask;
 import com.prezi.spaghetti.typescript.gradle.internal.DefinitionAwareTypeScriptCompileDtsTask;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
+import com.prezi.spaghetti.typescript.gradle.internal.VerifyDtsTask;
 import com.prezi.typescript.gradle.TypeScriptBasePlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
@@ -206,6 +207,12 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, TypeScriptBinaryBase original) {
 				TypeScriptSpaghettiModule moduleBinary = new TypeScriptSpaghettiModule(namingScheme, data, original, testing);
 				moduleBinary.builtBy(original);
+
+				// Verify .d.ts module definition
+				String verifyTaskName = namingScheme.getTaskName("verifyDtsFor");
+				VerifyDtsTask verifyDtsTask = project.getTasks().create(verifyTaskName, VerifyDtsTask.class);
+				data.getBundleTask().dependsOn(verifyDtsTask);
+				data.getObfuscateTask().dependsOn(verifyDtsTask);
 				return moduleBinary;
 			}
 		});
