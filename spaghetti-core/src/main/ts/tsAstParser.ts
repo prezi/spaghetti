@@ -59,31 +59,31 @@ class Linter {
     }
 
     lintCommonJs() {
-        const sourceFile = this.sourceFile;
+        const relativePathMatch = /^\.?\.?\//;
         const importDeclarations: Array<ts.ImportDeclaration> = [];
         const exportModules: Array<string> = [];
-        ts.forEachChild(sourceFile, (node: ts.Node) => {
+        ts.forEachChild(this.sourceFile, (node: ts.Node) => {
             if (node.kind === ts.SyntaxKind.ImportDeclaration) {
                 const importDeclaration = (<ts.ImportDeclaration>node);
-                if (importDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
+                const moduleText = getImportExportText(importDeclaration)!;
+                if (moduleText.match(relativePathMatch) != null) {
                     importDeclarations.push(importDeclaration);
                 }
             } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
                 const exportDeclaration = (<ts.ExportDeclaration>node);
+                const moduleText = getImportExportText(exportDeclaration);
 
-                if (exportDeclaration.moduleSpecifier != null &&
-                    exportDeclaration.moduleSpecifier.getText().match(/^['"]\.?\.?\//) != null) {
+                if (moduleText != null && moduleText.match(relativePathMatch) != null) {
                     if (exportDeclaration.exportClause != null) {
-                        this.lintError(`named exports are not supported from relative modules: ${exportDeclaration.moduleSpecifier.getText()}`, exportDeclaration);
+                        this.lintError(`named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
                     } else {
-                        const moduleText = exportDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
                         exportModules.push(moduleText);
                     }
                 }
             }
         });
         importDeclarations.forEach((importDeclaration) => {
-            const moduleText = importDeclaration.moduleSpecifier.getText().replace(/['"]/g, '');
+            const moduleText = getImportExportText(importDeclaration)!;
             if (exportModules.indexOf(moduleText) == -1) {
                 this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
             }
@@ -210,6 +210,13 @@ function getSourceFile(filename: string) {
         process.exit(2);
     }
     return sourceFile;
+}
+
+function getImportExportText(declaration: ts.ImportDeclaration | ts.ExportDeclaration): string | null {
+    if (declaration.moduleSpecifier != null) {
+        return declaration.moduleSpecifier.getText().replace(/['"]/g, '');
+    }
+    return null;
 }
 
 const args = process.argv.slice(2);
