@@ -58,6 +58,38 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
+    lintCommonJs() {
+        const relativePathMatch = /^\.?\.?\//;
+        const importDeclarations: Array<ts.ImportDeclaration> = [];
+        const exportModules: Array<string> = [];
+        ts.forEachChild(this.sourceFile, (node: ts.Node) => {
+            if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+                const importDeclaration = (<ts.ImportDeclaration>node);
+                const moduleText = getImportExportText(importDeclaration)!;
+                if (moduleText.match(relativePathMatch) != null) {
+                    importDeclarations.push(importDeclaration);
+                }
+            } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+                const exportDeclaration = (<ts.ExportDeclaration>node);
+                const moduleText = getImportExportText(exportDeclaration);
+
+                if (moduleText != null && moduleText.match(relativePathMatch) != null) {
+                    if (exportDeclaration.exportClause != null) {
+                        this.lintError(`named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
+                    } else {
+                        exportModules.push(moduleText);
+                    }
+                }
+            }
+        });
+        importDeclarations.forEach((importDeclaration) => {
+            const moduleText = getImportExportText(importDeclaration)!;
+            if (exportModules.indexOf(moduleText) == -1) {
+                this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
+            }
+        });
+    }
+
     lintVariableDeclaration(node: ts.VariableDeclaration) {
         if (node.type == null) {
             this.lintError("Variables without explicit types are not allowed.", node);
@@ -180,6 +212,13 @@ function getSourceFile(filename: string) {
     return sourceFile;
 }
 
+function getImportExportText(declaration: ts.ImportDeclaration | ts.ExportDeclaration): string | null {
+    if (declaration.moduleSpecifier != null) {
+        return declaration.moduleSpecifier.getText().replace(/['"]/g, '');
+    }
+    return null;
+}
+
 const args = process.argv.slice(2);
 if (args[0] === "--collectExportedIdentifiers") {
     let filename = args[1];
@@ -193,6 +232,17 @@ if (args[0] === "--collectExportedIdentifiers") {
     let sourceFile = getSourceFile(filename);
     let linter = new Linter(sourceFile);
     linter.lint();
+    if (linter.hasErrors()) {
+        linter.printErrors();
+        process.exit(1);
+    } else {
+        process.exit(0);
+    }
+} else if (args[0] === "--verifyCommonJsModuleDefinition") {
+    let filename = args[1];
+    let sourceFile = getSourceFile(filename);
+    let linter = new Linter(sourceFile);
+    linter.lintCommonJs();
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);
