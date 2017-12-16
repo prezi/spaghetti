@@ -14,13 +14,14 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
 
     private static final Pattern moduleNamespacePattern =
         Pattern.compile("(?:declare\\s+)?(?:module|namespace)\\s+([a-zA-Z0-9_\\.]+)\\s+\\{");
+    private static final Pattern commonJsNamespacePattern =
+        Pattern.compile("export\\s+as\\s+namespace\\s+([a-zA-Z0-9_]+)\\s*;");
 
     public SimpleTypeScriptDefinitionParser(ModuleDefinitionSource source, String namespaceOverride) {
         super(null, createModuleNode(source, namespaceOverride));
     }
 
     private static DefaultModuleNode createModuleNode(ModuleDefinitionSource source, String namespaceOverride) {
-
         String namespace = namespaceOverride;
         if (namespace == null) {
             namespace = extractNamespaceFromContent(source);
@@ -36,12 +37,6 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
             DefaultLocation location = new DefaultLocation(deferredSource, 0, 0);
             return new DefaultModuleNode(location, namespace, name);
         } else {
-            Matcher m = moduleNamespacePattern.matcher(source.getContents());
-            boolean found = m.find();
-            if (!found || !m.group().startsWith("declare ")) {
-                throw new AstParserException(source, ": TypeScript definition must be prefixed with 'declare'");
-            }
-
             DefaultLocation location = new DefaultLocation(source, 0, 0);
             return new DefaultModuleNode(location, namespace, name);
         }
@@ -51,7 +46,11 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
         Matcher m = moduleNamespacePattern.matcher(source.getContents());
         boolean found = m.find();
         if (!found || m.groupCount() < 1) {
-            throw new AstParserException(source, ": Cannot find module namespace in TypeScript file");
+            m = commonJsNamespacePattern.matcher(source.getContents());
+            found = m.find();
+            if (!found || m.groupCount() < 1) {
+                throw new AstParserException(source, ": Cannot find module namespace in TypeScript file");
+            }
         }
         return m.group(1);
     }
