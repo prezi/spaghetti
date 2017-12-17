@@ -41,7 +41,9 @@ import javax.inject.Inject;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -64,7 +66,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 	public void apply(final Project project) {
 		// Spaghetti will be working with TypeScript, might as well set it
 		project.getPlugins().apply(SpaghettiBasePlugin.class);
-		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
+		final SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		spaghettiExtension.setLanguage("typescript");
 
 		project.getPlugins().apply(TypeScriptBasePlugin.class);
@@ -90,6 +92,13 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 		project.getPlugins().apply(TypeScriptPlugin.class);
 
+		final Callable<List<File>> getCommonsJsEntryPoints = new Callable<List<File>>() {
+			public List<File> call() {
+				File defFile = spaghettiExtension.getDefinition().getFile();
+				return Collections.singletonList(defFile);
+			}
+		};
+
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
@@ -97,7 +106,16 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				Callable<File> getDtsFile = null;
 				if (SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
 					binary.getCompileTask().setGenerateDeclarations(true);
+					binary.getCompileTask().getConventionMapping().map("commonJsEntryPoints", getCommonsJsEntryPoints);
+
 					concatTask = addConcatenateTask(project, binary);
+					concatTask.getConventionMapping().map("entryPoint", new Callable<String>() {
+						public String call() {
+							File defFile = spaghettiExtension.getDefinition().getFile();
+							return defFile.getName().replace(".d.ts", "").replace(".ts", "") + ".js";
+						}
+					});
+
 					final MergeDtsTask mergeDtsTask = addMergeDtsTask(project, binary);
 					getDtsFile = new Callable<File>() {
 						public File call() {

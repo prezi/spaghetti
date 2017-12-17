@@ -23,7 +23,6 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 	@Override
 	String processModuleJavaScript(JavaScriptBundleProcessorParameters params, String javaScript) {
 		def module = params.moduleConfiguration.localModule
-		def export = getModuleExport(module)
 
 		def content = ""
 		if (javaScript.startsWith(USE_STRICT)) {
@@ -32,7 +31,12 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		}
 		content += generateAccessors(params.moduleConfiguration)
 		content += TypeScriptEnumDenormalizer.denormalize(javaScript)
-		content += "\n" + "return ${export};" + "\n"
+		if (content.contains("var __spaghettiMainModule=")) {
+			content += "\n" + "return __spaghettiMainModule;" + "\n"
+		} else {
+			def export = getModuleExport(module)
+			content += "\n" + "return ${export};" + "\n"
+		}
 		return content
 	}
 
