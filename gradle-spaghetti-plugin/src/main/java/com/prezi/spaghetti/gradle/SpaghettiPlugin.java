@@ -129,13 +129,8 @@ public class SpaghettiPlugin implements Plugin<Project> {
 
 	private GenerateHeaders addGenerateHeadersTask(final Project project, String name, final String directoryName, FunctionalSourceSet functionalSourceSet) {
 		final GenerateHeaders generateHeadersTask = project.getTasks().create(name, GenerateHeaders.class);
-		generateHeadersTask.getConventionMapping().map("outputDirectory", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return new File(project.getBuildDir(), "spaghetti/" + directoryName);
-			}
-
-		});
+		generateHeadersTask.setOutputDirectory(
+			new File(project.getBuildDir(), "spaghetti/" + directoryName));
 		logger.debug("Created {}", generateHeadersTask);
 
 		// Create source set
