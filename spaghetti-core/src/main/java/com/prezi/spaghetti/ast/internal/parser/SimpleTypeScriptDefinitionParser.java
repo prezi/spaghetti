@@ -43,10 +43,10 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
     }
 
     private static String extractNamespaceFromContent(ModuleDefinitionSource source) {
-        Matcher m = moduleNamespacePattern.matcher(source.getContents());
+        Matcher m = commonJsNamespacePattern.matcher(source.getContents());
         boolean found = m.find();
         if (!found || m.groupCount() < 1) {
-            m = commonJsNamespacePattern.matcher(source.getContents());
+             m = moduleNamespacePattern.matcher(source.getContents());
             found = m.find();
             if (!found || m.groupCount() < 1) {
                 throw new AstParserException(source, ": Cannot find module namespace in TypeScript file");

@@ -42,7 +42,7 @@ enum MyEnum {
 	bela
 }
 
-module submodule {
+declare module submodule {
 	interface Test {}
 }
 export as namespace com_example_test;
