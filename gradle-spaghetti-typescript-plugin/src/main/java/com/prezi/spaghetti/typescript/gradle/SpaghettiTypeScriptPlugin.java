@@ -14,11 +14,13 @@ import com.prezi.spaghetti.gradle.internal.SpaghettiModuleFactory;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryNamingScheme;
 import com.prezi.spaghetti.typescript.gradle.internal.ClosureConcatenateTask;
 import com.prezi.spaghetti.typescript.gradle.internal.DefinitionAwareTypeScriptCompileDtsTask;
+import com.prezi.spaghetti.typescript.gradle.internal.MergeDtsTask;
 import com.prezi.spaghetti.typescript.gradle.internal.TypeScriptSpaghettiModule;
 import com.prezi.spaghetti.typescript.gradle.internal.VerifyDtsTask;
 import com.prezi.typescript.gradle.TypeScriptBasePlugin;
 import com.prezi.typescript.gradle.TypeScriptBinary;
 import com.prezi.typescript.gradle.TypeScriptBinaryBase;
+import com.prezi.typescript.gradle.TypeScriptCompileDts;
 import com.prezi.typescript.gradle.TypeScriptExtension;
 import com.prezi.typescript.gradle.TypeScriptPlugin;
 import com.prezi.typescript.gradle.TypeScriptSourceSet;
@@ -91,15 +93,42 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
 			public void execute(final TypeScriptBinary binary) {
-				addCompileDtsTask(project, binary);
-				ClosureConcatenateTask concatTask = addConcatenateTask(project, binary);
-				registerSpaghettiModule(project, binary, concatTask, false);
+				ClosureConcatenateTask concatTask = null;
+				Callable<File> getDtsFile = null;
+				if (SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
+					binary.getCompileTask().setGenerateDeclarations(true);
+					concatTask = addConcatenateTask(project, binary);
+					final MergeDtsTask mergeDtsTask = addMergeDtsTask(project, binary);
+					getDtsFile = new Callable<File>() {
+						public File call() {
+							return mergeDtsTask.getOutputFile();
+						}
+					};
+				} else {
+					final TypeScriptCompileDts dtsTask = addCompileDtsTask(project, binary);
+					getDtsFile = new Callable<File>() {
+						public File call() {
+							File dir = dtsTask.getOutputDir();
+							File[] files = dir.listFiles();
+							if (files == null || files.length == 0) {
+								return null;
+							} else {
+								return files[0];
+							}
+						}
+					};
+				}
+				registerSpaghettiModule(project, binary, getDtsFile, concatTask, false);
 			}
 		});
 		typeScriptExtension.getBinaries().withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
-				registerSpaghettiModule(project, testBinary, null, true);
+				ClosureConcatenateTask concatTask = null;
+				if (SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
+					concatTask = addConcatenateTask(project, testBinary);
+				}
+				registerSpaghettiModule(project, testBinary, null, concatTask, true);
 			}
 		});
 
@@ -132,7 +161,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		});
 	}
 
-	private void addCompileDtsTask(final Project project, TypeScriptBinary binary) {
+	private DefinitionAwareTypeScriptCompileDtsTask addCompileDtsTask(final Project project, TypeScriptBinary binary) {
 		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
 		final DefinitionAwareTypeScriptCompileDtsTask compileDtsTask = project.getTasks().create(
 			namingScheme.getTaskName("compileDtsFor"),
@@ -157,9 +186,10 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		binary.setCompileDtsTask(compileDtsTask);
 		binary.builtBy(compileDtsTask);
 		logger.debug("Added compile dts task {} for binary {} in {}", compileDtsTask, binary, project.getPath());
+		return compileDtsTask;
 	}
 
-	private ClosureConcatenateTask addConcatenateTask(final Project project, final TypeScriptBinary binary) {
+	private ClosureConcatenateTask addConcatenateTask(final Project project, final TypeScriptBinaryBase binary) {
 		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
 		final ClosureConcatenateTask concatTask = project.getTasks().create(
 			namingScheme.getTaskName("concatenate"),
@@ -172,16 +202,36 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				project.file(project.getBuildDir() + "/closure-concat/"
 					+ namingScheme.getOutputDirectoryBase() + "/"));
 		binary.builtBy(concatTask);
-		concatTask.setEnabled(false);
 		return concatTask;
 	}
 
+	private MergeDtsTask addMergeDtsTask(final Project project, final TypeScriptBinaryBase binary) {
+		final com.prezi.typescript.gradle.incubating.BinaryNamingScheme namingScheme = binary.getNamingScheme();
+		final MergeDtsTask mergeDtsTask = project.getTasks().create(
+			namingScheme.getTaskName("mergeDtsFor"),
+			MergeDtsTask.class);
+		mergeDtsTask.setDescription("Merges .d.ts for " + binary);
+		mergeDtsTask.dependsOn(binary.getCompileTask());
+		mergeDtsTask.setSourceDir(binary.getCompileTask().getOutputDir());
+		mergeDtsTask.setSource(project.fileTree(binary.getCompileTask().getOutputDir()));
+		mergeDtsTask.setWorkDir(
+				project.file(project.getBuildDir() + "/merge-dts/"
+					+ namingScheme.getOutputDirectoryBase() + "/"));
+		binary.builtBy(mergeDtsTask);
+		return mergeDtsTask;
+	}
 
-	private void registerSpaghettiModule(Project project, final TypeScriptBinaryBase binary, final ClosureConcatenateTask concatTask, final boolean testing) {
+
+	private void registerSpaghettiModule(
+			final Project project,
+			final TypeScriptBinaryBase binary,
+			final Callable<File> getDtsFile,
+			final ClosureConcatenateTask concatTask,
+			final boolean testing) {
 		Callable<File> javaScriptFile = new Callable<File>() {
 			@Override
 			public File call() throws Exception {
-				if (concatTask != null && concatTask.isEnabled()) {
+				if (concatTask != null) {
 					return concatTask.getOutputFile();
 				}
 				return binary.getCompileTask().getConcatenatedOutputFile();
@@ -190,16 +240,12 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		Callable<DefinitionFile> definitionOverride = new Callable<DefinitionFile>() {
 			@Override
 			public DefinitionFile call() throws Exception {
-				if (binary.getCompileDtsTask() == null) {
+				File file = getDtsFile != null ? getDtsFile.call() : null;
+				if (file == null) {
 					return null;
 				}
-				File dir = binary.getCompileDtsTask().getOutputDir();
-				File[] files = dir.listFiles();
-				if (files == null || files.length == 0) {
-					return null;
-				} else {
-					return new DefaultDefinitionFile(files[0], null);
-				}
+
+				return new DefaultDefinitionFile(file);
 			}
 		};
 		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, definitionOverride, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
@@ -208,11 +254,14 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				TypeScriptSpaghettiModule moduleBinary = new TypeScriptSpaghettiModule(namingScheme, data, original, testing);
 				moduleBinary.builtBy(original);
 
-				// Verify .d.ts module definition
-				String verifyTaskName = namingScheme.getTaskName("verifyDtsFor");
-				VerifyDtsTask verifyDtsTask = project.getTasks().create(verifyTaskName, VerifyDtsTask.class);
-				data.getBundleTask().dependsOn(verifyDtsTask);
-				data.getObfuscateTask().dependsOn(verifyDtsTask);
+				if (!SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
+					// Verify .d.ts module definition
+					String verifyTaskName = namingScheme.getTaskName("verifyDtsFor");
+					VerifyDtsTask verifyDtsTask = project.getTasks().create(verifyTaskName, VerifyDtsTask.class);
+					data.getBundleTask().dependsOn(verifyDtsTask);
+					data.getObfuscateTask().dependsOn(verifyDtsTask);
+				}
+
 				return moduleBinary;
 			}
 		});

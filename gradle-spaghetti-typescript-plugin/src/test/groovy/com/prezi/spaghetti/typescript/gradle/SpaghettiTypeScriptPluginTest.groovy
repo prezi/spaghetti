@@ -18,7 +18,6 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"compileDtsForJs",
 				"compileJs",
 				"compileTestJs",
-				"concatenateJs",
 				"generateHeaders",
 				"generateStubs",
 				"generateTestHeaders",
@@ -31,6 +30,40 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"testJsModule",
 				"verifyDtsForJsModule",
 				"verifyDtsForTestJsModule",
+				"zipJsModule",
+				"zipJsModuleObfuscated",
+				"zipTestJsModule",
+				"zipTestJsModuleObfuscated",
+		]
+	}
+
+	def "empty commonjs project creates all necessary tasks"() {
+		def project = ProjectBuilder.builder().build()
+		project.apply plugin: "spaghetti-typescript-commonjs"
+		project.apply plugin: "spaghetti-typescript"
+
+		expect:
+		project.tasks*.name.sort() == [
+				"assemble",
+				"build",
+				"bundleJsModule",
+				"bundleTestJsModule",
+				"check",
+				"compileJs",
+				"compileTestJs",
+				"concatenateJs",
+				"concatenateTestJs",
+				"generateHeaders",
+				"generateStubs",
+				"generateTestHeaders",
+				"js",
+				"jsModule",
+				"mergeDtsForJs",
+				"obfuscateJsModule",
+				"obfuscateTestJsModule",
+				"processSpaghettiResources",
+				"testJs",
+				"testJsModule",
 				"zipJsModule",
 				"zipJsModuleObfuscated",
 				"zipTestJsModule",
