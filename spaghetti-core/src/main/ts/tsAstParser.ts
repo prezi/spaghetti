@@ -104,8 +104,8 @@ class Linter {
 
         const replacements: Array<Replacement> = [];
         statements.forEach((statement) => {
-            if (statement.kind === ts.SyntaxKind.ImportDeclaration) {
-                const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ImportDeclaration)
+            if (statement.kind === ts.SyntaxKind.ExportDeclaration) {
+                const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ExportDeclaration)
                 replacements.push(fileContentReplacement);
             } else {
                 replacements.push({
@@ -121,13 +121,13 @@ class Linter {
         return newText;
     }
 
-    getImportReplacement(filename: string, importDeclaration: ts.ImportDeclaration): Replacement {
-        const moduleText = getImportExportText(importDeclaration)!;
-        const filePath = path.resolve(path.dirname(filename), moduleText + ".ts");
+    getImportReplacement(filename: string, exportDeclaration: ts.ExportDeclaration): Replacement {
+        const moduleText = getImportExportText(exportDeclaration);
+        const filePath = path.resolve(path.dirname(filename), moduleText + ".d.ts");
         const importContent = fs.readFileSync(filePath, "utf8");
         return {
-            start: importDeclaration.pos,
-            end: importDeclaration.end,
+            start: exportDeclaration.pos,
+            end: exportDeclaration.end,
             replacementText: importContent,
         }
     }
@@ -179,24 +179,6 @@ class Linter {
                 ts.forEachChild(node, (n) => this.lintNode(n));
         }
     }
-}
-
-class Parser {
-    private sourceFile: ts.SourceFile;
-    private errors: Array<string> = [];
-
-    constructor(sourceFile: ts.SourceFile) {
-        this.sourceFile = sourceFile;
-    }
-
-    hasErrors(): boolean {
-        return this.errors.length > 0;
-    }
-
-    printErrors() {
-        this.errors.forEach((e) => process.stdout.write(e + '\n'));
-    }
-
 }
 
 function hasModifier(node: ts.Node, kind: ts.SyntaxKind) {

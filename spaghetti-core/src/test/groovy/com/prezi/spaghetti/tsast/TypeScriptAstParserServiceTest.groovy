@@ -255,7 +255,7 @@ export { a } from './b'
         File definitionFile = new File(dir, "definition.d.ts");
         FileUtils.write(definitionFile, content);
 
-        File importFile = new File(dir, "b.ts");
+        File importFile = new File(dir, "b.d.ts");
         FileUtils.write(importFile, "export interface Foo { }");
 
         Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
@@ -311,7 +311,7 @@ export { a } from './b'
         File definitionFile = new File(dir, "definition.d.ts");
         FileUtils.write(definitionFile, content);
 
-        File importFile = new File(dir, "b.ts");
+        File importFile = new File(dir, "b.d.ts");
         FileUtils.write(importFile, "export interface Foo { }");
 
         Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
