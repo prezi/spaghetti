@@ -49,6 +49,17 @@ public class TypeScriptAstParserService {
 		return output;
 	}
 
+	public static List<String> mergeDefinitionFileImports (File workDir, File tsCompilerPath, File definitionFile, Logger logger) throws IOException, InterruptedException {
+		List<String> output = executeTsApiParser(
+			logger,
+			workDir,
+			tsCompilerPath,
+			"--mergeDtsForJs",
+			definitionFile);
+
+		return output;
+	}
+
 	private static List<String> executeTsApiParserWithContent(Logger logger, File workDir, File tsCompilerPath, String param, String tsContent) throws IOException, InterruptedException {
 		File definitionFile = new File(workDir, "definition.d.ts");
 		FileUtils.write(definitionFile, tsContent);

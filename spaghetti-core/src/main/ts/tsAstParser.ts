@@ -2,7 +2,13 @@
 
 import * as ts from "typescript";
 import * as fs from 'fs';
+import * as path from 'path';
 
+interface Replacement {
+    start: number;
+    end: number;
+    replacementText: string;
+}
 
 class Linter {
     private sourceFile: ts.SourceFile;
@@ -58,16 +64,18 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
-    lintCommonJs() {
+    lintCommonJs(filename: string): string | null {
         const relativePathMatch = /^\.?\.?\//;
         const importDeclarations: Array<ts.ImportDeclaration> = [];
         const exportModules: Array<string> = [];
+        const statements: Array<ts.Statement> = [];
         ts.forEachChild(this.sourceFile, (node: ts.Node) => {
             if (node.kind === ts.SyntaxKind.ImportDeclaration) {
                 const importDeclaration = (<ts.ImportDeclaration>node);
                 const moduleText = getImportExportText(importDeclaration)!;
                 if (moduleText.match(relativePathMatch) != null) {
                     importDeclarations.push(importDeclaration);
+                    statements.push(importDeclaration);
                 }
             } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
                 const exportDeclaration = (<ts.ExportDeclaration>node);
@@ -78,6 +86,7 @@ class Linter {
                         this.lintError(`named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
                     } else {
                         exportModules.push(moduleText);
+                        statements.push(exportDeclaration);
                     }
                 }
             }
@@ -88,6 +97,39 @@ class Linter {
                 this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
             }
         });
+
+        if (this.hasErrors()) {
+            return null;
+        }
+
+        const replacements: Array<Replacement> = [];
+        statements.forEach((statement) => {
+            if (statement.kind === ts.SyntaxKind.ImportDeclaration) {
+                const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ImportDeclaration)
+                replacements.push(fileContentReplacement);
+            } else {
+                replacements.push({
+                    start: statement.pos,
+                    end: statement.end,
+                    replacementText: "",
+                });
+            }
+        });
+
+        const newText = getNewText(this.sourceFile.getText(), replacements.reverse());
+
+        return newText;
+    }
+
+    getImportReplacement(filename: string, importDeclaration: ts.ImportDeclaration): Replacement {
+        const moduleText = getImportExportText(importDeclaration)!;
+        const filePath = path.resolve(path.dirname(filename), moduleText + ".ts");
+        const importContent = fs.readFileSync(filePath, "utf8");
+        return {
+            start: importDeclaration.pos,
+            end: importDeclaration.end,
+            replacementText: importContent,
+        }
     }
 
     lintVariableDeclaration(node: ts.VariableDeclaration) {
@@ -137,6 +179,24 @@ class Linter {
                 ts.forEachChild(node, (n) => this.lintNode(n));
         }
     }
+}
+
+class Parser {
+    private sourceFile: ts.SourceFile;
+    private errors: Array<string> = [];
+
+    constructor(sourceFile: ts.SourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
+    hasErrors(): boolean {
+        return this.errors.length > 0;
+    }
+
+    printErrors() {
+        this.errors.forEach((e) => process.stdout.write(e + '\n'));
+    }
+
 }
 
 function hasModifier(node: ts.Node, kind: ts.SyntaxKind) {
@@ -219,18 +279,27 @@ function getImportExportText(declaration: ts.ImportDeclaration | ts.ExportDeclar
     return null;
 }
 
+function getNewText(sourceText: string, replacementsInReverse: Replacement[]) {
+    for (const { start, end, replacementText } of replacementsInReverse) {
+        sourceText = sourceText.slice(0, start) + replacementText + sourceText.slice(end)
+    }
+
+    return sourceText;
+}
+
+
 const args = process.argv.slice(2);
 if (args[0] === "--collectExportedIdentifiers") {
-    let filename = args[1];
-    let sourceFile = getSourceFile(filename);
-    let idents = getProtectedIdentifiers(sourceFile);
+    const filename = args[1];
+    const sourceFile = getSourceFile(filename);
+    const idents = getProtectedIdentifiers(sourceFile);
     process.stdout.write(idents.join(',') + '\n');
     process.exit(0);
 
 } else if (args[0] === "--verifyModuleDefinition") {
-    let filename = args[1];
-    let sourceFile = getSourceFile(filename);
-    let linter = new Linter(sourceFile);
+    const filename = args[1];
+    const sourceFile = getSourceFile(filename);
+    const linter = new Linter(sourceFile);
     linter.lint();
     if (linter.hasErrors()) {
         linter.printErrors();
@@ -239,14 +308,26 @@ if (args[0] === "--collectExportedIdentifiers") {
         process.exit(0);
     }
 } else if (args[0] === "--verifyCommonJsModuleDefinition") {
-    let filename = args[1];
-    let sourceFile = getSourceFile(filename);
-    let linter = new Linter(sourceFile);
-    linter.lintCommonJs();
+    const filename = args[1];
+    const sourceFile = getSourceFile(filename);
+    const linter = new Linter(sourceFile);
+    linter.lintCommonJs(filename);
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);
     } else {
+        process.exit(0);
+    }
+} else if (args[0] === "--mergeDtsForJs") {
+    const filename = args[1];
+    const sourceFile = getSourceFile(filename);
+    const linter = new Linter(sourceFile);
+    const lintedFileText = linter.lintCommonJs(filename);
+    if (linter.hasErrors()) {
+        linter.printErrors();
+        process.exit(1);
+    } else {
+        fs.writeFileSync(args[2], lintedFileText, { encoding: "utf8" });
         process.exit(0);
     }
 }
