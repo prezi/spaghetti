@@ -104,7 +104,7 @@ class Linter {
 
         const replacements: Array<Replacement> = [];
         statements.forEach((statement) => {
-            const referenceMatch = statement.getFullText().match(/\/\/\/ <reference path=".*" \/>/g);
+            const referenceMatch = statement.getFullText().match(/\/\/\/\s+<reference\s+path=".*"\s+\/>/g);
             const referenceStatements = referenceMatch == null ? "" : referenceMatch.join("\n");
             if (statement.kind === ts.SyntaxKind.ExportDeclaration) {
                 const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ExportDeclaration, referenceStatements)
