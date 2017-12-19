@@ -210,7 +210,7 @@ module test {
 
     def "commonJs with no import statements"() {
         when:
-        def lines = runVerifyCommonJs("""
+        def lines = runMergeDtsForJs("""
 export function foo(){};
 """)
         then:
@@ -219,7 +219,7 @@ export function foo(){};
 
     def "commonJs with single import statement"() {
         when:
-        def lines = runVerifyCommonJs("""
+        def lines = runMergeDtsForJs("""
 import * as a from './b';
 export function foo(){};
 """)
@@ -230,7 +230,7 @@ export function foo(){};
 
     def "commonJs with single import and export statement"() {
         when:
-        def lines = runVerifyCommonJs("""
+        def lines = runMergeDtsForJs("""
 import * as a from './b';
 export * from './b'
 """)
@@ -240,7 +240,7 @@ export * from './b'
 
     def "commonJs with relative export statement and named exports"() {
         when:
-        def lines = runVerifyCommonJs("""
+        def lines = runMergeDtsForJs("""
 export { a } from './b'
 """)
         then:
@@ -248,16 +248,57 @@ export { a } from './b'
         e.output[0].contains("named exports are not supported from relative modules: './b'");
     }
 
-    def runVerifyCommonJs(String content) {
+    def "commonJs with no import and export statement"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""")
+        then:
+        lines == []
+    }
+
+    def "commonJs with no import and export statement"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("export * from './b'", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == "\nexport interface Foo { }\n";
+    }
+
+    def "commonJs with reference path"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""/// <reference path="./b" />
+export * from './b'""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """/// <reference path="./b" />
+export interface Foo { }
+""";
+    }
+
+    def runMergeDtsForJs(String content, File outputFile =  null) {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
 
         File definitionFile = new File(dir, "definition.d.ts");
         FileUtils.write(definitionFile, content);
 
+        File importFile = new File(dir, "b.d.ts");
+        FileUtils.write(importFile, "export interface Foo { }");
+
         Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
         File compilerPath = new File("build/typescript/node_modules/typescript");
 
-        return TypeScriptAstParserService.verifyCommonJsModuleDefinition(dir, compilerPath, definitionFile, logger);
+        if (outputFile == null) {
+            outputFile = new File(dir, "output.d.ts");
+        }
+
+        return TypeScriptAstParserService.mergeDefinitionFileImports(dir, compilerPath, definitionFile, outputFile, logger);
     }
 }

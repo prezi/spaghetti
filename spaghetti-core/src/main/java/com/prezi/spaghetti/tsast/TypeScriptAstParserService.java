@@ -33,18 +33,20 @@ public class TypeScriptAstParserService {
 			workDir,
 			tsCompilerPath,
 			"--verifyModuleDefinition",
-			definitionFile);
+			definitionFile,
+			null);
 
 		return output;
 	}
 
-	public static List<String> verifyCommonJsModuleDefinition(File workDir, File tsCompilerPath, File definitionFile, Logger logger) throws IOException, InterruptedException {
+	public static List<String> mergeDefinitionFileImports (File workDir, File tsCompilerPath, File definitionFile, File outputFile, Logger logger) throws IOException, InterruptedException {
 		List<String> output = executeTsApiParser(
 			logger,
 			workDir,
 			tsCompilerPath,
-			"--verifyCommonJsModuleDefinition",
-			definitionFile);
+			"--mergeDtsForJs",
+			definitionFile,
+			outputFile);
 
 		return output;
 	}
@@ -52,10 +54,10 @@ public class TypeScriptAstParserService {
 	private static List<String> executeTsApiParserWithContent(Logger logger, File workDir, File tsCompilerPath, String param, String tsContent) throws IOException, InterruptedException {
 		File definitionFile = new File(workDir, "definition.d.ts");
 		FileUtils.write(definitionFile, tsContent);
-		return executeTsApiParser(logger, workDir, tsCompilerPath, param, definitionFile);
+		return executeTsApiParser(logger, workDir, tsCompilerPath, param, definitionFile, null);
 	}
 
-	private static List<String> executeTsApiParser(Logger logger, File workDir, File tsCompilerPath, String param, File definitionFile) throws IOException, InterruptedException {
+	private static List<String> executeTsApiParser(Logger logger, File workDir, File tsCompilerPath, String param, File definitionFile, File outputFile) throws IOException, InterruptedException {
 
 		File tsAstParser = new File(workDir, "tsAstParser.js");
 		FileUtils.copyURLToFile(
@@ -67,6 +69,9 @@ public class TypeScriptAstParserService {
 		command.add(tsAstParser.getAbsolutePath());
 		command.add(param);
 		command.add(definitionFile.getAbsolutePath());
+		if (outputFile != null) {
+			command.add(outputFile.getAbsolutePath());
+		}
 		String nodePath = tsCompilerPath.getParentFile().getAbsolutePath();
 		return executeCommand(command, nodePath, logger);
 	}
