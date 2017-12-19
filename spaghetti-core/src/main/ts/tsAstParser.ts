@@ -104,31 +104,33 @@ class Linter {
 
         const replacements: Array<Replacement> = [];
         statements.forEach((statement) => {
+            const referenceMatch = statement.getFullText().match(/\/\/\/ <reference path=".*" \/>/g);
+            const referenceStatements = referenceMatch == null ? "" : referenceMatch.join("\n");
             if (statement.kind === ts.SyntaxKind.ExportDeclaration) {
-                const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ExportDeclaration)
+                const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ExportDeclaration, referenceStatements)
                 replacements.push(fileContentReplacement);
             } else {
                 replacements.push({
                     start: statement.pos,
                     end: statement.end,
-                    replacementText: "",
+                    replacementText: referenceStatements,
                 });
             }
         });
 
-        const newText = getNewText(this.sourceFile.getText(), replacements.reverse());
+        const newText = getNewText(this.sourceFile.text, replacements.reverse());
 
         return newText;
     }
 
-    getImportReplacement(filename: string, exportDeclaration: ts.ExportDeclaration): Replacement {
+    getImportReplacement(filename: string, exportDeclaration: ts.ExportDeclaration, referenceStatements: string): Replacement {
         const moduleText = getImportExportText(exportDeclaration);
         const filePath = path.resolve(path.dirname(filename), moduleText + ".d.ts");
         const importContent = fs.readFileSync(filePath, "utf8");
         return {
             start: exportDeclaration.pos,
             end: exportDeclaration.end,
-            replacementText: importContent,
+            replacementText: `${referenceStatements}\n${importContent}\n`,
         }
     }
 
@@ -268,6 +270,7 @@ function getNewText(sourceText: string, replacementsInReverse: Replacement[]) {
 
     return sourceText;
 }
+
 
 
 const args = process.argv.slice(2);
