@@ -13,6 +13,7 @@ import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters;
 import com.prezi.spaghetti.generator.internal.Generators;
@@ -40,7 +41,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private File outputDirectory;
 	private String sourceBaseUrl;
 	private File sourceMap;
-	private File definitionOverride;
+	private DefinitionFile definitionOverride;
 	private File resourcesDirectoryInternal;
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
@@ -109,16 +110,16 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		setSourceMap(sourceMap);
 	}
 
-	public void setDefinitionOverride(File definitionOverride) {
+	public void setDefinitionOverride(DefinitionFile definitionOverride) {
 		this.definitionOverride = definitionOverride;
 	}
 
-	public File getDefinitionOverride() {
+	public DefinitionFile getDefinitionOverride() {
 		return definitionOverride;
 	}
 
-	protected File getOriginalDefinitionOrOverride() {
-		File def = getDefinitionOverride();
+	protected DefinitionFile getOriginalDefinitionOrOverride() {
+		DefinitionFile def = getDefinitionOverride();
 		return def == null ? getDefinition() : def;
 	}
 

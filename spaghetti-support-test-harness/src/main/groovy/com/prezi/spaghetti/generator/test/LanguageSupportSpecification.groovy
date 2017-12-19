@@ -131,14 +131,14 @@ public abstract class LanguageSupportSpecification extends Specification {
 			List<URL> extraTestSources) {
 		// Build the dependency module
 		def testDependencyDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, dependencyModuleDefResourcePath))
-		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, new DefaultModuleBundleSet([], []))
+		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, null, new DefaultModuleBundleSet([], []))
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
 		def testDependencyBundle = bundle(testDependencyModule, Resources.getResource(this.class, "/dependency.js").text, [], [:])
 
 		// Build the module
 		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, testModuleDefResourcePath))
-		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.UMD)], [])
+		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, null, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.UMD)], [])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
 		def headersDir = new File(rootDir, "headers")
@@ -162,7 +162,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 
 		// Make the app bundle
 		def testAppDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
-		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testModuleDefinition, ModuleFormat.Wrapperless), new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.Wrapperless)], [])
+		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, null, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testModuleDefinition, ModuleFormat.Wrapperless), new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.Wrapperless)], [])
 		def appModule = appConfig.localModule
 
 		def processedAppJs = processJavaScript(new VerbatimJavaScriptBundleProcessor("js"), appConfig, Resources.getResource(this.class, "/app.js").text)

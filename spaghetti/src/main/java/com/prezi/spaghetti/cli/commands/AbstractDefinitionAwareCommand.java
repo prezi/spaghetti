@@ -19,7 +19,7 @@ public abstract class AbstractDefinitionAwareCommand extends AbstractSpaghettiCo
 	protected ModuleConfiguration parseConfig() throws IOException {
 		ModuleDefinitionSource localSource  = parseDefinition(definition);
 		ModuleBundleSet bundles = lookupBundles();
-		return ModuleConfigurationParser.parse(localSource, bundles);
+		return ModuleConfigurationParser.parse(localSource, null, bundles);
 	}
 
 	private static ModuleDefinitionSource parseDefinition(File file) throws IOException {

@@ -80,7 +80,13 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
-	public static int concat(File workDir, File outputFile, Collection<File> inputSources, Collection<File> customExterns, CompilationLevel compilationLevel) throws IOException, InterruptedException   {
+	public static int concat(
+			File workDir,
+			File outputFile,
+			Collection<File> inputSources,
+			Collection<File> customExterns,
+			CompilationLevel compilationLevel,
+			File variableRenameReport) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir);
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -92,6 +98,10 @@ public class ClosureCompiler {
 		add(args, "--language_in", "ECMASCRIPT5");
 		add(args, "--language_out", "ECMASCRIPT5");
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
+
+		if (variableRenameReport != null) {
+			add(args, "--variable_renaming_report", variableRenameReport.getAbsolutePath());
+		}
 
 		for (File inputSource : inputSources) {
 			add(args, "--js", inputSource.getAbsolutePath());

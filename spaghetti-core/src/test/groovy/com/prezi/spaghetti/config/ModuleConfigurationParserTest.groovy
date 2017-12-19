@@ -13,6 +13,7 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		ModuleConfigurationParser.parse(
 				DefaultModuleDefinitionSource.fromString("C:\\test1.module", "module com.example.test {}"),
+				null,
 				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("C:\\test2.module", "module com.example.test {}"), ModuleFormat.Wrapperless)],
 				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("C:\\test3.module", "module com.example.test {}"), ModuleFormat.Wrapperless)]
 		)
@@ -26,6 +27,7 @@ class ModuleConfigurationParserTest extends Specification {
 		when:
 		def config = ModuleConfigurationParser.parse(
 				DefaultModuleDefinitionSource.fromString("A", "module com.example.testA {}"),
+				null,
 				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("B", "module com.example.testB { struct Point { x: int; y: int; } }"), ModuleFormat.Wrapperless)],
 				[new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(DefaultModuleDefinitionSource.fromString("C", "module com.example.testC { origin(): com.example.testB.Point; }"), ModuleFormat.Wrapperless)]
 		)

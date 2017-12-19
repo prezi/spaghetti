@@ -104,9 +104,36 @@ module test {
         e.output[2].contains("Variables should not have 'any' type")
     }
 
+    def "commonjs: untyped variables are not allowed"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export const a = "a";
+export const b;
+export const c: any;
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Variables without explicit types are not allowed")
+        e.output[1].contains("Variables without explicit types are not allowed")
+        e.output[2].contains("Variables should not have 'any' type")
+    }
+
     def "non-exported are ignored in non-ambient context"() {
         when:
         def lines = runVerify("""
+module test {
+    let a = "a";
+    var b;
+    class A {}
+}
+""")
+        then:
+        lines == []
+    }
+
+    def "commonsjs: non-exported are ignored in non-ambient context"() {
+        when:
+        def lines = runMergeDtsForJs("""
 module test {
     let a = "a";
     var b;

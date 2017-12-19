@@ -34,11 +34,10 @@ module submodule {
 		module.methods*.name == []
 	}
 
-	def "parse non-declare module"() {
+	def "parse commonjs dts"() {
 		def definition = """/// comment
-module com.example.test {
 
-declare enum MyEnum {
+enum MyEnum {
 	alma,
 	bela
 }
@@ -46,7 +45,7 @@ declare enum MyEnum {
 declare module submodule {
 	interface Test {}
 }
-}
+export as namespace com_example_test;
 """
 		def source = DefaultModuleDefinitionSource.fromStringWithLang("test.d.ts", definition, DefinitionLanguage.TypeScript);
 
@@ -55,8 +54,11 @@ declare module submodule {
 		def module = parser.parse(null)
 
 		then:
-		def e = thrown(AstParserException)
-		e.message.contains("must be prefixed with 'declare'")
+		module.name == "com_example_test"
+		module.alias == "com_example_test"
+		module.types*.qualifiedName*.toString().asList() == []
+		module.externTypes*.qualifiedName*.toString().asList() == []
+		module.methods*.name == []
 	}
 
 	def "parse declare namespace"() {
@@ -134,22 +136,6 @@ declare module submodule {
 		module.alias == "com_example_test"
 		module.source.contents == SimpleTypeScriptDefinitionParser.DEFERRED_DTS_CONTENTS
 		module.source.location == "test.ts"
-	}
-
-	def "parse non-definition from bundle throws error"() {
-		def definition = """/// comment
-module com.example.test {
-
-}
-"""
-		def source = DefaultModuleDefinitionSource.fromStringWithLang("internal bundle", definition, DefinitionLanguage.TypeScript);
-
-		when:
-		def parser = ModuleParser.create(source)
-
-		then:
-		def e = thrown(AstParserException)
-		e.message.contains("must be prefixed with 'declare'")
 	}
 
 	def "parse definition from bundle has right contents"() {
