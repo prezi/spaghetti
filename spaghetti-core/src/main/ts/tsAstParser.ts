@@ -64,7 +64,17 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
-    lintCommonJs(filename: string): string | null {
+    lintCommonJs() {
+        const sourceFile = this.sourceFile;
+        if (sourceFile.amdDependencies.length > 0) {
+            this.lintError("Amd dependencies are not allowed", sourceFile);
+        }
+
+        ts.forEachChild(sourceFile, (n) => this.lintStatements(n));
+    }
+
+
+    mergeCommonJsImports(filename: string): string | null {
         const relativePathMatch = /^\.?\.?\//;
         const importDeclarations: Array<ts.ImportDeclaration> = [];
         const exportModules: Array<string> = [];
@@ -296,7 +306,8 @@ if (args[0] === "--collectExportedIdentifiers") {
     const filename = args[1];
     const sourceFile = getSourceFile(filename);
     const linter = new Linter(sourceFile);
-    const lintedFileText = linter.lintCommonJs(filename);
+    linter.lintCommonJs();
+    const lintedFileText = linter.mergeCommonJsImports(filename);
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);
