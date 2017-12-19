@@ -39,18 +39,6 @@ public class TypeScriptAstParserService {
 		return output;
 	}
 
-	public static List<String> verifyCommonJsModuleDefinition(File workDir, File tsCompilerPath, File definitionFile, Logger logger) throws IOException, InterruptedException {
-		List<String> output = executeTsApiParser(
-			logger,
-			workDir,
-			tsCompilerPath,
-			"--verifyCommonJsModuleDefinition",
-			definitionFile,
-			null);
-
-		return output;
-	}
-
 	public static List<String> mergeDefinitionFileImports (File workDir, File tsCompilerPath, File definitionFile, File outputFile, Logger logger) throws IOException, InterruptedException {
 		List<String> output = executeTsApiParser(
 			logger,

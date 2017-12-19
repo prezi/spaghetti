@@ -292,17 +292,6 @@ if (args[0] === "--collectExportedIdentifiers") {
     } else {
         process.exit(0);
     }
-} else if (args[0] === "--verifyCommonJsModuleDefinition") {
-    const filename = args[1];
-    const sourceFile = getSourceFile(filename);
-    const linter = new Linter(sourceFile);
-    linter.lintCommonJs(filename);
-    if (linter.hasErrors()) {
-        linter.printErrors();
-        process.exit(1);
-    } else {
-        process.exit(0);
-    }
 } else if (args[0] === "--mergeDtsForJs") {
     const filename = args[1];
     const sourceFile = getSourceFile(filename);
