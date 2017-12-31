@@ -109,7 +109,9 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	}
 
 	private static void writeTypeScriptDtsFile(ModuleNode module, File outputDirectory, String header) {
-		File file = new File(outputDirectory, module.alias + ".d.ts");
+		File folder = new File(outputDirectory, module.name.replace(".", "_"));
+		folder.mkdir()
+		File file = new File(folder, "index.d.ts");
 		TypeScriptUtils.createRawSourceFile(header, module.source.contents, file);
 	}
 }
