@@ -2,8 +2,10 @@ package com.prezi.spaghetti.typescript.gradle;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.internal.DefaultDefinitionFile;
+import com.prezi.spaghetti.gradle.GenerateHeaders;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
@@ -94,8 +96,13 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 		final Callable<List<File>> getCommonsJsEntryPoints = new Callable<List<File>>() {
 			public List<File> call() {
+				GenerateHeaders task = project.getTasks().withType(GenerateHeaders.class).getByName("generateHeaders");
+				List<File> files = Lists.newArrayList();
+
 				File defFile = spaghettiExtension.getDefinition().getFile();
-				return Collections.singletonList(defFile);
+				files.add(defFile);
+				files.addAll(project.fileTree(task.getOutputDirectory()).getFiles());
+				return files;
 			}
 		};
 
