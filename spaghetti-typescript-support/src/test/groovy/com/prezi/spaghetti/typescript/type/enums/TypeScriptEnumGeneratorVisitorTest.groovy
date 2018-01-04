@@ -13,7 +13,7 @@ enum MyEnum {
 	BELA
 }
 """
-	def dependentExpected = """export declare enum MyEnum {
+	def dependentExpected = """export enum MyEnum {
 	/**
 	 * Alma.
 	 */
