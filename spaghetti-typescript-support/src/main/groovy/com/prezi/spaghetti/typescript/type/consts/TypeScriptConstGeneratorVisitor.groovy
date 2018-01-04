@@ -8,7 +8,7 @@ import com.prezi.spaghetti.typescript.TypeScriptUtils
 class TypeScriptConstGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	@Override
 	String visitConstNode(ConstNode node) {
-"""export class ${node.name} {
+"""export module ${node.name} {
 ${visitChildren(node)}
 }
 """
@@ -18,6 +18,6 @@ ${visitChildren(node)}
 	String visitConstEntryNode(ConstEntryNode node) {
 		String type = PRIMITIVE_TYPES.get(node.type.type)
 		String value = TypeScriptUtils.toPrimitiveString(node.value)
-		return "\tstatic ${node.name}: ${type} = ${value};\n"
+		return "\texport const ${node.name}: ${type} = ${value};\n"
 	}
 }

@@ -60,14 +60,14 @@ const MyConstants {
 		"""/**
  * My dear constants.
  */
-export class MyConstants {
-	static alma: number = ${first};
+export module MyConstants {
+	export const alma: number = ${first};
 	/**
 	 * Bela is -123.
 	 */
-	static bela: number = ${second};
-	static geza: number = ${third};
-	static tibor: string = ${fourth};
+	export const bela: number = ${second};
+	export const geza: number = ${third};
+	export const tibor: string = ${fourth};
 
 }
 """
