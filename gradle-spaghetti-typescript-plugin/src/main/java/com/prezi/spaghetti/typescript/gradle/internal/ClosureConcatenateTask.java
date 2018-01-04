@@ -101,7 +101,8 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		Map<String, String> deps = Maps.newHashMap();
 		ModuleConfiguration config = readConfig(getDefinition());
 		for (ModuleNode node : config.getAllDependentModules()) {
-			deps.put(node.getAlias(), node.getAlias());
+			String importName = node.getName().replace(".", "_");
+			deps.put(node.getName(), importName);
 		}
 		deps.putAll(getExternalDependencies());
 		return deps.entrySet();
