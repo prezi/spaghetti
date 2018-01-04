@@ -1,6 +1,7 @@
 package spaghetti.test;
 
 import spaghetti.test.dependency.DependencyModule;
+import spaghetti.test.dependency.DependentConstant;
 import spaghetti.test.dependency.Fruit;
 import spaghetti.test.dependency.Prime;
 import spaghetti.test.dependency.Point2d;
@@ -20,6 +21,10 @@ class TestModule {
 
 	public static function getValueOfTwo():String {
 		return Numbers.TWO;
+	}
+
+	public static function getValueOfDependentConstant():String {
+		return DependentConstant.A;
 	}
 
 	public static function createPoint3dWithGivenValues(x:Int, y:Int, z:Int):Point3d {

@@ -43,6 +43,8 @@ declare module spaghetti.test {
 	 */
 	function getValueOfTwo(): string;
 
+	function getValueOfDependentConstant(): string;
+
 	/**
 	 * Create an instance of the Point3d type, and assign the parameters to its fields.
 	 */

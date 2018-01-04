@@ -17,6 +17,10 @@ declare module spaghetti.test.dependency {
 		y: number;
 	}
 
+	module DependentConstant {
+		const A: string;
+	}
+
 	module DependencyModule {
 		function getPoint(): Point2d;
 		function createPointViaCallback(x: number, y: number, callback: (Point2d) => void): void;

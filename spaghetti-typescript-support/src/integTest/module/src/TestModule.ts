@@ -19,6 +19,10 @@ export class TestModule {
 		return Numbers.TWO;
 	}
 
+	static getValueOfDependentConstant():string {
+		return spaghetti.test.dependency.DependentConstant.A;
+	}
+
 	static createPoint3dWithGivenValues(x:number, y:number, z:number):Point3d {
 		return {
 			x: x,
