@@ -32,28 +32,14 @@ const MyConstants {
 		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test", ModuleFormat.UMD))
 
 		expect:
-		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
-		// TODO [knuton] Enable after migratory period
-		// result == expectedWith(
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"alma\"]",
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"bela\"]",
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"geza\"]",
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"MyConstants\"][\"tibor\"]")
-
+		result == expectedWithoutValues()
 	}
 
 	def "generate proxied definition for wrapperless format"() {
 		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test", ModuleFormat.Wrapperless))
 
 		expect:
-		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
-		// TODO [knuton] Enable after migratory period
-		// result == expectedWith(
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"alma\"]",
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"bela\"]",
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"geza\"]",
-		//		"Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyConstants\"][\"tibor\"]")
-
+		result == expectedWithoutValues()
 	}
 
 	private static String expectedWith(String first, String second, String third, String fourth) {
@@ -68,6 +54,23 @@ export module MyConstants {
 	export const bela: number = ${second};
 	export const geza: number = ${third};
 	export const tibor: string = ${fourth};
+
+}
+"""
+	}
+
+	private static String expectedWithoutValues() {
+		"""/**
+ * My dear constants.
+ */
+export module MyConstants {
+	export const alma: number;
+	/**
+	 * Bela is -123.
+	 */
+	export const bela: number;
+	export const geza: number;
+	export const tibor: string;
 
 }
 """
