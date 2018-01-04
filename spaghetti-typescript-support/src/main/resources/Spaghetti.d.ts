@@ -1,25 +1,21 @@
-interface Spaghetti {
-	[s: string]: any;
-
+declare const Spaghetti: {
 	/**
 	 * Returns the module version.
 	 */
-	getModuleVersion():string;
+	getModuleVersion(): string;
 
 	/**
 	 * Returns the Spaghetti version used to build the module.
 	 */
-	getSpaghettiVersion():string;
+	getSpaghettiVersion(): string;
 
 	/**
 	 * Returns the name of the module.
 	 */
-	getModuleName():string;
+	getModuleName(): string;
 
 	/**
 	 * Returns a URL pointing to this module's given resource.
 	 */
-	getResourceUrl(resource:string):string;
-}
-
-declare var Spaghetti: Spaghetti;
+	getResourceUrl(resource: string): string;
+};

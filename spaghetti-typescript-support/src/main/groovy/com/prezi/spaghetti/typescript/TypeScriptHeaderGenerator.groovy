@@ -44,7 +44,7 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	 * Copies Spaghetti.ts to the generated source directory.
 	 */
 	private static void copySpaghettiClass(File outputDirectory) {
-		new File(outputDirectory, "${SPAGHETTI_CLASS}.ts") << TypeScriptHeaderGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.ts")
+		new File(outputDirectory, "${SPAGHETTI_CLASS}.d.ts") << TypeScriptHeaderGenerator.class.getResourceAsStream("/${SPAGHETTI_CLASS}.d.ts")
 	}
 
 	/**
