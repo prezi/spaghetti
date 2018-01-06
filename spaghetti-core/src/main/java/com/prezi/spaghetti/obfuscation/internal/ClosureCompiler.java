@@ -83,6 +83,7 @@ public class ClosureCompiler {
 	public static int concat(
 			File workDir,
 			File outputFile,
+			File entryPoint,
 			Collection<File> inputSources,
 			Collection<File> customExterns,
 			CompilationLevel compilationLevel,
@@ -94,9 +95,11 @@ public class ClosureCompiler {
 		args.add("--assume_function_wrapper");
 		args.add("--process_common_js_modules");
 		add(args, "--module_resolution", "NODE");
+		add(args, "--dependency_mode", "STRICT");
 		add(args, "--compilation_level", compilationLevel.name());
 		add(args, "--language_in", "ECMASCRIPT5");
 		add(args, "--language_out", "ECMASCRIPT5");
+		add(args, "--entry_point", entryPoint.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
 
 		if (variableRenameReport != null) {

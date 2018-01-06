@@ -128,10 +128,13 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		}
 
 		File variableRenameMap = new File(workDir, "rename-map.txt");
+		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
+		File entryPointFile = filterFileList(inputFiles, getEntryPoint());
 		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
-			FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true),
+			entryPointFile,
+			inputFiles,
 			Sets.<File>newHashSet(),
 			CompilationLevel.SIMPLE,
 			variableRenameMap);
@@ -168,5 +171,14 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 				entryPointKey,
 				variableRenameMap.getAbsolutePath()));
 		throw new RuntimeException("cannot find entry point in variable_renaming_report");
+	}
+
+	private static File filterFileList(Collection<File> list, String name) {
+		for (File f: list) {
+			if (f.getName().equals(name)) {
+				return f;
+			}
+		}
+		throw new RuntimeException("Cannot find entry point: " + name);
 	}
 }
