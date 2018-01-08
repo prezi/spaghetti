@@ -13,6 +13,9 @@ var module = {
 	createPointViaCallback: function (x, y, callback) {
 		callback({ x: x, y: y});
 	},
+	DependentConstant: {
+		A: "constant",
+	},
 	Fruit: (function(Fruit) {
 		Fruit[Fruit.Apple = 0] = "Apple";
 		Fruit[Fruit.Pear = 1] = "Pear";

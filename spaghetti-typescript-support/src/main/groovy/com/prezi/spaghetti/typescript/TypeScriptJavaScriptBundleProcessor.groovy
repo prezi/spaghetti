@@ -60,11 +60,9 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		LinkedHashSet<String> lines = new LinkedHashSet<String>();
 		for (def wrapper: config.getDirectDependentModules()) {
 			ModuleNode module = wrapper.entity;
-			if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
-				String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);
-				Collection<String> namespaceMerge = GeneratorUtils.createNamespaceMerge(module.name, value);
-				lines.addAll(namespaceMerge);
-			}
+			String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);
+			Collection<String> namespaceMerge = GeneratorUtils.createNamespaceMerge(module.name, value);
+			lines.addAll(namespaceMerge);
 		}
 
 		if (lines.isEmpty()) {

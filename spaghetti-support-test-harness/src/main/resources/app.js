@@ -30,6 +30,12 @@ return {
 				});
 			});
 
+			describe("#getValueOfDependentConstant()", function () {
+				it("should return the value of the constant from the dependent module", function () {
+					expect(module.getValueOfDependentConstant()).to.equal("constant");
+				});
+			});
+
 			describe("#createPoint3dWithGivenValues()", function () {
 				it("should create a struct with the given values", function () {
 					var point3d = module.createPoint3dWithGivenValues(1, 2, 3);

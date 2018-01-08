@@ -17,6 +17,10 @@ module spaghetti.test.dependency as DependencyModule {
 		y: int;
 	}
 
+	const DependentConstant {
+		A = "constant";
+	}
+
 	getPoint(): Point2d;
 
 	createPointViaCallback(x: int, y: int, callback: (Point2d) -> void): void;

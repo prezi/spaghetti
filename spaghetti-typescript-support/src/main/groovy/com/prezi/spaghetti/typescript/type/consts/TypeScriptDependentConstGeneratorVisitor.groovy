@@ -19,7 +19,7 @@ class TypeScriptDependentConstGeneratorVisitor extends AbstractTypeScriptGenerat
 
 	@Override
 	String visitConstNode(ConstNode node) {
-"""export class ${node.name} {
+"""export module ${node.name} {
 ${node.entries*.accept(new ConstEntryVisitor(node.name)).join("")}
 }
 """
@@ -35,11 +35,7 @@ ${node.entries*.accept(new ConstEntryVisitor(node.name)).join("")}
 		@Override
 		String visitConstEntryNode(ConstEntryNode node) {
 			String type = PRIMITIVE_TYPES.get(node.type.type)
-			String value = TypeScriptUtils.toPrimitiveString(node.value)
-			// TODO [knuton] Enable after migratory period
-			// String moduleAccessor = GeneratorUtils.createModuleAccessor(foreignModuleName, format)
-			// String value = "${moduleAccessor}[\"${constName}\"][\"${node.name}\"]"
-			return "\tstatic ${node.name}: ${type} = ${value};\n"
+			return "\texport const ${node.name}: ${type};\n"
 		}
 	}
 }

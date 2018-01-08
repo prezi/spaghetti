@@ -39,6 +39,8 @@ module spaghetti.test as TestModule {
 	 */
 	getValueOfTwo(): string;
 
+	getValueOfDependentConstant(): string;
+
 	struct Point3d extends Point2d {
 		z: int;
 	}

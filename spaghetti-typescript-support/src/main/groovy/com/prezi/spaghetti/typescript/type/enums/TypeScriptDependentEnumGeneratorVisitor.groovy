@@ -17,7 +17,7 @@ class TypeScriptDependentEnumGeneratorVisitor extends AbstractTypeScriptGenerato
 
 	@Override
 	String visitEnumNode(EnumNode node) {
-		"""export declare enum ${node.name} {
+		"""export enum ${node.name} {
 ${node.values*.accept(new EnumValueVisitor(node.name)).join(",\n")}
 }
 """
