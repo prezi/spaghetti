@@ -42,6 +42,40 @@ return spaghetti.test.main;
 """
 	}
 
+	def "processModuleJavaScript: 'use strict' is copied to the top line"() {
+		def processor = new TypeScriptJavaScriptBundleProcessor()
+		def config = new DefaultModuleConfiguration(
+			makeModuleNode("spaghetti.test.main"),
+			makeDependencies([]),
+			Collections.emptySet())
+		def params = new DefaultJavaScriptBundleProcessorParameters(config);
+
+		when:
+		def result = processor.processModuleJavaScript(params, "'use strict';/* This is the JavaScript module */");
+		then:
+		result == """'use strict';
+/* This is the JavaScript module */
+return spaghetti.test.main;
+"""
+	}
+
+	def "processModuleJavaScript: \"use strict\" with double quotes is copied to the top line"() {
+		def processor = new TypeScriptJavaScriptBundleProcessor()
+		def config = new DefaultModuleConfiguration(
+			makeModuleNode("spaghetti.test.main"),
+			makeDependencies([]),
+			Collections.emptySet())
+		def params = new DefaultJavaScriptBundleProcessorParameters(config);
+
+		when:
+		def result = processor.processModuleJavaScript(params, "\"use strict\";/* This is the JavaScript module */");
+		then:
+		result == """'use strict';
+/* This is the JavaScript module */
+return spaghetti.test.main;
+"""
+	}
+
 	def makeModuleNode(String name) {
 		def source = DefaultModuleDefinitionSource.fromStringWithLang("internal", "", DefinitionLanguage.TypeScript)
 		DefaultLocation location = new DefaultLocation(source, 0, 0);
