@@ -34,12 +34,8 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 
 		content += generateAccessors(params.moduleConfiguration)
 		content += TypeScriptEnumDenormalizer.denormalize(javaScript)
-		if (content.contains("var __spaghettiMainModule=")) {
-			content += "\n" + "return __spaghettiMainModule;" + "\n"
-		} else {
-			def export = getModuleExport(module)
-			content += "\n" + "return ${export};" + "\n"
-		}
+		def export = getModuleExport(module)
+		content += "\n" + "return ${export};" + "\n"
 		return content
 	}
 
@@ -61,6 +57,11 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		// but duplicate (redundant) lines are not generated for namespaces
 		// which have a common prefix (ie. com.spaghetti.a, com.spaghetti.b).
 		LinkedHashSet<String> lines = new LinkedHashSet<String>();
+
+		// Create local variable for current module's namespace and initialize it to null.
+		// To prevent module's code from accidentally assigning to a global variable.
+		lines.addAll(GeneratorUtils.createNamespaceMerge(config.localModule.name, "null"))
+
 		for (def wrapper: config.getDirectDependentModules()) {
 			ModuleNode module = wrapper.entity;
 			String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);

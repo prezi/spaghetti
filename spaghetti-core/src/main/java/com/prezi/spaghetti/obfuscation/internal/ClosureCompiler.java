@@ -86,8 +86,7 @@ public class ClosureCompiler {
 			File entryPoint,
 			Collection<File> inputSources,
 			Collection<File> customExterns,
-			CompilationLevel compilationLevel,
-			File variableRenameReport) throws IOException, InterruptedException   {
+			CompilationLevel compilationLevel) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir);
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -101,10 +100,6 @@ public class ClosureCompiler {
 		add(args, "--language_out", "ECMASCRIPT5_STRICT");
 		add(args, "--entry_point", entryPoint.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
-
-		if (variableRenameReport != null) {
-			add(args, "--variable_renaming_report", variableRenameReport.getAbsolutePath());
-		}
 
 		for (File inputSource : inputSources) {
 			add(args, "--js", inputSource.getAbsolutePath());

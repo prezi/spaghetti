@@ -97,17 +97,6 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		this.entryPoint = filename;
 	}
 
-	private Set<Map.Entry<String, String>> getDependencies() throws IOException {
-		Map<String, String> deps = Maps.newHashMap();
-		ModuleConfiguration config = readConfig(getDefinition());
-		for (ModuleNode node : config.getAllDependentModules()) {
-			String importName = node.getName().replace(".", "_");
-			deps.put(node.getName(), importName);
-		}
-		deps.putAll(getExternalDependencies());
-		return deps.entrySet();
-	}
-
 	@TaskAction
 	public void concat() throws IOException, InterruptedException {
 		File workDir = getWorkDir();
@@ -118,8 +107,9 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		FileUtils.forceMkdir(nodeDir);
 
 		FileUtils.copyDirectory(getSourceDir(), jsFilesDir);
+		ModuleConfiguration config = readConfig(getDefinition());
 
-		for (Map.Entry<String, String> extern : getDependencies()) {
+		for (Map.Entry<String, String> extern : getDependencies(config, getExternalDependencies())) {
 			String varName = extern.getKey();
 			String importName = extern.getValue();
 			FileUtils.write(
@@ -127,50 +117,32 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 				String.format("module.exports = %s;\n", varName));
 		}
 
-		File variableRenameMap = new File(workDir, "rename-map.txt");
 		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
 		File entryPointFile = filterFileList(inputFiles, getEntryPoint());
+		File mainEntryPoint = createMainEntryPoint(workDir, entryPointFile, config.getLocalModule());
+		inputFiles.add(mainEntryPoint);
+
 		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
-			entryPointFile,
+			mainEntryPoint,
 			inputFiles,
 			Sets.<File>newHashSet(),
-			CompilationLevel.SIMPLE,
-			variableRenameMap);
+			CompilationLevel.SIMPLE);
 
 		if (exitValue != 0) {
 			throw new RuntimeException("Closure Compiler return an error code: " + exitValue);
 		}
-
-		String entryVarName = getEntryPointVarName(jsFilesDir, variableRenameMap);
-		String line = String.format("\nvar __spaghettiMainModule=%s.default;\n", entryVarName);
-		Files.append(line, getOutputFile(), Charsets.UTF_8);
 	}
 
-	private String getEntryPointVarName(File sourceDir, File variableRenameMap) throws IOException {
-		File file = Iterables.getOnlyElement(
-			FileUtils.listFiles(
-				sourceDir,
-				new NameFileFilter(getEntryPoint()),
-				TrueFileFilter.INSTANCE));
-		String closureModule = FilenameUtils.removeExtension(file.getAbsolutePath());
-		closureModule = closureModule.replace("/", "$").replace(".", "_").replace("-", "_");
-
-		String entryPointKey = "module" + closureModule + ":";
-		Collection<String> lines = Files.asCharSource(variableRenameMap, Charsets.UTF_8).readLines();
-		for (String line : lines) {
-			if (line.startsWith(entryPointKey)) {
-				return line.substring(entryPointKey.length());
-			}
-		}
-
-		System.out.println(
-			String.format(
-				"Searching for: '%s' in: '%s'",
-				entryPointKey,
-				variableRenameMap.getAbsolutePath()));
-		throw new RuntimeException("cannot find entry point in variable_renaming_report");
+	private File createMainEntryPoint(File workDir, File entryPoint, ModuleNode module) throws IOException {
+		File file = new File(workDir, "_spaghetti-main.js");
+		String data = String.format(
+			"%s=require('%s');",
+			module.getName(),
+			entryPoint.getAbsolutePath());
+		FileUtils.write(file, data);
+		return file;
 	}
 
 	private static File filterFileList(Collection<File> list, String name) {
@@ -180,5 +152,15 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			}
 		}
 		throw new RuntimeException("Cannot find entry point: " + name);
+	}
+
+	private static Set<Map.Entry<String, String>> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
+		Map<String, String> deps = Maps.newHashMap();
+		for (ModuleNode node : config.getAllDependentModules()) {
+			String importName = node.getName().replace(".", "_");
+			deps.put(node.getName(), importName);
+		}
+		deps.putAll(externalDependencies);
+		return deps.entrySet();
 	}
 }
