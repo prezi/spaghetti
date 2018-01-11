@@ -7,20 +7,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
@@ -34,7 +31,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private File workDir;
 	private File sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
-	private String entryPoint = null;
+	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
 
 	@Input
@@ -89,12 +86,12 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	}
 
 	@Input
-	public String getEntryPoint() {
-		return entryPoint;
+	public Collection<File> getEntryPoints() {
+		return entryPoints;
 	}
 
-	public void setEntryPoint(String filename) {
-		this.entryPoint = filename;
+	public void setEntryPoints(Collection<File> files) {
+		this.entryPoints = files;
 	}
 
 	@TaskAction
@@ -118,8 +115,8 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		}
 
 		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
-		File entryPointFile = filterFileList(inputFiles, getEntryPoint());
-		File mainEntryPoint = createMainEntryPoint(workDir, entryPointFile, config.getLocalModule());
+		Collection<File> entryPointFiles = filterFileList(inputFiles, getEntryPoints());
+		File mainEntryPoint = createMainEntryPoint(workDir, entryPointFiles, config.getLocalModule());
 		inputFiles.add(mainEntryPoint);
 
 		int exitValue = ClosureCompiler.concat(
@@ -135,23 +132,46 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		}
 	}
 
-	private File createMainEntryPoint(File workDir, File entryPoint, ModuleNode module) throws IOException {
+	private File createMainEntryPoint(File workDir, Collection<File> entryPoints, ModuleNode module) throws IOException {
 		File file = new File(workDir, "_spaghetti-main.js");
-		String data = String.format(
-			"%s=require('%s');",
-			module.getName(),
-			entryPoint.getAbsolutePath());
+		String data;
+		if (entryPoints.size() == 1) {
+			File entryPoint = Iterables.getOnlyElement(entryPoints);
+			data = String.format(
+				"%s=require('%s');",
+				module.getName(),
+				entryPoint.getAbsolutePath());
+		} else {
+			Collection<String> requireCalls = Lists.newArrayList();
+			for (File entryPoint: entryPoints) {
+				requireCalls.add(String.format("require('%s')", entryPoint.getAbsolutePath()));
+			}
+			data = String.format(
+				"%s=[%s];",
+				module.getName(),
+				Joiner.on(",").join(requireCalls));
+		}
 		FileUtils.write(file, data);
 		return file;
 	}
 
-	private static File filterFileList(Collection<File> list, String name) {
+	private static Collection<File> filterFileList(Collection<File> list, Collection<File> fileNames) {
+		Set<String> names = Sets.newHashSet();
+		for (File f: fileNames) {
+			names.add(f.getName().replaceAll("(\\.d)?\\.ts$", ".js"));
+		}
+
+		Collection<File> foundFiles = Lists.newArrayList();
 		for (File f: list) {
-			if (f.getName().equals(name)) {
-				return f;
+			if (names.contains(f.getName())) {
+				foundFiles.add(f);
 			}
 		}
-		throw new RuntimeException("Cannot find entry point: " + name);
+
+		if (foundFiles.size() != fileNames.size()) {
+			throw new RuntimeException("Cannot find entry points: " + Joiner.on(", ").join(names));
+		}
+		return foundFiles;
 	}
 
 	private static Set<Map.Entry<String, String>> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
