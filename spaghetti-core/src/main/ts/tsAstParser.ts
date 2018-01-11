@@ -114,18 +114,16 @@ class Linter {
 
         const replacements: Array<Replacement> = [];
         statements.forEach((statement) => {
-            const referenceMatch = statement.getFullText().match(/\/\/\/[^\n]+/g);
-            const referenceStatements = referenceMatch == null ? "" : referenceMatch.join("\n");
+            let replacementText = "";
             if (statement.kind === ts.SyntaxKind.ExportDeclaration) {
-                const fileContentReplacement = this.getImportReplacement(filename, statement as ts.ExportDeclaration, referenceStatements)
-                replacements.push(fileContentReplacement);
-            } else {
-                replacements.push({
-                    start: statement.pos,
-                    end: statement.end,
-                    replacementText: referenceStatements,
-                });
+                replacementText = this.getImportReplacement(filename, statement as ts.ExportDeclaration);
             }
+
+            replacements.push({
+                start: statement.getStart(),
+                end: statement.getEnd(),
+                replacementText: replacementText,
+            });
         });
 
         const newText = getNewText(this.sourceFile.text, replacements.reverse());
@@ -133,15 +131,16 @@ class Linter {
         return newText;
     }
 
-    getImportReplacement(filename: string, exportDeclaration: ts.ExportDeclaration, referenceStatements: string): Replacement {
-        const moduleText = getImportExportText(exportDeclaration);
-        const filePath = path.resolve(path.dirname(filename), moduleText + ".d.ts");
+    getImportReplacement(filename: string, exportDeclaration: ts.ExportDeclaration): string {
+        const importPath = getImportExportText(exportDeclaration);
+        const relativePath = importPath + ".d.ts";
+        const filePath = path.resolve(path.dirname(filename), relativePath);
         const importContent = fs.readFileSync(filePath, "utf8");
-        return {
-            start: exportDeclaration.pos,
-            end: exportDeclaration.end,
-            replacementText: `${referenceStatements}\n${importContent}\n`,
-        }
+        return [
+            `/* inlined import: start of '${relativePath}' */`,
+            importContent,
+            `/* inlined import: end of '${relativePath}' */`,
+        ].join("\n");
     }
 
     lintVariableDeclaration(node: ts.VariableDeclaration) {

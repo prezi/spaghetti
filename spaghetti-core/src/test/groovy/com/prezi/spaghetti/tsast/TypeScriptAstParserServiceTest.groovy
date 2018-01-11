@@ -289,10 +289,24 @@ export * from './b'
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
         File outputFile = new File(dir, "output.d.ts");
-        def lines = runMergeDtsForJs("export * from './b'", outputFile)
+        def lines = runMergeDtsForJs("""// a comment
+/* pre import */ import { b } from './b'; /* post import */
+/* above comment */
+/* pre comment */ export * from './b'; /* post comment */
+// another comment
+export interface A { }
+""", outputFile)
         then:
         lines == []
-        outputFile.getText() == "\nexport interface Foo { }\n";
+        outputFile.getText() == """// a comment
+/* pre import */  /* post import */
+/* above comment */
+/* pre comment */ /* inlined import: start of './b.d.ts' */
+export interface Foo { }
+/* inlined import: end of './b.d.ts' */ /* post comment */
+// another comment
+export interface A { }
+""";
     }
 
     def "commonJs with reference path"() {
@@ -301,11 +315,14 @@ export * from './b'
         dir.mkdirs();
         File outputFile = new File(dir, "output.d.ts");
         def lines = runMergeDtsForJs("""/// <reference path="./b" />
-export * from './b'""", outputFile)
+export * from './b';
+""", outputFile)
         then:
         lines == []
         outputFile.getText() == """/// <reference path="./b" />
+/* inlined import: start of './b.d.ts' */
 export interface Foo { }
+/* inlined import: end of './b.d.ts' */
 """;
     }
 
