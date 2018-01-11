@@ -83,10 +83,10 @@ public class ClosureCompiler {
 	public static int concat(
 			File workDir,
 			File outputFile,
+			File entryPoint,
 			Collection<File> inputSources,
 			Collection<File> customExterns,
-			CompilationLevel compilationLevel,
-			File variableRenameReport) throws IOException, InterruptedException   {
+			CompilationLevel compilationLevel) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir);
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -94,14 +94,12 @@ public class ClosureCompiler {
 		args.add("--assume_function_wrapper");
 		args.add("--process_common_js_modules");
 		add(args, "--module_resolution", "NODE");
+		add(args, "--dependency_mode", "STRICT");
 		add(args, "--compilation_level", compilationLevel.name());
-		add(args, "--language_in", "ECMASCRIPT5");
-		add(args, "--language_out", "ECMASCRIPT5");
+		add(args, "--language_in", "ECMASCRIPT5_STRICT");
+		add(args, "--language_out", "ECMASCRIPT5_STRICT");
+		add(args, "--entry_point", entryPoint.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
-
-		if (variableRenameReport != null) {
-			add(args, "--variable_renaming_report", variableRenameReport.getAbsolutePath());
-		}
 
 		for (File inputSource : inputSources) {
 			add(args, "--js", inputSource.getAbsolutePath());

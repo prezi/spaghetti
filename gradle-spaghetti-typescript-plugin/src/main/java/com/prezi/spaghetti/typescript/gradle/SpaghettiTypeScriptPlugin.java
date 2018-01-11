@@ -2,8 +2,10 @@ package com.prezi.spaghetti.typescript.gradle;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.internal.DefaultDefinitionFile;
+import com.prezi.spaghetti.gradle.GenerateHeaders;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
@@ -94,8 +96,13 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 		final Callable<List<File>> getCommonsJsEntryPoints = new Callable<List<File>>() {
 			public List<File> call() {
+				GenerateHeaders task = project.getTasks().withType(GenerateHeaders.class).getByName("generateHeaders");
+				List<File> files = Lists.newArrayList();
+
 				File defFile = spaghettiExtension.getDefinition().getFile();
-				return Collections.singletonList(defFile);
+				files.add(defFile);
+				files.addAll(project.fileTree(task.getOutputDirectory()).getFiles());
+				return files;
 			}
 		};
 
@@ -109,10 +116,10 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 					binary.getCompileTask().getConventionMapping().map("commonJsEntryPoints", getCommonsJsEntryPoints);
 
 					concatTask = addConcatenateTask(project, binary);
-					concatTask.getConventionMapping().map("entryPoint", new Callable<String>() {
-						public String call() {
+					concatTask.getConventionMapping().map("entryPoints", new Callable<List<File>>() {
+						public List<File> call() {
 							File defFile = spaghettiExtension.getDefinition().getFile();
-							return defFile.getName().replace(".d.ts", "").replace(".ts", "") + ".js";
+							return Lists.newArrayList(defFile);
 						}
 					});
 
@@ -139,12 +146,25 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				registerSpaghettiModule(project, binary, getDtsFile, concatTask, false);
 			}
 		});
+
+		final Callable<List<File>> testSourcesEntryPoints = new Callable<List<File>>() {
+			public List<File> call() {
+				Set<TypeScriptSourceSet> sources = typeScriptExtension.getSources().getByName("test").withType(TypeScriptSourceSet.class);
+				TypeScriptSourceSet source = Iterables.getOnlyElement(sources);
+				return Lists.newArrayList(source.getSource().getFiles());
+			}
+		};
+
 		typeScriptExtension.getBinaries().withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
 				ClosureConcatenateTask concatTask = null;
 				if (SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
+					testBinary.getCompileTask().getConventionMapping().map("commonJsEntryPoints", testSourcesEntryPoints);
+
 					concatTask = addConcatenateTask(project, testBinary);
+					concatTask.getConventionMapping().map("entryPoints", testSourcesEntryPoints);
+
 				}
 				registerSpaghettiModule(project, testBinary, null, concatTask, true);
 			}

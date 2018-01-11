@@ -7,20 +7,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
-import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
@@ -34,7 +31,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private File workDir;
 	private File sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
-	private String entryPoint = null;
+	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
 
 	@Input
@@ -89,22 +86,12 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	}
 
 	@Input
-	public String getEntryPoint() {
-		return entryPoint;
+	public Collection<File> getEntryPoints() {
+		return entryPoints;
 	}
 
-	public void setEntryPoint(String filename) {
-		this.entryPoint = filename;
-	}
-
-	private Set<Map.Entry<String, String>> getDependencies() throws IOException {
-		Map<String, String> deps = Maps.newHashMap();
-		ModuleConfiguration config = readConfig(getDefinition());
-		for (ModuleNode node : config.getAllDependentModules()) {
-			deps.put(node.getAlias(), node.getAlias());
-		}
-		deps.putAll(getExternalDependencies());
-		return deps.entrySet();
+	public void setEntryPoints(Collection<File> files) {
+		this.entryPoints = files;
 	}
 
 	@TaskAction
@@ -117,8 +104,9 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		FileUtils.forceMkdir(nodeDir);
 
 		FileUtils.copyDirectory(getSourceDir(), jsFilesDir);
+		ModuleConfiguration config = readConfig(getDefinition());
 
-		for (Map.Entry<String, String> extern : getDependencies()) {
+		for (Map.Entry<String, String> extern : getDependencies(config, getExternalDependencies())) {
 			String varName = extern.getKey();
 			String importName = extern.getValue();
 			FileUtils.write(
@@ -126,46 +114,73 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 				String.format("module.exports = %s;\n", varName));
 		}
 
-		File variableRenameMap = new File(workDir, "rename-map.txt");
+		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
+		Collection<File> entryPointFiles = filterFileList(inputFiles, getEntryPoints());
+		File mainEntryPoint = createMainEntryPoint(workDir, entryPointFiles, config.getLocalModule());
+		inputFiles.add(mainEntryPoint);
+
 		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
-			FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true),
+			mainEntryPoint,
+			inputFiles,
 			Sets.<File>newHashSet(),
-			CompilationLevel.SIMPLE,
-			variableRenameMap);
+			CompilationLevel.SIMPLE);
 
 		if (exitValue != 0) {
 			throw new RuntimeException("Closure Compiler return an error code: " + exitValue);
 		}
-
-		String entryVarName = getEntryPointVarName(jsFilesDir, variableRenameMap);
-		String line = String.format("\nvar __spaghettiMainModule=%s.default;\n", entryVarName);
-		Files.append(line, getOutputFile(), Charsets.UTF_8);
 	}
 
-	private String getEntryPointVarName(File sourceDir, File variableRenameMap) throws IOException {
-		File file = Iterables.getOnlyElement(
-			FileUtils.listFiles(
-				sourceDir,
-				new NameFileFilter(getEntryPoint()),
-				TrueFileFilter.INSTANCE));
-		String closureModule = FilenameUtils.removeExtension(file.getAbsolutePath());
-		closureModule = closureModule.replace("/", "$").replace(".", "_").replace("-", "_");
+	private File createMainEntryPoint(File workDir, Collection<File> entryPoints, ModuleNode module) throws IOException {
+		File file = new File(workDir, "_spaghetti-main.js");
+		String data;
+		if (entryPoints.size() == 1) {
+			File entryPoint = Iterables.getOnlyElement(entryPoints);
+			data = String.format(
+				"%s=require('%s');",
+				module.getName(),
+				entryPoint.getAbsolutePath());
+		} else {
+			Collection<String> requireCalls = Lists.newArrayList();
+			for (File entryPoint: entryPoints) {
+				requireCalls.add(String.format("require('%s')", entryPoint.getAbsolutePath()));
+			}
+			data = String.format(
+				"%s=[%s];",
+				module.getName(),
+				Joiner.on(",").join(requireCalls));
+		}
+		FileUtils.write(file, data);
+		return file;
+	}
 
-		String entryPointKey = "module" + closureModule + ":";
-		Collection<String> lines = Files.asCharSource(variableRenameMap, Charsets.UTF_8).readLines();
-		for (String line : lines) {
-			if (line.startsWith(entryPointKey)) {
-				return line.substring(entryPointKey.length());
+	private static Collection<File> filterFileList(Collection<File> list, Collection<File> fileNames) {
+		Set<String> names = Sets.newHashSet();
+		for (File f: fileNames) {
+			names.add(f.getName().replaceAll("(\\.d)?\\.ts$", ".js"));
+		}
+
+		Collection<File> foundFiles = Lists.newArrayList();
+		for (File f: list) {
+			if (names.contains(f.getName())) {
+				foundFiles.add(f);
 			}
 		}
 
-		System.out.println(
-			String.format(
-				"Searching for: '%s' in: '%s'",
-				entryPointKey,
-				variableRenameMap.getAbsolutePath()));
-		throw new RuntimeException("cannot find entry point in variable_renaming_report");
+		if (foundFiles.size() != fileNames.size()) {
+			throw new RuntimeException("Cannot find entry points: " + Joiner.on(", ").join(names));
+		}
+		return foundFiles;
+	}
+
+	private static Set<Map.Entry<String, String>> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
+		Map<String, String> deps = Maps.newHashMap();
+		for (ModuleNode node : config.getAllDependentModules()) {
+			String importName = node.getName().replace(".", "_");
+			deps.put(node.getName(), importName);
+		}
+		deps.putAll(externalDependencies);
+		return deps.entrySet();
 	}
 }

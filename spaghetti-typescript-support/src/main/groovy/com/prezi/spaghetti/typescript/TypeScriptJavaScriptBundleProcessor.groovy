@@ -9,12 +9,13 @@ import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters
 import com.prezi.spaghetti.typescript.bundle.TypeScriptEnumDenormalizer
 import java.util.Collection
 import java.util.LinkedHashSet
+import java.util.regex.Pattern
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
 
 class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProcessor {
 	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
-	public static final String USE_STRICT = "\"use strict\";";
+	public static final Pattern USE_STRICT = Pattern.compile("^['\"]use strict['\"];");
 
 	TypeScriptJavaScriptBundleProcessor() {
 		super("typescript")
@@ -25,18 +26,16 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		def module = params.moduleConfiguration.localModule
 
 		def content = ""
-		if (javaScript.startsWith(USE_STRICT)) {
-			javaScript = javaScript.substring(USE_STRICT.length());
-			content += USE_STRICT + "\n";
+		def matcher = USE_STRICT.matcher(javaScript)
+		if (matcher.find()) {
+			javaScript = javaScript.substring(matcher.end());
+			content += "'use strict';\n";
 		}
+
 		content += generateAccessors(params.moduleConfiguration)
 		content += TypeScriptEnumDenormalizer.denormalize(javaScript)
-		if (content.contains("var __spaghettiMainModule=")) {
-			content += "\n" + "return __spaghettiMainModule;" + "\n"
-		} else {
-			def export = getModuleExport(module)
-			content += "\n" + "return ${export};" + "\n"
-		}
+		def export = getModuleExport(module)
+		content += "\n" + "return ${export};" + "\n"
 		return content
 	}
 
@@ -58,6 +57,11 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		// but duplicate (redundant) lines are not generated for namespaces
 		// which have a common prefix (ie. com.spaghetti.a, com.spaghetti.b).
 		LinkedHashSet<String> lines = new LinkedHashSet<String>();
+
+		// Create local variable for current module's namespace and initialize it to null.
+		// To prevent module's code from accidentally assigning to a global variable.
+		lines.addAll(GeneratorUtils.createNamespaceMerge(config.localModule.name, "null"))
+
 		for (def wrapper: config.getDirectDependentModules()) {
 			ModuleNode module = wrapper.entity;
 			String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);

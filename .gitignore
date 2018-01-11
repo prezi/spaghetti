@@ -24,3 +24,4 @@ _site/
 .classpath
 .settings/
 bin/
+node_modules/
