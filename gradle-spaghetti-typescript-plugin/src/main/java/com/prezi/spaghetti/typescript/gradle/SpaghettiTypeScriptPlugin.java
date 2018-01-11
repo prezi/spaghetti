@@ -155,12 +155,29 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			}
 		};
 
+		final Callable<Collection<File>> testGeneratedHeaders = new Callable<Collection<File>>() {
+			public Collection<File> call() {
+				GenerateHeaders task = project.getTasks().withType(GenerateHeaders.class).getByName("generateTestHeaders");
+				return project.fileTree(task.getOutputDirectory()).getFiles();
+			}
+		};
+
 		typeScriptExtension.getBinaries().withType(TypeScriptTestBinary.class).all(new Action<TypeScriptTestBinary>() {
 			@Override
 			public void execute(TypeScriptTestBinary testBinary) {
 				ClosureConcatenateTask concatTask = null;
 				if (SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
-					testBinary.getCompileTask().getConventionMapping().map("commonJsEntryPoints", testSourcesEntryPoints);
+					testBinary
+						.getCompileTask()
+						.getConventionMapping()
+						.map("commonJsEntryPoints", new Callable<List<File>>() {
+							public List<File> call() throws Exception {
+								List<File> files = Lists.newArrayList();
+								files.addAll(testSourcesEntryPoints.call());
+								files.addAll(testGeneratedHeaders.call());
+								return files;
+							}
+						});
 
 					concatTask = addConcatenateTask(project, testBinary);
 					concatTask.getConventionMapping().map("entryPoints", testSourcesEntryPoints);
