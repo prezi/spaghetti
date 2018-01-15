@@ -31,6 +31,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private File workDir;
 	private File sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
+	private Set<String> nodeRequireDependencies = Sets.newHashSet();
 	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
 
@@ -69,6 +70,14 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	}
 	public void externalDependency(String shorthand) {
 		externalDependency(shorthand, shorthand);
+	}
+
+	@Input
+	public Set<String> getNodeRequireDependencies() {
+		return nodeRequireDependencies;
+	}
+	public void nodeRequireDependency(String name) {
+		this.nodeRequireDependencies.add(name);
 	}
 
 	@InputFile
@@ -112,6 +121,12 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			FileUtils.write(
 				new File(nodeDir, importName + ".js"),
 				String.format("module.exports = %s;\n", varName));
+		}
+
+		for (String name : getNodeRequireDependencies()) {
+			FileUtils.write(
+				new File(nodeDir, name + ".js"),
+				String.format("var _require=require;\nmodule.exports = _require('%s');\n", name));
 		}
 
 		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
