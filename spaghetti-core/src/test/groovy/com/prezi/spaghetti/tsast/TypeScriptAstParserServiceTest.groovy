@@ -222,18 +222,186 @@ module test {
         return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
     }
 
-
-    def "commonsjs: non-exported are ignored in non-ambient context"() {
+    def "commonjs: classes not allowed"() {
         when:
-        def lines = runMergeDtsForJs("""
-module test {
-    let a = "a";
-    var b;
-    class A {}
+        def lines = runCommonJsVerify("""
+export class Test {
 }
-""")
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Classes are not allowed.")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: var, let not allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+export var test: number;
+export let test2: number;
+""",
+checkImported)
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("'var' and 'let' are not allowed")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: references are allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+/// <reference path="internal/other.ts"/>
+/// <reference types="node" />
+module test {}
+""",
+checkImported)
         then:
         lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: untyped variables are not allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+export const a = "a";
+export const b;
+export const c: any;
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Variables without explicit types are not allowed")
+        e.output[1].contains("Variables without explicit types are not allowed")
+        e.output[2].contains("Variables should not have 'any' type")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: non-exported are ignored in non-ambient context"() {
+        when:
+        def lines = runCommonJsVerify("""
+let a = "a";
+var b;
+class A {}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: ambient context members are implicitly exported"() {
+        when:
+        def lines = runCommonJsVerify("""
+export declare module test {
+    class A {}
+}
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Classes are not allowed.")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: ambient non-exported sub-context members are ignored"() {
+        when:
+        def lines = runCommonJsVerify("""
+module test {
+    var a: any;
+
+    export declare module B {
+        class C {}
+    }
+}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: ambient sub-context members are implicitly exported"() {
+        when:
+        def lines = runCommonJsVerify("""
+export module test {
+    var a: any;
+
+    export module B {
+        export declare module C {
+            class D {}
+        }
+    }
+}
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Classes are not allowed.")
+
+        where:
+        checkImported << [false, true]
+    }
+
+
+    def "non-exported sub-module members are ignored"() {
+        when:
+        def lines = runCommonJsVerify("""
+export module test {
+    var a: any;
+
+    export module B {
+        module C {
+            class D {}
+        }
+    }
+}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "var, let inside functions bodies are ignored"() {
+        when:
+        def lines = runCommonJsVerify("""
+export function a(): number {
+    var b = 1;
+    let c = 2;
+    return b + c;
+}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
     }
 
     def "commonsjs: with no import statements"() {
@@ -331,6 +499,28 @@ export * from './b';
 export interface Foo { }
 /* End of inlined export: './b.d.ts' */
 """;
+    }
+
+    def runCommonJsVerify(String code, boolean inSubModule) {
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+
+        def content = code;
+        if (inSubModule) {
+            File importFile = new File(dir, "b.d.ts");
+            FileUtils.write(importFile, code);
+            content = "export * from './b';"
+        }
+
+        File definitionFile = new File(dir, "definition.d.ts");
+        FileUtils.write(definitionFile, content);
+
+        return TypeScriptAstParserService.mergeDefinitionFileImports(
+            dir,
+            new File("build/typescript/node_modules/typescript"),
+            definitionFile,
+            new File(dir, "output.d.ts"),
+            LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class));
     }
 
     def runMergeDtsForJs(String content, String importedContent = null, File outputFile =  null) {
