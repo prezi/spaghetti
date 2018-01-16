@@ -22,6 +22,10 @@ class Linter {
         return this.errors.length > 0;
     }
 
+    copyErrorsTo(other: Linter) {
+        other.errors.push(...this.errors);
+    }
+
     printErrors() {
         this.errors.forEach((e) => process.stdout.write(e + '\n'));
     }
@@ -64,34 +68,43 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
-    lintCommonJs() {
+    lintCommonJs(isSubModule: boolean = false) {
         const sourceFile = this.sourceFile;
         if (sourceFile.amdDependencies.length > 0) {
             this.lintError("Amd dependencies are not allowed", sourceFile);
         }
 
         ts.forEachChild(sourceFile, (n) => this.lintStatements(n));
+        ts.forEachChild(sourceFile, (node: ts.Node) => {
+            if (isSubModule) {
+
+
+            } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+                const exportDecl = (<ts.ExportDeclaration>node);
+                if (exportDecl.exportClause == null) {
+                    // exportClause is null: 'export * from ...'
+                    const filePath = getImportFilePath(sourceFile.fileName, exportDecl);
+                    const subLinter = new Linter(getSourceFile(filePath));
+                    subLinter.lintCommonJs(true);
+                    subLinter.copyErrorsTo(this);
+                }
+            }
+        });
     }
 
 
-    mergeCommonJsImports(filename: string): string | null {
-        const relativePathMatch = /^\.?\.?\//;
+    mergeCommonJsImports(): string | null {
         const importDeclarations: Array<ts.ImportDeclaration> = [];
         const exportModules: Array<string> = [];
         const statements: Array<ts.Statement> = [];
         ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-            if (node.kind === ts.SyntaxKind.ImportDeclaration) {
-                const importDeclaration = (<ts.ImportDeclaration>node);
-                const moduleText = getImportExportText(importDeclaration)!;
-                if (moduleText.match(relativePathMatch) != null) {
-                    importDeclarations.push(importDeclaration);
-                    statements.push(importDeclaration);
-                }
-            } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
-                const exportDeclaration = (<ts.ExportDeclaration>node);
-                const moduleText = getImportExportText(exportDeclaration);
-
-                if (moduleText != null && moduleText.match(relativePathMatch) != null) {
+            if (isRelativeImportExport(node)) {
+                if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+                    importDeclarations.push(node as ts.ImportDeclaration);
+                    statements.push(node as ts.ImportDeclaration);
+                } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+                    const exportDeclaration = (<ts.ExportDeclaration>node);
+                    const moduleText = getImportExportText(exportDeclaration)!;
                     if (exportDeclaration.exportClause != null) {
                         this.lintError(`named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
                     } else {
@@ -116,7 +129,7 @@ class Linter {
         statements.forEach((statement) => {
             let replacementText = "";
             if (statement.kind === ts.SyntaxKind.ExportDeclaration) {
-                replacementText = this.getImportReplacement(filename, statement as ts.ExportDeclaration);
+                replacementText = this.getImportReplacement(this.sourceFile.fileName, statement as ts.ExportDeclaration);
             }
 
             replacements.push({
@@ -131,15 +144,14 @@ class Linter {
         return newText;
     }
 
-    getImportReplacement(filename: string, exportDeclaration: ts.ExportDeclaration): string {
-        const importPath = getImportExportText(exportDeclaration);
-        const relativePath = importPath + ".d.ts";
-        const filePath = path.resolve(path.dirname(filename), relativePath);
+    getImportReplacement(filename: string, exportDecl: ts.ExportDeclaration): string {
+        const filePath = getImportFilePath(filename, exportDecl);
         const importContent = fs.readFileSync(filePath, "utf8");
+        const exportSpecifier = exportDecl.moduleSpecifier ? exportDecl.moduleSpecifier.getText() : "";
         return [
-            `/* Start of inlined export: '${relativePath}' */`,
+            `/* Start of inlined export: ${exportSpecifier} */`,
             importContent,
-            `/* End of inlined export: '${relativePath}' */`,
+            `/* End of inlined export: ${exportSpecifier} */`,
         ].join("\n");
     }
 
@@ -265,6 +277,24 @@ function getSourceFile(filename: string) {
     return sourceFile;
 }
 
+function isRelativeImportExport(decl: ts.Node): boolean {
+    const relativePathMatch = /^\.?\.?\//;
+    if (decl.kind === ts.SyntaxKind.ImportDeclaration
+            ||decl.kind === ts.SyntaxKind.ExportDeclaration) {
+        const moduleText = getImportExportText(decl as (ts.ImportDeclaration | ts.ExportDeclaration));
+        if (moduleText != null && moduleText.match(relativePathMatch) != null) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function getImportFilePath(parentPath: string, exportDeclaration: ts.ExportDeclaration) {
+    const importPath = getImportExportText(exportDeclaration);
+    const relativePath = importPath + ".d.ts";
+    return path.resolve(path.dirname(parentPath), relativePath);
+}
+
 function getImportExportText(declaration: ts.ImportDeclaration | ts.ExportDeclaration): string | null {
     if (declaration.moduleSpecifier != null) {
         return declaration.moduleSpecifier.getText().replace(/['"]/g, '');
@@ -306,7 +336,7 @@ if (args[0] === "--collectExportedIdentifiers") {
     const sourceFile = getSourceFile(filename);
     const linter = new Linter(sourceFile);
     linter.lintCommonJs();
-    const lintedFileText = linter.mergeCommonJsImports(filename);
+    const lintedFileText = linter.mergeCommonJsImports();
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);

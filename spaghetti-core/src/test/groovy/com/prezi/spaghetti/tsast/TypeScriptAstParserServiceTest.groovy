@@ -475,9 +475,9 @@ export interface A { }
         outputFile.getText() == """// a comment
 /* pre import */  /* post import */
 /* above comment */
-/* pre comment */ /* Start of inlined export: './b.d.ts' */
+/* pre comment */ /* Start of inlined export: './b' */
 export interface Foo { }
-/* End of inlined export: './b.d.ts' */ /* post comment */
+/* End of inlined export: './b' */ /* post comment */
 // another comment
 export interface A { }
 """;
@@ -495,9 +495,9 @@ export * from './b';
         then:
         lines == []
         outputFile.getText() == """/// <reference path="./b" />
-/* Start of inlined export: './b.d.ts' */
+/* Start of inlined export: './b' */
 export interface Foo { }
-/* End of inlined export: './b.d.ts' */
+/* End of inlined export: './b' */
 """;
     }
 
