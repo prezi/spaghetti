@@ -131,19 +131,6 @@ module test {
         lines == []
     }
 
-    def "commonsjs: non-exported are ignored in non-ambient context"() {
-        when:
-        def lines = runMergeDtsForJs("""
-module test {
-    let a = "a";
-    var b;
-    class A {}
-}
-""")
-        then:
-        lines == []
-    }
-
     def "ambient context members are implicitly exported"() {
         when:
         def lines = runVerify("""
@@ -235,7 +222,21 @@ module test {
         return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
     }
 
-    def "commonJs with no import statements"() {
+
+    def "commonsjs: non-exported are ignored in non-ambient context"() {
+        when:
+        def lines = runMergeDtsForJs("""
+module test {
+    let a = "a";
+    var b;
+    class A {}
+}
+""")
+        then:
+        lines == []
+    }
+
+    def "commonsjs: with no import statements"() {
         when:
         def lines = runMergeDtsForJs("""
 export function foo(){};
@@ -244,7 +245,7 @@ export function foo(){};
         lines == []
     }
 
-    def "commonJs with single import statement"() {
+    def "commonsjs: with single import statement"() {
         when:
         def lines = runMergeDtsForJs("""
 import * as a from './b';
@@ -255,7 +256,7 @@ export function foo(){};
         e.output[0].contains("missing export * from './b' statement")
     }
 
-    def "commonJs with single import and export statement"() {
+    def "commonsjs: with single import and export statement"() {
         when:
         def lines = runMergeDtsForJs("""
 import * as a from './b';
@@ -265,7 +266,7 @@ export * from './b'
         lines == []
     }
 
-    def "commonJs with relative export statement and named exports"() {
+    def "commonsjs: with relative export statement and named exports"() {
         when:
         def lines = runMergeDtsForJs("""
 export { a } from './b'
@@ -275,7 +276,7 @@ export { a } from './b'
         e.output[0].contains("named exports are not supported from relative modules: './b'");
     }
 
-    def "commonJs with no import and export statement"() {
+    def "commonsjs: with no import and export statement"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -284,7 +285,7 @@ export * from './b'
         lines == []
     }
 
-    def "commonJs with no import and export statement"() {
+    def "commonsjs: with no import and export statement"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -309,7 +310,7 @@ export interface A { }
 """;
     }
 
-    def "commonJs with reference path"() {
+    def "commonsjs: with reference path"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
