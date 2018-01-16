@@ -447,6 +447,44 @@ export { a } from './b'
         e.output[0].contains("named exports are not supported from relative modules: './b'");
     }
 
+    def "commonsjs: imported file cannot contain relative import"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""",
+"""
+import * as a from './c';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("relative imports are not permitted in file being merged");
+    }
+
+    def "commonsjs: imported file can contain non-relative import"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""",
+"""
+import * as a from 'react';
+""")
+        then:
+        lines == []
+    }
+
+    def "commonsjs: imported file cannot contain relative export"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""",
+"""
+export * from './c';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("exports from relative paths are not permitted a file being merged.");
+    }
+
     def "commonsjs: with no import and export statement"() {
         when:
         def lines = runMergeDtsForJs("""

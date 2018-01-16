@@ -39,7 +39,7 @@ class Linter {
     lint() {
         const sourceFile = this.sourceFile;
         if (sourceFile.amdDependencies.length > 0) {
-            this.lintError("Amd dependencies are not allowed", sourceFile);
+            this.lintError("Amd dependencies are not allowed.", sourceFile);
         }
         if (sourceFile.statements.length > 1) {
             this.lintError("Expecting only one module declaration at the top level.", sourceFile);
@@ -61,7 +61,7 @@ class Linter {
         }
 
         if (statement.kind !== ts.SyntaxKind.ModuleBlock) {
-            this.lintError("Expecting a module block inside top level module declaration", sourceFile);
+            this.lintError("Expecting a module block inside top level module declaration.", sourceFile);
             return;
         }
 
@@ -71,15 +71,20 @@ class Linter {
     lintCommonJs(isSubModule: boolean = false) {
         const sourceFile = this.sourceFile;
         if (sourceFile.amdDependencies.length > 0) {
-            this.lintError("Amd dependencies are not allowed", sourceFile);
+            this.lintError("Amd dependencies are not allowed.", sourceFile);
         }
 
         ts.forEachChild(sourceFile, (n) => this.lintStatements(n));
         ts.forEachChild(sourceFile, (node: ts.Node) => {
-            if (isSubModule) {
+            if (isSubModule && isRelativeImportExport(node)) {
+                if (node.kind === ts.SyntaxKind.ImportDeclaration) {
+                    this.lintError("relative imports are not permitted in file being merged.", node);
+                } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+                    this.lintError("exports from relative paths are not permitted a file being merged.", node);
+                }
+            }
 
-
-            } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
+            if (!isSubModule && isRelativeImportExport(node) && node.kind === ts.SyntaxKind.ExportDeclaration) {
                 const exportDecl = (<ts.ExportDeclaration>node);
                 if (exportDecl.exportClause == null) {
                     // exportClause is null: 'export * from ...'
@@ -117,7 +122,7 @@ class Linter {
         importDeclarations.forEach((importDeclaration) => {
             const moduleText = getImportExportText(importDeclaration)!;
             if (exportModules.indexOf(moduleText) == -1) {
-                this.lintError(`missing export * from '${moduleText}' statement`, importDeclaration);
+                this.lintError(`missing export * from '${moduleText}' statement.`, importDeclaration);
             }
         });
 
