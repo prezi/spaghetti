@@ -250,7 +250,8 @@ export function foo(){};
         def lines = runMergeDtsForJs("""
 import * as a from './b';
 export function foo(){};
-""")
+""",
+"""export interface Foo { }""")
         then:
         def e = thrown(TypeScriptAstParserException)
         e.output[0].contains("missing export * from './b' statement")
@@ -261,7 +262,8 @@ export function foo(){};
         def lines = runMergeDtsForJs("""
 import * as a from './b';
 export * from './b'
-""")
+""",
+"""export interface Foo { }""")
         then:
         lines == []
     }
@@ -270,7 +272,8 @@ export * from './b'
         when:
         def lines = runMergeDtsForJs("""
 export { a } from './b'
-""")
+""",
+"""export interface Foo { }""")
         then:
         def e = thrown(TypeScriptAstParserException)
         e.output[0].contains("named exports are not supported from relative modules: './b'");
@@ -280,7 +283,8 @@ export { a } from './b'
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
-""")
+""",
+"""export interface Foo { }""")
         then:
         lines == []
     }
@@ -296,7 +300,8 @@ export * from './b'
 /* pre comment */ export * from './b'; /* post comment */
 // another comment
 export interface A { }
-""", outputFile)
+""",
+"""export interface Foo { }""", outputFile)
         then:
         lines == []
         outputFile.getText() == """// a comment
@@ -317,7 +322,8 @@ export interface A { }
         File outputFile = new File(dir, "output.d.ts");
         def lines = runMergeDtsForJs("""/// <reference path="./b" />
 export * from './b';
-""", outputFile)
+""",
+"""export interface Foo { }""", outputFile)
         then:
         lines == []
         outputFile.getText() == """/// <reference path="./b" />
@@ -327,15 +333,17 @@ export interface Foo { }
 """;
     }
 
-    def runMergeDtsForJs(String content, File outputFile =  null) {
+    def runMergeDtsForJs(String content, String importedContent = null, File outputFile =  null) {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
 
         File definitionFile = new File(dir, "definition.d.ts");
         FileUtils.write(definitionFile, content);
 
-        File importFile = new File(dir, "b.d.ts");
-        FileUtils.write(importFile, "export interface Foo { }");
+        if (importedContent != null) {
+            File importFile = new File(dir, "b.d.ts");
+            FileUtils.write(importFile, importedContent);
+        }
 
         Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
         File compilerPath = new File("build/typescript/node_modules/typescript");
