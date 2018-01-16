@@ -302,9 +302,9 @@ export interface A { }
         outputFile.getText() == """// a comment
 /* pre import */  /* post import */
 /* above comment */
-/* pre comment */ /* inlined import: start of './b.d.ts' */
+/* pre comment */ /* Start of inlined export: './b.d.ts' */
 export interface Foo { }
-/* inlined import: end of './b.d.ts' */ /* post comment */
+/* End of inlined export: './b.d.ts' */ /* post comment */
 // another comment
 export interface A { }
 """;
@@ -321,9 +321,9 @@ export * from './b';
         then:
         lines == []
         outputFile.getText() == """/// <reference path="./b" />
-/* inlined import: start of './b.d.ts' */
+/* Start of inlined export: './b.d.ts' */
 export interface Foo { }
-/* inlined import: end of './b.d.ts' */
+/* End of inlined export: './b.d.ts' */
 """;
     }
 

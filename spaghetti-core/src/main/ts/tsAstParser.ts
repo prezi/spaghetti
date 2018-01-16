@@ -137,9 +137,9 @@ class Linter {
         const filePath = path.resolve(path.dirname(filename), relativePath);
         const importContent = fs.readFileSync(filePath, "utf8");
         return [
-            `/* inlined import: start of '${relativePath}' */`,
+            `/* Start of inlined export: '${relativePath}' */`,
             importContent,
-            `/* inlined import: end of '${relativePath}' */`,
+            `/* End of inlined export: '${relativePath}' */`,
         ].join("\n");
     }
 
