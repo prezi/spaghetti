@@ -192,7 +192,9 @@ public class SpaghettiExtension {
 	public DefinitionFile getDefinition() {
 		if (this.definition == null) {
 			File file = findDefinition();
-			this.definition = new DefaultDefinitionFile(file, typescriptExportNamespace);
+			if (file != null) {
+				this.definition = new DefaultDefinitionFile(file, typescriptExportNamespace);
+			}
 		}
 		return this.definition;
 	}

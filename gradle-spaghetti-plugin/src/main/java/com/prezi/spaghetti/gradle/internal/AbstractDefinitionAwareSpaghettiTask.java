@@ -12,7 +12,11 @@ public class AbstractDefinitionAwareSpaghettiTask extends AbstractLanguageAwareS
 
 	@InputFile
 	public File getDefinitionFile() {
-		return getDefinition().getFile();
+		DefinitionFile d = getDefinition();
+		if (d != null) {
+			return d.getFile();
+		}
+		return null;
 	}
 
 	@Input
