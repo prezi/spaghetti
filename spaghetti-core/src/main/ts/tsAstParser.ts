@@ -10,6 +10,38 @@ interface Replacement {
     replacementText: string;
 }
 
+interface ImportedIdentifiers {
+    [key: string]: ImportType;
+}
+
+type ImportType = DefaultImport | StarImport | NamedImport | NamedWithAliasImport;
+
+interface BaseImport {
+    node: ts.ImportDeclaration;
+    moduleSpec: string;
+}
+
+interface DefaultImport extends BaseImport {
+    type: "default-import";
+    name: string;
+}
+
+interface StarImport extends BaseImport {
+    type: "star-import";
+    name: string;
+}
+
+interface NamedImport extends BaseImport {
+    type: "named-import";
+    name: string;
+}
+
+interface NamedWithAliasImport extends BaseImport {
+    type: "named-with-alias-import";
+    name: string;
+    propertyName: string;
+}
+
 class Linter {
     private sourceFile: ts.SourceFile;
     private errors: Array<string> = [];
@@ -75,6 +107,9 @@ class Linter {
         }
 
         ts.forEachChild(sourceFile, (n) => this.lintStatements(n));
+
+        const importedIdentifiers = collectImportedIdentifiers(sourceFile);
+
         ts.forEachChild(sourceFile, (node: ts.Node) => {
             if (isSubModule && isRelativeImportExport(node)) {
                 if (node.kind === ts.SyntaxKind.ImportDeclaration) {
@@ -89,8 +124,18 @@ class Linter {
                 if (exportDecl.exportClause == null) {
                     // exportClause is null: 'export * from ...'
                     const filePath = getImportFilePath(sourceFile.fileName, exportDecl);
-                    const subLinter = new Linter(getSourceFile(filePath));
+                    const subSourceFile = getSourceFile(filePath);
+                    const subLinter = new Linter(subSourceFile);
                     subLinter.lintCommonJs(true);
+
+                    const subImportedIds = collectImportedIdentifiers(subSourceFile);
+                    Object.keys(subImportedIds).forEach((name: string) => {
+                        if (importedIdentifiers[name] != null
+                                && !importsCanBeMerged(importedIdentifiers[name], subImportedIds[name])) {
+                            subLinter.lintError(`duplicate imported identifier: '${name}'`, subImportedIds[name].node);
+                        }
+                    });
+
                     subLinter.copyErrorsTo(this);
                 }
             }
@@ -120,8 +165,8 @@ class Linter {
             }
         });
         importDeclarations.forEach((importDeclaration) => {
-            const moduleText = getImportExportText(importDeclaration)!;
-            if (exportModules.indexOf(moduleText) == -1) {
+            const moduleText = getImportText(importDeclaration)!;
+            if (exportModules.indexOf(moduleText) === -1) {
                 this.lintError(`missing export * from '${moduleText}' statement.`, importDeclaration);
             }
         });
@@ -130,11 +175,12 @@ class Linter {
             return null;
         }
 
+        const importedIdentifiers = collectImportedIdentifiers(this.sourceFile);
         const replacements: Array<Replacement> = [];
         statements.forEach((statement) => {
             let replacementText = "";
             if (statement.kind === ts.SyntaxKind.ExportDeclaration) {
-                replacementText = this.getImportReplacement(this.sourceFile.fileName, statement as ts.ExportDeclaration);
+                replacementText = getInlinedFileContent(this.sourceFile.fileName, importedIdentifiers, statement as ts.ExportDeclaration);
             }
 
             replacements.push({
@@ -144,20 +190,9 @@ class Linter {
             });
         });
 
-        const newText = getNewText(this.sourceFile.text, replacements.reverse());
+        const newText = replaceInText(this.sourceFile.text, replacements);
 
         return newText;
-    }
-
-    getImportReplacement(filename: string, exportDecl: ts.ExportDeclaration): string {
-        const filePath = getImportFilePath(filename, exportDecl);
-        const importContent = fs.readFileSync(filePath, "utf8");
-        const exportSpecifier = exportDecl.moduleSpecifier ? exportDecl.moduleSpecifier.getText() : "";
-        return [
-            `/* Start of inlined export: ${exportSpecifier} */`,
-            importContent,
-            `/* End of inlined export: ${exportSpecifier} */`,
-        ].join("\n");
     }
 
     lintVariableDeclaration(node: ts.VariableDeclaration) {
@@ -207,6 +242,139 @@ class Linter {
                 ts.forEachChild(node, (n) => this.lintNode(n));
         }
     }
+}
+
+function getInlinedFileContent(filename: string, parentImportedIds: ImportedIdentifiers, exportDecl: ts.ExportDeclaration): string {
+    const filePath = getImportFilePath(filename, exportDecl);
+    const sourceFile = getSourceFile(filePath);
+
+    const importedIds = collectImportedIdentifiers(sourceFile);
+    const replacements: Array<Replacement> = [];
+    const rewriteStatements: Array<ts.ImportDeclaration> = [];
+    const removeIds: Array<NamedImport | NamedWithAliasImport> = [];
+    Object.keys(importedIds).forEach((name: string) => {
+        const id = importedIds[name];
+        const parentId = parentImportedIds[name];
+        if (parentId != null && importsCanBeMerged(id, parentId)) {
+            if (id.type === "default-import" || id.type === "star-import") {
+                replacements.push({
+                    start: id.node.getStart(),
+                    end: id.node.getEnd(),
+                    replacementText: "",
+                });
+            } else if (id.type === "named-import" || id.type === "named-with-alias-import") {
+                removeIds.push(id);
+                if (rewriteStatements.indexOf(id.node) === -1) {
+                    rewriteStatements.push(id.node);
+                }
+            }
+        }
+    });
+
+    rewriteStatements.forEach(stmt => {
+        const skipNames = removeIds.filter(id => id.node === stmt).map(id => id.name);
+
+        const elements = (stmt.importClause!.namedBindings as ts.NamedImports).elements
+            .filter(imp => {
+                return skipNames.indexOf(imp.name.getText()) === -1
+            })
+            .map((imp: ts.ImportSpecifier) => {
+                const name = imp.name.getText();
+                if (imp.propertyName == null) {
+                    return name;
+                } else {
+                    return `${imp.propertyName.getText()} as ${name}`;
+                }
+            })
+            .join(", ");
+
+        let text = "";
+        if (elements.length > 0) {
+            text = `import { ${elements} } from ${stmt.moduleSpecifier.getText()};`
+        }
+
+        replacements.push({
+            start: stmt.getStart(),
+            end: stmt.getEnd(),
+            replacementText: text,
+        });
+    });
+
+
+    const content = replaceInText(sourceFile.text, replacements);
+
+    const exportSpecifier = exportDecl.moduleSpecifier ? exportDecl.moduleSpecifier.getText() : "";
+    return [
+        `/* Start of inlined export: ${exportSpecifier} */`,
+        content,
+        `/* End of inlined export: ${exportSpecifier} */`,
+    ].join("\n");
+}
+
+function importsCanBeMerged(a: ImportType, b: ImportType) {
+    if (a.type !== b.type) {
+        return false;
+    }
+
+    if (a.type === "named-with-alias-import") {
+        if ((a as NamedWithAliasImport).propertyName !== (b as NamedWithAliasImport).propertyName) {
+            return false;
+        }
+    }
+
+    return a.moduleSpec === b.moduleSpec && a.name === b.name;
+}
+
+function collectImportedIdentifiers(root: ts.Node): ImportedIdentifiers {
+    const importedNames: ImportedIdentifiers = {};
+    ts.forEachChild(root, (node: ts.Node) => {
+        if ((node.kind === ts.SyntaxKind.ImportDeclaration
+                && (<ts.ImportDeclaration>node).importClause != null)
+                && !isRelativeImportExport(node)) {
+            const importDecl = node as ts.ImportDeclaration;
+
+            const clause = importDecl.importClause!;
+            if (clause.name != null) {
+                importedNames[clause.name.getText()] = {
+                    type: "default-import",
+                    node: importDecl,
+                    moduleSpec: getImportText(importDecl),
+                    name: clause.name.getText(),
+                };
+            }
+            const bindings = clause.namedBindings;
+            if (bindings != null && bindings.kind === ts.SyntaxKind.NamespaceImport) {
+                const namespaceImport = bindings as ts.NamespaceImport;
+                importedNames[namespaceImport.name.getText()] = {
+                    type: "star-import",
+                    node: importDecl,
+                    moduleSpec: getImportText(importDecl),
+                    name: namespaceImport.name.getText(),
+                };
+
+            } else if (bindings != null && bindings.kind === ts.SyntaxKind.NamedImports) {
+                (bindings as ts.NamedImports).elements.forEach((imp: ts.ImportSpecifier) => {
+                    if (imp.propertyName == null) {
+                        importedNames[imp.name.getText()] = {
+                            type: "named-import",
+                            node: importDecl,
+                            moduleSpec: getImportText(importDecl),
+                            name: imp.name.getText(),
+                        };
+                    } else {
+                        importedNames[imp.name.getText()] = {
+                            type: "named-with-alias-import",
+                            node: importDecl,
+                            moduleSpec: getImportText(importDecl),
+                            name: imp.name.getText(),
+                            propertyName: imp.propertyName.getText(),
+                        };
+                    }
+                });
+            }
+        }
+    });
+    return importedNames;
 }
 
 function hasModifier(node: ts.Node, kind: ts.SyntaxKind) {
@@ -300,6 +468,10 @@ function getImportFilePath(parentPath: string, exportDeclaration: ts.ExportDecla
     return path.resolve(path.dirname(parentPath), relativePath);
 }
 
+function getImportText(decl: ts.ImportDeclaration): string {
+    return decl.moduleSpecifier.getText().replace(/['"]/g, '');
+}
+
 function getImportExportText(declaration: ts.ImportDeclaration | ts.ExportDeclaration): string | null {
     if (declaration.moduleSpecifier != null) {
         return declaration.moduleSpecifier.getText().replace(/['"]/g, '');
@@ -307,8 +479,13 @@ function getImportExportText(declaration: ts.ImportDeclaration | ts.ExportDeclar
     return null;
 }
 
-function getNewText(sourceText: string, replacementsInReverse: Replacement[]) {
-    for (const { start, end, replacementText } of replacementsInReverse) {
+function replaceInText(sourceText: string, replacements: Replacement[]) {
+    replacements.sort((a, b) => {
+        // sort into reverse order
+        // (assuming the ranges don't overlap)
+        return a.start < b.start ? 1 : -1;
+    });
+    for (const { start, end, replacementText } of replacements) {
         sourceText = sourceText.slice(0, start) + replacementText + sourceText.slice(end)
     }
 

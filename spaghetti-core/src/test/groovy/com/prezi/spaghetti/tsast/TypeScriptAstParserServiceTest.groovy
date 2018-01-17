@@ -472,6 +472,170 @@ import * as a from 'react';
         lines == []
     }
 
+    def "commonsjs: conflicting import: default import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import one from 'react';
+""",
+"""
+import one from 'react2';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("duplicate imported identifier: 'one'");
+    }
+
+    def "commonsjs: conflicting import: star import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import * as one from 'react';
+""",
+"""
+import * as one from 'react2';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("duplicate imported identifier: 'one'");
+    }
+
+    def "commonsjs: conflicting import: named import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import { one, two } from 'react';
+""",
+"""
+import { one } from 'react2';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("duplicate imported identifier: 'one'");
+    }
+
+    def "commonsjs: conflicting import: named with alias import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import { one, two } from 'react';
+""",
+"""
+import { x as one } from 'react';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("duplicate imported identifier: 'one'");
+    }
+
+
+    def "commonsjs: merged import: default import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import one from 'react';
+import two from 'react';
+export * from './b'
+""",
+"""import one from 'react';
+import two from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import one from 'react';
+import two from 'react';
+/* Start of inlined export: './b' */
+
+
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+    def "commonsjs: merged import: star import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import * as one from 'react';
+import * as two from 'react';
+export * from './b'
+""",
+"""import * as one from 'react';
+import * as two from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import * as one from 'react';
+import * as two from 'react';
+/* Start of inlined export: './b' */
+
+
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+    def "commonsjs: merged import: named import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import { one, two, three } from 'react';
+export * from './b'
+""",
+"""import { one, two, four } from 'react';
+import { three } from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import { one, two, three } from 'react';
+/* Start of inlined export: './b' */
+import { four } from 'react';
+
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+
+    def "commonsjs: merged import: named with alias import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import { one as r, three } from 'react';
+export * from './b'
+""",
+"""import { one as r, two, three } from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import { one as r, three } from 'react';
+/* Start of inlined export: './b' */
+import { two } from 'react';
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
     def "commonsjs: imported file cannot contain relative export"() {
         when:
         def lines = runMergeDtsForJs("""
