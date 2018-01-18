@@ -404,7 +404,7 @@ checkImported)
         checkImported << [false, true]
     }
 
-    def "commonsjs: with no import statements"() {
+    def "commonjs: with no import statements"() {
         when:
         def lines = runMergeDtsForJs("""
 export function foo(){};
@@ -413,7 +413,7 @@ export function foo(){};
         lines == []
     }
 
-    def "commonsjs: with single import statement"() {
+    def "commonjs: with single import statement"() {
         when:
         def lines = runMergeDtsForJs("""
 import * as a from './b';
@@ -425,7 +425,7 @@ export function foo(){};
         e.output[0].contains("Missing export * from './b' statement")
     }
 
-    def "commonsjs: with single import and export statement"() {
+    def "commonjs: with single import and export statement"() {
         when:
         def lines = runMergeDtsForJs("""
 import * as a from './b';
@@ -436,7 +436,7 @@ export * from './b'
         lines == []
     }
 
-    def "commonsjs: with relative export statement and named exports"() {
+    def "commonjs: with relative export statement and named exports"() {
         when:
         def lines = runMergeDtsForJs("""
 export { a } from './b'
@@ -447,7 +447,7 @@ export { a } from './b'
         e.output[0].contains("Named exports are not supported from relative modules: './b'");
     }
 
-    def "commonsjs: imported file cannot contain relative import"() {
+    def "commonjs: imported file cannot contain relative import"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -460,7 +460,7 @@ import * as a from './c';
         e.output[0].contains("Relative imports are not permitted in a file being merged");
     }
 
-    def "commonsjs: imported file can contain non-relative import"() {
+    def "commonjs: imported file can contain non-relative import"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -472,7 +472,7 @@ import * as a from 'react';
         lines == []
     }
 
-    def "commonsjs: conflicting import: default import style"() {
+    def "commonjs: conflicting import: default import style"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -486,7 +486,7 @@ import one from 'react2';
         e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
-    def "commonsjs: conflicting import: star import style"() {
+    def "commonjs: conflicting import: star import style"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -500,7 +500,7 @@ import * as one from 'react2';
         e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
-    def "commonsjs: conflicting import: named import style"() {
+    def "commonjs: conflicting import: named import style"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -514,7 +514,7 @@ import { one } from 'react2';
         e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
-    def "commonsjs: conflicting import: named with alias import style"() {
+    def "commonjs: conflicting import: named with alias import style"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -529,7 +529,7 @@ import { x as one } from 'react';
     }
 
 
-    def "commonsjs: merged import: default import style"() {
+    def "commonjs: merged import: default import style"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -557,7 +557,7 @@ export interface Foo { }
 """;
     }
 
-    def "commonsjs: merged import: star import style"() {
+    def "commonjs: merged import: star import style"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -585,7 +585,7 @@ export interface Foo { }
 """;
     }
 
-    def "commonsjs: merged import: named import style"() {
+    def "commonjs: merged import: named import style"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -612,7 +612,7 @@ export interface Foo { }
     }
 
 
-    def "commonsjs: merged import: named with alias import style"() {
+    def "commonjs: merged import: named with alias import style"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -636,7 +636,7 @@ export interface Foo { }
 """;
     }
 
-    def "commonsjs: imported file cannot contain relative export"() {
+    def "commonjs: imported file cannot contain relative export"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -649,7 +649,7 @@ export * from './c';
         e.output[0].contains("Exports from relative paths are not permitted in a file being merged.");
     }
 
-    def "commonsjs: with no import and export statement"() {
+    def "commonjs: with no import and export statement"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
@@ -659,7 +659,7 @@ export * from './b'
         lines == []
     }
 
-    def "commonsjs: with no import and export statement"() {
+    def "commonjs: with no import and export statement"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -685,7 +685,7 @@ export interface A { }
 """;
     }
 
-    def "commonsjs: with reference path"() {
+    def "commonjs: with reference path"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
