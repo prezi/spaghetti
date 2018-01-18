@@ -131,19 +131,6 @@ module test {
         lines == []
     }
 
-    def "commonsjs: non-exported are ignored in non-ambient context"() {
-        when:
-        def lines = runMergeDtsForJs("""
-module test {
-    let a = "a";
-    var b;
-    class A {}
-}
-""")
-        then:
-        lines == []
-    }
-
     def "ambient context members are implicitly exported"() {
         when:
         def lines = runVerify("""
@@ -235,7 +222,189 @@ module test {
         return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
     }
 
-    def "commonJs with no import statements"() {
+    def "commonjs: classes not allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+export class Test {
+}
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Classes are not allowed.")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: var, let not allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+export var test: number;
+export let test2: number;
+""",
+checkImported)
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("'var' and 'let' are not allowed")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: references are allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+/// <reference path="internal/other.ts"/>
+/// <reference types="node" />
+module test {}
+""",
+checkImported)
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: untyped variables are not allowed"() {
+        when:
+        def lines = runCommonJsVerify("""
+export const a = "a";
+export const b;
+export const c: any;
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Variables without explicit types are not allowed")
+        e.output[1].contains("Variables without explicit types are not allowed")
+        e.output[2].contains("Variables should not have 'any' type")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: non-exported are ignored in non-ambient context"() {
+        when:
+        def lines = runCommonJsVerify("""
+let a = "a";
+var b;
+class A {}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: ambient context members are implicitly exported"() {
+        when:
+        def lines = runCommonJsVerify("""
+export declare module test {
+    class A {}
+}
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Classes are not allowed.")
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: ambient non-exported sub-context members are ignored"() {
+        when:
+        def lines = runCommonJsVerify("""
+module test {
+    var a: any;
+
+    export declare module B {
+        class C {}
+    }
+}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: ambient sub-context members are implicitly exported"() {
+        when:
+        def lines = runCommonJsVerify("""
+export module test {
+    var a: any;
+
+    export module B {
+        export declare module C {
+            class D {}
+        }
+    }
+}
+""",
+checkImported)
+
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Classes are not allowed.")
+
+        where:
+        checkImported << [false, true]
+    }
+
+
+    def "non-exported sub-module members are ignored"() {
+        when:
+        def lines = runCommonJsVerify("""
+export module test {
+    var a: any;
+
+    export module B {
+        module C {
+            class D {}
+        }
+    }
+}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "var, let inside functions bodies are ignored"() {
+        when:
+        def lines = runCommonJsVerify("""
+export function a(): number {
+    var b = 1;
+    let c = 2;
+    return b + c;
+}
+""",
+checkImported)
+
+        then:
+        lines == []
+
+        where:
+        checkImported << [false, true]
+    }
+
+    def "commonjs: with no import statements"() {
         when:
         def lines = runMergeDtsForJs("""
 export function foo(){};
@@ -244,47 +413,253 @@ export function foo(){};
         lines == []
     }
 
-    def "commonJs with single import statement"() {
+    def "commonjs: with single import statement"() {
         when:
         def lines = runMergeDtsForJs("""
 import * as a from './b';
 export function foo(){};
-""")
+""",
+"""export interface Foo { }""")
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("missing export * from './b' statement")
+        e.output[0].contains("Missing export * from './b' statement")
     }
 
-    def "commonJs with single import and export statement"() {
+    def "commonjs: with single import and export statement"() {
         when:
         def lines = runMergeDtsForJs("""
 import * as a from './b';
 export * from './b'
-""")
+""",
+"""export interface Foo { }""")
         then:
         lines == []
     }
 
-    def "commonJs with relative export statement and named exports"() {
+    def "commonjs: with relative export statement and named exports"() {
         when:
         def lines = runMergeDtsForJs("""
 export { a } from './b'
-""")
+""",
+"""export interface Foo { }""")
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("named exports are not supported from relative modules: './b'");
+        e.output[0].contains("Named exports are not supported from relative modules: './b'");
     }
 
-    def "commonJs with no import and export statement"() {
+    def "commonjs: imported file cannot contain relative import"() {
         when:
         def lines = runMergeDtsForJs("""
 export * from './b'
+""",
+"""
+import * as a from './c';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Relative imports are not permitted in a file being merged");
+    }
+
+    def "commonjs: imported file can contain non-relative import"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""",
+"""
+import * as a from 'react';
 """)
         then:
         lines == []
     }
 
-    def "commonJs with no import and export statement"() {
+    def "commonjs: conflicting import: default import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import one from 'react';
+""",
+"""
+import one from 'react2';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Duplicate imported identifier: 'one'");
+    }
+
+    def "commonjs: conflicting import: star import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import * as one from 'react';
+""",
+"""
+import * as one from 'react2';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Duplicate imported identifier: 'one'");
+    }
+
+    def "commonjs: conflicting import: named import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import { one, two } from 'react';
+""",
+"""
+import { one } from 'react2';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Duplicate imported identifier: 'one'");
+    }
+
+    def "commonjs: conflicting import: named with alias import style"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+import { one, two } from 'react';
+""",
+"""
+import { x as one } from 'react';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Duplicate imported identifier: 'one'");
+    }
+
+
+    def "commonjs: merged import: default import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import one from 'react';
+import two from 'react';
+export * from './b'
+""",
+"""import one from 'react';
+import two from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import one from 'react';
+import two from 'react';
+/* Start of inlined export: './b' */
+
+
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+    def "commonjs: merged import: star import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import * as one from 'react';
+import * as two from 'react';
+export * from './b'
+""",
+"""import * as one from 'react';
+import * as two from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import * as one from 'react';
+import * as two from 'react';
+/* Start of inlined export: './b' */
+
+
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+    def "commonjs: merged import: named import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import { one, two, three } from 'react';
+export * from './b'
+""",
+"""import { one, two, four } from 'react';
+import { three } from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import { one, two, three } from 'react';
+/* Start of inlined export: './b' */
+import { four } from 'react';
+
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+
+    def "commonjs: merged import: named with alias import style"() {
+        when:
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+        File outputFile = new File(dir, "output.d.ts");
+        def lines = runMergeDtsForJs("""
+import { one as r, three } from 'react';
+export * from './b'
+""",
+"""import { one as r, two, three } from 'react';
+export interface Foo { }
+""", outputFile)
+        then:
+        lines == []
+        outputFile.getText() == """
+import { one as r, three } from 'react';
+/* Start of inlined export: './b' */
+import { two } from 'react';
+export interface Foo { }
+
+/* End of inlined export: './b' */
+""";
+    }
+
+    def "commonjs: imported file cannot contain relative export"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""",
+"""
+export * from './c';
+""")
+        then:
+        def e = thrown(TypeScriptAstParserException)
+        e.output[0].contains("Exports from relative paths are not permitted in a file being merged.");
+    }
+
+    def "commonjs: with no import and export statement"() {
+        when:
+        def lines = runMergeDtsForJs("""
+export * from './b'
+""",
+"""export interface Foo { }""")
+        then:
+        lines == []
+    }
+
+    def "commonjs: with no import and export statement"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
@@ -295,46 +670,72 @@ export * from './b'
 /* pre comment */ export * from './b'; /* post comment */
 // another comment
 export interface A { }
-""", outputFile)
+""",
+"""export interface Foo { }""", outputFile)
         then:
         lines == []
         outputFile.getText() == """// a comment
 /* pre import */  /* post import */
 /* above comment */
-/* pre comment */ /* inlined import: start of './b.d.ts' */
+/* pre comment */ /* Start of inlined export: './b' */
 export interface Foo { }
-/* inlined import: end of './b.d.ts' */ /* post comment */
+/* End of inlined export: './b' */ /* post comment */
 // another comment
 export interface A { }
 """;
     }
 
-    def "commonJs with reference path"() {
+    def "commonjs: with reference path"() {
         when:
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
         File outputFile = new File(dir, "output.d.ts");
         def lines = runMergeDtsForJs("""/// <reference path="./b" />
 export * from './b';
-""", outputFile)
+""",
+"""export interface Foo { }""", outputFile)
         then:
         lines == []
         outputFile.getText() == """/// <reference path="./b" />
-/* inlined import: start of './b.d.ts' */
+/* Start of inlined export: './b' */
 export interface Foo { }
-/* inlined import: end of './b.d.ts' */
+/* End of inlined export: './b' */
 """;
     }
 
-    def runMergeDtsForJs(String content, File outputFile =  null) {
+    def runCommonJsVerify(String code, boolean inSubModule) {
+        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+        dir.mkdirs();
+
+        def content = code;
+        if (inSubModule) {
+            File importFile = new File(dir, "b.d.ts");
+            FileUtils.write(importFile, code);
+            content = "export * from './b';"
+        }
+
+        File definitionFile = new File(dir, "definition.d.ts");
+        FileUtils.write(definitionFile, content);
+
+        return TypeScriptAstParserService.mergeDefinitionFileImports(
+            dir,
+            new File("build/typescript/node_modules/typescript"),
+            definitionFile,
+            new File(dir, "output.d.ts"),
+            LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class));
+    }
+
+    def runMergeDtsForJs(String content, String importedContent = null, File outputFile =  null) {
         File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
         dir.mkdirs();
 
         File definitionFile = new File(dir, "definition.d.ts");
         FileUtils.write(definitionFile, content);
 
-        File importFile = new File(dir, "b.d.ts");
-        FileUtils.write(importFile, "export interface Foo { }");
+        if (importedContent != null) {
+            File importFile = new File(dir, "b.d.ts");
+            FileUtils.write(importFile, importedContent);
+        }
 
         Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
         File compilerPath = new File("build/typescript/node_modules/typescript");
