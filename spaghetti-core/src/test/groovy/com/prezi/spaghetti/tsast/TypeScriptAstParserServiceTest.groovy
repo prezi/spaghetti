@@ -457,7 +457,7 @@ import * as a from './c';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("Relative imports are not permitted in file being merged");
+        e.output[0].contains("Relative imports are not permitted in a file being merged");
     }
 
     def "commonsjs: imported file can contain non-relative import"() {

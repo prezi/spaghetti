@@ -117,7 +117,7 @@ class Linter {
         ts.forEachChild(sourceFile, (node: ts.Node) => {
             if (isSubModule && isRelativeImportExport(node)) {
                 if (node.kind === ts.SyntaxKind.ImportDeclaration) {
-                    this.lintError("Relative imports are not permitted in file being merged.", node);
+                    this.lintError("Relative imports are not permitted in a file being merged.", node);
                 } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
                     this.lintError("Exports from relative paths are not permitted in a file being merged.", node);
                 }
