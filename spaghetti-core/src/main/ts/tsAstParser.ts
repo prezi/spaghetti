@@ -87,7 +87,7 @@ class Linter {
 
         var statement: ts.Node = sourceFile.statements[0];
         while (statement.kind === ts.SyntaxKind.ModuleDeclaration) {
-            var body = (<ts.ModuleDeclaration>statement).body
+            var body = (statement as ts.ModuleDeclaration).body
             if (body == null) {
                 break;
             }
@@ -122,7 +122,7 @@ class Linter {
             }
 
             if (!isSubModule && isRelativeImportExport(node) && node.kind === ts.SyntaxKind.ExportDeclaration) {
-                const exportDecl = (<ts.ExportDeclaration>node);
+                const exportDecl = node as ts.ExportDeclaration;
                 if (exportDecl.exportClause == null) {
                     // exportClause is null: 'export * from ...'
                     const filePath = getImportFilePath(sourceFile.fileName, exportDecl);
@@ -154,7 +154,7 @@ class Linter {
                     importDeclarations.push(node as ts.ImportDeclaration);
                     statements.push(node as ts.ImportDeclaration);
                 } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
-                    const exportDeclaration = (<ts.ExportDeclaration>node);
+                    const exportDeclaration = node as ts.ExportDeclaration;
                     const moduleText = getImportExportText(exportDeclaration)!;
                     if (exportDeclaration.exportClause != null) {
                         this.lintError(`Named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
@@ -216,7 +216,7 @@ class Linter {
     lintNode(node: ts.Node) {
         switch (node.kind) {
             case ts.SyntaxKind.VariableStatement:
-                let varDecl = (<ts.VariableStatement>node).declarationList;
+                let varDecl = (node as ts.VariableStatement).declarationList;
                 varDecl.declarations.forEach((n) => this.lintVariableDeclaration(n));
                 if (!(varDecl.flags & ts.NodeFlags.Const)) {
                     this.lintError("'var' and 'let' are not allowed. Please use 'const' instead.", node);
@@ -415,7 +415,7 @@ function getProtectedIdentifiers(sourceFile: ts.SourceFile) {
                 if (node.parent && node.parent.kind === ts.SyntaxKind.InterfaceDeclaration) {
                     break;
                 }
-                let text = (<ts.Identifier>node).text;
+                let text = (node as ts.Identifier).text;
                 idents[text] = text;
                 break;
 
@@ -437,7 +437,7 @@ function getSourceFile(filename: string) {
             fs.readFileSync(filename, 'utf8'),
             ts.ScriptTarget.ES5,
             true);
-    let parseErrors: Array<ts.Diagnostic> = (<any>sourceFile).parseDiagnostics;
+    let parseErrors: Array<ts.Diagnostic> = (sourceFile as any).parseDiagnostics;
     if (parseErrors && parseErrors.length > 0) {
         parseErrors.forEach((error: ts.Diagnostic) => {
             let { line, character } = sourceFile.getLineAndCharacterOfPosition(error.start);
