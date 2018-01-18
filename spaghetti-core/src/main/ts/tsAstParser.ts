@@ -113,9 +113,9 @@ class Linter {
         ts.forEachChild(sourceFile, (node: ts.Node) => {
             if (isSubModule && isRelativeImportExport(node)) {
                 if (node.kind === ts.SyntaxKind.ImportDeclaration) {
-                    this.lintError("relative imports are not permitted in file being merged.", node);
+                    this.lintError("Relative imports are not permitted in file being merged.", node);
                 } else if (node.kind === ts.SyntaxKind.ExportDeclaration) {
-                    this.lintError("exports from relative paths are not permitted a file being merged.", node);
+                    this.lintError("Exports from relative paths are not permitted in a file being merged.", node);
                 }
             }
 
@@ -132,7 +132,7 @@ class Linter {
                     Object.keys(subImportedIds).forEach((name: string) => {
                         if (importedIdentifiers[name] != null
                                 && !importsCanBeMerged(importedIdentifiers[name], subImportedIds[name])) {
-                            subLinter.lintError(`duplicate imported identifier: '${name}'`, subImportedIds[name].node);
+                            subLinter.lintError(`Duplicate imported identifier: '${name}'`, subImportedIds[name].node);
                         }
                     });
 
@@ -156,7 +156,7 @@ class Linter {
                     const exportDeclaration = (<ts.ExportDeclaration>node);
                     const moduleText = getImportExportText(exportDeclaration)!;
                     if (exportDeclaration.exportClause != null) {
-                        this.lintError(`named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
+                        this.lintError(`Named exports are not supported from relative modules: '${moduleText}'`, exportDeclaration);
                     } else {
                         exportModules.push(moduleText);
                         statements.push(exportDeclaration);
@@ -167,7 +167,7 @@ class Linter {
         importDeclarations.forEach((importDeclaration) => {
             const moduleText = getImportText(importDeclaration)!;
             if (exportModules.indexOf(moduleText) === -1) {
-                this.lintError(`missing export * from '${moduleText}' statement.`, importDeclaration);
+                this.lintError(`Missing export * from '${moduleText}' statement.`, importDeclaration);
             }
         });
 

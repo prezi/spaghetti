@@ -422,7 +422,7 @@ export function foo(){};
 """export interface Foo { }""")
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("missing export * from './b' statement")
+        e.output[0].contains("Missing export * from './b' statement")
     }
 
     def "commonsjs: with single import and export statement"() {
@@ -444,7 +444,7 @@ export { a } from './b'
 """export interface Foo { }""")
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("named exports are not supported from relative modules: './b'");
+        e.output[0].contains("Named exports are not supported from relative modules: './b'");
     }
 
     def "commonsjs: imported file cannot contain relative import"() {
@@ -457,7 +457,7 @@ import * as a from './c';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("relative imports are not permitted in file being merged");
+        e.output[0].contains("Relative imports are not permitted in file being merged");
     }
 
     def "commonsjs: imported file can contain non-relative import"() {
@@ -483,7 +483,7 @@ import one from 'react2';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("duplicate imported identifier: 'one'");
+        e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
     def "commonsjs: conflicting import: star import style"() {
@@ -497,7 +497,7 @@ import * as one from 'react2';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("duplicate imported identifier: 'one'");
+        e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
     def "commonsjs: conflicting import: named import style"() {
@@ -511,7 +511,7 @@ import { one } from 'react2';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("duplicate imported identifier: 'one'");
+        e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
     def "commonsjs: conflicting import: named with alias import style"() {
@@ -525,7 +525,7 @@ import { x as one } from 'react';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("duplicate imported identifier: 'one'");
+        e.output[0].contains("Duplicate imported identifier: 'one'");
     }
 
 
@@ -646,7 +646,7 @@ export * from './c';
 """)
         then:
         def e = thrown(TypeScriptAstParserException)
-        e.output[0].contains("exports from relative paths are not permitted a file being merged.");
+        e.output[0].contains("Exports from relative paths are not permitted in a file being merged.");
     }
 
     def "commonsjs: with no import and export statement"() {
