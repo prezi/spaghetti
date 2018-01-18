@@ -10,11 +10,9 @@ interface Replacement {
     replacementText: string;
 }
 
-interface ImportedIdentifiers {
-    [key: string]: ImportType;
-}
+type ImportedIdentifiers = Map<string, ImportIdent>;
 
-type ImportType = DefaultImport | StarImport | NamedImport | NamedWithAliasImport;
+type ImportIdent = DefaultImport | StarImport | NamedImport | NamedWithAliasImport;
 
 interface BaseImport {
     node: ts.ImportDeclaration;
@@ -132,11 +130,10 @@ class Linter {
                     const subLinter = new Linter(subSourceFile);
                     subLinter.lintCommonJs(true);
 
-                    const subImportedIds = collectImportedIdentifiers(subSourceFile);
-                    Object.keys(subImportedIds).forEach((name: string) => {
-                        if (importedIdentifiers[name] != null
-                                && !importsCanBeMerged(importedIdentifiers[name], subImportedIds[name])) {
-                            subLinter.lintError(`Duplicate imported identifier: '${name}'`, subImportedIds[name].node);
+                    collectImportedIdentifiers(subSourceFile).forEach((subId: ImportIdent, name: string) => {
+                        const parentId = importedIdentifiers.get(name);
+                        if (parentId != null && !importsCanBeMerged(parentId, subId)) {
+                            subLinter.lintError(`Duplicate imported identifier: '${name}'`, subId.node);
                         }
                     });
 
@@ -249,65 +246,9 @@ class Linter {
 }
 
 function getInlinedFileContent(filename: string, parentImportedIds: ImportedIdentifiers, exportDecl: ts.ExportDeclaration): string {
-    const filePath = getImportFilePath(filename, exportDecl);
-    const sourceFile = getSourceFile(filePath);
-
-    const importedIds = collectImportedIdentifiers(sourceFile);
-    const replacements: Array<Replacement> = [];
-    const rewriteStatements: Array<ts.ImportDeclaration> = [];
-    const removeIds: Array<NamedImport | NamedWithAliasImport> = [];
-    Object.keys(importedIds).forEach((name: string) => {
-        const id = importedIds[name];
-        const parentId = parentImportedIds[name];
-        if (parentId != null && importsCanBeMerged(id, parentId)) {
-            if (id.type === "default-import" || id.type === "star-import") {
-                replacements.push({
-                    start: id.node.getStart(),
-                    end: id.node.getEnd(),
-                    replacementText: "",
-                });
-            } else if (id.type === "named-import" || id.type === "named-with-alias-import") {
-                removeIds.push(id);
-                if (rewriteStatements.indexOf(id.node) === -1) {
-                    rewriteStatements.push(id.node);
-                }
-            }
-        }
-    });
-
-    rewriteStatements.forEach(stmt => {
-        const skipNames = removeIds.filter(id => id.node === stmt).map(id => id.name);
-
-        const elements = (stmt.importClause!.namedBindings as ts.NamedImports).elements
-            .filter(imp => {
-                return skipNames.indexOf(imp.name.getText()) === -1
-            })
-            .map((imp: ts.ImportSpecifier) => {
-                const name = imp.name.getText();
-                if (imp.propertyName == null) {
-                    return name;
-                } else {
-                    return `${imp.propertyName.getText()} as ${name}`;
-                }
-            })
-            .join(", ");
-
-        let text = "";
-        if (elements.length > 0) {
-            text = `import { ${elements} } from ${stmt.moduleSpecifier.getText()};`
-        }
-
-        replacements.push({
-            start: stmt.getStart(),
-            end: stmt.getEnd(),
-            replacementText: text,
-        });
-    });
-
-
-    const content = replaceInText(sourceFile.text, replacements);
-
-    const exportSpecifier = exportDecl.moduleSpecifier ? exportDecl.moduleSpecifier.getText() : "";
+    const sourceFile = getSourceFile(getImportFilePath(filename, exportDecl));
+    const content = mergeImports(sourceFile, parentImportedIds);
+    const exportSpecifier = exportDecl.moduleSpecifier!.getText();
     return [
         `/* Start of inlined export: ${exportSpecifier} */`,
         content,
@@ -315,64 +256,119 @@ function getInlinedFileContent(filename: string, parentImportedIds: ImportedIden
     ].join("\n");
 }
 
-function importsCanBeMerged(a: ImportType, b: ImportType) {
-    if (a.type !== b.type) {
-        return false;
-    }
+function mergeImports(sourceFile: ts.SourceFile, parentImportedIds: ImportedIdentifiers) {
+    const allImportedIds = collectImportedIdentifiers(sourceFile);
+    const idsToRemove: Array<ImportIdent> = Array.from(allImportedIds.values())
+        .filter(id => {
+            const parentId = parentImportedIds.get(id.name);
+            return parentId != null && importsCanBeMerged(id, parentId);
+        });
+    const namesToRemove = new Set(idsToRemove.map(id => id.name));
 
-    if (a.type === "named-with-alias-import") {
-        if ((a as NamedWithAliasImport).propertyName !== (b as NamedWithAliasImport).propertyName) {
+    const statementsToRewrite = new Map<ts.ImportDeclaration, ImportIdent['type']>();
+    idsToRemove.forEach(id => {
+        statementsToRewrite.set(id.node, id.type);
+    });
+
+    const replacements: Array<Replacement> = Array.from(statementsToRewrite.entries()).map(([node, type]) => {
+        switch (type) {
+            case "default-import":
+            case "star-import":
+                return {
+                    start: node.getStart(),
+                    end: node.getEnd(),
+                    replacementText: "",
+                };
+
+            case "named-import":
+            case "named-with-alias-import":
+                const namedImports = node.importClause!.namedBindings as ts.NamedImports;
+                const elements = namedImports.elements
+                    .filter(imp => {
+                        return !namesToRemove.has(imp.name.getText())
+                    })
+                    .map(imp => {
+                        const name = imp.name.getText();
+                        if (imp.propertyName == null) {
+                            return name;
+                        } else {
+                            return `${imp.propertyName.getText()} as ${name}`;
+                        }
+                    })
+                    .join(", ");
+
+                let text = "";
+                if (elements.length > 0) {
+                    text = `import { ${elements} } from ${node.moduleSpecifier.getText()};`
+                }
+
+                return {
+                    start: node.getStart(),
+                    end: node.getEnd(),
+                    replacementText: text,
+                };
+        }
+    });
+    return replaceInText(sourceFile.text, replacements);
+}
+
+function importsCanBeMerged(a: ImportIdent, b: ImportIdent) {
+    if (a.type === "named-with-alias-import"
+            && b.type === "named-with-alias-import") {
+        if (a.propertyName !== b.propertyName) {
             return false;
         }
     }
 
-    return a.moduleSpec === b.moduleSpec && a.name === b.name;
+    return a.moduleSpec === b.moduleSpec
+        && a.name === b.name
+        && a.type === b.type;
 }
 
 function collectImportedIdentifiers(root: ts.Node): ImportedIdentifiers {
-    const importedNames: ImportedIdentifiers = {};
+    const importedNames: ImportedIdentifiers = new Map();
     ts.forEachChild(root, (node: ts.Node) => {
-        if ((node.kind === ts.SyntaxKind.ImportDeclaration
-                && (<ts.ImportDeclaration>node).importClause != null)
-                && !isRelativeImportExport(node)) {
-            const importDecl = node as ts.ImportDeclaration;
+        const importDecl = node as ts.ImportDeclaration;
+        if ((importDecl.kind === ts.SyntaxKind.ImportDeclaration
+                && importDecl.importClause != null)
+                && !isRelativeImportExport(importDecl)) {
 
-            const clause = importDecl.importClause!;
+            const clause = importDecl.importClause;
             if (clause.name != null) {
-                importedNames[clause.name.getText()] = {
+                importedNames.set(clause.name.getText(), {
                     type: "default-import",
                     node: importDecl,
                     moduleSpec: getImportText(importDecl),
                     name: clause.name.getText(),
-                };
+                });
             }
             const bindings = clause.namedBindings;
             if (bindings != null && bindings.kind === ts.SyntaxKind.NamespaceImport) {
                 const namespaceImport = bindings as ts.NamespaceImport;
-                importedNames[namespaceImport.name.getText()] = {
+                importedNames.set(namespaceImport.name.getText(), {
                     type: "star-import",
                     node: importDecl,
                     moduleSpec: getImportText(importDecl),
                     name: namespaceImport.name.getText(),
-                };
+                });
 
             } else if (bindings != null && bindings.kind === ts.SyntaxKind.NamedImports) {
                 (bindings as ts.NamedImports).elements.forEach((imp: ts.ImportSpecifier) => {
                     if (imp.propertyName == null) {
-                        importedNames[imp.name.getText()] = {
+                        importedNames.set(imp.name.getText(), {
                             type: "named-import",
                             node: importDecl,
                             moduleSpec: getImportText(importDecl),
                             name: imp.name.getText(),
-                        };
+                        });
                     } else {
-                        importedNames[imp.name.getText()] = {
+                        importedNames.set(imp.name.getText(), {
                             type: "named-with-alias-import",
                             node: importDecl,
                             moduleSpec: getImportText(importDecl),
                             name: imp.name.getText(),
                             propertyName: imp.propertyName.getText(),
-                        };
+                        });
                     }
                 });
             }
