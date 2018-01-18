@@ -22,21 +22,25 @@ interface BaseImport {
 }
 
 interface DefaultImport extends BaseImport {
+    /* import foo from 'bar'; */
     type: "default-import";
     name: string;
 }
 
 interface StarImport extends BaseImport {
+    /* import * as foo from 'bar'; */
     type: "star-import";
     name: string;
 }
 
 interface NamedImport extends BaseImport {
+    /* import { foo, foo2 } from 'bar'; */
     type: "named-import";
     name: string;
 }
 
 interface NamedWithAliasImport extends BaseImport {
+    /* import { foo as f, foo2 as f2 } from 'bar'; */
     type: "named-with-alias-import";
     name: string;
     propertyName: string;
