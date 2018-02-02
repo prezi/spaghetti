@@ -173,7 +173,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private static Collection<File> filterFileList(Collection<File> list, Collection<File> fileNames) {
 		Set<String> names = Sets.newHashSet();
 		for (File f: fileNames) {
-			names.add(f.getName().replaceAll("(\\.d)?\\.ts$", ".js"));
+			names.add(f.getName().replaceAll("(\\.d)?\\.tsx?$", ".js"));
 		}
 
 		Collection<File> foundFiles = Lists.newArrayList();
