@@ -131,7 +131,11 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 
 		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
 		Collection<File> entryPointFiles = filterFileList(inputFiles, getEntryPoints());
-		File mainEntryPoint = createMainEntryPoint(workDir, entryPointFiles, config.getLocalModule());
+		File mainEntryPoint = new File(workDir, "_spaghetti-main.js");
+		ClosureUtils.writeMainEntryPoint(
+			mainEntryPoint,
+			entryPointFiles,
+			config.getLocalModule().getName());
 		inputFiles.add(mainEntryPoint);
 
 		int exitValue = ClosureCompiler.concat(
@@ -140,40 +144,17 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			mainEntryPoint,
 			inputFiles,
 			Sets.<File>newHashSet(),
-			CompilationLevel.SIMPLE);
+			CompilationLevel.WHITESPACE_ONLY);
 
 		if (exitValue != 0) {
 			throw new RuntimeException("Closure Compiler return an error code: " + exitValue);
 		}
 	}
 
-	private File createMainEntryPoint(File workDir, Collection<File> entryPoints, ModuleNode module) throws IOException {
-		File file = new File(workDir, "_spaghetti-main.js");
-		String data;
-		if (entryPoints.size() == 1) {
-			File entryPoint = Iterables.getOnlyElement(entryPoints);
-			data = String.format(
-				"%s=require('%s');",
-				module.getName(),
-				entryPoint.getAbsolutePath());
-		} else {
-			Collection<String> requireCalls = Lists.newArrayList();
-			for (File entryPoint: entryPoints) {
-				requireCalls.add(String.format("require('%s')", entryPoint.getAbsolutePath()));
-			}
-			data = String.format(
-				"%s=[%s];",
-				module.getName(),
-				Joiner.on(",").join(requireCalls));
-		}
-		FileUtils.write(file, data);
-		return file;
-	}
-
 	private static Collection<File> filterFileList(Collection<File> list, Collection<File> fileNames) {
 		Set<String> names = Sets.newHashSet();
 		for (File f: fileNames) {
-			names.add(f.getName().replaceAll("(\\.d)?\\.ts$", ".js"));
+			names.add(f.getName().replaceAll("(\\.d)?\\.tsx?$", ".js"));
 		}
 
 		Collection<File> foundFiles = Lists.newArrayList();
