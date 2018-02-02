@@ -144,7 +144,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			mainEntryPoint,
 			inputFiles,
 			Sets.<File>newHashSet(),
-			CompilationLevel.SIMPLE);
+			CompilationLevel.WHITESPACE_ONLY);
 
 		if (exitValue != 0) {
 			throw new RuntimeException("Closure Compiler return an error code: " + exitValue);
