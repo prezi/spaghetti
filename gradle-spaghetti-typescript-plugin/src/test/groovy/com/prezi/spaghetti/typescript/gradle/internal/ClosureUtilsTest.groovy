@@ -16,8 +16,7 @@ class ClosureUtilsTest extends Specification {
             "prezi_closure_test");
 
         then:
-        def absPath = dir.getAbsolutePath();
-        mainFile.text == "prezi_closure_test=require('${absPath}/folder/folder/module.js');"
+        mainFile.text == "prezi_closure_test=require('./folder/folder/module');"
     }
 
     def "test multiple entry points"() {
@@ -37,8 +36,8 @@ class ClosureUtilsTest extends Specification {
 
         then:
         mainFile.text == ("prezi_closure_test=[" +
-            "require('${dir.getAbsolutePath()}/folder/folder/module.js')," +
-            "require('${dir.getAbsolutePath()}/module.js')," +
-            "require('${dir.getParent()}/module.js')];")
+            "require('./folder/folder/module')," +
+            "require('./module')," +
+            "require('../module')];")
     }
 }
