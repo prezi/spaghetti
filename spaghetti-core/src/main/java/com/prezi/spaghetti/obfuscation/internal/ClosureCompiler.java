@@ -58,7 +58,7 @@ public class ClosureCompiler {
 
 		add(args, "--compilation_level", compilationLevel.name());
 
-		add(args, "--language_in", "ECMASCRIPT6");
+		add(args, "--language_in", "ECMASCRIPT5");
 
 		add(args, "--jscomp_off", "checkVars");
 		add(args, "--jscomp_off", "checkTypes");
@@ -96,7 +96,7 @@ public class ClosureCompiler {
 		add(args, "--module_resolution", "NODE");
 		add(args, "--dependency_mode", "STRICT");
 		add(args, "--compilation_level", compilationLevel.name());
-		add(args, "--language_in", "ECMASCRIPT6_STRICT");
+		add(args, "--language_in", "ECMASCRIPT5_STRICT");
 		add(args, "--language_out", "ECMASCRIPT5_STRICT");
 		add(args, "--entry_point", entryPoint.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
