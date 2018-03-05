@@ -1,9 +1,9 @@
 package com.prezi.spaghetti.obfuscation.internal;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+import com.prezi.spaghetti.obfuscation.ClosureTarget;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
 
 import org.apache.commons.io.FileUtils;
@@ -14,13 +14,12 @@ import org.apache.commons.io.FileUtils;
 // import com.google.javascript.jscomp.DiagnosticGroups;
 // import com.google.javascript.jscomp.Result;
 // import com.google.javascript.jscomp.SourceFile;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Collection;
 
@@ -48,7 +47,15 @@ public class ClosureCompiler {
 		args.add(b);
 	}
 
-	public static int compile(File workDir, File inputFile, File outputFile, File outputSourceMapFile, CompilationLevel compilationLevel, Collection<File> customExterns) throws IOException, InterruptedException {
+	public static int compile(
+			File workDir,
+			File inputFile,
+			File outputFile,
+			File outputSourceMapFile,
+			CompilationLevel compilationLevel,
+			Collection<File> customExterns,
+			ClosureTarget target
+	) throws IOException, InterruptedException {
 
 		File jarPath = copyJarFile(workDir);
 
@@ -58,7 +65,14 @@ public class ClosureCompiler {
 
 		add(args, "--compilation_level", compilationLevel.name());
 
-		add(args, "--language_in", "ECMASCRIPT5");
+		if (target.equals(ClosureTarget.ES5)) {
+			add(args, "--language_in", "ECMASCRIPT5");
+		} else if (target.equals(ClosureTarget.ES6)) {
+			add(args, "--language_in", "ECMASCRIPT6");
+			add(args, "--language_out", "NO_TRANSPILE");
+			add(args, "--emit_use_strict", "false");
+			add(args, "--rewrite_polyfills", "false");
+		}
 
 		add(args, "--jscomp_off", "checkVars");
 		add(args, "--jscomp_off", "checkTypes");
@@ -73,10 +87,15 @@ public class ClosureCompiler {
 
 		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
-			.inheritIO()
+			.redirectErrorStream(true)
 			.start();
 
+		String output = IOUtils.toString(process.getInputStream());
+
 		int retCode = process.waitFor();
+		if (retCode != 0) {
+			logger.error("Obfuscation error:" + output);
+		}
 		return retCode;
 	}
 
@@ -86,7 +105,9 @@ public class ClosureCompiler {
 			File entryPoint,
 			Collection<File> inputSources,
 			Collection<File> customExterns,
-			CompilationLevel compilationLevel) throws IOException, InterruptedException   {
+			CompilationLevel compilationLevel,
+			ClosureTarget target
+	) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir);
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -96,8 +117,13 @@ public class ClosureCompiler {
 		add(args, "--module_resolution", "NODE");
 		add(args, "--dependency_mode", "STRICT");
 		add(args, "--compilation_level", compilationLevel.name());
-		add(args, "--language_in", "ECMASCRIPT5_STRICT");
-		add(args, "--language_out", "ECMASCRIPT5_STRICT");
+		if (target.equals(ClosureTarget.ES5)) {
+			add(args, "--language_in", "ECMASCRIPT5_STRICT");
+			add(args, "--language_out", "ECMASCRIPT5_STRICT");
+		} else if (target.equals(ClosureTarget.ES6)) {
+			add(args, "--language_in", "ECMASCRIPT6_STRICT");
+			add(args, "--language_out", "ECMASCRIPT6_STRICT");
+		}
 		add(args, "--entry_point", entryPoint.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
 
@@ -111,17 +137,21 @@ public class ClosureCompiler {
 
 		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
-			.inheritIO()
+			.redirectErrorStream(true)
 			.start();
+		String output = IOUtils.toString(process.getInputStream());
 
 		int retCode = process.waitFor();
+		if (retCode != 0) {
+			logger.error("Obfuscation error:" + output);
+		}
 		return retCode;
 	}
 
 	private static File copyJarFile(File workDir) throws IOException {
 		File jarPath = new File(workDir, "closure.jar");
 		FileUtils.copyURLToFile(
-			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20171203.jar"),
+			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20180204.jar"),
 			jarPath
 		);
 

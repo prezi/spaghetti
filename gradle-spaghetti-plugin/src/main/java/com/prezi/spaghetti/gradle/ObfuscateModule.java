@@ -24,6 +24,7 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 	private final Set<String> additionalSymbols = Sets.newLinkedHashSet();
 	private final Set<Object> closureExterns = Sets.newLinkedHashSet();
 	private String compilationLevel = "advanced";
+	private String closureTarget = "es5";
 	private File workDir;
 	private String nodeSourceMapRoot;
 	private File tsCompilerPath;
@@ -62,7 +63,8 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 				getWorkDir(),
 				getCompilerPath(),
 				getLogger(),
-				getCompilationLevel()
+				getCompilationLevel(),
+				getClosureTarget()
 		));
 		return super.createBundle(config, result.javaScript, result.sourceMap, resourceDir);
 	}
@@ -129,5 +131,14 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 	@SuppressWarnings("UnusedDeclaration")
 	public void nodeSourceMapRoot(String sourceMapRoot) {
 		this.nodeSourceMapRoot = sourceMapRoot;
+	}
+
+	@Input
+	public String getClosureTarget() {
+		return closureTarget;
+	}
+
+	public void setClosureTarget(String closureTarget) {
+		this.closureTarget = closureTarget;
 	}
 }

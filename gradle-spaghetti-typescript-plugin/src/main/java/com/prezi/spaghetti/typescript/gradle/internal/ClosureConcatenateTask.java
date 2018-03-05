@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
+import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -34,6 +35,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private Set<String> nodeRequireDependencies = Sets.newHashSet();
 	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
+	private String closureTarget = "es5";
 
 	@Input
 	public File getWorkDir() {
@@ -103,6 +105,15 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		this.entryPoints = files;
 	}
 
+	@Input
+	public String getClosureTarget() {
+		return closureTarget;
+	}
+
+	public void setClosureTarget(String closureTarget) {
+		this.closureTarget = closureTarget;
+	}
+
 	@TaskAction
 	public void concat() throws IOException, InterruptedException {
 		File workDir = getWorkDir();
@@ -144,7 +155,8 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			mainEntryPoint,
 			inputFiles,
 			Sets.<File>newHashSet(),
-			CompilationLevel.WHITESPACE_ONLY);
+			CompilationLevel.WHITESPACE_ONLY,
+			ObfuscationParameters.convertClosureTarget(getClosureTarget()));
 
 		if (exitValue != 0) {
 			throw new RuntimeException("Closure Compiler return an error code: " + exitValue);
