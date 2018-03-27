@@ -20,9 +20,14 @@ abstract public class ModuleParser extends AbstractParser<DefaultModuleNode> {
 	protected ModuleParser(Locator locator, DefaultModuleNode node) {
 		super(locator, node);
 	}
+
 	public static ModuleParser create(ModuleDefinitionSource source) {
+		return create(source, null);
+	}
+
+	public static ModuleParser create(ModuleDefinitionSource source, String namespaceOverride) {
 		if (source.getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
-			return new SimpleTypeScriptDefinitionParser(source);
+			return new SimpleTypeScriptDefinitionParser(source, namespaceOverride);
 		}
 
 		com.prezi.spaghetti.internal.grammar.ModuleParser.ModuleDefinitionContext context = ModuleDefinitionParser.parse(source);

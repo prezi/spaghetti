@@ -38,7 +38,7 @@ module com.example.test {
 	returnT<T>(t:T):com.example.test.MyInterface<T>;
 
 }
-export var TestModule:TestModule = Spaghetti["dependencies"]["com.example.test"];
+export var TestModule:TestModule;
 """
 	}
 
@@ -76,7 +76,7 @@ module com.example.test {
 	returnT<T>(t:T):com.example.test.MyInterface<T>;
 
 }
-export var TestModule:TestModule = Spaghetti["dependencies"]["com.example.test"]["module"];
+export var TestModule:TestModule;
 """
 	}
 }

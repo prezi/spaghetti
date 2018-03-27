@@ -13,6 +13,7 @@ import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor;
 import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters;
 import com.prezi.spaghetti.generator.internal.Generators;
@@ -35,12 +36,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
-public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask {
+public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTask implements ExternalDependencyAwareTask {
 	private File inputFile;
 	private File outputDirectory;
 	private String sourceBaseUrl;
 	private File sourceMap;
-	private File definitionOverride;
+	private DefinitionFile definitionOverride;
 	private File resourcesDirectoryInternal;
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
@@ -109,16 +110,16 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		setSourceMap(sourceMap);
 	}
 
-	public void setDefinitionOverride(File definitionOverride) {
+	public void setDefinitionOverride(DefinitionFile definitionOverride) {
 		this.definitionOverride = definitionOverride;
 	}
 
-	public File getDefinitionOverride() {
+	public DefinitionFile getDefinitionOverride() {
 		return definitionOverride;
 	}
 
-	protected File getOriginalDefinitionOrOverride() {
-		File def = getDefinitionOverride();
+	protected DefinitionFile getOriginalDefinitionOrOverride() {
+		DefinitionFile def = getDefinitionOverride();
 		return def == null ? getDefinition() : def;
 	}
 
@@ -194,9 +195,6 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	public void externalDependencies(Map<String, String> externalDependencies) {
 		this.externalDependencies.putAll(externalDependencies);
 	}
-	public void externalDependencies(Set<String> externalDependencies) {
-		externalDependencies(BundleUtils.parseExternalDependencies(externalDependencies));
-	}
 	public void externalDependency(String importName, String dependencyName) {
 		externalDependencies(ImmutableSortedMap.of(importName, dependencyName));
 	}
@@ -205,7 +203,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	}
 
 	@TaskAction
-	public final ModuleBundle bundle() throws IOException {
+	public final ModuleBundle bundle() throws IOException, InterruptedException {
 		ModuleConfiguration config = readConfig(getOriginalDefinitionOrOverride());
 
 		String inputContents = "";
@@ -228,7 +226,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		return createBundle(config, processedJavaScript, sourceMapText, getResourcesDirectory());
 	}
 
-	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException {
+	protected ModuleBundle createBundle(ModuleConfiguration config, String javaScript, String sourceMap, File resourceDir) throws IOException, InterruptedException {
 		ModuleNode module = config.getLocalModule();
 		File outputDir = getOutputDirectory();
 		getLogger().info("Creating bundle in {}", outputDir);

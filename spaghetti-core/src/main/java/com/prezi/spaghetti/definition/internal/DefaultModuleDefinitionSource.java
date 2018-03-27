@@ -103,6 +103,7 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 
 		if (contents != null ? !contents.equals(that.getContents()) : that.getContents() != null) return false;
 		if (location != null ? !location.equals(that.getLocation()) : that.getLocation() != null) return false;
+		if (definitionLang != definitionLang) return false;
 
 		return true;
 	}
@@ -111,6 +112,7 @@ public final class DefaultModuleDefinitionSource implements ModuleDefinitionSour
 	public int hashCode() {
 		int result = location != null ? location.hashCode() : 0;
 		result = 31 * result + (contents != null ? contents.hashCode() : 0);
+		result = 31 * result + (definitionLang != null ? definitionLang.hashCode() : 0);
 		return result;
 	}
 

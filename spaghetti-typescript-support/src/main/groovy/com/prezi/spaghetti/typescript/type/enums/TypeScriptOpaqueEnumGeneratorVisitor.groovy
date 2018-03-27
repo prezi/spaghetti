@@ -6,7 +6,7 @@ import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 class TypeScriptOpaqueEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	@Override
 	String visitEnumNode(EnumNode node) {
-"""export declare enum ${node.name} {
+"""export enum ${node.name} {
 	// Enum members are not generated for transitive dependencies. To generate
 	// the enum type with members, depend directly on the containing module.
 }

@@ -3,6 +3,7 @@ package com.prezi.spaghetti.gradle.internal;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
@@ -91,19 +92,19 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		return dependentBundles;
 	}
 
-	public ModuleConfiguration readConfig(File definition) throws IOException {
+	public ModuleConfiguration readConfig(DefinitionFile definition) throws IOException {
 		ModuleDefinitionSource definitionSource;
 		try {
-			definitionSource = DefaultModuleDefinitionSource.fromFile(definition);
+			definitionSource = DefaultModuleDefinitionSource.fromFile(definition.getFile());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		return readConfigInternal(definitionSource);
-	}
 
-	private ModuleConfiguration readConfigInternal(ModuleDefinitionSource localDefinition) throws IOException {
 		ModuleBundleSet bundles = lookupBundles();
-		ModuleConfiguration config = ModuleConfigurationParser.parse(localDefinition, bundles);
+		ModuleConfiguration config = ModuleConfigurationParser.parse(
+				definitionSource,
+				definition.getNamespaceOverride(),
+				bundles);
 		getLogger().info("Loaded configuration: {}", config);
 		return config;
 	}

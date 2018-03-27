@@ -32,8 +32,7 @@ ${node.values*.accept(new EnumValueVisitor(node.name)).join(",\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			String moduleAccessor = GeneratorUtils.createModuleAccessor(foreignModuleName, format)
-			return "\t${node.name} = ${moduleAccessor}[\"${enumName}\"][\"${node.name}\"]"
+			return "\t${node.name}"
 		}
 	}
 }

@@ -28,15 +28,56 @@ class TypeScriptJavaScriptBundleProcessorTest extends Specification {
 		when:
 		def result = processor.processModuleJavaScript(params, "/* This is the JavaScript module */");
 		then:
-		result == """var com=(com||{});
+		result == """var spaghetti=(spaghetti||{});
+spaghetti.test=(spaghetti.test||{});
+spaghetti.test.main=null;
+var com=(com||{});
 com.a=Spaghetti["dependencies"]["com.a"];
 com.b=Spaghetti["dependencies"]["com.b"];
-var spaghetti=(spaghetti||{});
 spaghetti.other=(spaghetti.other||{});
 spaghetti.other.dep=Spaghetti["dependencies"]["spaghetti.other.dep"];
-spaghetti.test=(spaghetti.test||{});
 spaghetti.test.a=Spaghetti["dependencies"]["spaghetti.test.a"];
 spaghetti.test.dep=Spaghetti["dependencies"]["spaghetti.test.dep"];
+/* This is the JavaScript module */
+return spaghetti.test.main;
+"""
+	}
+
+	def "processModuleJavaScript: 'use strict' is copied to the top line"() {
+		def processor = new TypeScriptJavaScriptBundleProcessor()
+		def config = new DefaultModuleConfiguration(
+			makeModuleNode("spaghetti.test.main"),
+			makeDependencies([]),
+			Collections.emptySet())
+		def params = new DefaultJavaScriptBundleProcessorParameters(config);
+
+		when:
+		def result = processor.processModuleJavaScript(params, "'use strict';/* This is the JavaScript module */");
+		then:
+		result == """'use strict';
+var spaghetti=(spaghetti||{});
+spaghetti.test=(spaghetti.test||{});
+spaghetti.test.main=null;
+/* This is the JavaScript module */
+return spaghetti.test.main;
+"""
+	}
+
+	def "processModuleJavaScript: \"use strict\" with double quotes is copied to the top line"() {
+		def processor = new TypeScriptJavaScriptBundleProcessor()
+		def config = new DefaultModuleConfiguration(
+			makeModuleNode("spaghetti.test.main"),
+			makeDependencies([]),
+			Collections.emptySet())
+		def params = new DefaultJavaScriptBundleProcessorParameters(config);
+
+		when:
+		def result = processor.processModuleJavaScript(params, "\"use strict\";/* This is the JavaScript module */");
+		then:
+		result == """'use strict';
+var spaghetti=(spaghetti||{});
+spaghetti.test=(spaghetti.test||{});
+spaghetti.test.main=null;
 /* This is the JavaScript module */
 return spaghetti.test.main;
 """

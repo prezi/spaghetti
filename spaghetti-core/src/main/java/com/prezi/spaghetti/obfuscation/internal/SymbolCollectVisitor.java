@@ -37,7 +37,7 @@ public class SymbolCollectVisitor extends ModuleVisitorBase<Collection<String>> 
 
 	@Override
 	public Collection<String> visitModuleNode(ModuleNode node) {
-		return Sets.newLinkedHashSet(Iterables.concat(super.visitModuleNode(node), extractNames(node.getMethods())));
+		return Sets.newLinkedHashSet(Iterables.concat(ImmutableList.of(node.getAlias()), super.visitModuleNode(node), extractNames(node.getMethods())));
 	}
 
 	@Override

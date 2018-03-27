@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.obfuscation;
 
 import com.google.common.collect.ImmutableSortedSet;
-import com.google.javascript.jscomp.CompilationLevel;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 
@@ -28,8 +27,9 @@ public class ObfuscationParameters {
 	public final File tsCompilerPath;
 	public final Logger logger;
 	public final CompilationLevel compilationLevel;
+	public final ClosureTarget closureTarget;
 
-	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, File tsCompilerPath, Logger logger, CompilationLevel compilationLevel) {
+	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, File tsCompilerPath, Logger logger, CompilationLevel compilationLevel, ClosureTarget closureTarget) {
 		this.config = config;
 		this.module = module;
 		this.javaScript = javaScript;
@@ -42,21 +42,46 @@ public class ObfuscationParameters {
 		this.tsCompilerPath = tsCompilerPath;
 		this.logger = logger;
 		this.compilationLevel = compilationLevel;
+		this.closureTarget = closureTarget;
 	}
 
-	public ObfuscationParameters(ModuleConfiguration config, ModuleNode module, String javaScript, String sourceMap, URI sourceMapRoot, String nodeSourceMapRoot, Set<File> closureExterns, Set<String> additionalSymbols, File workingDirectory, File tsCompilerPath, Logger logger, String compilationLevel) {
-		this(config, module, javaScript, sourceMap, sourceMapRoot, nodeSourceMapRoot, closureExterns, additionalSymbols, workingDirectory, tsCompilerPath, logger, convertCompilationLevel(compilationLevel));
+	public ObfuscationParameters(
+			ModuleConfiguration config,
+			ModuleNode module,
+			String javaScript,
+			String sourceMap,
+			URI sourceMapRoot,
+			String nodeSourceMapRoot,
+			Set<File> closureExterns,
+			Set<String> additionalSymbols,
+			File workingDirectory,
+			File tsCompilerPath,
+			Logger logger,
+			String compilationLevel,
+			String closureTarget
+	) {
+		this(config, module, javaScript, sourceMap, sourceMapRoot, nodeSourceMapRoot, closureExterns, additionalSymbols, workingDirectory, tsCompilerPath, logger, convertCompilationLevel(compilationLevel), convertClosureTarget(closureTarget));
 	}
 
 	private static CompilationLevel convertCompilationLevel(String compilationLevel) {
 		if (compilationLevel.equals("advanced")) {
-			return CompilationLevel.ADVANCED_OPTIMIZATIONS;
+			return CompilationLevel.ADVANCED;
 		} else if (compilationLevel.equals("simple")) {
-			return CompilationLevel.SIMPLE_OPTIMIZATIONS;
+			return CompilationLevel.SIMPLE;
 		} else if (compilationLevel.equals("whitespace")) {
 			return CompilationLevel.WHITESPACE_ONLY;
 		} else {
 			throw new IllegalArgumentException("Unknown compilation level: " + compilationLevel);
+		}
+	}
+
+	public static ClosureTarget convertClosureTarget(String closureTarget) {
+		if (closureTarget.equalsIgnoreCase("es5")) {
+			return ClosureTarget.ES5;
+		} else if (closureTarget.equalsIgnoreCase("es6")) {
+			return ClosureTarget.ES6;
+		} else {
+			throw new IllegalArgumentException("Unknown closure target level: " + closureTarget);
 		}
 	}
 }

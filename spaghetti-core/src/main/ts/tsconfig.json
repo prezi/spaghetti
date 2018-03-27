@@ -4,7 +4,12 @@
 		"strictNullChecks": true,
 		"noImplicitThis": true,
 		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true
+		"noFallthroughCasesInSwitch": true,
+		"lib": [
+			"es2015",
+			"es2015.core",
+			"es2015.collection"
+		]
 	},
 	"files": [
 		"tsAstParser.ts"

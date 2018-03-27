@@ -3,6 +3,8 @@ package com.prezi.spaghetti.gradle.internal;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.prezi.spaghetti.definition.DefinitionFile;
+import com.prezi.spaghetti.definition.internal.DefaultDefinitionFile;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryContainer;
 import com.prezi.spaghetti.gradle.internal.incubating.BinaryInternal;
 import com.prezi.spaghetti.gradle.internal.incubating.DefaultBinaryContainer;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -27,6 +31,7 @@ import org.gradle.internal.reflect.Instantiator;
 public class SpaghettiExtension {
 	private static final String[] MODULE_SUFFIXES = { ".module", ".module.d.ts", ".module.ts" };
 	private static final IOFileFilter MODULE_FILE_FILTER = new SuffixFileFilter(MODULE_SUFFIXES);
+	private static final Pattern TYPESCRIPT_NAMESPACE_PATTERN = Pattern.compile("^[a-z_][a-z0-9_]*$");
 
 
 	private final ProjectSourceSet sources;
@@ -40,7 +45,8 @@ public class SpaghettiExtension {
 	private String sourceBaseUrl;
 	private boolean publishTestArtifacts;
 	private Collection<Function<Void, Iterable<File>>> definitionSearchSourceDirProviders;
-	private File definition = null;
+	private DefinitionFile definition = null;
+	private String typescriptExportNamespace = null;
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
@@ -175,9 +181,20 @@ public class SpaghettiExtension {
 		return iterables;
 	}
 
-	public File getDefinition() {
+	public void typescriptExportNamespace(String namespace) {
+		Matcher m = TYPESCRIPT_NAMESPACE_PATTERN.matcher(namespace);
+		if (!m.matches()) {
+			throw new RuntimeException("typescriptExportNamespace must be a valid typescript identifier: " + namespace);
+		}
+		typescriptExportNamespace = namespace;
+	}
+
+	public DefinitionFile getDefinition() {
 		if (this.definition == null) {
-			this.definition = findDefinition();
+			File file = findDefinition();
+			if (file != null) {
+				this.definition = new DefaultDefinitionFile(file, typescriptExportNamespace);
+			}
 		}
 		return this.definition;
 	}

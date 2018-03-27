@@ -62,6 +62,7 @@ module com.example.test {
 	}
 	public var MyConst = com.example.test.MyConst;
 	public var MyEnum = com.example.test.MyEnum;
+	public var TestModule = this;
 }
 """
 	}

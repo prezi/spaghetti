@@ -3,7 +3,6 @@ package com.prezi.spaghetti.obfuscation;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.javascript.jscomp.CompilationLevel;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
@@ -59,25 +58,25 @@ public class ModuleObfuscator {
 	 * @param params the obfuscation parameters.
 	 * @return the obfuscated JavaScript with the updated source map.
 	 */
-	public ObfuscationResult obfuscateModule(ObfuscationParameters params) throws IOException {
+	public ObfuscationResult obfuscateModule(ObfuscationParameters params) throws IOException, InterruptedException {
 		ModuleConfiguration config = params.config;
 		ModuleNode module = params.module;
 
-		// OBFUSCATE
-		StringBuilder compressedJS = new StringBuilder();
-
-		// Write JavaScript source
 		File workDir = params.workingDirectory;
 		FileUtils.deleteQuietly(workDir);
 		FileUtils.forceMkdir(workDir);
-		File closureFile = new File(workDir, "closure.js");
-		FileUtils.write(closureFile, params.javaScript);
+
+		File inputFile = new File(workDir, "input.js");
+		FileUtils.write(inputFile, params.javaScript);
+
+		File outputFile = new File(workDir, "output.js");
+		File outputSourceMapFile = new File(workDir, "output.map");
 
 		Set<File> externs = Sets.newHashSet();
 		externs.addAll(params.closureExterns);
 
 		// Append @expose annotations for Closure Compiler
-		if (params.compilationLevel == CompilationLevel.ADVANCED_OPTIMIZATIONS) {
+		if (params.compilationLevel == CompilationLevel.ADVANCED) {
 			ImmutableSet.Builder<String> builder = ImmutableSet.builder();
 			builder.addAll(protectedSymbols).addAll(params.additionalSymbols);
 			for (ModuleNode moduleNode : config.getAllModules()) {
@@ -105,14 +104,13 @@ public class ModuleObfuscator {
 		}
 
 		// Hand off for compilation
-		StringBuilder sourceMapBuilder = new StringBuilder();
-		Integer closureRet = ClosureCompiler.compile(closureFile.toString(), compressedJS, module.getName(), sourceMapBuilder, params.compilationLevel, externs);
+		Integer closureRet = ClosureCompiler.compile(workDir, inputFile, outputFile, outputSourceMapFile, params.compilationLevel, externs, params.closureTarget);
 		if (closureRet != 0) {
 			throw new RuntimeException("Closure returned with exit code " + closureRet);
 		}
 
 		// SOURCEMAP
-		String mapJStoMin = sourceMapBuilder.toString();
+		String mapJStoMin = FileUtils.readFileToString(outputSourceMapFile);
 		String sourceMap = params.sourceMap;
 		Object finalSourceMap;
 		if (sourceMap != null) {
@@ -130,7 +128,8 @@ public class ModuleObfuscator {
 			finalSourceMap = SourceMap.relativizePaths((String) finalSourceMap, sourceMapRoot);
 		}
 
-		return new ObfuscationResult(compressedJS.toString(), (String) finalSourceMap);
+		String obfuscatedContent = FileUtils.readFileToString(outputFile);
+		return new ObfuscationResult(obfuscatedContent, (String) finalSourceMap);
 	}
 
 	protected Set<String> getTypeScriptDtsSymbols(ModuleDefinitionSource source, File workDir, File compilerPath, Logger logger) {

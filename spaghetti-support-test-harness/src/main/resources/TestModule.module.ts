@@ -40,6 +40,8 @@ module spaghetti.test {
 	 */
 	export const getValueOfTwo: () => string = TestModule.getValueOfTwo;
 
+	export const getValueOfDependentConstant: () => string = TestModule.getValueOfDependentConstant;
+
 	/**
 	 * Create an instance of the Point3d type, and assign the parameters to its fields.
 	 */

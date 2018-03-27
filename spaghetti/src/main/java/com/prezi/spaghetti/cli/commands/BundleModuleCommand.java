@@ -35,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import org.slf4j.LoggerFactory;
-
 @Command(name = "bundle", description = "Create a module bundle.")
 public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 	@Option(name = {"-T", "--type"},
@@ -84,6 +82,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 	@Option(name = {"--compilation-level"},
 			description = "Set the compilation level for Closure compiler")
 	private String compilationLevel = "advanced";
+
+	@Option(name = {"--closure-target"},
+			description = "Set the target for Closure compiler (es5|es6)")
+	private String closureTarget = "es5";
 
 	@Option(name = {"--symbols"},
 			description = "Comma delimited list of additional symbols to protect during obfuscation")
@@ -153,7 +155,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		return 0;
 	}
 
-	private ObfuscationResult obfuscate(ModuleConfiguration config, String javaScript, String sourceMap) throws IOException {
+	private ObfuscationResult obfuscate(ModuleConfiguration config, String javaScript, String sourceMap) throws IOException, InterruptedException {
 		if (workDir == null) {
 			workDir = Files.createTempDir();
 		}
@@ -191,7 +193,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				workDir,
 				new File(nodePath, "typescript"),
 				BundleModuleCommand.logger,
-				compilationLevel
+				compilationLevel,
+				closureTarget
 		));
 	}
 }
