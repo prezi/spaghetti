@@ -1,4 +1,4 @@
-ext.gradleVer = "2.3"
+ext.gradleVer = "4.6"
 ext.groovyVersion = "2.3.9"
 
 String gitVersion
