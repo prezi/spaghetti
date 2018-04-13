@@ -63,12 +63,13 @@ class ClosureWrapper {
         Compiler compiler = new Compiler(System.err);
         CompilerOptions options = new CompilerOptions();
 
-        CompilationLevel level = CompilationLevel.WHITESPACE_ONLY;
+        CompilationLevel level = CompilationLevel.SIMPLE_OPTIMIZATIONS;
         level.setOptionsForCompilationLevel(options);
         level.setWrappedOutputOptimizations(options);
         options.setProcessCommonJSModules(true);
         options.setTrustedStrings(true);
         options.setEnvironment(CompilerOptions.Environment.BROWSER);
+        options.setConvertToDottedProperties(false);
         options.setModuleResolutionMode(ModuleLoader.ResolutionMode.NODE);
         // Dependency mode STRICT
         options.setDependencyOptions(new DependencyOptions()
