@@ -134,7 +134,7 @@ public class ClosureCompiler {
 
 		int retCode = process.waitFor();
 		if (retCode != 0) {
-			logger.error("Obfuscation error:" + output);
+			logger.error("ERROR: " + output);
 		}
 		return retCode;
 	}
