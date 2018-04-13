@@ -140,20 +140,22 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 				String.format("var _require=require;\nmodule.exports = _require('%s');\n", name));
 		}
 
-		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
-		Collection<File> entryPointFiles = filterFileList(inputFiles, getEntryPoints());
+		Collection<File> entryPointFiles = filterFileList(
+			FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true),
+			getEntryPoints());
 		File mainEntryPoint = new File(workDir, "_spaghetti-entry.js");
 		ClosureUtils.writeMainEntryPoint(
 			mainEntryPoint,
 			entryPointFiles,
 			config.getLocalModule().getName());
-		inputFiles.add(mainEntryPoint);
+		File relativeJsDir = new File(jsFilesDir.getName());
+		File relativeEntryPoint = new File(mainEntryPoint.getName());
 
 		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
-			mainEntryPoint,
-			inputFiles,
+			relativeEntryPoint,
+			Lists.newArrayList(relativeJsDir, relativeEntryPoint),
 			Sets.<File>newHashSet(),
 			ObfuscationParameters.convertClosureTarget(getClosureTarget()));
 

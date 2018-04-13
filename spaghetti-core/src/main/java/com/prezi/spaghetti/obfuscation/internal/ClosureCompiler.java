@@ -114,19 +114,21 @@ public class ClosureCompiler {
 		if (target.equals(ClosureTarget.ES5)) {
 			add(args, "--target", "ES5");
 		}
-		add(args, "--entry_point", entryPoint.getAbsolutePath());
-		add(args, "--js_output_file", outputFile.getAbsolutePath());
+		add(args, "--entry_point", entryPoint.getPath());
+		add(args, "--js_output_file", outputFile.getPath());
 
 		for (File inputSource : inputSources) {
-			add(args, "--js", inputSource.getAbsolutePath());
+			add(args, "--js", inputSource.getPath());
 		}
 
 		for (File customExtern : customExterns) {
-			add(args, "--externs", customExtern.getAbsolutePath());
+			add(args, "--externs", customExtern.getPath());
 		}
 
+		logger.info("In working directory: {}", workDir.getPath());
 		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
+			.directory(workDir)
 			.redirectErrorStream(true)
 			.start();
 		String output = IOUtils.toString(process.getInputStream());
