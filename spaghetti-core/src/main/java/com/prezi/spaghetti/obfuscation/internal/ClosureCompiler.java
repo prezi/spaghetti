@@ -105,7 +105,6 @@ public class ClosureCompiler {
 			File entryPoint,
 			Collection<File> inputSources,
 			Collection<File> customExterns,
-			CompilationLevel compilationLevel,
 			ClosureTarget target
 	) throws IOException, InterruptedException   {
 		File jarPath = copyJarFile(workDir, "/closure-compiler-wrapper.jar");

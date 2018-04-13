@@ -155,7 +155,6 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			mainEntryPoint,
 			inputFiles,
 			Sets.<File>newHashSet(),
-			CompilationLevel.WHITESPACE_ONLY,
 			ObfuscationParameters.convertClosureTarget(getClosureTarget()));
 
 		if (exitValue != 0) {
