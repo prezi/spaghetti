@@ -13,10 +13,15 @@ class ClosureCompilerTest extends Specification {
         dir.mkdirs();
         File entryJs = new File(dir, "Entry.js");
         File moduleJs = new File(dir, "Module.js");
+        File externsJs = new File(dir, "Externs.js");
         File outputJs = new File(dir, "output.js")
         File obfuscatedJs = new File(dir, "obfuscated.js");
 
         when:
+        FileUtils.write(externsJs, """
+var prezi_module;
+""");
+
         FileUtils.write(entryJs, """
 prezi_module=require('./Module.js');
 """);
@@ -38,7 +43,9 @@ exports.translations = {
                 new File(entryJs.getName()),
                 new File(moduleJs.getName())
             ],
-            [],
+            [
+                new File(externsJs.getName()),
+            ],
             ClosureTarget.ES6);
 
         ClosureCompiler.compile(

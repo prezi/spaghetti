@@ -1,6 +1,7 @@
 package com.prezi.spaghetti.closure;
 
 import com.google.javascript.jscomp.deps.ModuleLoader;
+import com.google.javascript.jscomp.AbstractCommandLineRunner;
 import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilationLevel;
@@ -67,6 +68,7 @@ class ClosureWrapper {
         level.setWrappedOutputOptimizations(options);
         options.setProcessCommonJSModules(true);
         options.setTrustedStrings(true);
+        options.setEnvironment(CompilerOptions.Environment.BROWSER);
         options.setModuleResolutionMode(ModuleLoader.ResolutionMode.NODE);
         // Dependency mode STRICT
         options.setDependencyOptions(new DependencyOptions()
@@ -86,6 +88,7 @@ class ClosureWrapper {
         options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.ERROR);
 
         List<SourceFile> externs = new ArrayList<SourceFile>();
+        externs.addAll(AbstractCommandLineRunner.getBuiltinExterns(options.getEnvironment()));
         for (String path : CommandLineRunner.findJsFiles(parsedArgs.externsPatterns)) {
             externs.add(SourceFile.fromFile(path));
         }
