@@ -142,7 +142,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 
 		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
 		Collection<File> entryPointFiles = filterFileList(inputFiles, getEntryPoints());
-		File mainEntryPoint = new File(workDir, "_spaghetti-main.js");
+		File mainEntryPoint = new File(workDir, "_spaghetti-entry.js");
 		ClosureUtils.writeMainEntryPoint(
 			mainEntryPoint,
 			entryPointFiles,
