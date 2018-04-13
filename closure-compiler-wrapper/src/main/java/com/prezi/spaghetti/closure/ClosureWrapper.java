@@ -1,8 +1,8 @@
 package com.prezi.spaghetti.closure;
 
 import com.google.javascript.jscomp.deps.ModuleLoader;
-import com.google.javascript.jscomp.AbstractCommandLineRunner;
 import com.google.javascript.jscomp.CheckLevel;
+import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.Compiler;
@@ -28,10 +28,10 @@ class Args {
     public List<String> entryPoints = new ArrayList<String>();
 
     @Option(name="--js")
-    public List<File> inputSources = new ArrayList<File>();
+    public List<String> inputPatterns = new ArrayList<String>();
 
     @Option(name="--externs")
-    public List<File> externsSources = new ArrayList<File>();
+    public List<String> externsPatterns = new ArrayList<String>();
 
     @Option(name="--target")
     public String target = "none";
@@ -86,16 +86,17 @@ class ClosureWrapper {
         options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.ERROR);
 
         List<SourceFile> externs = new ArrayList<SourceFile>();
-        for (File f : parsedArgs.externsSources) {
-            externs.add(SourceFile.fromFile(f));
+        for (String path : CommandLineRunner.findJsFiles(parsedArgs.externsPatterns)) {
+            externs.add(SourceFile.fromFile(path));
         }
 
         List<SourceFile> inputs = new ArrayList<SourceFile>();
-        for (File f : parsedArgs.inputSources) {
-            inputs.add(SourceFile.fromFile(f));
+        for (String path : CommandLineRunner.findJsFiles(parsedArgs.inputPatterns)) {
+            inputs.add(SourceFile.fromFile(path));
         }
 
         compiler.compile(externs, inputs, options);
+
         if (compiler.hasErrors()) {
             System.exit(1);
         } else {
