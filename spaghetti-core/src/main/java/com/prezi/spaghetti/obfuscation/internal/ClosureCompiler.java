@@ -57,7 +57,7 @@ public class ClosureCompiler {
 			ClosureTarget target
 	) throws IOException, InterruptedException {
 
-		File jarPath = copyJarFile(workDir);
+		File jarPath = copyJarFile(workDir, "/closure-compiler/closure-compiler-v20180204.jar");
 
 		List<String> args = Lists.newArrayList();
 		args.add("java");
@@ -108,21 +108,12 @@ public class ClosureCompiler {
 			CompilationLevel compilationLevel,
 			ClosureTarget target
 	) throws IOException, InterruptedException   {
-		File jarPath = copyJarFile(workDir);
+		File jarPath = copyJarFile(workDir, "/closure-compiler-wrapper.jar");
 		List<String> args = Lists.newArrayList();
 		args.add("java");
 		add(args, "-jar", jarPath.getAbsolutePath());
-		args.add("--assume_function_wrapper");
-		args.add("--process_common_js_modules");
-		add(args, "--module_resolution", "NODE");
-		add(args, "--dependency_mode", "STRICT");
-		add(args, "--compilation_level", compilationLevel.name());
 		if (target.equals(ClosureTarget.ES5)) {
-			add(args, "--language_in", "ECMASCRIPT5_STRICT");
-			add(args, "--language_out", "ECMASCRIPT5_STRICT");
-		} else if (target.equals(ClosureTarget.ES6)) {
-			add(args, "--language_in", "ECMASCRIPT6_STRICT");
-			add(args, "--language_out", "ECMASCRIPT6_STRICT");
+			add(args, "--target", "ES5");
 		}
 		add(args, "--entry_point", entryPoint.getAbsolutePath());
 		add(args, "--js_output_file", outputFile.getAbsolutePath());
@@ -148,10 +139,10 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
-	private static File copyJarFile(File workDir) throws IOException {
+	private static File copyJarFile(File workDir, String resourceName) throws IOException {
 		File jarPath = new File(workDir, "closure.jar");
 		FileUtils.copyURLToFile(
-			Resources.getResource(ClosureCompiler.class, "/closure-compiler/closure-compiler-v20180204.jar"),
+			Resources.getResource(ClosureCompiler.class, resourceName),
 			jarPath
 		);
 

@@ -66,6 +66,7 @@ class ClosureWrapper {
         level.setOptionsForCompilationLevel(options);
         level.setWrappedOutputOptimizations(options);
         options.setProcessCommonJSModules(true);
+        options.setTrustedStrings(true);
         options.setModuleResolutionMode(ModuleLoader.ResolutionMode.NODE);
         // Dependency mode STRICT
         options.setDependencyOptions(new DependencyOptions()
