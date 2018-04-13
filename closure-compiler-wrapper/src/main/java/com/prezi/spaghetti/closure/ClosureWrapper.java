@@ -25,7 +25,7 @@ class Args {
     public File outputFile;
 
     @Option(name="--entry_point")
-    public List<File> entryPoints = new ArrayList<File>();
+    public List<String> entryPoints = new ArrayList<String>();
 
     @Option(name="--js")
     public List<File> inputSources = new ArrayList<File>();
@@ -39,10 +39,10 @@ class Args {
 
 class ClosureWrapper {
 
-    private static List<ModuleIdentifier> getEntryPoints(List<File> entryFiles) {
+    private static List<ModuleIdentifier> getEntryPoints(List<String> entryFiles) {
         List<ModuleIdentifier> entryPoints = new ArrayList<ModuleIdentifier>();
-        for (File f : entryFiles) {
-            entryPoints.add(ModuleIdentifier.forFile(f.getAbsolutePath()));
+        for (String s : entryFiles) {
+            entryPoints.add(ModuleIdentifier.forFile(s));
         }
         return entryPoints;
     }
