@@ -30,7 +30,7 @@ class Args {
     public File outputFile;
 
     @Option(name="--create_source_map")
-    public String sourceMap = null;
+    public File sourceMap = null;
 
     @Option(name="--entry_point")
     public List<String> entryPoints = new ArrayList<String>();
@@ -120,7 +120,7 @@ class ClosureWrapper {
         }
 
         if (args.sourceMap != null) {
-            options.setSourceMapOutputPath(args.sourceMap);
+            options.setSourceMapOutputPath(args.sourceMap.getPath());
         }
 
         if (args.es5) {
@@ -174,6 +174,13 @@ class ClosureWrapper {
             writer.write("\n");
             writer.close();
             System.out.println("Wrote: " + args.outputFile.getAbsolutePath());
+
+            if (args.sourceMap != null) {
+                writer = new FileWriter(args.sourceMap);
+                compiler.getSourceMap().appendTo(writer, args.outputFile.getPath());
+                writer.close();
+                System.out.println("Wrote: " + args.sourceMap.getAbsolutePath());
+            }
         }
     }
 }
