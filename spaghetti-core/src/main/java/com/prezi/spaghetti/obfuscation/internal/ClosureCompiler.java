@@ -112,8 +112,10 @@ public class ClosureCompiler {
 		args.add("java");
 		add(args, "-jar", jarPath.getAbsolutePath());
 		if (target.equals(ClosureTarget.ES5)) {
-			add(args, "--target", "ES5");
+			args.add("--es5");
 		}
+
+		args.add("--concat");
 		add(args, "--entry_point", entryPoint.getPath());
 		add(args, "--js_output_file", outputFile.getPath());
 
