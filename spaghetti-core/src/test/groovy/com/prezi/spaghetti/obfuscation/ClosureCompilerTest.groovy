@@ -48,7 +48,7 @@ exports.translations = {
             ],
             ClosureTarget.ES6);
 
-        ClosureCompiler.compile(
+        ClosureCompiler.minify(
             dir,
             outputJs,
             obfuscatedJs,

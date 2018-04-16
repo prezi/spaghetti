@@ -104,7 +104,7 @@ public class ModuleObfuscator {
 		}
 
 		// Hand off for compilation
-		Integer closureRet = ClosureCompiler.compile(workDir, inputFile, outputFile, outputSourceMapFile, params.compilationLevel, externs, params.closureTarget);
+		Integer closureRet = ClosureCompiler.minify(workDir, inputFile, outputFile, outputSourceMapFile, params.compilationLevel, externs, params.closureTarget);
 		if (closureRet != 0) {
 			throw new RuntimeException("Closure returned with exit code " + closureRet);
 		}

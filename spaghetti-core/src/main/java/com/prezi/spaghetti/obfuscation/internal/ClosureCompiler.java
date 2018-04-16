@@ -7,13 +7,6 @@ import com.prezi.spaghetti.obfuscation.ClosureTarget;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
 
 import org.apache.commons.io.FileUtils;
-// import com.google.javascript.jscomp.CheckLevel;
-// import com.google.javascript.jscomp.CommandLineRunner;
-// import com.google.javascript.jscomp.Compiler;
-// import com.google.javascript.jscomp.CompilerOptions;
-// import com.google.javascript.jscomp.DiagnosticGroups;
-// import com.google.javascript.jscomp.Result;
-// import com.google.javascript.jscomp.SourceFile;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +16,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Collection;
 
-/**
- * lineLengthThreshold = 1 forces closure to insert a newline in the
- * obfuscated code every chance it gets.
- * <p>
- * The reason we want this is because column number information in
- * stack traces are inconsistent across browsers. Most of the time
- * we only have line numbers, which means we cannot exactly tell
- * where in the code the obfuscated statement in question
- * originates from.
- * </p>
- * <p>
- * This way we don't rely on support for column number information
- * in browsers.
- * </p>
- */
 public class ClosureCompiler {
 
 	private static Logger logger = LoggerFactory.getLogger(ClosureCompiler.class);
@@ -47,7 +25,7 @@ public class ClosureCompiler {
 		args.add(b);
 	}
 
-	public static int compile(
+	public static int minify(
 			File workDir,
 			File inputFile,
 			File outputFile,
@@ -57,33 +35,22 @@ public class ClosureCompiler {
 			ClosureTarget target
 	) throws IOException, InterruptedException {
 
-		File jarPath = copyJarFile(workDir, "/closure-compiler/closure-compiler-v20180204.jar");
-
-		List<String> args = Lists.newArrayList();
-		args.add("java");
-		add(args, "-jar", jarPath.getAbsolutePath());
-
-		add(args, "--compilation_level", compilationLevel.name());
+		File jarPath = copyJarFile(workDir);
+		List<String> args = Lists.newArrayList(
+			"java", "-jar", jarPath.getAbsolutePath(),
+			"--compilation_level", compilationLevel.name(),
+			"--js", inputFile.getAbsolutePath(),
+			"--create_source_map", outputSourceMapFile.getAbsolutePath(),
+			"--js_output_file", outputFile.getAbsolutePath()
+		);
 
 		if (target.equals(ClosureTarget.ES5)) {
-			add(args, "--language_in", "ECMASCRIPT5");
-		} else if (target.equals(ClosureTarget.ES6)) {
-			add(args, "--language_in", "ECMASCRIPT6");
-			add(args, "--language_out", "NO_TRANSPILE");
-			add(args, "--emit_use_strict", "false");
-			add(args, "--rewrite_polyfills", "false");
+			args.add("--es5");
 		}
-
-		add(args, "--jscomp_off", "checkVars");
-		add(args, "--jscomp_off", "checkTypes");
 
 		for (File customExtern : customExterns) {
 			add(args, "--externs", customExtern.getAbsolutePath());
 		}
-		add(args, "--env", "BROWSER");
-		add(args, "--js", inputFile.getAbsolutePath());
-		add(args, "--create_source_map", outputSourceMapFile.getAbsolutePath());
-		add(args, "--js_output_file", outputFile.getAbsolutePath());
 
 		logger.info("Executing: {}", Joiner.on(" ").join(args));
 		Process process = new ProcessBuilder(args)
@@ -106,16 +73,19 @@ public class ClosureCompiler {
 			Collection<File> inputSources,
 			Collection<File> customExterns,
 			ClosureTarget target
-	) throws IOException, InterruptedException   {
-		File jarPath = copyJarFile(workDir, "/closure-compiler-wrapper.jar");
-		List<String> args = Lists.newArrayList();
-		args.add("java");
-		add(args, "-jar", jarPath.getAbsolutePath());
+	) throws IOException, InterruptedException {
+
+		File jarPath = copyJarFile(workDir);
+		List<String> args = Lists.newArrayList(
+			"java", "-jar", jarPath.getAbsolutePath(),
+			"--concat",
+			"--entry_point", entryPoint.getPath(),
+			"--js_output_file", outputFile.getPath()
+		);
+
 		if (target.equals(ClosureTarget.ES5)) {
-			add(args, "--target", "ES5");
+			args.add("--es5");
 		}
-		add(args, "--entry_point", entryPoint.getPath());
-		add(args, "--js_output_file", outputFile.getPath());
 
 		for (File inputSource : inputSources) {
 			add(args, "--js", inputSource.getPath());
@@ -140,10 +110,10 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
-	private static File copyJarFile(File workDir, String resourceName) throws IOException {
-		File jarPath = new File(workDir, "closure.jar");
+	private static File copyJarFile(File workDir) throws IOException {
+		File jarPath = new File(workDir, "closure-compiler-wrapper.jar");
 		FileUtils.copyURLToFile(
-			Resources.getResource(ClosureCompiler.class, resourceName),
+			Resources.getResource(ClosureCompiler.class, "/closure-compiler-wrapper.jar"),
 			jarPath
 		);
 

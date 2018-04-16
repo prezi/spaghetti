@@ -29,6 +29,9 @@ class Args {
     @Option(name="--js_output_file")
     public File outputFile;
 
+    @Option(name="--create_source_map")
+    public File sourceMap = null;
+
     @Option(name="--entry_point")
     public List<String> entryPoints = new ArrayList<String>();
 
@@ -38,8 +41,14 @@ class Args {
     @Option(name="--externs")
     public List<String> externsPatterns = new ArrayList<String>();
 
-    @Option(name="--target")
-    public String target = "none";
+    @Option(name="--compilation_level")
+    public String compilationLevel = "SIMPLE";
+
+    @Option(name="--concat")
+    public boolean concat = false;
+
+    @Option(name="--es5")
+    public boolean es5 = false;
 }
 
 class ClosureWrapper {
@@ -79,47 +88,70 @@ class ClosureWrapper {
             return;
         }
 
+        runCompiler(parsedArgs);
+    }
+
+    private static void runCompiler(Args args) throws IOException {
+
         Compiler compiler = new Compiler(System.err);
         CompilerOptions options = new CompilerOptions();
 
-        CompilationLevel level = CompilationLevel.SIMPLE_OPTIMIZATIONS;
+        CompilationLevel level = CompilationLevel.fromString(args.compilationLevel);
+        if (level == null) {
+            System.err.println("Invalid value for compilation_level: " + args.compilationLevel);
+            System.exit(2);
+        }
+
         level.setOptionsForCompilationLevel(options);
-        level.setWrappedOutputOptimizations(options);
-        options.setProcessCommonJSModules(true);
         options.setTrustedStrings(true);
         options.setEnvironment(CompilerOptions.Environment.BROWSER);
-        options.setConvertToDottedProperties(false);
-        options.setModuleResolutionMode(ModuleLoader.ResolutionMode.NODE);
-        // Dependency mode STRICT
-        options.setDependencyOptions(new DependencyOptions()
-            .setDependencyPruning(true)
-            .setDependencySorting(true)
-            .setMoocherDropping(true)
-            .setEntryPoints(getEntryPoints(parsedArgs.entryPoints)));
 
-        if (parsedArgs.target.toUpperCase().equals("ES5")) {
+        if (args.concat) {
+            level.setWrappedOutputOptimizations(options);
+            options.setProcessCommonJSModules(true);
+            options.setConvertToDottedProperties(false);
+            options.setModuleResolutionMode(ModuleLoader.ResolutionMode.NODE);
+            // Dependency mode STRICT
+            options.setDependencyOptions(new DependencyOptions()
+                .setDependencyPruning(true)
+                .setDependencySorting(true)
+                .setMoocherDropping(true)
+                .setEntryPoints(getEntryPoints(args.entryPoints)));
+        }
+
+        if (args.sourceMap != null) {
+            options.setSourceMapOutputPath(args.sourceMap.getPath());
+        }
+
+        if (args.es5) {
             options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT);
             options.setLanguageOut(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT);
         } else {
             options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT_2015);
-            options.setLanguageOut(CompilerOptions.LanguageMode.ECMASCRIPT_2015);
+            options.setLanguageOut(CompilerOptions.LanguageMode.NO_TRANSPILE);
+            options.setEmitUseStrict(false);
+            options.setRewritePolyfills(false);
         }
 
-        options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.WARNING);
-        // Report an error if there is an import cycle in the module resolution.
-        // (ie. EARLY_REFERENCE, the module is referenced before it is defined).
-        options.setWarningLevel(
-            new DiagnosticGroup(EARLY_REFERENCE),
-            CheckLevel.ERROR);
+        options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.OFF);
+        options.setWarningLevel(DiagnosticGroups.CHECK_TYPES, CheckLevel.OFF);
+
+        if (args.concat) {
+            // Report an error if there is an import cycle in the module resolution.
+            // (ie. EARLY_REFERENCE, the module is referenced before it is defined).
+            options.setWarningLevel(
+                new DiagnosticGroup(EARLY_REFERENCE),
+                CheckLevel.ERROR);
+        }
 
         List<SourceFile> externs = new ArrayList<SourceFile>();
         externs.addAll(AbstractCommandLineRunner.getBuiltinExterns(options.getEnvironment()));
-        for (String path : CommandLineRunner.findJsFiles(parsedArgs.externsPatterns)) {
+        for (String path : CommandLineRunner.findJsFiles(args.externsPatterns)) {
             externs.add(SourceFile.fromFile(path));
         }
 
         List<SourceFile> inputs = new ArrayList<SourceFile>();
-        for (String path : CommandLineRunner.findJsFiles(parsedArgs.inputPatterns)) {
+        for (String path : CommandLineRunner.findJsFiles(args.inputPatterns)) {
             inputs.add(SourceFile.fromFile(path));
         }
 
@@ -128,7 +160,7 @@ class ClosureWrapper {
         if (compiler.hasErrors()) {
             JSError[] errors = compiler.getErrors();
             for (JSError e : errors) {
-                if (e.getType() == EARLY_REFERENCE) {
+                if (args.concat && e.getType() == EARLY_REFERENCE) {
                     System.err.println(String.format("The error '%s'", e.description));
                     System.err.println("  likely means that there is a cycle in the module import graph.");
                     System.err.println("  You must restructure the modules so there are no circular imports.");
@@ -137,11 +169,18 @@ class ClosureWrapper {
             }
             System.exit(1);
         } else {
-            Writer writer = new FileWriter(parsedArgs.outputFile);
+            Writer writer = new FileWriter(args.outputFile);
             writer.write(compiler.toSource());
             writer.write("\n");
             writer.close();
-            System.out.println("Wrote: " + parsedArgs.outputFile.getAbsolutePath());
+            System.out.println("Wrote: " + args.outputFile.getAbsolutePath());
+
+            if (args.sourceMap != null) {
+                writer = new FileWriter(args.sourceMap);
+                compiler.getSourceMap().appendTo(writer, args.outputFile.getPath());
+                writer.close();
+                System.out.println("Wrote: " + args.sourceMap.getAbsolutePath());
+            }
         }
     }
 }
