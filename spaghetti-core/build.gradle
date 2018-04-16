@@ -33,15 +33,6 @@ task generateGrammar(type: JavaExec) {
 	classpath = configurations.antlr
 }
 
-processResources {
-	inputs.property "version", version
-	filesMatching('*.properties') {
-		filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
-				version: version
-		])
-	}
-}
-
 idea.module {
 	sourceDirs += generatedGrammar
 	excludeDirs -= project.buildDir
@@ -103,8 +94,25 @@ task compileTsAstParser {
 	}
 }
 
-processResources.dependsOn compileTsAstParser
-processResources.from compileTsAstParser.outputs.files
+processResources {
+	// Add compiled tsAstParser.js
+	dependsOn compileTsAstParser
+	from compileTsAstParser.outputs.files
+
+	// Add compiled closure-compiler-wrapper.jar
+	dependsOn project(":closure-compiler-wrapper").jar
+	from project(":closure-compiler-wrapper").jar.outputs.files
+	rename "closure-compiler-wrapper-(.*)\\.jar", "closure-compiler-wrapper.jar"
+
+	// Put version into spaghetti.properties
+	inputs.property "version", version
+	filesMatching('*.properties') {
+		filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: [
+				version: version
+		])
+	}
+}
+
 
 artifacts {
 	testCompile(testJar)
