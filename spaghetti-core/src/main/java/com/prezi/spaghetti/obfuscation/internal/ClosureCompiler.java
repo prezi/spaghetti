@@ -7,13 +7,6 @@ import com.prezi.spaghetti.obfuscation.ClosureTarget;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
 
 import org.apache.commons.io.FileUtils;
-// import com.google.javascript.jscomp.CheckLevel;
-// import com.google.javascript.jscomp.CommandLineRunner;
-// import com.google.javascript.jscomp.Compiler;
-// import com.google.javascript.jscomp.CompilerOptions;
-// import com.google.javascript.jscomp.DiagnosticGroups;
-// import com.google.javascript.jscomp.Result;
-// import com.google.javascript.jscomp.SourceFile;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,21 +16,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Collection;
 
-/**
- * lineLengthThreshold = 1 forces closure to insert a newline in the
- * obfuscated code every chance it gets.
- * <p>
- * The reason we want this is because column number information in
- * stack traces are inconsistent across browsers. Most of the time
- * we only have line numbers, which means we cannot exactly tell
- * where in the code the obfuscated statement in question
- * originates from.
- * </p>
- * <p>
- * This way we don't rely on support for column number information
- * in browsers.
- * </p>
- */
 public class ClosureCompiler {
 
 	private static Logger logger = LoggerFactory.getLogger(ClosureCompiler.class);
