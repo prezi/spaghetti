@@ -8,13 +8,17 @@ import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.DependencyOptions;
+import com.google.javascript.jscomp.DiagnosticGroup;
 import com.google.javascript.jscomp.DiagnosticGroups;
+import com.google.javascript.jscomp.DiagnosticType;
+import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.ModuleIdentifier;
 import com.google.javascript.jscomp.SourceFile;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
 import org.kohsuke.args4j.CmdLineException;
@@ -39,6 +43,21 @@ class Args {
 }
 
 class ClosureWrapper {
+
+    static DiagnosticType EARLY_REFERENCE = findDiagnosticType("JSC_REFERENCE_BEFORE_DECLARE");
+
+    // VariableReferenceCheck is a protected class, so we have to access
+    // VariableReferenceCheck.EARLY_REFERENCE the hacky way.
+    static DiagnosticType findDiagnosticType(String key) {
+        for (DiagnosticType t : DiagnosticGroups.CHECK_VARIABLES.getTypes()) {
+            if (key.equals(t.key)) {
+                return t;
+            }
+        }
+
+        throw new RuntimeException("Cannot locate EARLY_REFERENCE");
+    }
+
 
     private static List<ModuleIdentifier> getEntryPoints(List<String> entryFiles) {
         List<ModuleIdentifier> entryPoints = new ArrayList<ModuleIdentifier>();
@@ -86,7 +105,12 @@ class ClosureWrapper {
             options.setLanguageOut(CompilerOptions.LanguageMode.ECMASCRIPT_2015);
         }
 
-        options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.ERROR);
+        options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.WARNING);
+        // Report an error if there is an import cycle in the module resolution.
+        // (ie. EARLY_REFERENCE, the module is referenced before it is defined).
+        options.setWarningLevel(
+            new DiagnosticGroup(EARLY_REFERENCE),
+            CheckLevel.ERROR);
 
         List<SourceFile> externs = new ArrayList<SourceFile>();
         externs.addAll(AbstractCommandLineRunner.getBuiltinExterns(options.getEnvironment()));
@@ -102,6 +126,15 @@ class ClosureWrapper {
         compiler.compile(externs, inputs, options);
 
         if (compiler.hasErrors()) {
+            JSError[] errors = compiler.getErrors();
+            for (JSError e : errors) {
+                if (e.getType() == EARLY_REFERENCE) {
+                    System.err.println(String.format("The error '%s'", e.description));
+                    System.err.println("  likely means that there is a cycle in the module import graph.");
+                    System.err.println("  You must restructure the modules so there are no circular imports.");
+                    break;
+                }
+            }
             System.exit(1);
         } else {
             Writer writer = new FileWriter(parsedArgs.outputFile);

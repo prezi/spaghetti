@@ -66,4 +66,72 @@ exports.translations = {
         ].join("")
 
     }
+
+    def "unknown variable error is ignored"() {
+        File dir = Files.createTempDirectory("ClosureCompilerTest").toFile();
+        dir.mkdirs();
+        File entryJs = new File(dir, "Entry.js");
+        File moduleJs = new File(dir, "Module.js");
+        File outputJs = new File(dir, "output.js")
+
+        when:
+        FileUtils.write(entryJs, """
+prezi_module=require('./Module.js');
+""");
+
+        FileUtils.write(moduleJs, """
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+unknown.xx();
+""");
+
+        def ret = ClosureCompiler.concat(
+            dir,
+            new File(outputJs.getName()),
+            new File(entryJs.getName()),
+            [
+                new File(entryJs.getName()),
+                new File(moduleJs.getName())
+            ],
+            [],
+            ClosureTarget.ES6);
+
+        then:
+        ret == 0
+        outputJs.text.size() > 10
+
+    }
+
+    def "circular import is an error"() {
+        File dir = Files.createTempDirectory("ClosureCompilerTest").toFile();
+        dir.mkdirs();
+        File entryJs = new File(dir, "Entry.js");
+        File moduleJs = new File(dir, "Module.js");
+        File outputJs = new File(dir, "output.js")
+
+        when:
+        FileUtils.write(entryJs, """
+prezi_module=require('./Module.js');
+""");
+
+        FileUtils.write(moduleJs, """
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+prezi_entry=require('./Entry.js');
+""");
+
+        def ret = ClosureCompiler.concat(
+            dir,
+            new File(outputJs.getName()),
+            new File(entryJs.getName()),
+            [
+                new File(entryJs.getName()),
+                new File(moduleJs.getName())
+            ],
+            [],
+            ClosureTarget.ES6);
+
+        then:
+        ret == 1
+    }
 }
