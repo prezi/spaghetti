@@ -33,6 +33,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private File sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
 	private Set<String> nodeRequireDependencies = Sets.newHashSet();
+	private Set<File> npmPackageRoots = Sets.newHashSet();
 	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
 	private String closureTarget = "es5";
@@ -80,6 +81,14 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	}
 	public void nodeRequireDependency(String name) {
 		this.nodeRequireDependencies.add(name);
+	}
+
+	@Input
+	public Set<File> getNpmPackageRoots() {
+		return npmPackageRoots;
+	}
+	public void includeNpmPackagesFrom(File folder) {
+		this.npmPackageRoots.add(folder);
 	}
 
 	@InputFile
@@ -138,6 +147,13 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			FileUtils.write(
 				new File(nodeDir, name + ".js"),
 				String.format("var _require=require;\nmodule.exports = _require('%s');\n", name));
+		}
+
+		for (File root : getNpmPackageRoots()) {
+			// Merge all the root dirs together into one.
+			// Closure Compiler needs to see all the packages in one "node_modules" folder
+			// to correctly resolve the imports.
+			FileUtils.copyDirectory(root, nodeDir);
 		}
 
 		Collection<File> entryPointFiles = filterFileList(
