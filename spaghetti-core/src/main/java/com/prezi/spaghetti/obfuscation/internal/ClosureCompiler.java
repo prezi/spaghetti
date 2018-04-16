@@ -47,7 +47,7 @@ public class ClosureCompiler {
 		args.add(b);
 	}
 
-	public static int compile(
+	public static int minify(
 			File workDir,
 			File inputFile,
 			File outputFile,
