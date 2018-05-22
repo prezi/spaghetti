@@ -52,22 +52,6 @@ class Args {
 }
 
 class ClosureWrapper {
-
-    static DiagnosticType EARLY_REFERENCE = findDiagnosticType("JSC_REFERENCE_BEFORE_DECLARE");
-
-    // VariableReferenceCheck is a protected class, so we have to access
-    // VariableReferenceCheck.EARLY_REFERENCE the hacky way.
-    static DiagnosticType findDiagnosticType(String key) {
-        for (DiagnosticType t : DiagnosticGroups.CHECK_VARIABLES.getTypes()) {
-            if (key.equals(t.key)) {
-                return t;
-            }
-        }
-
-        throw new RuntimeException("Cannot locate EARLY_REFERENCE");
-    }
-
-
     private static List<ModuleIdentifier> getEntryPoints(List<String> entryFiles) {
         List<ModuleIdentifier> entryPoints = new ArrayList<ModuleIdentifier>();
         for (String s : entryFiles) {
@@ -136,14 +120,6 @@ class ClosureWrapper {
         options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.OFF);
         options.setWarningLevel(DiagnosticGroups.CHECK_TYPES, CheckLevel.OFF);
 
-        if (args.concat) {
-            // Report an error if there is an import cycle in the module resolution.
-            // (ie. EARLY_REFERENCE, the module is referenced before it is defined).
-            options.setWarningLevel(
-                new DiagnosticGroup(EARLY_REFERENCE),
-                CheckLevel.ERROR);
-        }
-
         List<SourceFile> externs = new ArrayList<SourceFile>();
         externs.addAll(AbstractCommandLineRunner.getBuiltinExterns(options.getEnvironment()));
         for (String path : CommandLineRunner.findJsFiles(args.externsPatterns)) {
@@ -158,15 +134,6 @@ class ClosureWrapper {
         compiler.compile(externs, inputs, options);
 
         if (compiler.hasErrors()) {
-            JSError[] errors = compiler.getErrors();
-            for (JSError e : errors) {
-                if (args.concat && e.getType() == EARLY_REFERENCE) {
-                    System.err.println(String.format("The error '%s'", e.description));
-                    System.err.println("  likely means that there is a cycle in the module import graph.");
-                    System.err.println("  You must restructure the modules so there are no circular imports.");
-                    break;
-                }
-            }
             System.exit(1);
         } else {
             Writer writer = new FileWriter(args.outputFile);
