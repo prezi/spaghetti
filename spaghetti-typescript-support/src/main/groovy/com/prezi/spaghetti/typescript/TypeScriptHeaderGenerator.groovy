@@ -3,7 +3,6 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.ast.ModuleNode
-import com.prezi.spaghetti.ast.ModuleVisitor
 import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData
 import com.prezi.spaghetti.generator.AbstractHeaderGenerator
@@ -14,11 +13,9 @@ import com.prezi.spaghetti.typescript.impl.TypeScriptModuleInitializerGeneratorV
 import com.prezi.spaghetti.typescript.impl.TypeScriptModuleProxyGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.consts.TypeScriptDependentConstGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptDependentEnumGeneratorVisitor
-import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptOpaqueEnumGeneratorVisitor
 
 import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
-import static com.prezi.spaghetti.typescript.TypeScriptJavaScriptBundleProcessor.CREATE_MODULE_FUNCTION
 
 class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 
@@ -32,12 +29,21 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 		def header = params.header
 		copySpaghettiClass(outputDirectory)
 		generateLocalModule(config.localModule, outputDirectory, header)
-		config.directDependentModules.each { dependentModule ->
+		(config.directDependentModules + config.lazyDependentModules).each { dependentModule ->
 			generateDependentModule(dependentModule, outputDirectory, header, true)
+		}
+		config.lazyDependentModules.each { dependentModule ->
+			generateLazyGetter(dependentModule, outputDirectory)
 		}
 		config.transitiveDependentModules.each { dependentModule ->
 			generateDependentModule(dependentModule, outputDirectory, header, false)
 		}
+	}
+
+	private static generateLazyGetter(EntityWithModuleMetaData<ModuleNode> module, File outputDirectory) {
+		def file = new File(outputDirectory, module.entity.name.replace(".", "_") + "__loader_generated.d.ts")
+		def accessorName = GeneratorUtils.createLazyModuleAccessorName(module.entity.name)
+		file << """declare function ${accessorName}(): Promise<${module.entity.name}.LazyModule>;"""
 	}
 
 	/**

@@ -47,4 +47,9 @@ public class GeneratorUtils {
 		}
 		return lines;
 	}
+
+	public static String createLazyModuleAccessorName(String moduleName) {
+		String cleanedModuleName = moduleName.replaceAll("^[^a-zA-Z_$]|[^\\w$]", "_");
+		return "get_" + cleanedModuleName;
+	}
 }

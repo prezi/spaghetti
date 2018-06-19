@@ -6,6 +6,7 @@ import java.util.SortedSet;
 
 public interface ModuleBundleSet extends SortedSet<ModuleBundle> {
 	SortedSet<ModuleBundle> getDirectBundles();
+	SortedSet<ModuleBundle> getLazyBundles();
 	SortedSet<ModuleBundle> getTransitiveBundles();
 	SortedMap<String, Set<String>> getExternalDependencies();
 }

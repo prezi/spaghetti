@@ -39,6 +39,7 @@ public class SpaghettiExtension {
 
 	private String language;
 	private Configuration configuration;
+	private Configuration lazyConfiguration;
 	private Configuration testConfiguration;
 	private Configuration obfuscatedConfiguration;
 	private Configuration testObfuscatedConfiguration;
@@ -48,10 +49,11 @@ public class SpaghettiExtension {
 	private DefinitionFile definition = null;
 	private String typescriptExportNamespace = null;
 
-	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
+	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultLazyConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
 		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator);
 		this.configuration = defaultConfiguration;
+		this.lazyConfiguration = defaultLazyConfiguration;
 		this.obfuscatedConfiguration = defaultObfuscatedConfiguration;
 		this.testConfiguration = defaultTestConfiguration;
 		this.testObfuscatedConfiguration = defaultTestObfuscatedConfiguration;
@@ -105,6 +107,18 @@ public class SpaghettiExtension {
 
 	public void configuration(Configuration configuration) {
 		setConfiguration(configuration);
+	}
+
+	public Configuration getLazyConfiguration() {
+		return lazyConfiguration;
+	}
+
+	public void setLazyConfiguration(Configuration lazyConfiguration) {
+		this.lazyConfiguration = lazyConfiguration;
+	}
+
+	public void lazyConfiguration(Configuration lazyConfiguration) {
+		setLazyConfiguration(lazyConfiguration);
 	}
 
 	public Configuration getTestConfiguration() {

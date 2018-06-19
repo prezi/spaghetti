@@ -13,14 +13,14 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> implements ModuleBundleSet {
 	private final SortedSet<ModuleBundle> directBundles;
+	private final SortedSet<ModuleBundle> lazyBundles;
 	private final SortedSet<ModuleBundle> transitiveBundles;
 	private final SortedSet<ModuleBundle> allBundles;
 
-	public DefaultModuleBundleSet(Collection<ModuleBundle> directBundles, Collection<ModuleBundle> transitiveBundles) {
+	public DefaultModuleBundleSet(Collection<ModuleBundle> directBundles, Collection<ModuleBundle> lazyBundles, Collection<ModuleBundle> transitiveBundles) {
 		Preconditions.checkArgument(Collections.disjoint(
 						Preconditions.checkNotNull(directBundles, "directBundles"),
 						Preconditions.checkNotNull(transitiveBundles, "transitiveBundles")
@@ -28,8 +28,9 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 				"Some bundles are both direct and transitive, direct bundles: " + directBundles
 						+ ", transitive bundles: " + transitiveBundles);
 		this.directBundles = ImmutableSortedSet.copyOf(directBundles);
+		this.lazyBundles = ImmutableSortedSet.copyOf(lazyBundles);
 		this.transitiveBundles = ImmutableSortedSet.copyOf(transitiveBundles);
-		this.allBundles = ImmutableSortedSet.<ModuleBundle>naturalOrder().addAll(directBundles).addAll(transitiveBundles).build();
+		this.allBundles = ImmutableSortedSet.<ModuleBundle>naturalOrder().addAll(directBundles).addAll(lazyBundles).addAll(transitiveBundles).build();
 	}
 
 	@Override
@@ -40,6 +41,11 @@ public class DefaultModuleBundleSet extends ForwardingSortedSet<ModuleBundle> im
 	@Override
 	public SortedSet<ModuleBundle> getDirectBundles() {
 		return directBundles;
+	}
+
+	@Override
+	public SortedSet<ModuleBundle> getLazyBundles() {
+		return lazyBundles;
 	}
 
 	@Override

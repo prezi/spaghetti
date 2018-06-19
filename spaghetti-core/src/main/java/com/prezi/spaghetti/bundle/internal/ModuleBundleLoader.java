@@ -15,8 +15,9 @@ import java.util.Set;
 public class ModuleBundleLoader {
 	private  static final Logger logger = LoggerFactory.getLogger(ModuleBundleLoader.class);
 
-	public static ModuleBundleSet loadBundles(Collection<File> directBundleFiles, Collection<File> transitiveBundleFiles) throws IOException {
+	public static ModuleBundleSet loadBundles(Collection<File> directBundleFiles, Collection<File> lazyBundleFiles, Collection<File> transitiveBundleFiles) throws IOException {
 		Set<ModuleBundle> directBundles = loadBundles(directBundleFiles);
+		Set<ModuleBundle> lazyBundles = loadBundles(lazyBundleFiles);
 		Set<ModuleBundle> transitiveBundles = loadBundles(transitiveBundleFiles);
 
 		Sets.SetView<ModuleBundle> sharedModules = Sets.intersection(directBundles, transitiveBundles);
@@ -25,7 +26,7 @@ public class ModuleBundleLoader {
 			transitiveBundles.removeAll(directBundles);
 		}
 
-		return new DefaultModuleBundleSet(directBundles, transitiveBundles);
+		return new DefaultModuleBundleSet(directBundles, lazyBundles, transitiveBundles);
 	}
 
 	private static Set<ModuleBundle> loadBundles(Collection<File> bundleFiles) throws IOException {

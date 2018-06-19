@@ -10,6 +10,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
 
@@ -29,19 +31,19 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper {
 		wrapModuleObject(
 				result,
 				params,
-				params.dependencies,
-				params.externalDependencies.keySet(),
 				true);
-		result
-				.append(")(")
-				.append(Joiner.on(",").join(Iterables.transform(dependencies, new Function<String, String>() {
-					@Nullable
-					@Override
-					public String apply(String name) {
-						return "require(\"" + name + "\")";
-				}
-				})))
-				.append(");");
+		result.append(")(");
+		result.append(
+				Stream.concat(
+						Stream.concat(params.externalDependencies.values().stream(), Sets.newTreeSet(params.dependencies).stream()).map(dependency ->
+								"require(\"" + dependency + "\")"
+						),
+						params.lazyDependencies.stream().map(lazyDependency ->
+								"function(){return Promise.resolve(require(\"" + lazyDependency + "\").lazyModule);}"
+						)
+				).collect(Collectors.joining(","))
+		);
+		result.append(");");
 		result.append("})();");
 
 		return result.toString();

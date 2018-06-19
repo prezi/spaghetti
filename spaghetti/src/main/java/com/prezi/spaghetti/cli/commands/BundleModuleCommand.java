@@ -123,6 +123,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		for (EntityWithModuleMetaData<ModuleNode> dependentModule : config.getDirectDependentModules()) {
 			dependentModules.add(dependentModule.getEntity().getName());
 		}
+		SortedSet<String> lazyDependentModules = Sets.newTreeSet();
+		for (EntityWithModuleMetaData<ModuleNode> lazyDependentModule : config.getLazyDependentModules()) {
+			lazyDependentModules.add(lazyDependentModule.getEntity().getName());
+		}
 
 		// Transform list of externals to map from variable name to dependency name
 		Map<String,String> externalDependencies = null;
@@ -148,6 +152,7 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				processedJavaScript,
 				sourceMap,
 				dependentModules,
+				lazyDependentModules,
 				externalDependencies,
 				resourcesDirectory);
 

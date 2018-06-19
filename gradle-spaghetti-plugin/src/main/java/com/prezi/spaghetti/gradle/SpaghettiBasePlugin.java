@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 
 public class SpaghettiBasePlugin implements Plugin<Project> {
 	public static final String CONFIGURATION_NAME = "modules";
+	public static final String LAZY_CONFIGURATION_NAME = "lazyModules";
 	public static final String TEST_CONFIGURATION_NAME = "testModules";
 	public static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
 	public static final String TEST_OBFUSCATED_CONFIGURATION_NAME = "testModulesObf";
@@ -29,6 +30,7 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	@Override
 	public void apply(final Project project) {
 		Configuration defaultConfiguration = project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
+		Configuration defaultLazyConfiguration = project.getConfigurations().maybeCreate(LAZY_CONFIGURATION_NAME);
 		Configuration defaultTestConfiguration = project.getConfigurations().maybeCreate(TEST_CONFIGURATION_NAME);
 		defaultTestConfiguration.extendsFrom(defaultConfiguration);
 		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
@@ -37,6 +39,7 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 
 		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, project, instantiator,
 				defaultConfiguration,
+				defaultLazyConfiguration,
 				defaultTestConfiguration,
 				defaultObfuscatedConfiguration,
 				defaultTestObfuscatedConfiguration);
@@ -67,6 +70,12 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
 				return project.files(project.getExtensions().getByType(SpaghettiExtension.class).getConfiguration());
+			}
+		});
+		task.getConventionMapping().map("lazyDependentModules", new Callable<ConfigurableFileCollection>() {
+			@Override
+			public ConfigurableFileCollection call() throws Exception {
+				return project.files(project.getExtensions().getByType(SpaghettiExtension.class).getLazyConfiguration());
 			}
 		});
 	}

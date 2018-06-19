@@ -39,6 +39,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	SortedSet<String> getDependentModules();
 
 	/**
+	 * Returns the names of the module's lazy dependencies.
+	 */
+	SortedSet<String> getLazyDependentModules();
+
+	/**
 	 * Returns the list of resource file paths.
 	 */
 	SortedSet<String> getResourcePaths();

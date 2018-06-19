@@ -9,7 +9,6 @@ import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
-import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
@@ -32,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
@@ -234,6 +232,10 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		for (EntityWithModuleMetaData<ModuleNode> moduleNode : config.getDirectDependentModules()) {
 			dependentModuleNames.add(moduleNode.getEntity().getName());
 		}
+		TreeSet<String> lazyDependentModuleNames = Sets.newTreeSet();
+		for (EntityWithModuleMetaData<ModuleNode> moduleNode : config.getLazyDependentModules()) {
+			lazyDependentModuleNames.add(moduleNode.getEntity().getName());
+		}
 
 		return ModuleBundleFactory.createDirectory(getOutputDirectory(), new ModuleBundleParameters(
 				module.getName(),
@@ -245,8 +247,8 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 				javaScript,
 				sourceMap,
 				dependentModuleNames,
+				lazyDependentModuleNames,
 				externalDependencies,
-				resourceDir
-		));
+				resourceDir));
 	}
 }

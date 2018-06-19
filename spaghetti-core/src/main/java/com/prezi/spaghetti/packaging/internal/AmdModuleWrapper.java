@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
 
@@ -39,10 +40,18 @@ public class AmdModuleWrapper extends AbstractModuleWrapper {
 		wrapModuleObject(
 				result,
 				params,
-				params.dependencies,
-				params.externalDependencies.keySet(),
 				true);
-		result.append(").apply({},[].slice.call(arguments,1));");
+		result.append(").apply({},[].slice.call(arguments,1)");
+		if (params.lazyDependencies.size() > 0) {
+			result.append(".concat([");
+			result.append(
+					params.lazyDependencies.stream().map(lazyDependency ->
+							"function(){return new Promise(function(resolve,reject){require([\"" + lazyDependency + "\"],function(m){resolve(m.lazyModule);},function(err){reject(err);});});}"
+					).collect(Collectors.joining(","))
+			);
+			result.append("])");
+		}
+		result.append(");");
 		result.append("});");
 
 		return result.toString();

@@ -24,10 +24,11 @@ public class ModuleBundleParameters {
 	public final String javaScript;
 	public final String sourceMap;
 	public final SortedSet<String> dependentModules;
+	public final SortedSet<String> lazyDependentModules;
 	public final SortedMap<String, String> externalDependencies;
 	public final File resourcesDirectory;
 
-	public ModuleBundleParameters(String name, String definition, DefinitionLanguage definitionLang, String version, ModuleFormat format, String sourceBaseUrl, String javaScript, String sourceMap, Collection<String> dependentModules, Map<String, String> externalDependencies, File resourcesDirectory) {
+	public ModuleBundleParameters(String name, String definition, DefinitionLanguage definitionLang, String version, ModuleFormat format, String sourceBaseUrl, String javaScript, String sourceMap, Collection<String> dependentModules, Collection<String> lazyDependentModules, Map<String, String> externalDependencies, File resourcesDirectory) {
 		this.name = name;
 		this.definition = definition;
 		this.definitionLang = definitionLang;
@@ -37,6 +38,7 @@ public class ModuleBundleParameters {
 		this.javaScript = javaScript;
 		this.sourceMap = sourceMap;
 		this.dependentModules = ImmutableSortedSet.copyOf(dependentModules);
+		this.lazyDependentModules = ImmutableSortedSet.copyOf(lazyDependentModules);
 		this.externalDependencies = ImmutableSortedMap.copyOf(externalDependencies);
 		this.resourcesDirectory = resourcesDirectory;
 	}

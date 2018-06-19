@@ -70,14 +70,16 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_FORMAT = new Attributes.Name("Module-Format");
+	private static final Attributes.Name MANIFEST_ATTR_MODULE_LAZY_LOADABLE = new Attributes.Name("Module-Lazy-Loadable");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
 	private static final Attributes.Name MANIFEST_ATTR_DEFINITION_LANGUAGE = new Attributes.Name("Definition-Language");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies");
+	private static final Attributes.Name MANIFEST_ATTR_LAZY_DEPENDENCIES = new Attributes.Name("Lazy-Dependencies");
 	private static final Attributes.Name MANIFEST_ATTR_EXTERNAL_DEPENDENCIES = new Attributes.Name("External-Dependencies");
 	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
-		super(name, version, format, definitionLang, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Set<String> lazyDependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
+		super(name, version, format, definitionLang, sourceBaseUrl, dependentModules, lazyDependentModules, externalDependencies, resourcePaths);
 		this.source = source;
 	}
 
@@ -128,6 +130,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_SOURCE, url != null ? url : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_DEPENDENCIES,
 					Joiner.on(',').join(params.dependentModules));
+			manifest.getMainAttributes().put(MANIFEST_ATTR_LAZY_DEPENDENCIES,
+					Joiner.on(',').join(params.lazyDependentModules));
 			manifest.getMainAttributes().put(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES,
 					Joiner.on(',').withKeyValueSeparator(":").join(params.externalDependencies));
 			builder.appendFile(MANIFEST_MF_PATH, new IOAction<OutputStream>() {
@@ -150,8 +154,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 								params.version,
 								params.javaScript,
 								params.dependentModules,
-								params.externalDependencies
-						)
+								params.lazyDependentModules,
+								params.externalDependencies)
 				);
 				builder.appendFile(JAVASCRIPT_PATH, javaScript);
 			}
@@ -173,7 +177,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			StructuredProcessor source = builder.create();
-			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.definitionLang, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
+			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.definitionLang, params.sourceBaseUrl, params.dependentModules, params.lazyDependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
 		} finally {
 			builder.close();
 		}
@@ -246,10 +250,13 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String moduleDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES);
 		Set<String> dependentModules = !Strings.isNullOrEmpty(moduleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
 
+		String lazyModuleDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_LAZY_DEPENDENCIES);
+		Set<String> lazyDependentModules = !Strings.isNullOrEmpty(lazyModuleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(lazyModuleDependenciesString.split(","))) : Collections.<String>emptySet();
+
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
 		Map<String, String> externalDependencies = BundleUtils.parseExternalDependencies(externalDependenciesString);
 
-		return new DefaultModuleBundle(source, name, version, format, definitionLang, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
+		return new DefaultModuleBundle(source, name, version, format, definitionLang, sourceUrl, dependentModules, lazyDependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
 	}
 
 	private String getString(String path) throws IOException {

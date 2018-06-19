@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-
-import static com.prezi.spaghetti.generator.ReservedWords.MODULE;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UmdModuleWrapper extends AbstractModuleWrapper {
 
@@ -28,8 +28,6 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 		wrapModuleObject(
 				result,
 				params,
-				params.dependencies,
-				params.externalDependencies.keySet(),
 				false);
 		result.append(";");
 
@@ -49,39 +47,42 @@ public class UmdModuleWrapper extends AbstractModuleWrapper {
 				.append("\"],function(){");
 		result.append(baseUrlDeclaration);
 		result.append("return");
-		result.append("(__factory).apply({},[].slice.call(arguments,1));");
+		result.append("(__factory).apply({},[].slice.call(arguments,1)");
+		if (params.lazyDependencies.size() > 0) {
+			result.append(".concat([");
+			result.append(
+				params.lazyDependencies.stream().map(lazyDependency ->
+					"function(){return new Promise(function(resolve,reject){require([\"" + lazyDependency + "\"],function(m){resolve(m.lazyModule);},function(err){reject(err);});});}"
+				).collect(Collectors.joining(","))
+			);
+			result.append("])");
+		}
+		result.append(");");
 		result.append("});");
 
 		// CommonJS
-		Iterable<String> dependencies = Iterables.concat(
-				params.externalDependencies.values(),
-				Sets.newTreeSet(params.dependencies)
-		);
-
 		result.append("}else if(typeof exports===\"object\"&&typeof exports.nodeName!==\"string\"){");
 		result.append("baseUrl=__dirname;");
 		result.append("module.exports=(__factory)");
-		result
-				.append("(")
-				.append(Joiner.on(",").join(Iterables.transform(dependencies, new Function<String, String>() {
-					@Nullable
-					@Override
-					public String apply(String name) {
-						return "require(\"" + name + "\")";
-					}
-				})))
-				.append(");");
+		result.append("(");
+		result.append(
+			Stream.concat(
+					Stream.concat(params.externalDependencies.values().stream(), Sets.newTreeSet(params.dependencies).stream()).map(dependency ->
+						"require(\"" + dependency + "\")"
+					),
+					params.lazyDependencies.stream().map(lazyDependency ->
+						"function(){return Promise.resolve(require(\"" + lazyDependency + "\").lazyModule);}"
+					)
+			).collect(Collectors.joining(","))
+		);
+		result.append(");");
 		//result.append("return module.exports;");
 
 		// Browser Globals
-		Iterable<String> globalModuleDependencies = Iterables.transform(params.dependencies,
-			new Function<String, String>() {
-				@Nullable
-				@Override
-				public String apply(String name) {
-					return "this[\"" + name + "\"]";
-				}
-			});
+		Iterable<String> globalModuleDependencies = Stream.concat(
+				params.dependencies.stream().map(dependency -> "this[\"" + dependency + "\"]"),
+				params.lazyDependencies.stream().map(lazyDependency -> "function(){return Promise.resolve(this[\"" + lazyDependency + "\"].lazyModule);}")
+		).collect(Collectors.toList());
 
 		result.append("}else{");
 		result.append("this[\"" + params.name + "\"]=");
