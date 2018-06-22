@@ -51,7 +51,7 @@ For a detailed explanation of the steps to building a Spaghetti application, see
 
 ## How to Use It?
 
-Spaghetti is a [Java](http://java.oracle.com)-based tool, and requires Java 7 or newer. It has multiple interfaces:
+Spaghetti is a [Java](http://java.oracle.com)-based tool, and requires Java 8 or newer. It has multiple interfaces:
 
 * The [command-line tool](spaghetti) is the quickest way to get working with Spaghetti.
 * [Gradle plugins](gradle-spaghetti-plugin/README.md) make it easy to integrate Spaghetti into your workflow.
