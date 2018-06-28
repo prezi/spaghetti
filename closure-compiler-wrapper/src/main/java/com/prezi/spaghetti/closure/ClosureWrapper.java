@@ -35,6 +35,13 @@ class ClosureWrapper {
         Compiler compiler = new Compiler(System.err);
         CompilerOptions options = new CompilerOptions();
 
+        if (args.concat) {
+            compiler.setErrorManager(new FilteringErrorManager(
+                options.errorFormat.toFormatter(compiler, true),
+                System.err
+            ));
+        }
+
         CompilationLevel level = CompilationLevel.fromString(args.compilationLevel);
         if (level == null) {
             System.err.println("Invalid value for compilation_level: " + args.compilationLevel);
@@ -97,12 +104,11 @@ class ClosureWrapper {
         compiler.compile(externs, inputs, options);
 
         if (compiler.hasErrors()) {
-            JSError[] errors = compiler.getErrors();
-            for (JSError e : errors) {
+            for (JSError e : compiler.getErrors()) {
                 if (args.concat && e.getType() == EARLY_REFERENCE) {
                     System.err.println(String.format("The error '%s'", e.description));
-                    System.err.println("  likely means that there is a cycle in the module import graph.");
-                    System.err.println("  You must restructure the modules so there are no circular imports.");
+                    System.err.println("  likely means that there is a cycle in the module imports.");
+                    System.err.println("  Please refactor to avoid undefined errors at runtime.");
                     break;
                 }
             }
