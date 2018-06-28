@@ -101,4 +101,78 @@ unknown.xx();
         outputJs.text.size() > 10
 
     }
+
+    def "circular import is not an error"() {
+        File dir = Files.createTempDirectory("ClosureCompilerTest").toFile();
+        dir.mkdirs();
+        File entryJs = new File(dir, "Entry.js");
+        File moduleJs = new File(dir, "Module.js");
+        File outputJs = new File(dir, "output.js")
+
+        when:
+        FileUtils.write(entryJs, """
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Module=require('./Module');
+console.log(Module.Value);
+""");
+
+        FileUtils.write(moduleJs, """
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Entry=require('./Entry');
+exports.Value = "Module value";
+""");
+
+        def ret = ClosureCompiler.concat(
+            dir,
+            new File(outputJs.getName()),
+            new File(entryJs.getName()),
+            [
+                new File(entryJs.getName()),
+                new File(moduleJs.getName())
+            ],
+            [],
+            ClosureTarget.ES6);
+
+        then:
+        ret == 0
+    }
+
+    def "early reference is an error"() {
+        File dir = Files.createTempDirectory("ClosureCompilerTest").toFile();
+        dir.mkdirs();
+        File entryJs = new File(dir, "Entry.js");
+        File moduleJs = new File(dir, "Module.js");
+        File outputJs = new File(dir, "output.js")
+
+        when:
+        FileUtils.write(entryJs, """
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Module=require('./Module');
+exports.EntryValue = [1,2,3];
+""");
+
+        FileUtils.write(moduleJs, """
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Entry=require('./Entry');
+console.log(Entry.EntryValue);
+""");
+
+        def ret = ClosureCompiler.concat(
+            dir,
+            new File(outputJs.getName()),
+            new File(entryJs.getName()),
+            [
+                new File(entryJs.getName()),
+                new File(moduleJs.getName())
+            ],
+            [],
+            ClosureTarget.ES6);
+
+        then:
+        ret == 1
+    }
 }

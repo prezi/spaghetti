@@ -128,11 +128,10 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		File workDir = getWorkDir();
 		FileUtils.deleteQuietly(workDir);
 
-		File jsFilesDir = new File(workDir, "js");
-		File nodeDir = new File(jsFilesDir, "node_modules");
+		File nodeDir = new File(workDir, "node_modules");
 		FileUtils.forceMkdir(nodeDir);
 
-		FileUtils.copyDirectory(getSourceDir(), jsFilesDir);
+		FileUtils.copyDirectory(getSourceDir(), workDir);
 		ModuleConfiguration config = readConfig(getDefinition());
 
 		for (Map.Entry<String, String> extern : getDependencies(config, getExternalDependencies())) {
@@ -157,21 +156,21 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		}
 
 		Collection<File> entryPointFiles = filterFileList(
-			FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true),
+			FileUtils.listFiles(workDir, new String[] {"js"}, true),
 			getEntryPoints());
 		File mainEntryPoint = new File(workDir, "_spaghetti-entry.js");
 		ClosureUtils.writeMainEntryPoint(
 			mainEntryPoint,
 			entryPointFiles,
 			config.getLocalModule().getName());
-		File relativeJsDir = new File(jsFilesDir.getName());
+		File relativeJsDir = new File(".");
 		File relativeEntryPoint = new File(mainEntryPoint.getName());
 
 		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
 			relativeEntryPoint,
-			Lists.newArrayList(relativeJsDir, relativeEntryPoint),
+			Lists.newArrayList(relativeJsDir),
 			Sets.<File>newHashSet(),
 			ObfuscationParameters.convertClosureTarget(getClosureTarget()));
 
