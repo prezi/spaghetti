@@ -32,6 +32,8 @@ public class ModuleBundleLookup {
 		addFiles(project, dependencies, directFiles, transitiveFiles);
 		addFiles(project, lazyDependencies, lazyFiles, transitiveFiles);
 
+		transitiveFiles.removeAll(lazyFiles);
+
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading modules from:");
 			logger.debug("\tDirect dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(directFiles));
