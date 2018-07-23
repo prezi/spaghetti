@@ -6,6 +6,7 @@ import com.google.javascript.jscomp.CheckLevel;
 import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.CompilerOptions;
+import com.google.javascript.jscomp.CompilerOptions.Reach;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.DependencyOptions;
 import com.google.javascript.jscomp.DiagnosticGroup;
@@ -13,7 +14,9 @@ import com.google.javascript.jscomp.DiagnosticGroups;
 import com.google.javascript.jscomp.DiagnosticType;
 import com.google.javascript.jscomp.JSError;
 import com.google.javascript.jscomp.ModuleIdentifier;
+import com.google.javascript.jscomp.PropertyRenamingPolicy;
 import com.google.javascript.jscomp.SourceFile;
+import com.google.javascript.jscomp.VariableRenamingPolicy;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -46,6 +49,12 @@ class ClosureWrapper {
         if (level == null) {
             System.err.println("Invalid value for compilation_level: " + args.compilationLevel);
             System.exit(2);
+        } else if (args.concat) {
+            if (level != CompilationLevel.SIMPLE_OPTIMIZATIONS
+                    && level != CompilationLevel.ADVANCED_OPTIMIZATIONS) {
+                System.err.println("With concat, compilation_level must be SIMPLE or ADVANCED. It was: " + args.compilationLevel);
+                System.exit(2);
+            }
         }
 
         level.setOptionsForCompilationLevel(options);
@@ -63,6 +72,15 @@ class ClosureWrapper {
                 .setDependencySorting(true)
                 .setMoocherDropping(true)
                 .setEntryPoints(getEntryPoints(args.entryPoints)));
+
+            if (level == CompilationLevel.SIMPLE_OPTIMIZATIONS) {
+                // Pretty print output to make local debugging easier.
+                // Spaghetti's obfuscation task will obfuscate & minify later in the build process.
+                options.setRenamingPolicy(VariableRenamingPolicy.OFF, PropertyRenamingPolicy.OFF);
+                options.setInlineVariables(Reach.NONE);
+                options.setInlineFunctions(Reach.NONE);
+                options.setPrettyPrint(true);
+            }
         }
 
         if (args.sourceMap != null) {
@@ -103,8 +121,9 @@ class ClosureWrapper {
 
         compiler.compile(externs, inputs, options);
 
-        if (compiler.hasErrors()) {
-            for (JSError e : compiler.getErrors()) {
+        JSError[] errors = compiler.getErrors();
+        if (errors.length > 0) {
+            for (JSError e : errors) {
                 if (args.concat && e.getType() == EARLY_REFERENCE) {
                     System.err.println(String.format("The error '%s'", e.description));
                     System.err.println("  likely means that there is a cycle in the module imports.");
