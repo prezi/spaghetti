@@ -1,5 +1,5 @@
 dependencies {
-    compile "com.google.javascript:closure-compiler:v20180204"
+    compile "com.google.javascript:closure-compiler:v20180716"
     compile "args4j:args4j:2.33"
 
 }

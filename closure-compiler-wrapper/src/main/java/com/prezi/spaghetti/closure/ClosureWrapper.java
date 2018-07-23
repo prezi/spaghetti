@@ -103,8 +103,9 @@ class ClosureWrapper {
 
         compiler.compile(externs, inputs, options);
 
-        if (compiler.hasErrors()) {
-            for (JSError e : compiler.getErrors()) {
+        JSError[] errors = compiler.getErrors();
+        if (errors.length > 0) {
+            for (JSError e : errors) {
                 if (args.concat && e.getType() == EARLY_REFERENCE) {
                     System.err.println(String.format("The error '%s'", e.description));
                     System.err.println("  likely means that there is a cycle in the module imports.");
