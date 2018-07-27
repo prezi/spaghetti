@@ -243,7 +243,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 				moduleDependencies,
 				[],
 				externalDependencies,
-				null
+				null,
+				false
 		));
 	}
 

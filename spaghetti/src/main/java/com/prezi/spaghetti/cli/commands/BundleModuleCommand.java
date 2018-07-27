@@ -79,6 +79,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 			description = "Obfuscate the output with Closure compiler")
 	private boolean obfuscate;
 
+	@Option(name = {"--lazy"},
+			description = "Module is lazy loadable")
+	private boolean lazyLoadable;
+
 	@Option(name = {"--compilation-level"},
 			description = "Set the compilation level for Closure compiler")
 	private String compilationLevel = "advanced";
@@ -154,7 +158,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				dependentModules,
 				lazyDependentModules,
 				externalDependencies,
-				resourcesDirectory);
+				resourcesDirectory,
+				lazyLoadable);
 
 		ModuleBundleFactory.create(type, output, params);
 		return 0;

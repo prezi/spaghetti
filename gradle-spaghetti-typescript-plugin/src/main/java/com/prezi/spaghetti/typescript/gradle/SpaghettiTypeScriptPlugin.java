@@ -105,6 +105,12 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				return files;
 			}
 		};
+		final Callable<Boolean> lazy = new Callable<Boolean>() {
+			@Override
+			public Boolean call() throws Exception {
+				return spaghettiExtension.isLazy();
+			}
+		};
 
 		typeScriptExtension.getBinaries().withType(TypeScriptBinary.class).all(new Action<TypeScriptBinary>() {
 			@Override
@@ -143,7 +149,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 						}
 					};
 				}
-				registerSpaghettiModule(project, binary, getDtsFile, concatTask, false);
+				registerSpaghettiModule(project, binary, getDtsFile, concatTask, false, lazy);
 			}
 		});
 
@@ -183,7 +189,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 					concatTask.getConventionMapping().map("entryPoints", testSourcesEntryPoints);
 
 				}
-				registerSpaghettiModule(project, testBinary, null, concatTask, true);
+				registerSpaghettiModule(project, testBinary, null, concatTask, true, lazy);
 			}
 		});
 
@@ -281,7 +287,8 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			final TypeScriptBinaryBase binary,
 			final Callable<File> getDtsFile,
 			final ClosureConcatenateTask concatTask,
-			final boolean testing) {
+			final boolean testing,
+			final Callable<Boolean> lazy) {
 		Callable<File> javaScriptFile = new Callable<File>() {
 			@Override
 			public File call() throws Exception {
@@ -312,6 +319,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 					// Verify .d.ts module definition
 					String verifyTaskName = namingScheme.getTaskName("verifyDtsFor");
 					VerifyDtsTask verifyDtsTask = project.getTasks().create(verifyTaskName, VerifyDtsTask.class);
+					verifyDtsTask.conventionMapping("lazy", lazy);
 					data.getBundleTask().dependsOn(verifyDtsTask);
 					data.getObfuscateTask().dependsOn(verifyDtsTask);
 				}

@@ -41,6 +41,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private File sourceMap;
 	private DefinitionFile definitionOverride;
 	private File resourcesDirectoryInternal;
+	private boolean lazyLoadable = false;
 	private final ConfigurableFileCollection prefixes = getProject().files();
 	private final ConfigurableFileCollection suffixes = getProject().files();
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
@@ -200,6 +201,19 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 		externalDependency(shorthand, shorthand);
 	}
 
+	@Input
+	public boolean isLazyLoadable() {
+		return lazyLoadable;
+	}
+
+	public void setLazyLoadable(boolean lazyLoadable) {
+		this.lazyLoadable = lazyLoadable;
+	}
+
+	public void lazyLoadable(boolean lazyLoadable) {
+		setLazyLoadable(lazyLoadable);
+	}
+
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException, InterruptedException {
 		ModuleConfiguration config = readConfig(getOriginalDefinitionOrOverride());
@@ -249,6 +263,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 				dependentModuleNames,
 				lazyDependentModuleNames,
 				externalDependencies,
-				resourceDir));
+				resourceDir,
+				isLazyLoadable()));
 	}
 }

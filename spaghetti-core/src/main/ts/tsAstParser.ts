@@ -102,6 +102,32 @@ class Linter {
         ts.forEachChild(statement, (n) => this.lintStatements(n));
     }
 
+    lintLazy() {
+        this.lint();
+        let foundLazyModule = false;
+        const lintLazyNode = (node: ts.Node) => {
+            if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
+                const interfaceDeclaration = node as ts.InterfaceDeclaration;
+                if (interfaceDeclaration.name.text === "LazyModule") {
+                    foundLazyModule = true;
+                }
+            } else if (node.kind === ts.SyntaxKind.EnumDeclaration) {
+                const enumDeclaration = node as ts.EnumDeclaration;
+                if (enumDeclaration.modifiers == null ||
+                    !enumDeclaration.modifiers.some((m: ts.Modifier) => m != null && m.kind === ts.SyntaxKind.ConstKeyword)
+                ) {
+                    this.lintError("Lazy module can contain only const enums.", this.sourceFile);
+                }
+            } else {
+                ts.forEachChild(node, lintLazyNode);
+            }
+        };
+        ts.forEachChild(this.sourceFile.statements[0], lintLazyNode);
+        if (!foundLazyModule) {
+            this.lintError("Lazy module must have an interface named LazyModule.", this.sourceFile);
+        }
+    }
+
     lintCommonJs(isSubModule: boolean = false) {
         const sourceFile = this.sourceFile;
         if (sourceFile.amdDependencies.length > 0) {
@@ -507,6 +533,17 @@ if (args[0] === "--collectExportedIdentifiers") {
     const sourceFile = getSourceFile(filename);
     const linter = new Linter(sourceFile);
     linter.lint();
+    if (linter.hasErrors()) {
+        linter.printErrors();
+        process.exit(1);
+    } else {
+        process.exit(0);
+    }
+} else if (args[0] === "--verifyLazyModuleDefinition") {
+    const filename = args[1];
+    const sourceFile = getSourceFile(filename);
+    const linter = new Linter(sourceFile);
+    linter.lintLazy();
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);

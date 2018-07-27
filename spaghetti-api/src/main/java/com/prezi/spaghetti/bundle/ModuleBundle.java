@@ -64,6 +64,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	String getJavaScript() throws IOException;
 
 	/**
+	 * Returns if the module is lazy loadable
+	 */
+	boolean isLazyLoadable();
+
+	/**
 	 * Returns the module's source map, or <code>null</code> if there is no source map.
 	 */
 	String getSourceMap() throws IOException;

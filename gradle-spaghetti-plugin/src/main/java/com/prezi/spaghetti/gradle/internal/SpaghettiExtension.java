@@ -48,6 +48,7 @@ public class SpaghettiExtension {
 	private Collection<Function<Void, Iterable<File>>> definitionSearchSourceDirProviders;
 	private DefinitionFile definition = null;
 	private String typescriptExportNamespace = null;
+	private boolean lazy = false;
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultLazyConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
@@ -241,5 +242,17 @@ public class SpaghettiExtension {
 		} else {
 			throw new IllegalStateException("More than one definition found: " + definitions);
 		}
+	}
+
+	public boolean isLazy() {
+		return lazy;
+	}
+
+	public void setLazy(boolean lazy) {
+		this.lazy = lazy;
+	}
+
+	public void lazy(boolean lazy) {
+		setLazy(lazy);
 	}
 }

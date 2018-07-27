@@ -67,7 +67,8 @@ class DefaultModuleBundleSetTest extends Specification {
 				[] as Set,
 				[] as Set,
 				extDeps,
-				[] as Set)
+				[] as Set,
+				false)
 	}
 
 	ModuleBundle createBundle(String name) {

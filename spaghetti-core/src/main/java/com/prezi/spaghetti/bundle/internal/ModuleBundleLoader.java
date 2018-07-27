@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.bundle.internal;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
@@ -19,6 +20,10 @@ public class ModuleBundleLoader {
 		Set<ModuleBundle> directBundles = loadBundles(directBundleFiles);
 		Set<ModuleBundle> lazyBundles = loadBundles(lazyBundleFiles);
 		Set<ModuleBundle> transitiveBundles = loadBundles(transitiveBundleFiles);
+
+		lazyBundles.forEach(lazyBundle -> {
+			Preconditions.checkArgument(lazyBundle.isLazyLoadable(), "Lazy bundle is not marked as lazy loadable: " + lazyBundle.getName());
+		});
 
 		Sets.SetView<ModuleBundle> sharedModules = Sets.intersection(directBundles, transitiveBundles);
 		if (!sharedModules.isEmpty()) {
