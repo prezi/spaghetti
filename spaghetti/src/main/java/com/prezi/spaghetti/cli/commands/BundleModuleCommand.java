@@ -79,6 +79,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 			description = "Obfuscate the output with Closure compiler")
 	private boolean obfuscate;
 
+	@Option(name = {"--lazy"},
+			description = "Module is lazy loadable")
+	private boolean lazyLoadable;
+
 	@Option(name = {"--compilation-level"},
 			description = "Set the compilation level for Closure compiler")
 	private String compilationLevel = "advanced";
@@ -123,6 +127,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 		for (EntityWithModuleMetaData<ModuleNode> dependentModule : config.getDirectDependentModules()) {
 			dependentModules.add(dependentModule.getEntity().getName());
 		}
+		SortedSet<String> lazyDependentModules = Sets.newTreeSet();
+		for (EntityWithModuleMetaData<ModuleNode> lazyDependentModule : config.getLazyDependentModules()) {
+			lazyDependentModules.add(lazyDependentModule.getEntity().getName());
+		}
 
 		// Transform list of externals to map from variable name to dependency name
 		Map<String,String> externalDependencies = null;
@@ -148,8 +156,10 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				processedJavaScript,
 				sourceMap,
 				dependentModules,
+				lazyDependentModules,
 				externalDependencies,
-				resourcesDirectory);
+				resourcesDirectory,
+				lazyLoadable);
 
 		ModuleBundleFactory.create(type, output, params);
 		return 0;

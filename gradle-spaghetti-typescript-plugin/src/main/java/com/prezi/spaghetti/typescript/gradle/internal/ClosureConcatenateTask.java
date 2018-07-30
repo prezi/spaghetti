@@ -33,6 +33,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 	private File sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
 	private Set<String> nodeRequireDependencies = Sets.newHashSet();
+	private Set<File> npmPackageRoots = Sets.newHashSet();
 	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
 	private String closureTarget = "es5";
@@ -82,6 +83,14 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		this.nodeRequireDependencies.add(name);
 	}
 
+	@Input
+	public Set<File> getNpmPackageRoots() {
+		return npmPackageRoots;
+	}
+	public void includeNpmPackagesFrom(File folder) {
+		this.npmPackageRoots.add(folder);
+	}
+
 	@InputFile
 	public File getDefinitionFile() {
 		return getDefinition().getFile();
@@ -119,11 +128,10 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		File workDir = getWorkDir();
 		FileUtils.deleteQuietly(workDir);
 
-		File jsFilesDir = new File(workDir, "js");
-		File nodeDir = new File(jsFilesDir, "node_modules");
+		File nodeDir = new File(workDir, "node_modules");
 		FileUtils.forceMkdir(nodeDir);
 
-		FileUtils.copyDirectory(getSourceDir(), jsFilesDir);
+		FileUtils.copyDirectory(getSourceDir(), workDir);
 		ModuleConfiguration config = readConfig(getDefinition());
 
 		for (Map.Entry<String, String> extern : getDependencies(config, getExternalDependencies())) {
@@ -140,22 +148,30 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 				String.format("var _require=require;\nmodule.exports = _require('%s');\n", name));
 		}
 
-		Collection<File> inputFiles = FileUtils.listFiles(jsFilesDir, new String[] {"js"}, true);
-		Collection<File> entryPointFiles = filterFileList(inputFiles, getEntryPoints());
-		File mainEntryPoint = new File(workDir, "_spaghetti-main.js");
+		for (File root : getNpmPackageRoots()) {
+			// Merge all the root dirs together into one.
+			// Closure Compiler needs to see all the packages in one "node_modules" folder
+			// to correctly resolve the imports.
+			FileUtils.copyDirectory(root, nodeDir);
+		}
+
+		Collection<File> entryPointFiles = filterFileList(
+			FileUtils.listFiles(workDir, new String[] {"js"}, true),
+			getEntryPoints());
+		File mainEntryPoint = new File(workDir, "_spaghetti-entry.js");
 		ClosureUtils.writeMainEntryPoint(
 			mainEntryPoint,
 			entryPointFiles,
 			config.getLocalModule().getName());
-		inputFiles.add(mainEntryPoint);
+		File relativeJsDir = new File(".");
+		File relativeEntryPoint = new File(mainEntryPoint.getName());
 
 		int exitValue = ClosureCompiler.concat(
 			workDir,
 			getOutputFile(),
-			mainEntryPoint,
-			inputFiles,
+			relativeEntryPoint,
+			Lists.newArrayList(relativeJsDir),
 			Sets.<File>newHashSet(),
-			CompilationLevel.WHITESPACE_ONLY,
 			ObfuscationParameters.convertClosureTarget(getClosureTarget()));
 
 		if (exitValue != 0) {

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.DefinitionLanguage;
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
 import com.prezi.spaghetti.generator.ReservedWords;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Obfuscates a module's code with Google Closure Compiler.
@@ -79,13 +81,14 @@ public class ModuleObfuscator {
 		if (params.compilationLevel == CompilationLevel.ADVANCED) {
 			ImmutableSet.Builder<String> builder = ImmutableSet.builder();
 			builder.addAll(protectedSymbols).addAll(params.additionalSymbols);
-			for (ModuleNode moduleNode : config.getAllModules()) {
-				if (moduleNode.getSource().getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
-					builder.addAll(getTypeScriptDtsSymbols(moduleNode.getSource(), workDir, params.tsCompilerPath, params.logger));
-				} else {
-					builder.addAll(new SymbolCollectVisitor().visit(moduleNode));
-				}
-			}
+			Stream.concat(config.getAllModules().stream(), config.getLazyDependentModules().stream().map(EntityWithModuleMetaData::getEntity))
+					.map(moduleNode -> {
+						if (moduleNode.getSource().getDefinitionLanguage() == DefinitionLanguage.TypeScript) {
+							return getTypeScriptDtsSymbols(moduleNode.getSource(), workDir, params.tsCompilerPath, params.logger);
+						} else {
+							return new SymbolCollectVisitor().visit(moduleNode);
+						}
+					}).forEach(builder::addAll);
 			ImmutableSet<String> symbols = builder.build();
 
 			List<String> lines = Lists.newArrayList();
@@ -104,7 +107,7 @@ public class ModuleObfuscator {
 		}
 
 		// Hand off for compilation
-		Integer closureRet = ClosureCompiler.compile(workDir, inputFile, outputFile, outputSourceMapFile, params.compilationLevel, externs, params.closureTarget);
+		Integer closureRet = ClosureCompiler.minify(workDir, inputFile, outputFile, outputSourceMapFile, params.compilationLevel, externs, params.closureTarget);
 		if (closureRet != 0) {
 			throw new RuntimeException("Closure returned with exit code " + closureRet);
 		}

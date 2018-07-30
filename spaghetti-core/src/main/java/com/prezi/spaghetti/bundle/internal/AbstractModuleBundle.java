@@ -20,16 +20,20 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	private final SortedSet<String> dependentModules;
 	private final SortedMap<String, String> externalDependencies;
 	private final SortedSet<String> resourcePaths;
+	private final SortedSet<String> lazyDependentModules;
+	private final Boolean lazyLoadable;
 
-	public AbstractModuleBundle(String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
+	public AbstractModuleBundle(String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Set<String> lazyDependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths, Boolean lazyLoadable) {
 		this.name = name;
 		this.version = version;
 		this.format = format;
 		this.definitionLang = definitionLang;
 		this.sourceBaseUrl = sourceBaseUrl;
 		this.dependentModules = ImmutableSortedSet.copyOf(dependentModules);
+		this.lazyDependentModules = ImmutableSortedSet.copyOf(lazyDependentModules);
 		this.externalDependencies = ImmutableSortedMap.copyOf(externalDependencies);
 		this.resourcePaths = ImmutableSortedSet.copyOf(resourcePaths);
+		this.lazyLoadable = lazyLoadable;
 	}
 
 	@Override
@@ -79,6 +83,10 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	public final SortedSet<String> getDependentModules() {
 		return dependentModules;
 	}
+	@Override
+	public final SortedSet<String> getLazyDependentModules() {
+		return lazyDependentModules;
+	}
 
 	@Override
 	public final SortedMap<String, String> getExternalDependencies() {
@@ -88,5 +96,10 @@ public abstract class AbstractModuleBundle implements ModuleBundleInternal {
 	@Override
 	public final SortedSet<String> getResourcePaths() {
 		return resourcePaths;
+	}
+
+	@Override
+	public boolean isLazyLoadable() {
+		return this.lazyLoadable;
 	}
 }

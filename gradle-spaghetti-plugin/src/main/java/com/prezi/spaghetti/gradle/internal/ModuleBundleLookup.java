@@ -28,20 +28,26 @@ import java.util.concurrent.Callable;
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static ModuleBundleSet lookup(Project project, Object dependencies) throws IOException {
+	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies) throws IOException {
 		Set<File> directFiles = Sets.newLinkedHashSet();
+		Set<File> lazyFiles = Sets.newLinkedHashSet();
 		Set<File> transitiveFiles = Sets.newLinkedHashSet();
 		Map<ResolvedDependency, List<File>> moduleFileCache = Maps.newHashMap();
 
 		addFiles(project, dependencies, moduleFileCache, directFiles, transitiveFiles);
+		addFiles(project, dependencies, moduleFileCache, directFiles, transitiveFiles);
+		addFiles(project, lazyDependencies, moduleFileCache, lazyFiles, transitiveFiles);
+
+		transitiveFiles.removeAll(lazyFiles);
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading modules from:");
 			logger.debug("\tDirect dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(directFiles));
+			logger.debug("\tLazy dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(lazyFiles));
 			logger.debug("\tTransitive dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(transitiveFiles));
 		}
 
-		return ModuleBundleLoader.loadBundles(directFiles, transitiveFiles);
+		return ModuleBundleLoader.loadBundles(directFiles, lazyFiles, transitiveFiles);
 	}
 
 	private static void addFiles(Project project, Object from, Map<ResolvedDependency, List<File>> moduleFileCache, Set<File> directFiles, Set<File> transitiveFiles) throws IOException {

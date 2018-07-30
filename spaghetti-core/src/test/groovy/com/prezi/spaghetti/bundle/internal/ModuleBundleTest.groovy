@@ -34,8 +34,9 @@ class ModuleBundleTest extends Specification {
 						"console.log('hello');",
 						"sourcemap",
 						["com.example.alma", "com.example.bela"],
+						["com.example.lazy.a", "com.example.lazy.b"],
 						ImmutableSortedMap.copyOf("React": "react", "\$": "jquery"),
-						null)
+						null, false)
 		)
 
 		then:
@@ -48,6 +49,7 @@ class ModuleBundleTest extends Specification {
 		1 * builder.close()
 		0 * _
 		manifest.tokenize("\r?\n").sort() == [
+				"Lazy-Dependencies: com.example.lazy.a,com.example.lazy.b",
 				"Manifest-Version: 1.0",
 				"Spaghetti-Version: ${Version.SPAGHETTI_VERSION}",
 				"Module-Name: test",
@@ -57,6 +59,7 @@ class ModuleBundleTest extends Specification {
 				"Module-Dependencies: com.example.alma,com.example.bela",
 				"External-Dependencies: \$:jquery,React:react",
 				"Module-Source: http://git.example.com/test",
+				"Module-Lazy-Loadable: false"
 		].sort()
 	}
 
@@ -119,6 +122,7 @@ class ModuleBundleTest extends Specification {
 		1 * source.processFiles({
 			FileProcessor handler = it
 			handler.processFile("META-INF/MANIFEST.MF", content(
+					"Lazy-Dependencies: ",
 					"Manifest-Version: 1.0",
 					"Spaghetti-Version: 3.5",
 					"Module-Name: com.example.test",
@@ -193,7 +197,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", ModuleFormat.UMD, DefinitionLanguage definitionLang, null, [] as Set, [:], [] as Set)
+		return new DefaultModuleBundle(source, "test", "3.7", ModuleFormat.UMD, DefinitionLanguage definitionLang, null, [] as Set, [] as Set, [:], [] as Set, false)
 	}
 
 	private static String get(IOAction<OutputStream> action) {

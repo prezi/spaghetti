@@ -19,8 +19,6 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 		wrapModuleObject(
 				result,
 				params,
-				params.dependencies,
-				params.externalDependencies.keySet(),
 				true);
 		result.append(").apply({},arguments);");
 		result.append("}");

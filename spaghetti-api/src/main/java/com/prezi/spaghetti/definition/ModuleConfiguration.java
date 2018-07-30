@@ -23,6 +23,13 @@ public interface ModuleConfiguration {
 	SortedSet<EntityWithModuleMetaData<ModuleNode>> getDirectDependentModules();
 
 	/**
+	 * Returns direct lazy dependencies of the local module.
+	 *
+	 * @return direct lazy dependencies of the local module.
+	 */
+	SortedSet<EntityWithModuleMetaData<ModuleNode>> getLazyDependentModules();
+
+	/**
 	 * Returns transitive dependencies of the local module.
 	 *
 	 * @return transitive dependencies of the local module.

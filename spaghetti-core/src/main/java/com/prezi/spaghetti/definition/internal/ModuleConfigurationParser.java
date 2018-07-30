@@ -13,21 +13,26 @@ import com.prezi.spaghetti.ast.internal.parser.ModuleTypeResolver;
 import com.prezi.spaghetti.ast.internal.parser.TypeResolver;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
-import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.definition.ModuleDefinitionSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Parses module definitions for a module.
  */
 public final class ModuleConfigurationParser {
+
+	private static Logger logger = LoggerFactory.getLogger(ModuleConfigurationParser.class);
 	/**
 	 * Parses module definitions for a module.
 	 *
@@ -47,6 +52,17 @@ public final class ModuleConfigurationParser {
 					}
 				}
 			);
+		Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> lazySources =
+			Collections2.transform(
+				dependencies.getLazyBundles(),
+				new Function<ModuleBundle, EntityWithModuleMetaData<ModuleDefinitionSource>>() {
+					@Nullable
+					@Override
+					public EntityWithModuleMetaData<ModuleDefinitionSource> apply(ModuleBundle bundle) {
+						return makeModuleSourceWithMetaData(bundle);
+					}
+				}
+			);
 		Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> transitiveSources =
 			Collections2.transform(
 				dependencies.getTransitiveBundles(),
@@ -58,7 +74,7 @@ public final class ModuleConfigurationParser {
 					}
 				}
 			);
-		return parse(localModuleSource, localNamespace, directSources, transitiveSources);
+		return parse(localModuleSource, localNamespace, directSources, lazySources, transitiveSources);
 	}
 
 	private static ModuleDefinitionSource makeModuleSource(ModuleBundle bundle) {
@@ -81,6 +97,7 @@ public final class ModuleConfigurationParser {
 	 *
 	 * @param localModuleSource       the source of the local module.
 	 * @param directModuleSources     the sources of directly dependent modules.
+	 * @param lazyModuleSources
 	 * @param transitiveModuleSources the sources of transitively dependent modules.
 	 * @return the parsed module configuration.
 	 */
@@ -88,6 +105,7 @@ public final class ModuleConfigurationParser {
 			ModuleDefinitionSource localModuleSource,
 			String localNamespace,
 			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> directModuleSources,
+			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> lazyModuleSources,
 			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> transitiveModuleSources
 	) {
 		Set<String> parsedModules = Sets.newLinkedHashSet();
@@ -95,18 +113,22 @@ public final class ModuleConfigurationParser {
 		EntityWithModuleMetaData<ModuleParser> localParser = createParser(
 				new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(localModuleSource, null), localNamespace);
 		Iterable<EntityWithModuleMetaData<ModuleParser>> directParsers = createParsersFor(directModuleSources);
+		Iterable<EntityWithModuleMetaData<ModuleParser>> lazyParsers = createParsersFor(lazyModuleSources);
 		Iterable<EntityWithModuleMetaData<ModuleParser>> transitiveParsers = createParsersFor(transitiveModuleSources);
 
 		TypeResolver resolver = createResolverFor(Iterables.concat(
 			Collections.singleton(localParser),
 			directParsers,
+			lazyParsers,
 			transitiveParsers));
 
 		Set<EntityWithModuleMetaData<ModuleNode>> localModules = Sets.newLinkedHashSet();
 		Set<EntityWithModuleMetaData<ModuleNode>> directDependentModules = Sets.newLinkedHashSet();
+		Set<EntityWithModuleMetaData<ModuleNode>> lazyDependentModules = Sets.newLinkedHashSet();
 		Set<EntityWithModuleMetaData<ModuleNode>> transitiveDependentModules = Sets.newLinkedHashSet();
 		parseModules(resolver, transitiveParsers, transitiveDependentModules, parsedModules);
 		parseModules(resolver, directParsers, directDependentModules, parsedModules);
+		parseModules(resolver, lazyParsers, lazyDependentModules, parsedModules);
 		parseModules(resolver, Collections.singleton(localParser), localModules, parsedModules);
 		if (localModules.isEmpty()) {
 			throw new IllegalStateException("No local module found");
@@ -117,8 +139,8 @@ public final class ModuleConfigurationParser {
 		return new DefaultModuleConfiguration(
 			Iterables.getOnlyElement(localModules).getEntity(),
 			directDependentModules,
-			transitiveDependentModules
-		);
+				lazyDependentModules,
+				transitiveDependentModules);
 	}
 
 	private static Iterable<EntityWithModuleMetaData<ModuleParser>> createParsersFor(Iterable<EntityWithModuleMetaData<ModuleDefinitionSource>> sources) {

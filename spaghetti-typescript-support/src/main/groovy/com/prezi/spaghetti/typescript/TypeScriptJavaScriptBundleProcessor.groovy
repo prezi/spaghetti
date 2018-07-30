@@ -68,6 +68,11 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 			Collection<String> namespaceMerge = GeneratorUtils.createNamespaceMerge(module.name, value);
 			lines.addAll(namespaceMerge);
 		}
+		for (def wrapper: config.getLazyDependentModules()) {
+			ModuleNode module = wrapper.entity;
+			String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);
+			lines.add(String.format("var %s=%s;", GeneratorUtils.createLazyModuleAccessorName(module.name), value));
+		}
 
 		if (lines.isEmpty()) {
 			return ""

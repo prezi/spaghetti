@@ -2,19 +2,14 @@ package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.packaging.ModuleWrapper;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
-import org.apache.commons.lang.ArrayUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 import static com.prezi.spaghetti.generator.ReservedWords.DEPENDENCIES;
 import static com.prezi.spaghetti.generator.ReservedWords.GET_MODULE_NAME;
@@ -24,11 +19,13 @@ import static com.prezi.spaghetti.generator.ReservedWords.GET_SPAGHETTI_VERSION;
 import static com.prezi.spaghetti.packaging.internal.CommentUtils.appendAfterInitialComment;
 
 public abstract class AbstractModuleWrapper implements ModuleWrapper {
-	protected void wrapModuleObject(StringBuilder builder, ModuleWrapperParameters params, Iterable<String> dependencies, Collection<String> externalDependencies, boolean wrapExportedModule) throws IOException {
-		int ix = externalDependencies == null ? 0 : externalDependencies.size();
+	protected void wrapModuleObject(StringBuilder builder, ModuleWrapperParameters params, boolean wrapExportedModule) throws IOException {
+		SortedSet<String> dependencies = params.dependencies;
+		Set<String> externalDependencies = params.externalDependencies.keySet();
+		int ix = externalDependencies.size();
 		List<String> externalDependencyLines = ExternalDependencyGenerator.generateExternalDependencyLines(externalDependencies);
 		List<String> dependencyLines = new LinkedList<String>();
-		for (String dep : dependencies) {
+		for (String dep : Iterables.concat(dependencies, params.lazyDependencies)) {
 			dependencyLines.add(String.format("\"%s\":dependencies[%d]", dep, ix++));
 		}
 

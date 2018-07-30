@@ -14,17 +14,22 @@ import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.SortedSet;
 
 public class AbstractSpaghettiTask extends ConventionTask {
 	private ConfigurableFileCollection dependentModules = getProject().files();
+	private ConfigurableFileCollection lazyDependentModules = getProject().files();
 	private ModuleBundleSet dependentBundles;
 
 	@InputFiles
 	public ConfigurableFileCollection getDependentModules() {
 		return dependentModules;
+	}
+
+	@InputFiles
+	public ConfigurableFileCollection getLazyDependentModules() {
+		return lazyDependentModules;
 	}
 
 	/**
@@ -60,6 +65,21 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		dependentModules(dependentModules);
 	}
 
+	public void setLazyDependentModules(ConfigurableFileCollection lazyDependentModules) {
+		this.dependentBundles = null;
+		this.lazyDependentModules = lazyDependentModules;
+	}
+
+	public void lazyDependentModules(Object... additionalLazyDependentModules) {
+		ConfigurableFileCollection lazyDependentModules = getLazyDependentModules();
+		lazyDependentModules.from(additionalLazyDependentModules);
+		setLazyDependentModules(lazyDependentModules);
+	}
+
+	public void lazyDependentModule(Object... lazyDependentModules) {
+		lazyDependentModules(lazyDependentModules);
+	}
+
 	@Deprecated
 	@SuppressWarnings("UnusedDeclaration")
 	public void additionalDependentModules(Object... additionalDependentModules) {
@@ -87,7 +107,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 
 	protected ModuleBundleSet lookupBundles() throws IOException {
 		if (dependentBundles == null) {
-			dependentBundles = ModuleBundleLookup.lookup(getProject(), getDependentModules());
+			dependentBundles = ModuleBundleLookup.lookup(getProject(), getDependentModules(), getLazyDependentModules());
 		}
 		return dependentBundles;
 	}

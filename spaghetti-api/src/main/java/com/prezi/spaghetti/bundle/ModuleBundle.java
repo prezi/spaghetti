@@ -39,6 +39,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	SortedSet<String> getDependentModules();
 
 	/**
+	 * Returns the names of the module's lazy dependencies.
+	 */
+	SortedSet<String> getLazyDependentModules();
+
+	/**
 	 * Returns the list of resource file paths.
 	 */
 	SortedSet<String> getResourcePaths();
@@ -57,6 +62,11 @@ public interface ModuleBundle extends Comparable<ModuleBundle> {
 	 * Returns the module's JavaScript code.
 	 */
 	String getJavaScript() throws IOException;
+
+	/**
+	 * Returns if the module is lazy loadable
+	 */
+	boolean isLazyLoadable();
 
 	/**
 	 * Returns the module's source map, or <code>null</code> if there is no source map.

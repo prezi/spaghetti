@@ -65,19 +65,21 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final String RESOURCES_PREFIX = "resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
-	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4.", "5.", "6.", "7.", "8.", "9."};
+	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4.", "5.", "6.", "7.", "8.", "9.", "10."};
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_FORMAT = new Attributes.Name("Module-Format");
+	private static final Attributes.Name MANIFEST_ATTR_MODULE_LAZY_LOADABLE = new Attributes.Name("Module-Lazy-Loadable");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_SOURCE = new Attributes.Name("Module-Source");
 	private static final Attributes.Name MANIFEST_ATTR_DEFINITION_LANGUAGE = new Attributes.Name("Definition-Language");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_DEPENDENCIES = new Attributes.Name("Module-Dependencies");
+	private static final Attributes.Name MANIFEST_ATTR_LAZY_DEPENDENCIES = new Attributes.Name("Lazy-Dependencies");
 	private static final Attributes.Name MANIFEST_ATTR_EXTERNAL_DEPENDENCIES = new Attributes.Name("External-Dependencies");
 	protected final StructuredProcessor source;
 
-	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths) {
-		super(name, version, format, definitionLang, sourceBaseUrl, dependentModules, externalDependencies, resourcePaths);
+	protected DefaultModuleBundle(StructuredProcessor source, String name, String version, ModuleFormat format, DefinitionLanguage definitionLang, String sourceBaseUrl, Set<String> dependentModules, Set<String> lazyDependentModules, Map<String, String> externalDependencies, Set<String> resourcePaths, Boolean lazyLoadable) {
+		super(name, version, format, definitionLang, sourceBaseUrl, dependentModules, lazyDependentModules, externalDependencies, resourcePaths, lazyLoadable);
 		this.source = source;
 	}
 
@@ -104,10 +106,10 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		if (!isSpaghettiVersionSupported(Version.SPAGHETTI_VERSION)) {
 			throw new IllegalArgumentException(
-				String.format("Creating a bundle which Spaghetti does not support (\"%s\" should be included in %s).",
-					Version.SPAGHETTI_VERSION,
-					Arrays.toString(SUPPORTED_VERSIONS_PREFIX)
-				)
+					String.format("Creating a bundle which Spaghetti does not support (\"%s\" should be included in %s).",
+							Version.SPAGHETTI_VERSION,
+							Arrays.toString(SUPPORTED_VERSIONS_PREFIX)
+					)
 			);
 		}
 
@@ -128,6 +130,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_SOURCE, url != null ? url : "");
 			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_DEPENDENCIES,
 					Joiner.on(',').join(params.dependentModules));
+			manifest.getMainAttributes().put(MANIFEST_ATTR_LAZY_DEPENDENCIES,
+					Joiner.on(',').join(params.lazyDependentModules));
+			manifest.getMainAttributes().put(MANIFEST_ATTR_MODULE_LAZY_LOADABLE, params.lazyLoadable.toString());
 			manifest.getMainAttributes().put(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES,
 					Joiner.on(',').withKeyValueSeparator(":").join(params.externalDependencies));
 			builder.appendFile(MANIFEST_MF_PATH, new IOAction<OutputStream>() {
@@ -150,8 +155,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 								params.version,
 								params.javaScript,
 								params.dependentModules,
-								params.externalDependencies
-						)
+								params.lazyDependentModules,
+								params.externalDependencies)
 				);
 				builder.appendFile(JAVASCRIPT_PATH, javaScript);
 			}
@@ -173,7 +178,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			}
 
 			StructuredProcessor source = builder.create();
-			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.definitionLang, params.sourceBaseUrl, params.dependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths));
+			return new DefaultModuleBundle(source, params.name, params.version, params.format, params.definitionLang, params.sourceBaseUrl, params.dependentModules, params.lazyDependentModules, params.externalDependencies, Collections.unmodifiableSet(resourcePaths), params.lazyLoadable);
 		} finally {
 			builder.close();
 		}
@@ -221,11 +226,11 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 
 		if (!isSpaghettiVersionSupported(spaghettiVersion)) {
 			throw new IllegalArgumentException(
-				String.format("Spaghetti version mismatch (should be any of %s, but was \"%s\"): %s",
-						Arrays.toString(SUPPORTED_VERSIONS_PREFIX),
-					spaghettiVersion,
-					String.valueOf(source)
-				)
+					String.format("Spaghetti version mismatch (should be any of %s, but was \"%s\"): %s",
+							Arrays.toString(SUPPORTED_VERSIONS_PREFIX),
+							spaghettiVersion,
+							String.valueOf(source)
+					)
 			);
 		}
 
@@ -246,10 +251,16 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		String moduleDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_DEPENDENCIES);
 		Set<String> dependentModules = !Strings.isNullOrEmpty(moduleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(moduleDependenciesString.split(","))) : Collections.<String>emptySet();
 
+		String lazyModuleDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_LAZY_DEPENDENCIES);
+		Set<String> lazyDependentModules = !Strings.isNullOrEmpty(lazyModuleDependenciesString) ? Sets.newLinkedHashSet(Arrays.asList(lazyModuleDependenciesString.split(","))) : Collections.<String>emptySet();
+
 		String externalDependenciesString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_EXTERNAL_DEPENDENCIES);
 		Map<String, String> externalDependencies = BundleUtils.parseExternalDependencies(externalDependenciesString);
 
-		return new DefaultModuleBundle(source, name, version, format, definitionLang, sourceUrl, dependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths));
+		String lazyLoadableString = manifest.get().getMainAttributes().getValue(MANIFEST_ATTR_MODULE_LAZY_LOADABLE);
+		Boolean lazyLoadable = lazyLoadableString == null ? false : Boolean.valueOf(lazyLoadableString);
+
+		return new DefaultModuleBundle(source, name, version, format, definitionLang, sourceUrl, dependentModules, lazyDependentModules, externalDependencies, Collections.unmodifiableSet(resourcePaths), lazyLoadable);
 	}
 
 	private String getString(String path) throws IOException {

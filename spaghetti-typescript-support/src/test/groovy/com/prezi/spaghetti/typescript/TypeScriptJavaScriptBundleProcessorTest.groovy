@@ -6,23 +6,18 @@ import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.definition.internal.DefaultEntityWithModuleMetaData
 import com.prezi.spaghetti.definition.internal.DefaultModuleConfiguration
-import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
-import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.generator.JavaScriptBundleProcessorParameters
+import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource
 import com.prezi.spaghetti.generator.internal.DefaultJavaScriptBundleProcessorParameters
-
-import java.util.Collections
-import java.util.HashSet
-
 import spock.lang.Specification
 
 class TypeScriptJavaScriptBundleProcessorTest extends Specification {
 	def "processModuleJavaScript: TypeScript accessors are sorted and don't have redudant lines"() {
 		def processor = new TypeScriptJavaScriptBundleProcessor()
 		def config = new DefaultModuleConfiguration(
-			makeModuleNode("spaghetti.test.main"),
-			makeDependencies(["spaghetti.test.dep", "com.b", "spaghetti.other.dep", "spaghetti.test.a", "com.a"]),
-			Collections.emptySet())
+				makeModuleNode("spaghetti.test.main"),
+				makeDependencies(["spaghetti.test.dep", "com.b", "spaghetti.other.dep", "spaghetti.test.a", "com.a"]),
+				makeDependencies(["com.lazy.first", "com.lazy.second"]),
+				Collections.emptySet())
 		def params = new DefaultJavaScriptBundleProcessorParameters(config);
 
 		when:
@@ -38,6 +33,8 @@ spaghetti.other=(spaghetti.other||{});
 spaghetti.other.dep=Spaghetti["dependencies"]["spaghetti.other.dep"];
 spaghetti.test.a=Spaghetti["dependencies"]["spaghetti.test.a"];
 spaghetti.test.dep=Spaghetti["dependencies"]["spaghetti.test.dep"];
+var get_com_lazy_first=Spaghetti["dependencies"]["com.lazy.first"];
+var get_com_lazy_second=Spaghetti["dependencies"]["com.lazy.second"];
 /* This is the JavaScript module */
 return spaghetti.test.main;
 """
@@ -46,9 +43,10 @@ return spaghetti.test.main;
 	def "processModuleJavaScript: 'use strict' is copied to the top line"() {
 		def processor = new TypeScriptJavaScriptBundleProcessor()
 		def config = new DefaultModuleConfiguration(
-			makeModuleNode("spaghetti.test.main"),
-			makeDependencies([]),
-			Collections.emptySet())
+				makeModuleNode("spaghetti.test.main"),
+				makeDependencies([]),
+				Collections.emptySet(),
+				Collections.emptySet())
 		def params = new DefaultJavaScriptBundleProcessorParameters(config);
 
 		when:
@@ -66,9 +64,10 @@ return spaghetti.test.main;
 	def "processModuleJavaScript: \"use strict\" with double quotes is copied to the top line"() {
 		def processor = new TypeScriptJavaScriptBundleProcessor()
 		def config = new DefaultModuleConfiguration(
-			makeModuleNode("spaghetti.test.main"),
-			makeDependencies([]),
-			Collections.emptySet())
+				makeModuleNode("spaghetti.test.main"),
+				makeDependencies([]),
+				Collections.emptySet(),
+				Collections.emptySet())
 		def params = new DefaultJavaScriptBundleProcessorParameters(config);
 
 		when:

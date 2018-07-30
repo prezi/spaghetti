@@ -21,8 +21,9 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
 	private final SortedSet<EntityWithModuleMetaData<ModuleNode>> transitiveDependentModules;
 	private final SortedSet<ModuleNode> allDependentModules;
 	private final SortedSet<ModuleNode> allModules;
+	private final SortedSet<EntityWithModuleMetaData<ModuleNode>> lazyDependentModules;
 
-	public DefaultModuleConfiguration(ModuleNode localModule, Set<EntityWithModuleMetaData<ModuleNode>> directDependentModules, Set<EntityWithModuleMetaData<ModuleNode>> transitiveDependentModules) {
+	public DefaultModuleConfiguration(ModuleNode localModule, Set<EntityWithModuleMetaData<ModuleNode>> directDependentModules, Set<EntityWithModuleMetaData<ModuleNode>> lazyDependentModules, Set<EntityWithModuleMetaData<ModuleNode>> transitiveDependentModules) {
 		Preconditions.checkNotNull(localModule, "localModule");
 		Preconditions.checkArgument(Collections.disjoint(
 						Preconditions.checkNotNull(directDependentModules, "directDependentModules"),
@@ -40,6 +41,7 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
 		this.localModule = localModule;
 		Comparator<EntityWithModuleMetaData<ModuleNode>> moduleNodeEntityComparator = DefaultEntityWithModuleMetaData.<ModuleNode>mkComparator();
 		this.directDependentModules = ImmutableSortedSet.copyOf(moduleNodeEntityComparator, directDependentModules);
+		this.lazyDependentModules = ImmutableSortedSet.copyOf(moduleNodeEntityComparator, lazyDependentModules);
 		this.transitiveDependentModules = ImmutableSortedSet.copyOf(moduleNodeEntityComparator, transitiveDependentModules);
 		this.allDependentModules = ImmutableSortedSet.<ModuleNode>naturalOrder().addAll(stripMetaData(directDependentModules)).addAll(stripMetaData(transitiveDependentModules)).build();
 		this.allModules = ImmutableSortedSet.<ModuleNode>naturalOrder().add(localModule).addAll(stripMetaData(directDependentModules)).addAll(stripMetaData(transitiveDependentModules)).build();
@@ -63,6 +65,11 @@ public class DefaultModuleConfiguration implements ModuleConfiguration {
 	@Override
 	public SortedSet<EntityWithModuleMetaData<ModuleNode>> getDirectDependentModules() {
 		return directDependentModules;
+	}
+
+	@Override
+	public SortedSet<EntityWithModuleMetaData<ModuleNode>> getLazyDependentModules() {
+		return lazyDependentModules;
 	}
 
 	@Override

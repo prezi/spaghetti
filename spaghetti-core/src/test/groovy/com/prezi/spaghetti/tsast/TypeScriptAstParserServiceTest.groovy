@@ -210,16 +210,7 @@ module test {
     }
 
     def runVerify(String content) {
-        File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
-        dir.mkdirs();
-
-        File definitionFile = new File(dir, "definition.d.ts");
-        FileUtils.write(definitionFile, content);
-
-        Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
-        File compilerPath = new File("build/typescript/node_modules/typescript");
-
-        return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
+        return executeVerify(content, false)
     }
 
     def "commonjs: classes not allowed"() {
@@ -746,4 +737,83 @@ export interface Foo { }
 
         return TypeScriptAstParserService.mergeDefinitionFileImports(dir, compilerPath, definitionFile, outputFile, logger);
     }
+
+	def "lazy: LazyModule interface must exist"() {
+		when:
+		def lines = runLazyVerify("""
+module test {
+    export interface Test {
+    }
+}
+""")
+		then:
+		def e = thrown(TypeScriptAstParserException)
+		e.output[0].contains("Lazy module must have an interface named LazyModule.")
+	}
+
+	def "lazy: valid LazyModule interface"() {
+		when:
+		def lines = runLazyVerify("""
+module test {
+    export interface LazyModule {
+    }
+}
+""")
+		then:
+		lines == []
+	}
+
+	def "lazy: should not contain enum"() {
+		when:
+		def lines = runLazyVerify("""
+module test {
+	export enum A {
+		A1,
+		A2
+	}
+    export interface LazyModule {
+    }
+}
+""")
+		then:
+		def e = thrown(TypeScriptAstParserException)
+		e.output[0].contains("Lazy module can contain only const enums.")
+	}
+
+	def "lazy: const enum is valid"() {
+		when:
+		def lines = runLazyVerify("""
+module test {
+	export const enum A {
+		A1,
+		A2
+	}
+    export interface LazyModule {
+    }
+}
+""")
+		then:
+		lines == []
+	}
+
+	def runLazyVerify(String content) {
+		return executeVerify(content, true)
+	}
+
+
+	def executeVerify(String content, boolean lazy) {
+		File dir = Files.createTempDirectory("TypeScriptAstParserServiceTest").toFile();
+		dir.mkdirs();
+
+		File definitionFile = new File(dir, "definition.d.ts");
+		FileUtils.write(definitionFile, content);
+
+		Logger logger = LoggerFactory.getLogger(TypeScriptAstParserServiceTest.class);
+		File compilerPath = new File("build/typescript/node_modules/typescript");
+
+		if (lazy) {
+			return TypeScriptAstParserService.verifyLazyModuleDefinition(dir, compilerPath, definitionFile, logger);
+		}
+		return TypeScriptAstParserService.verifyModuleDefinition(dir, compilerPath, definitionFile, logger);
+	}
 }

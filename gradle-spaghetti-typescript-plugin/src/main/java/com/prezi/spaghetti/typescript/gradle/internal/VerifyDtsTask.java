@@ -20,6 +20,7 @@ import com.prezi.spaghetti.tsast.TypeScriptAstParserService;
 public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpaghettiTask, NeedsTypeScriptCompilerSpaghettiTask {
     private DefinitionFile definition = null;
     private File tsCompilerPath = null;
+    private boolean lazy = false;
 
     public VerifyDtsTask() {
         super();
@@ -73,11 +74,19 @@ public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpag
     public void verify() throws IOException, InterruptedException {
         File workDir = getTemporaryDir();
         try {
-            TypeScriptAstParserService.verifyModuleDefinition(
-                workDir,
-                getCompilerPath(),
-                getDefinition().getFile(),
-                getLogger());
+        	if (!isLazy()) {
+				TypeScriptAstParserService.verifyModuleDefinition(
+						workDir,
+						getCompilerPath(),
+						getDefinition().getFile(),
+						getLogger());
+			} else {
+				TypeScriptAstParserService.verifyLazyModuleDefinition(
+						workDir,
+						getCompilerPath(),
+						getDefinition().getFile(),
+						getLogger());
+			}
         } catch (TypeScriptAstParserException e) {
             for (String line: e.getOutput()) {
                 System.out.println(line);
@@ -85,4 +94,13 @@ public class VerifyDtsTask extends ConventionTask implements DefinitionAwareSpag
             throw new RuntimeException("Verify TypeScript module definition failed, see console for errors.", e);
         }
     }
+
+    @Input
+	public boolean isLazy() {
+		return lazy;
+	}
+
+	public void setLazy(boolean lazy) {
+		this.lazy = lazy;
+	}
 }
