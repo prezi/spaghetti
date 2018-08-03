@@ -8,11 +8,11 @@ stage("flow") {
 				sh "./gradlew assemble check"
 			}
 
-			archiveArtifacts artifacts: 'spaghetti-haxe-support/build/reports'
-			archiveArtifacts artifacts: 'spaghetti-js-support/build/reports'
-			archiveArtifacts artifacts: 'spaghetti-core/build/reports'
-			archiveArtifacts artifacts: 'spaghetti-typescript-support/build/reports'
-			archiveArtifacts artifacts: 'gradle-spaghetti-typescript-plugin/build/reports'
+			archiveArtifacts artifacts: 'spaghetti-haxe-support/build/reports/**'
+			archiveArtifacts artifacts: 'spaghetti-js-support/build/reports/**'
+			archiveArtifacts artifacts: 'spaghetti-core/build/reports/**'
+			archiveArtifacts artifacts: 'spaghetti-typescript-support/build/reports/**'
+			archiveArtifacts artifacts: 'gradle-spaghetti-typescript-plugin/build/reports/**'
 		}
 	}
 }
