@@ -4,7 +4,7 @@ stage("flow") {
 		ansiColor('xterm') {
 			try {
 				if (env.BRANCH_NAME == "master") {
-					sh "./gradlew version clean check install publish -Prelease"
+					sh "./gradlew version clean check install publish -Prelease --stacktrace"
 				} else {
 					sh "./gradlew assemble check"
 				}
