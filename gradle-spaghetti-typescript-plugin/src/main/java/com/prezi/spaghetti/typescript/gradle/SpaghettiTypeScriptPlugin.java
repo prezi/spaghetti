@@ -157,7 +157,10 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			public List<File> call() {
 				Set<TypeScriptSourceSet> sources = typeScriptExtension.getSources().getByName("test").withType(TypeScriptSourceSet.class);
 				TypeScriptSourceSet source = Iterables.getOnlyElement(sources);
-				return Lists.newArrayList(source.getSource().getFiles());
+				List<File> files = Lists.newArrayList();
+				files.add(spaghettiExtension.getDefinition().getFile());
+				files.addAll(source.getSource().getFiles());
+				return files;
 			}
 		};
 
