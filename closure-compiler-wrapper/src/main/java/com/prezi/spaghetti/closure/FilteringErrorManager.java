@@ -41,13 +41,16 @@ class FilteringErrorManager extends PrintStreamErrorManager {
          *          └─STRING 'default'
          */
 
+        if (nameNode == null) {
+            return false;
+        }
+
         Node sibling = nameNode.getNext();
         Node parent = nameNode.getParent();
         Node grandparent = nameNode.getGrandparent();
         Node ggparent = grandparent == null ? null : grandparent.getParent();
 
-        return nameNode != null
-            && sibling != null
+        return sibling != null
             && parent != null
             && grandparent != null
             && nameNode.isName()
