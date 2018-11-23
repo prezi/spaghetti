@@ -32,11 +32,9 @@ public class ModuleBundleLookup {
 		Set<File> directFiles = Sets.newLinkedHashSet();
 		Set<File> lazyFiles = Sets.newLinkedHashSet();
 		Set<File> transitiveFiles = Sets.newLinkedHashSet();
-		Map<ResolvedDependency, List<File>> moduleFileCache = Maps.newHashMap();
 
-		addFiles(project, dependencies, moduleFileCache, directFiles, transitiveFiles);
-		addFiles(project, dependencies, moduleFileCache, directFiles, transitiveFiles);
-		addFiles(project, lazyDependencies, moduleFileCache, lazyFiles, transitiveFiles);
+		addFiles(project, dependencies, directFiles, transitiveFiles);
+		addFiles(project, lazyDependencies, lazyFiles, transitiveFiles);
 
 		transitiveFiles.removeAll(lazyFiles);
 
@@ -50,7 +48,7 @@ public class ModuleBundleLookup {
 		return ModuleBundleLoader.loadBundles(directFiles, lazyFiles, transitiveFiles);
 	}
 
-	private static void addFiles(Project project, Object from, Map<ResolvedDependency, List<File>> moduleFileCache, Set<File> directFiles, Set<File> transitiveFiles) throws IOException {
+	private static void addFiles(Project project, Object from, Set<File> directFiles, Set<File> transitiveFiles) throws IOException {
 		if (from == null) {
 			return;
 		}
@@ -58,25 +56,25 @@ public class ModuleBundleLookup {
 		if (from instanceof Configuration) {
 			Configuration config = (Configuration) from;
 			Set<ResolvedDependency> firstLevelDependencies = config.getResolvedConfiguration().getFirstLevelModuleDependencies();
-			addAllFilesFrom(firstLevelDependencies, moduleFileCache, directFiles);
-			addAllFilesFromChildren(firstLevelDependencies, moduleFileCache, transitiveFiles);
+			addAllFilesFrom(firstLevelDependencies, directFiles);
+			transitiveFiles.addAll(config.resolve());
 		} else if (from instanceof ConfigurableFileCollection) {
 			for (Object child : ((ConfigurableFileCollection) from).getFrom()) {
-				addFiles(project, child, moduleFileCache, directFiles, transitiveFiles);
+				addFiles(project, child, directFiles, transitiveFiles);
 			}
 		} else if (from instanceof FileCollection) {
 			directFiles.addAll(((FileCollection) from).getFiles());
 		} else if (from instanceof Collection) {
 			for (Object child : ((Collection<?>) from)) {
-				addFiles(project, child, moduleFileCache, directFiles, transitiveFiles);
+				addFiles(project, child, directFiles, transitiveFiles);
 			}
 		} else if (from.getClass().isArray()) {
 			for (int i = 0; i < Array.getLength(from); i++) {
-				addFiles(project, Array.get(from, i), moduleFileCache, directFiles, transitiveFiles);
+				addFiles(project, Array.get(from, i), directFiles, transitiveFiles);
 			}
 		} else if (from instanceof Callable) {
 			try {
-				addFiles(project, ((Callable) from).call(), moduleFileCache, directFiles, transitiveFiles);
+				addFiles(project, ((Callable) from).call(), directFiles, transitiveFiles);
 			} catch (Exception e) {
 				throw Throwables.propagate(e);
 			}
@@ -89,23 +87,11 @@ public class ModuleBundleLookup {
 		}
 	}
 
-	private static void addAllFilesFromChildren(Set<ResolvedDependency> dependencies, Map<ResolvedDependency, List<File>> moduleFileCache, Set<File> files) throws IOException {
+	private static void addAllFilesFrom(Set<ResolvedDependency> dependencies, Set<File> files) throws IOException {
 		for (ResolvedDependency dependency : dependencies) {
-			addAllFilesFrom(dependency.getChildren(), moduleFileCache, files);
-			addAllFilesFromChildren(dependency.getChildren(), moduleFileCache, files);
-		}
-	}
-
-	private static void addAllFilesFrom(Set<ResolvedDependency> dependencies, Map<ResolvedDependency, List<File>> moduleFileCache, Set<File> files) throws IOException {
-		for (ResolvedDependency dependency : dependencies) {
-			if (!moduleFileCache.containsKey(dependency)) {
-				List<File> values = Lists.newArrayList();
-				moduleFileCache.put(dependency, values);
-				for (ResolvedArtifact artifact : dependency.getModuleArtifacts()) {
-					values.add(artifact.getFile());
-				}
+			for (ResolvedArtifact artifact : dependency.getModuleArtifacts()) {
+				files.add(artifact.getFile());
 			}
-			files.addAll(moduleFileCache.get(dependency));
 		}
 	}
 }
