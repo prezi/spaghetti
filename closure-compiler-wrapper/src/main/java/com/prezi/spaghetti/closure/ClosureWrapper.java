@@ -80,6 +80,9 @@ class ClosureWrapper {
                 options.setInlineVariables(Reach.NONE);
                 options.setInlineFunctions(Reach.NONE);
                 options.setPrettyPrint(true);
+                options.setFoldConstants(false);
+                options.setCoalesceVariableNames(false);
+                options.setCollapseVariableDeclarations(false);
             }
         }
 
