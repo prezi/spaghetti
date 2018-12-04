@@ -36,7 +36,7 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 		}
 		def params = []
 		parameters.eachWithIndex { param, index ->
-			params.push("arg${index}: ${param.accept(this)}")
+			params.add("arg${index}: ${param.accept(this)}")
 		}
 		return "(${params.join(", ")}) => ${retType}"
 	}
