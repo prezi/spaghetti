@@ -90,13 +90,14 @@ class ClosureWrapper {
             options.setSourceMapOutputPath(args.sourceMap.getPath());
         }
 
+        options.setEmitUseStrict(false);
+
         if (args.es5) {
             options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT);
             options.setLanguageOut(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT);
         } else {
             options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT_2015);
             options.setLanguageOut(CompilerOptions.LanguageMode.NO_TRANSPILE);
-            options.setEmitUseStrict(false);
             options.setRewritePolyfills(false);
         }
 
