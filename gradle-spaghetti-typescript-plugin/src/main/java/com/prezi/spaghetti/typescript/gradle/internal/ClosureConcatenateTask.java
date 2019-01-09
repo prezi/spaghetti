@@ -21,6 +21,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.DefinitionFile;
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
@@ -200,7 +201,8 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 
 	private static Set<Map.Entry<String, String>> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
 		Map<String, String> deps = Maps.newHashMap();
-		for (ModuleNode node : config.getAllDependentModules()) {
+		for (EntityWithModuleMetaData<ModuleNode> wrapper : config.getDirectDependentModules()) {
+			ModuleNode node = wrapper.getEntity();
 			String importName = node.getName().replace(".", "_");
 			deps.put(node.getName(), importName);
 		}
