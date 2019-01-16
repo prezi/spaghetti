@@ -20,7 +20,6 @@ import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
@@ -32,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Callable;
 
 public class SpaghettiPlugin implements Plugin<Project> {
@@ -183,7 +183,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		spaghettiStubs.builtBy(generateStubsTask);
 	}
 
-	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
+	public static <T> void registerSpaghettiModuleBinary(Project project, String moduleName, Callable<File> javaScriptFile, Callable<File> sourceMapFile, DefinitionOverride definitionOverride, Collection<?> dependencies, T payload, SpaghettiModuleFactory<T> callback) {
 		SpaghettiExtension spaghettiExtension = project.getExtensions().getByType(SpaghettiExtension.class);
 		BinaryNamingScheme namingScheme = new SpaghettiModuleNamingScheme(moduleName);
 
@@ -192,6 +192,11 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		BundleModule bundleTask = createBundleTask(project, namingScheme, javaScriptFile, sourceMapFile, definitionOverride, dependencies);
 		Zip zipModule = createZipTask(project, namingScheme, bundleTask, namingScheme.getLifecycleTaskName(), "");
 		logger.debug("Added bundle task {} with zip task {}", bundleTask, zipModule);
+
+		// Bundle def
+		BundleModule bundleDefinitionTask = createDefinitionBundleTask(project, namingScheme, definitionOverride, Collections.emptyList());
+		Zip zipDefinition = createZipTask(project, namingScheme, bundleDefinitionTask, namingScheme.getLifecycleTaskName() + "-definition", "definition");
+		logger.debug("Added bundle definition task {} with zip task {}", bundleDefinitionTask, zipDefinition);
 
 		// Obfuscate bundle
 		ObfuscateModule obfuscateTask = createObfuscateTask(project, namingScheme, javaScriptFile, sourceMapFile, definitionOverride, dependencies);
@@ -207,6 +212,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		if (!moduleBinary.isUsedForTesting()) {
 			addBundleArtifact(project, spaghettiExtension.getConfiguration(), zipModule, "");
 			addBundleArtifact(project, spaghettiExtension.getObfuscatedConfiguration(), zipObfuscated, "obfuscated");
+			addBundleArtifact(project, spaghettiExtension.getModuleDefinitionConfiguration(), zipDefinition, "definition");
 		} else {
 			if (spaghettiExtension.getPublishTestArtifacts()) {
 				addBundleArtifact(project, spaghettiExtension.getTestConfiguration(), zipModule, "test");
@@ -229,7 +235,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		});
 	}
 
-	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies) {
+	private static BundleModule createBundleTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, DefinitionOverride definitionOverride, Collection<?> dependencies) {
 		String bundleTaskName = namingScheme.getTaskName("bundle");
 		BundleModule bundleTask = project.getTasks().create(bundleTaskName, BundleModule.class);
 		bundleTask.setDescription("Bundles " + namingScheme.getDescription() + " module.");
@@ -237,7 +243,18 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		return bundleTask;
 	}
 
-	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies) {
+	private static BundleModule createDefinitionBundleTask(final Project project, final BinaryNamingScheme namingScheme, DefinitionOverride definitionOverride, Collection<?> dependencies) {
+		String bundleTaskName = namingScheme.getTaskName("bundleDef");
+		BundleModule bundleTask = project.getTasks().create(bundleTaskName, BundleModule.class);
+		if (definitionOverride != null && definitionOverride.getGeneratorTask() != null) {
+			bundleTask.dependsOn(definitionOverride.getGeneratorTask());
+		}
+		bundleTask.setDescription("Bundles definition of " + namingScheme.getDescription() + " module.");
+		configureBundleTask(project, bundleTask, namingScheme, null, null, definitionOverride, dependencies, "bundledDef");
+		return bundleTask;
+	}
+
+	private static ObfuscateModule createObfuscateTask(final Project project, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, DefinitionOverride definitionOverride, Collection<?> dependencies) {
 		String obfuscateTaskName = namingScheme.getTaskName("obfuscate");
 		ObfuscateModule obfuscateTask = project.getTasks().create(obfuscateTaskName, ObfuscateModule.class);
 		obfuscateTask.setDescription("Obfuscates " + namingScheme.getDescription() + " module.");
@@ -245,13 +262,15 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		return obfuscateTask;
 	}
 
-	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, Callable<DefinitionFile> definitionOverride, Collection<?> dependencies, final String outputDir) {
-		task.getConventionMapping().map("inputFile", javaScriptFile);
+	private static void configureBundleTask(final Project project, AbstractBundleModuleTask task, final BinaryNamingScheme namingScheme, Callable<File> javaScriptFile, Callable<File> sourceMapFile, DefinitionOverride definitionOverride, Collection<?> dependencies, final String outputDir) {
+		if (javaScriptFile != null) {
+			task.getConventionMapping().map("inputFile", javaScriptFile);
+		}
 		if (sourceMapFile != null) {
 			task.getConventionMapping().map("sourceMap", sourceMapFile);
 		}
-		if (definitionOverride != null) {
-			task.getConventionMapping().map("definitionOverride", definitionOverride);
+		if (definitionOverride != null && definitionOverride.getDefinitionFile() != null) {
+			task.getConventionMapping().map("definitionOverride", definitionOverride.getDefinitionFile());
 		}
 		task.getConventionMapping().map("outputDirectory", new Callable<File>() {
 			@Override

@@ -98,11 +98,13 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		return getString(SOURCE_MAP_PATH);
 	}
 
-	public static DefaultModuleBundle create(final StructuredWriter builder, ModuleBundleParameters params) throws IOException {
+	public static DefaultModuleBundle create(final StructuredWriter builder, ModuleBundleParameters params, boolean definitionOnly) throws IOException {
 		Preconditions.checkNotNull(params.name, "name");
 		Preconditions.checkNotNull(params.version, "version");
 		Preconditions.checkNotNull(params.definition, "definition");
-		Preconditions.checkNotNull(params.javaScript, "javaScript");
+//		if (!definitionOnly) {
+//			Preconditions.checkNotNull(params.javaScript, "javaScript");
+//		}
 
 		if (!isSpaghettiVersionSupported(Version.SPAGHETTI_VERSION)) {
 			throw new IllegalArgumentException(
@@ -145,35 +147,38 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			// Store definition
 			builder.appendFile(DEFINITION_PATH, params.definition);
 
-			// Store module itself
-			if (params.format == ModuleFormat.Wrapperless) {
-				builder.appendFile(JAVASCRIPT_PATH, params.javaScript);
-			} else {
-				String javaScript = new UmdModuleWrapper().wrap(
-						new ModuleWrapperParameters(
-								params.name,
-								params.version,
-								params.javaScript,
-								params.dependentModules,
-								params.lazyDependentModules,
-								params.externalDependencies)
-				);
-				builder.appendFile(JAVASCRIPT_PATH, javaScript);
-			}
+			if (params.javaScript != null) {
 
-			// Store sourcemap
-			if (params.sourceMap != null) {
-				builder.appendFile(SOURCE_MAP_PATH, params.sourceMap);
-			}
+				// Store module itself
+				if (params.format == ModuleFormat.Wrapperless) {
+					builder.appendFile(JAVASCRIPT_PATH, params.javaScript);
+				} else {
+					String javaScript = new UmdModuleWrapper().wrap(
+							new ModuleWrapperParameters(
+									params.name,
+									params.version,
+									params.javaScript,
+									params.dependentModules,
+									params.lazyDependentModules,
+									params.externalDependencies)
+					);
+					builder.appendFile(JAVASCRIPT_PATH, javaScript);
+				}
 
-			// Store resources
-			final File resourceDir = params.resourcesDirectory;
-			if (resourceDir != null && resourceDir.exists()) {
-				for (File resourceFile : FileUtils.listFiles(resourceDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
-					String resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString();
-					logger.debug("Adding resource {}", resourcePath);
-					builder.appendFile(resourcePath, resourceFile);
-					resourcePaths.add(resourcePath);
+				// Store sourcemap
+				if (params.sourceMap != null) {
+					builder.appendFile(SOURCE_MAP_PATH, params.sourceMap);
+				}
+
+				// Store resources
+				final File resourceDir = params.resourcesDirectory;
+				if (resourceDir != null && resourceDir.exists()) {
+					for (File resourceFile : FileUtils.listFiles(resourceDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
+						String resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString();
+						logger.debug("Adding resource {}", resourcePath);
+						builder.appendFile(resourcePath, resourceFile);
+						resourcePaths.add(resourcePath);
+					}
 				}
 			}
 
@@ -184,7 +189,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 	}
 
-	public static DefaultModuleBundle loadInternal(final StructuredProcessor source) throws IOException {
+	public static DefaultModuleBundle loadInternal(final StructuredProcessor source, boolean definitionOnly) throws IOException {
 		if (!source.hasFile(MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source);
 		}
@@ -193,8 +198,10 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			throw new IllegalArgumentException("Not a module, missing definition: " + String.valueOf(source));
 		}
 
-		if (!source.hasFile(JAVASCRIPT_PATH)) {
-			throw new IllegalArgumentException("Not a module, missing JavaScript: " + String.valueOf(source));
+		if (!definitionOnly && false) {
+			if (!source.hasFile(JAVASCRIPT_PATH)) {
+				throw new IllegalArgumentException("Not a module, missing JavaScript: " + String.valueOf(source));
+			}
 		}
 
 

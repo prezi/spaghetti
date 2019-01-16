@@ -50,7 +50,7 @@ public final class ModuleBundleFactory {
 	 * @return the created bundle.
 	 */
 	public static ModuleBundle createZip(File outputFile, ModuleBundleParameters params) throws IOException {
-		return DefaultModuleBundle.create(new StructuredZipWriter(outputFile), params);
+		return DefaultModuleBundle.create(new StructuredZipWriter(outputFile), params, false);
 	}
 
 	/**
@@ -61,7 +61,7 @@ public final class ModuleBundleFactory {
 	 * @return the created bundle.
 	 */
 	public static ModuleBundle createDirectory(File outputDirectory, ModuleBundleParameters params) throws IOException {
-		return DefaultModuleBundle.create(new StructuredDirectoryWriter(outputDirectory), params);
+		return DefaultModuleBundle.create(new StructuredDirectoryWriter(outputDirectory), params, false);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public final class ModuleBundleFactory {
 
 		source.init();
 		try {
-			return DefaultModuleBundle.loadInternal(source);
+			return DefaultModuleBundle.loadInternal(source, false);
 		} finally {
 			source.close();
 		}
