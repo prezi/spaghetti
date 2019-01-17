@@ -12,6 +12,8 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 		project.tasks*.name.sort() == [
 				"assemble",
 				"build",
+				"bundleDefJsModule",
+				"bundleDefTestJsModule",
 				"bundleJsModule",
 				"bundleTestJsModule",
 				"check",
@@ -31,8 +33,10 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"verifyDtsForJsModule",
 				"verifyDtsForTestJsModule",
 				"zipJsModule",
+				"zipJsModuleDefinition",
 				"zipJsModuleObfuscated",
 				"zipTestJsModule",
+				"zipTestJsModuleDefinition",
 				"zipTestJsModuleObfuscated",
 		]
 	}
@@ -46,6 +50,8 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 		project.tasks*.name.sort() == [
 				"assemble",
 				"build",
+				"bundleDefJsModule",
+				"bundleDefTestJsModule",
 				"bundleJsModule",
 				"bundleTestJsModule",
 				"check",
@@ -65,8 +71,10 @@ class SpaghettiTypeScriptPluginTest extends Specification {
 				"testJs",
 				"testJsModule",
 				"zipJsModule",
+				"zipJsModuleDefinition",
 				"zipJsModuleObfuscated",
 				"zipTestJsModule",
+				"zipTestJsModuleDefinition",
 				"zipTestJsModuleObfuscated",
 		]
 	}

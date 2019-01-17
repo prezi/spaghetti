@@ -38,8 +38,9 @@ class ModuleBundleTest extends Specification {
 						["com.example.lazy.a", "com.example.lazy.b"],
 						ImmutableSortedMap.copyOf("React": "react", "\$": "jquery"),
 						null,
+						false,
 						ModuleBundleType.SOURCE_AND_DEFINITION
-				), false
+				)
 		)
 
 		then:
@@ -70,7 +71,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(StructuredProcessor)
 
 		when:
-		DefaultModuleBundle.loadInternal(source, false)
+		DefaultModuleBundle.loadInternal(source, ModuleBundleType.SOURCE_AND_DEFINITION)
 
 		then:
 		1 * source.hasFile("META-INF/MANIFEST.MF") >> false
@@ -84,7 +85,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(StructuredProcessor)
 
 		when:
-		def bundle = DefaultModuleBundle.loadInternal(source, false)
+		def bundle = DefaultModuleBundle.loadInternal(source, ModuleBundleType.SOURCE_AND_DEFINITION)
 
 		then:
 		_ * source.hasFile(_) >> true
@@ -115,7 +116,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(StructuredProcessor)
 
 		when:
-		def bundle = DefaultModuleBundle.loadInternal(source, false)
+		def bundle = DefaultModuleBundle.loadInternal(source, ModuleBundleType.SOURCE_AND_DEFINITION)
 
 		then:
 		_ * source.hasFile(_) >> true
