@@ -20,6 +20,7 @@ import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
@@ -95,6 +96,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		project.getTasks().withType(AbstractBundleModuleTask.class).all(new Action<AbstractBundleModuleTask>() {
 			@Override
 			public void execute(AbstractBundleModuleTask task) {
+				task.dependsOn(spaghettiSourceSet.getBuildDependencies());
 				task.getConventionMapping().map("sourceBaseUrl", new Callable<String>() {
 					@Override
 					public String call() throws Exception {

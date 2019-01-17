@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
@@ -269,6 +270,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 				lazyDependentModuleNames,
 				externalDependencies,
 				resourceDir,
-				isLazyLoadable()));
+				isLazyLoadable(),
+				getInputFile() != null ? ModuleBundleType.SOURCE_AND_DEFINITION : ModuleBundleType.DEFINITION_ONLY));
 	}
 }

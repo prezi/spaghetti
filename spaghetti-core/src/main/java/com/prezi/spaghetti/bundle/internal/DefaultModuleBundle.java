@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
@@ -98,13 +99,13 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		return getString(SOURCE_MAP_PATH);
 	}
 
-	public static DefaultModuleBundle create(final StructuredWriter builder, ModuleBundleParameters params, boolean definitionOnly) throws IOException {
+	public static DefaultModuleBundle create(final StructuredWriter builder, ModuleBundleParameters params) throws IOException {
 		Preconditions.checkNotNull(params.name, "name");
 		Preconditions.checkNotNull(params.version, "version");
 		Preconditions.checkNotNull(params.definition, "definition");
-//		if (!definitionOnly) {
-//			Preconditions.checkNotNull(params.javaScript, "javaScript");
-//		}
+		if (ModuleBundleType.SOURCE_AND_DEFINITION.equals(params.moduleBundleType)) {
+			Preconditions.checkNotNull(params.javaScript, "javaScript");
+		}
 
 		if (!isSpaghettiVersionSupported(Version.SPAGHETTI_VERSION)) {
 			throw new IllegalArgumentException(
@@ -189,7 +190,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 	}
 
-	public static DefaultModuleBundle loadInternal(final StructuredProcessor source, boolean definitionOnly) throws IOException {
+	public static DefaultModuleBundle loadInternal(final StructuredProcessor source, ModuleBundleType moduleBundleType) throws IOException {
 		if (!source.hasFile(MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source);
 		}
@@ -198,10 +199,8 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			throw new IllegalArgumentException("Not a module, missing definition: " + String.valueOf(source));
 		}
 
-		if (!definitionOnly && false) {
-			if (!source.hasFile(JAVASCRIPT_PATH)) {
-				throw new IllegalArgumentException("Not a module, missing JavaScript: " + String.valueOf(source));
-			}
+		if (ModuleBundleType.SOURCE_AND_DEFINITION.equals(moduleBundleType) && !source.hasFile(JAVASCRIPT_PATH)) {
+			throw new IllegalArgumentException("Not a module, missing JavaScript: " + String.valueOf(source));
 		}
 
 

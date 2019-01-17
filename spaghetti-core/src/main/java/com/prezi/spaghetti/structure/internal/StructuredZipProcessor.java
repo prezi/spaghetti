@@ -19,7 +19,12 @@ public class StructuredZipProcessor implements StructuredProcessor {
 
 	@Override
 	public void init() throws IOException {
-		this.zipFile = new ZipFile(zip);
+		try {
+			this.zipFile = new ZipFile(zip);
+		} catch (Exception e ) {
+			System.err.println("Opening" + zip.getAbsolutePath());
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

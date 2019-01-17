@@ -2,10 +2,9 @@ package com.prezi.spaghetti.gradle.internal;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleLoader;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -20,15 +19,13 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies) throws IOException {
+	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies, ModuleBundleType moduleBundleType) throws IOException {
 		Set<File> directFiles = Sets.newLinkedHashSet();
 		Set<File> lazyFiles = Sets.newLinkedHashSet();
 		Set<File> transitiveFiles = Sets.newLinkedHashSet();
@@ -45,7 +42,7 @@ public class ModuleBundleLookup {
 			logger.debug("\tTransitive dependencies:\n\t\t{}", Joiner.on("\n\t\t").join(transitiveFiles));
 		}
 
-		return ModuleBundleLoader.loadBundles(directFiles, lazyFiles, transitiveFiles);
+		return ModuleBundleLoader.loadBundles(directFiles, lazyFiles, transitiveFiles, moduleBundleType);
 	}
 
 	private static void addFiles(Project project, Object from, Set<File> directFiles, Set<File> transitiveFiles) throws IOException {

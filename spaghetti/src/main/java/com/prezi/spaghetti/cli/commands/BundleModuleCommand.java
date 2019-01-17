@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.internal.BundleUtils;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
@@ -159,7 +160,8 @@ public class BundleModuleCommand extends AbstractLanguageAwareCommand {
 				lazyDependentModules,
 				externalDependencies,
 				resourcesDirectory,
-				lazyLoadable);
+				lazyLoadable,
+				ModuleBundleType.SOURCE_AND_DEFINITION);
 
 		ModuleBundleFactory.create(type, output, params);
 		return 0;
