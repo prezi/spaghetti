@@ -1,5 +1,6 @@
 package com.prezi.spaghetti.gradle;
 
+import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.AbstractLanguageAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
@@ -15,7 +16,9 @@ import java.util.concurrent.Callable;
 
 public class SpaghettiBasePlugin implements Plugin<Project> {
 	public static final String CONFIGURATION_NAME = "modules";
+	public static final String DEF_CONFIGURATION_NAME = "modulesDef";
 	public static final String LAZY_CONFIGURATION_NAME = "lazyModules";
+	public static final String LAZY_DEF_CONFIGURATION_NAME = "lazyModulesDef";
 	public static final String TEST_CONFIGURATION_NAME = "testModules";
 	public static final String OBFUSCATED_CONFIGURATION_NAME = "modulesObf";
 	public static final String TEST_OBFUSCATED_CONFIGURATION_NAME = "testModulesObf";
@@ -30,7 +33,9 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	@Override
 	public void apply(final Project project) {
 		Configuration defaultConfiguration = project.getConfigurations().maybeCreate(CONFIGURATION_NAME);
+		Configuration defaultModuleDefinitionConfiguration = project.getConfigurations().maybeCreate(DEF_CONFIGURATION_NAME);
 		Configuration defaultLazyConfiguration = project.getConfigurations().maybeCreate(LAZY_CONFIGURATION_NAME);
+		Configuration defaultLazyModuleDefinitionConfiguration = project.getConfigurations().maybeCreate(LAZY_DEF_CONFIGURATION_NAME);
 		Configuration defaultTestConfiguration = project.getConfigurations().maybeCreate(TEST_CONFIGURATION_NAME);
 		defaultTestConfiguration.extendsFrom(defaultConfiguration);
 		Configuration defaultObfuscatedConfiguration = project.getConfigurations().maybeCreate(OBFUSCATED_CONFIGURATION_NAME);
@@ -39,7 +44,9 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 
 		final SpaghettiExtension extension = project.getExtensions().create("spaghetti", SpaghettiExtension.class, project, instantiator,
 				defaultConfiguration,
+				defaultModuleDefinitionConfiguration,
 				defaultLazyConfiguration,
+				defaultLazyModuleDefinitionConfiguration,
 				defaultTestConfiguration,
 				defaultObfuscatedConfiguration,
 				defaultTestObfuscatedConfiguration);
@@ -69,13 +76,21 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 		task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
-				return project.files(project.getExtensions().getByType(SpaghettiExtension.class).getConfiguration());
+				SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
+				Configuration configuration = task instanceof AbstractDefinitionAwareSpaghettiTask
+					? extension.getModuleDefinitionConfiguration()
+					: extension.getConfiguration();
+				return project.files(configuration);
 			}
 		});
 		task.getConventionMapping().map("lazyDependentModules", new Callable<ConfigurableFileCollection>() {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
-				return project.files(project.getExtensions().getByType(SpaghettiExtension.class).getLazyConfiguration());
+				SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
+				Configuration configuration = task instanceof AbstractDefinitionAwareSpaghettiTask
+						? extension.getLazyModuleDefinitionConfiguration()
+						: extension.getLazyConfiguration();
+				return project.files(configuration);
 			}
 		});
 	}

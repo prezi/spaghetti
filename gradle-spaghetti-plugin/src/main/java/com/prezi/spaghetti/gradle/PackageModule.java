@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.packaging.ModulePackageParameters;
 import com.prezi.spaghetti.packaging.ModuleType;
@@ -131,7 +132,7 @@ public class PackageModule extends ConventionTask {
 
 	@SuppressWarnings("UnusedDeclaration")
 	public File getModuleFile() throws IOException {
-		ModuleBundle bundle = ModuleBundleFactory.load(getBundle());
+		ModuleBundle bundle = ModuleBundleFactory.load(getBundle(), ModuleBundleType.DEFINITION_ONLY);
 		return new File(getOutputDirectory(), getType().getPackager().getModuleName(bundle));
 	}
 
@@ -149,7 +150,7 @@ public class PackageModule extends ConventionTask {
 	@SuppressWarnings("UnusedDeclaration")
 	public void makeBundle() throws IOException {
 		getLogger().info("Creating {} module in {}", getType().getDescription(), getOutputDirectory());
-		ModuleBundle bundle = ModuleBundleFactory.load(getBundle());
+		ModuleBundle bundle = ModuleBundleFactory.load(getBundle(), ModuleBundleType.SOURCE_AND_DEFINITION);
 
 		ModulePackageParameters params = new ModulePackageParameters(bundle, getText(getPrefixes()), getText(getSuffixes()));
 		getType().getPackager().packageModuleDirectory(getOutputDirectory(), params);

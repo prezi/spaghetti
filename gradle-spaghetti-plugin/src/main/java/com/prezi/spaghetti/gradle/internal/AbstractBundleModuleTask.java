@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.bundle.ModuleBundle;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters;
@@ -47,6 +48,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
 
 	@InputFile
+	@Optional
 	public File getInputFile() {
 		return inputFile;
 	}
@@ -91,10 +93,12 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	@Optional
 	public File getSourceMap() {
 		if (sourceMap == null) {
-			// This should probably be done with convention mapping
-			File defSourceMap = new File(getInputFile().getParentFile(), getInputFile().getName() + ".map");
-			if (defSourceMap.exists()) {
-				sourceMap = defSourceMap;
+			if (getInputFile() != null) {
+				// This should probably be done with convention mapping
+				File defSourceMap = new File(getInputFile().getParentFile(), getInputFile().getName() + ".map");
+				if (defSourceMap.exists()) {
+					sourceMap = defSourceMap;
+				}
 			}
 		}
 		return sourceMap;
@@ -148,13 +152,13 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	}
 
 	public AbstractBundleModuleTask() {
-		this.getConventionMapping().map("inputFile", new Callable<File>() {
-			@Override
-			public File call() throws Exception {
-				return new File(getProject().getBuildDir(), "module.js");
-			}
-
-		});
+//		this.getConventionMapping().map("inputFile", new Callable<File>() {
+//			@Override
+//			public File call() throws Exception {
+//				return new File(getProject().getBuildDir(), "module.js");
+//			}
+//
+//		});
 	}
 
 	@InputFiles
@@ -217,21 +221,23 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 	@TaskAction
 	public final ModuleBundle bundle() throws IOException, InterruptedException {
 		ModuleConfiguration config = readConfig(getOriginalDefinitionOrOverride());
+		String processedJavaScript = null;
 
-		String inputContents = "";
-		for (File prefixFile : getPrefixes()) {
-			inputContents += Files.asCharSource(prefixFile, Charsets.UTF_8).read();
+		if (getInputFile() != null) {
+			String inputContents = "";
+			for (File prefixFile : getPrefixes()) {
+				inputContents += Files.asCharSource(prefixFile, Charsets.UTF_8).read();
+			}
+			inputContents += Files.asCharSource(getInputFile(), Charsets.UTF_8).read();
+			for (File suffixFile : getSuffixes()) {
+				inputContents += Files.asCharSource(suffixFile, Charsets.UTF_8).read();
+			}
+			DefaultJavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
+			JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
+			List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencies.keySet());
+			processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, inputContents), importedExternalDependencyVars);
+
 		}
-		inputContents += Files.asCharSource(getInputFile(), Charsets.UTF_8).read();
-		for (File suffixFile : getSuffixes()) {
-			inputContents += Files.asCharSource(suffixFile, Charsets.UTF_8).read();
-		}
-
-		JavaScriptBundleProcessor javaScriptBundleProcessor = Generators.getService(JavaScriptBundleProcessor.class, getLanguage());
-		DefaultJavaScriptBundleProcessorParameters processorParams = new DefaultJavaScriptBundleProcessorParameters(config);
-		List<String> importedExternalDependencyVars = ExternalDependencyGenerator.getImportedVarNames(externalDependencies.keySet());
-		String processedJavaScript = InternalGeneratorUtils.bundleJavaScript(javaScriptBundleProcessor.processModuleJavaScript(processorParams, inputContents), importedExternalDependencyVars);
-
 		File sourceMap = getSourceMap();
 		String sourceMapText = sourceMap != null ? Files.asCharSource(sourceMap, Charsets.UTF_8).read() : null;
 
@@ -264,6 +270,7 @@ public class AbstractBundleModuleTask extends AbstractDefinitionAwareSpaghettiTa
 				lazyDependentModuleNames,
 				externalDependencies,
 				resourceDir,
-				isLazyLoadable()));
+				isLazyLoadable(),
+				getInputFile() != null ? ModuleBundleType.SOURCE_AND_DEFINITION : ModuleBundleType.DEFINITION_ONLY));
 	}
 }

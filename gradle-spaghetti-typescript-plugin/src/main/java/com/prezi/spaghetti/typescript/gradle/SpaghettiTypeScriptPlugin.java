@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.internal.DefaultDefinitionFile;
+import com.prezi.spaghetti.gradle.DefinitionOverride;
 import com.prezi.spaghetti.gradle.GenerateHeaders;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
@@ -34,6 +35,7 @@ import com.prezi.typescript.gradle.incubating.LanguageSourceSet;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
@@ -117,6 +119,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			public void execute(final TypeScriptBinary binary) {
 				ClosureConcatenateTask concatTask = null;
 				Callable<File> getDtsFile = null;
+				MergeDtsTask mergeDtsTask = null;
 				if (SpaghettiTypeScriptCommonJsPlugin.isProjectUsingCommonJs(project)) {
 					binary.getCompileTask().setGenerateDeclarations(true);
 					binary.getCompileTask().getConventionMapping().map("commonJsEntryPoints", getCommonsJsEntryPoints);
@@ -129,10 +132,11 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 						}
 					});
 
-					final MergeDtsTask mergeDtsTask = addMergeDtsTask(project, binary);
+					mergeDtsTask = addMergeDtsTask(project, binary);
+					MergeDtsTask finalMergeDtsTask = mergeDtsTask;
 					getDtsFile = new Callable<File>() {
 						public File call() {
-							return mergeDtsTask.getOutputFile();
+							return finalMergeDtsTask.getOutputFile();
 						}
 					};
 				} else {
@@ -149,7 +153,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 						}
 					};
 				}
-				registerSpaghettiModule(project, binary, getDtsFile, concatTask, false, lazy);
+				registerSpaghettiModule(project, binary, getDtsFile, mergeDtsTask, concatTask, false, lazy);
 			}
 		});
 
@@ -192,7 +196,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 					concatTask.getConventionMapping().map("entryPoints", testSourcesEntryPoints);
 
 				}
-				registerSpaghettiModule(project, testBinary, null, concatTask, true, lazy);
+				registerSpaghettiModule(project, testBinary, null, null, concatTask, true, lazy);
 			}
 		});
 
@@ -289,6 +293,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			final Project project,
 			final TypeScriptBinaryBase binary,
 			final Callable<File> getDtsFile,
+			final Task dtsGenerator,
 			final ClosureConcatenateTask concatTask,
 			final boolean testing,
 			final Callable<Boolean> lazy) {
@@ -301,7 +306,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 				return binary.getCompileTask().getConcatenatedOutputFile();
 			}
 		};
-		Callable<DefinitionFile> definitionOverride = new Callable<DefinitionFile>() {
+		DefinitionOverride definitionOverride = new DefinitionOverride(new Callable<DefinitionFile>() {
 			@Override
 			public DefinitionFile call() throws Exception {
 				File file = getDtsFile != null ? getDtsFile.call() : null;
@@ -311,7 +316,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 				return new DefaultDefinitionFile(file);
 			}
-		};
+		}, dtsGenerator);
 		SpaghettiPlugin.registerSpaghettiModuleBinary(project, binary.getName(), javaScriptFile, null, definitionOverride, Arrays.asList(binary), binary, new SpaghettiModuleFactory<TypeScriptBinaryBase>() {
 			@Override
 			public SpaghettiModule create(BinaryNamingScheme namingScheme, SpaghettiModuleData data, TypeScriptBinaryBase original) {

@@ -2,6 +2,7 @@ package com.prezi.spaghetti.gradle;
 
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
 import com.prezi.spaghetti.packaging.ApplicationType;
@@ -162,7 +163,7 @@ public class PackageApplication extends AbstractSpaghettiTask {
 	@TaskAction
 	@SuppressWarnings("UnusedDeclaration")
 	public void makeBundle() throws IOException {
-		ModuleBundleSet bundles = lookupBundles();
+		ModuleBundleSet bundles = lookupBundles(ModuleBundleType.SOURCE_AND_DEFINITION);
 		getLogger().info("Creating {} application in {}", getType().getDescription(), getOutputDirectory());
 		getType().getPackager().packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles,

@@ -39,7 +39,9 @@ public class SpaghettiExtension {
 
 	private String language;
 	private Configuration configuration;
+	private Configuration moduleDefinitionConfiguration;
 	private Configuration lazyConfiguration;
+	private Configuration lazyModuleDefinitionConfiguration;
 	private Configuration testConfiguration;
 	private Configuration obfuscatedConfiguration;
 	private Configuration testObfuscatedConfiguration;
@@ -50,11 +52,13 @@ public class SpaghettiExtension {
 	private String typescriptExportNamespace = null;
 	private boolean lazy = false;
 
-	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultLazyConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
+	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultModuleDefinitionConfiguration, Configuration defaultLazyConfiguration, Configuration defaultLazyModuleDefinitionConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
 		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator);
 		this.configuration = defaultConfiguration;
+		this.moduleDefinitionConfiguration = defaultModuleDefinitionConfiguration;
 		this.lazyConfiguration = defaultLazyConfiguration;
+		this.lazyModuleDefinitionConfiguration = defaultLazyModuleDefinitionConfiguration;
 		this.obfuscatedConfiguration = defaultObfuscatedConfiguration;
 		this.testConfiguration = defaultTestConfiguration;
 		this.testObfuscatedConfiguration = defaultTestObfuscatedConfiguration;
@@ -110,6 +114,18 @@ public class SpaghettiExtension {
 		setConfiguration(configuration);
 	}
 
+	public Configuration getModuleDefinitionConfiguration() {
+		return moduleDefinitionConfiguration;
+	}
+
+	public void setModuleDefinitionConfiguration(Configuration moduleDefinitionConfiguration) {
+		this.moduleDefinitionConfiguration = moduleDefinitionConfiguration;
+	}
+
+	public void defModuleDefinitionConfiguration(Configuration moduleDefinitionConfiguration) {
+		setModuleDefinitionConfiguration(moduleDefinitionConfiguration);
+	}
+
 	public Configuration getLazyConfiguration() {
 		return lazyConfiguration;
 	}
@@ -120,6 +136,18 @@ public class SpaghettiExtension {
 
 	public void lazyConfiguration(Configuration lazyConfiguration) {
 		setLazyConfiguration(lazyConfiguration);
+	}
+
+	public Configuration getLazyModuleDefinitionConfiguration() {
+		return lazyModuleDefinitionConfiguration;
+	}
+
+	public void setLazyModuleDefinitionConfiguration(Configuration lazyModuleDefinitionConfiguration) {
+		this.lazyModuleDefinitionConfiguration = lazyModuleDefinitionConfiguration;
+	}
+
+	public void lazyModuleDefinitionConfiguration(Configuration lazyModuleDefinitionConfiguration) {
+		setLazyModuleDefinitionConfiguration(lazyModuleDefinitionConfiguration);
 	}
 
 	public Configuration getTestConfiguration() {

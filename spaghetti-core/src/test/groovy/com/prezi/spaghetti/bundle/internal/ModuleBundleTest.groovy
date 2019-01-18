@@ -2,6 +2,7 @@ package com.prezi.spaghetti.bundle.internal
 
 import com.google.common.collect.ImmutableSortedMap
 import com.prezi.spaghetti.bundle.ModuleBundle
+import com.prezi.spaghetti.bundle.ModuleBundleType
 import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.internal.Version
@@ -36,7 +37,10 @@ class ModuleBundleTest extends Specification {
 						["com.example.alma", "com.example.bela"],
 						["com.example.lazy.a", "com.example.lazy.b"],
 						ImmutableSortedMap.copyOf("React": "react", "\$": "jquery"),
-						null, false)
+						null,
+						false,
+						ModuleBundleType.SOURCE_AND_DEFINITION
+				)
 		)
 
 		then:
@@ -67,7 +71,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(StructuredProcessor)
 
 		when:
-		DefaultModuleBundle.loadInternal(source)
+		DefaultModuleBundle.loadInternal(source, ModuleBundleType.SOURCE_AND_DEFINITION)
 
 		then:
 		1 * source.hasFile("META-INF/MANIFEST.MF") >> false
@@ -81,7 +85,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(StructuredProcessor)
 
 		when:
-		def bundle = DefaultModuleBundle.loadInternal(source)
+		def bundle = DefaultModuleBundle.loadInternal(source, ModuleBundleType.SOURCE_AND_DEFINITION)
 
 		then:
 		_ * source.hasFile(_) >> true
@@ -112,7 +116,7 @@ class ModuleBundleTest extends Specification {
 		def source = Mock(StructuredProcessor)
 
 		when:
-		def bundle = DefaultModuleBundle.loadInternal(source)
+		def bundle = DefaultModuleBundle.loadInternal(source, ModuleBundleType.SOURCE_AND_DEFINITION)
 
 		then:
 		_ * source.hasFile(_) >> true

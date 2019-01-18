@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.DefinitionLanguage;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.internal.Version;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
@@ -65,7 +66,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 	private static final String RESOURCES_PREFIX = "resources/";
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultModuleBundle.class);
-	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4.", "5.", "6.", "7.", "8.", "9.", "10.", "11."};
+	private static final String[] SUPPORTED_VERSIONS_PREFIX = new String[]{"3.", "4.", "5.", "6.", "7.", "8.", "9.", "10.", "11.", "12."};
 	private static final Attributes.Name MANIFEST_ATTR_SPAGHETTI_VERSION = new Attributes.Name("Spaghetti-Version");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_NAME = new Attributes.Name("Module-Name");
 	private static final Attributes.Name MANIFEST_ATTR_MODULE_VERSION = new Attributes.Name("Module-Version");
@@ -102,7 +103,9 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		Preconditions.checkNotNull(params.name, "name");
 		Preconditions.checkNotNull(params.version, "version");
 		Preconditions.checkNotNull(params.definition, "definition");
-		Preconditions.checkNotNull(params.javaScript, "javaScript");
+		if (ModuleBundleType.SOURCE_AND_DEFINITION.equals(params.moduleBundleType)) {
+			Preconditions.checkNotNull(params.javaScript, "javaScript");
+		}
 
 		if (!isSpaghettiVersionSupported(Version.SPAGHETTI_VERSION)) {
 			throw new IllegalArgumentException(
@@ -145,35 +148,38 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			// Store definition
 			builder.appendFile(DEFINITION_PATH, params.definition);
 
-			// Store module itself
-			if (params.format == ModuleFormat.Wrapperless) {
-				builder.appendFile(JAVASCRIPT_PATH, params.javaScript);
-			} else {
-				String javaScript = new UmdModuleWrapper().wrap(
-						new ModuleWrapperParameters(
-								params.name,
-								params.version,
-								params.javaScript,
-								params.dependentModules,
-								params.lazyDependentModules,
-								params.externalDependencies)
-				);
-				builder.appendFile(JAVASCRIPT_PATH, javaScript);
-			}
+			if (params.javaScript != null) {
 
-			// Store sourcemap
-			if (params.sourceMap != null) {
-				builder.appendFile(SOURCE_MAP_PATH, params.sourceMap);
-			}
+				// Store module itself
+				if (params.format == ModuleFormat.Wrapperless) {
+					builder.appendFile(JAVASCRIPT_PATH, params.javaScript);
+				} else {
+					String javaScript = new UmdModuleWrapper().wrap(
+							new ModuleWrapperParameters(
+									params.name,
+									params.version,
+									params.javaScript,
+									params.dependentModules,
+									params.lazyDependentModules,
+									params.externalDependencies)
+					);
+					builder.appendFile(JAVASCRIPT_PATH, javaScript);
+				}
 
-			// Store resources
-			final File resourceDir = params.resourcesDirectory;
-			if (resourceDir != null && resourceDir.exists()) {
-				for (File resourceFile : FileUtils.listFiles(resourceDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
-					String resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString();
-					logger.debug("Adding resource {}", resourcePath);
-					builder.appendFile(resourcePath, resourceFile);
-					resourcePaths.add(resourcePath);
+				// Store sourcemap
+				if (params.sourceMap != null) {
+					builder.appendFile(SOURCE_MAP_PATH, params.sourceMap);
+				}
+
+				// Store resources
+				final File resourceDir = params.resourcesDirectory;
+				if (resourceDir != null && resourceDir.exists()) {
+					for (File resourceFile : FileUtils.listFiles(resourceDir, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE)) {
+						String resourcePath = RESOURCES_PREFIX + resourceDir.toURI().relativize(resourceFile.toURI()).toString();
+						logger.debug("Adding resource {}", resourcePath);
+						builder.appendFile(resourcePath, resourceFile);
+						resourcePaths.add(resourcePath);
+					}
 				}
 			}
 
@@ -184,7 +190,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 		}
 	}
 
-	public static DefaultModuleBundle loadInternal(final StructuredProcessor source) throws IOException {
+	public static DefaultModuleBundle loadInternal(final StructuredProcessor source, ModuleBundleType moduleBundleType) throws IOException {
 		if (!source.hasFile(MANIFEST_MF_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing manifest: " + source);
 		}
@@ -193,7 +199,7 @@ public class DefaultModuleBundle extends AbstractModuleBundle {
 			throw new IllegalArgumentException("Not a module, missing definition: " + String.valueOf(source));
 		}
 
-		if (!source.hasFile(JAVASCRIPT_PATH)) {
+		if (ModuleBundleType.SOURCE_AND_DEFINITION.equals(moduleBundleType) && !source.hasFile(JAVASCRIPT_PATH)) {
 			throw new IllegalArgumentException("Not a module, missing JavaScript: " + String.valueOf(source));
 		}
 

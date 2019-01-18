@@ -71,6 +71,16 @@ public final class ModuleBundleFactory {
 	 * @return the loaded bundle.
 	 */
 	public static ModuleBundle load(final File input) throws IOException {
+		return load(input, ModuleBundleType.SOURCE_AND_DEFINITION);
+	}
+	/**
+	 * Loads an existing module bundle from a ZIP file or an exploded directory.
+	 *
+	 * @param input the location of the bundle.
+	 * @param moduleBundleType the type of the module bundle
+	 * @return the loaded bundle.
+	 */
+	public static ModuleBundle load(final File input, ModuleBundleType moduleBundleType) throws IOException {
 		if (!input.exists()) {
 			throw new IllegalArgumentException("Module not found: " + String.valueOf(input));
 		}
@@ -88,7 +98,7 @@ public final class ModuleBundleFactory {
 
 		source.init();
 		try {
-			return DefaultModuleBundle.loadInternal(source);
+			return DefaultModuleBundle.loadInternal(source, moduleBundleType);
 		} finally {
 			source.close();
 		}

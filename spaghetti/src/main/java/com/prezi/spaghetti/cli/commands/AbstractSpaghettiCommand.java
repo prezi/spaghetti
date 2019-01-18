@@ -2,6 +2,7 @@ package com.prezi.spaghetti.cli.commands;
 
 import com.google.common.collect.Lists;
 import com.prezi.spaghetti.bundle.ModuleBundleSet;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleLoader;
 import io.airlift.command.Option;
 
@@ -23,6 +24,6 @@ public abstract class AbstractSpaghettiCommand extends AbstractCommand {
 	protected List<File> transitiveDependencies = Lists.newArrayList();
 
 	protected ModuleBundleSet lookupBundles() throws IOException {
-		return ModuleBundleLoader.loadBundles(directDependencies, lazyDependencies, transitiveDependencies);
+		return ModuleBundleLoader.loadBundles(directDependencies, lazyDependencies, transitiveDependencies, ModuleBundleType.SOURCE_AND_DEFINITION);
 	}
 }

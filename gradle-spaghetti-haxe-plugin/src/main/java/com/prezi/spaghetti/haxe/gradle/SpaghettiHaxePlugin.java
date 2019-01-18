@@ -12,6 +12,7 @@ import com.prezi.haxe.gradle.HaxeTestBinary;
 import com.prezi.haxe.gradle.incubating.FunctionalSourceSet;
 import com.prezi.haxe.gradle.nodetest.HaxeNodeTestCompile;
 import com.prezi.spaghetti.bundle.ModuleBundleFactory;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.gradle.PackageApplication;
 import com.prezi.spaghetti.gradle.SpaghettiBasePlugin;
 import com.prezi.spaghetti.gradle.SpaghettiPlugin;
@@ -166,7 +167,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 				appBundleTask.getConventionMapping().map("mainModule", new Callable<String>() {
 					@Override
 					public String call() throws Exception {
-						return ModuleBundleFactory.load(moduleBinary.getBundleTask().getOutputDirectory()).getName();
+						return ModuleBundleFactory.load(moduleBinary.getBundleTask().getOutputDirectory(), ModuleBundleType.SOURCE_AND_DEFINITION).getName();
 					}
 				});
 				appBundleTask.getConventionMapping().map("applicationName", Callables.returning(testBinary.getName() + "_test.js"));

@@ -7,6 +7,7 @@ import com.prezi.spaghetti.ast.internal.parser.AstParserException
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.bundle.ModuleBundle
 import com.prezi.spaghetti.bundle.ModuleBundleFactory
+import com.prezi.spaghetti.bundle.ModuleBundleType
 import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
@@ -244,7 +245,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 				[],
 				externalDependencies,
 				null,
-				false
+				false,
+				ModuleBundleType.SOURCE_AND_DEFINITION
 		));
 	}
 

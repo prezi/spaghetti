@@ -3,6 +3,7 @@ package com.prezi.spaghetti.bundle.internal;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.ImmutableSortedSet;
 import com.prezi.spaghetti.bundle.DefinitionLanguage;
+import com.prezi.spaghetti.bundle.ModuleBundleType;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 
 import java.io.File;
@@ -28,8 +29,9 @@ public class ModuleBundleParameters {
 	public final SortedMap<String, String> externalDependencies;
 	public final Boolean lazyLoadable;
 	public final File resourcesDirectory;
+	public final ModuleBundleType moduleBundleType;
 
-	public ModuleBundleParameters(String name, String definition, DefinitionLanguage definitionLang, String version, ModuleFormat format, String sourceBaseUrl, String javaScript, String sourceMap, Collection<String> dependentModules, Collection<String> lazyDependentModules, Map<String, String> externalDependencies, File resourcesDirectory, Boolean lazyLoadable) {
+	public ModuleBundleParameters(String name, String definition, DefinitionLanguage definitionLang, String version, ModuleFormat format, String sourceBaseUrl, String javaScript, String sourceMap, Collection<String> dependentModules, Collection<String> lazyDependentModules, Map<String, String> externalDependencies, File resourcesDirectory, Boolean lazyLoadable, ModuleBundleType moduleBundleType) {
 		this.name = name;
 		this.definition = definition;
 		this.definitionLang = definitionLang;
@@ -43,5 +45,6 @@ public class ModuleBundleParameters {
 		this.externalDependencies = ImmutableSortedMap.copyOf(externalDependencies);
 		this.resourcesDirectory = resourcesDirectory;
 		this.lazyLoadable = lazyLoadable;
+		this.moduleBundleType = moduleBundleType;
 	}
 }
