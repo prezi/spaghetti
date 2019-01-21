@@ -12,11 +12,15 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.prezi.spaghetti.gradle.internal.TextFileUtils.getText;
 
@@ -162,11 +166,31 @@ public class PackageApplication extends AbstractSpaghettiTask {
 
 	@TaskAction
 	@SuppressWarnings("UnusedDeclaration")
-	public void makeBundle() throws IOException {
-		ModuleBundleSet bundles = lookupBundles(ModuleBundleType.SOURCE_AND_DEFINITION);
+	public void makeBundle(IncrementalTaskInputs inputs) throws IOException {
+		ModuleBundleSet outOfDateBundles = null;
+		if (inputs.isIncremental()) {
+			Set<File> filterFiles = new HashSet<>();
+			AtomicBoolean fallbackToNonIncremental = new AtomicBoolean(false);
+			inputs.outOfDate(outOfDate -> {
+				if (!outOfDate.isRemoved()) {
+					filterFiles.add(outOfDate.getFile());
+				} else {
+					fallbackToNonIncremental.set(true);
+				}
+			});
+			inputs.removed(removed -> {
+				fallbackToNonIncremental.set(true);
+			});
+			if (!fallbackToNonIncremental.get()) {
+				outOfDateBundles = lookupBundles(ModuleBundleType.SOURCE_AND_DEFINITION, filterFiles);
+			}
+		}
+		ModuleBundleSet bundles = lookupBundles(ModuleBundleType.SOURCE_AND_DEFINITION, null);
+
 		getLogger().info("Creating {} application in {}", getType().getDescription(), getOutputDirectory());
 		getType().getPackager().packageApplicationDirectory(getOutputDirectory(), new ApplicationPackageParameters(
 				bundles,
+				outOfDateBundles,
 				getApplicationName(),
 				getMainModule(),
 				getExecute(),

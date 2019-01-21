@@ -15,7 +15,9 @@ import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 import java.util.SortedSet;
 
 public class AbstractSpaghettiTask extends ConventionTask {
@@ -45,7 +47,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 	@SuppressWarnings("UnusedDeclaration")
 	protected SortedSet<String> getDirectDependentBundleNames() throws IOException {
 		SortedSet<String> directBundleNames = Sets.newTreeSet();
-		for (ModuleBundle bundle : lookupBundles(ModuleBundleType.DEFINITION_ONLY).getDirectBundles()) {
+		for (ModuleBundle bundle : lookupBundles(ModuleBundleType.DEFINITION_ONLY, null).getDirectBundles()) {
 			directBundleNames.add(bundle.getName());
 		}
 		return directBundleNames;
@@ -106,9 +108,11 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		dependentModule(additionalDependentModules);
 	}
 
-	protected ModuleBundleSet lookupBundles(ModuleBundleType moduleBundleType) throws IOException {
-		if (dependentBundles == null) {
-			dependentBundles = ModuleBundleLookup.lookup(getProject(), getDependentModules(), getLazyDependentModules(), moduleBundleType);
+	protected ModuleBundleSet lookupBundles(ModuleBundleType moduleBundleType, Set<File> filterFilesForIncrementalTask) throws IOException {
+		if (dependentBundles == null && filterFilesForIncrementalTask == null) {
+			dependentBundles = ModuleBundleLookup.lookup(getProject(), getDependentModules(), getLazyDependentModules(), moduleBundleType, filterFilesForIncrementalTask);
+		} else {
+			return ModuleBundleLookup.lookup(getProject(), getDependentModules(), getLazyDependentModules(), moduleBundleType, filterFilesForIncrementalTask);
 		}
 		return dependentBundles;
 	}
@@ -121,7 +125,7 @@ public class AbstractSpaghettiTask extends ConventionTask {
 			throw new RuntimeException(e);
 		}
 
-		ModuleBundleSet bundles = lookupBundles(ModuleBundleType.DEFINITION_ONLY);
+		ModuleBundleSet bundles = lookupBundles(ModuleBundleType.DEFINITION_ONLY, null);
 		ModuleConfiguration config = ModuleConfigurationParser.parse(
 				definitionSource,
 				definition.getNamespaceOverride(),

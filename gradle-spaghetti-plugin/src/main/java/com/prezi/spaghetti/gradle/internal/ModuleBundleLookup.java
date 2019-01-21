@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies, ModuleBundleType moduleBundleType) throws IOException {
+	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies, ModuleBundleType moduleBundleType, Set<File> filterFilesForIncrementalTask) throws IOException {
 		Set<File> directFiles = Sets.newLinkedHashSet();
 		Set<File> lazyFiles = Sets.newLinkedHashSet();
 		Set<File> transitiveFiles = Sets.newLinkedHashSet();
@@ -34,6 +34,12 @@ public class ModuleBundleLookup {
 		addFiles(project, lazyDependencies, lazyFiles, transitiveFiles);
 
 		transitiveFiles.removeAll(lazyFiles);
+
+		if (filterFilesForIncrementalTask != null) {
+			directFiles.retainAll(filterFilesForIncrementalTask);
+			lazyFiles.retainAll(filterFilesForIncrementalTask);
+			transitiveFiles.retainAll(filterFilesForIncrementalTask);
+		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading modules from:");
