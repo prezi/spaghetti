@@ -176,7 +176,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def packageDir = new File(rootDir, "package")
 		// Package the application
 		ApplicationPackageParameters applicationPackagingParams = new ApplicationPackageParameters(
-				new DefaultModuleBundleSet([appBundle] as Set, [] as Set, [moduleBundle, testDependencyBundle] as Set),
+				new DefaultModuleBundleSet([appBundle] as Set, [] as Set, [moduleBundle, testDependencyBundle] as Set), null,
 				"test.js",
 				appModule.name,
 				true,
