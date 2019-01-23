@@ -28,8 +28,13 @@ declare module a.b.c {
 
     type XType = number | string;
 
+
+
     const ii:XInterface;
     function jj(xparam: number, xparam: string): { kk: number, ll: string };
+
+    export type ElementReference = string | XInterface | {m: string} | {n?: string} | {o: "viewport"};
+    export type FTypes = (no: string) => number;
 }
         """
         Set<String> symbols = TypeScriptAstParserService.collectExportedSymbols(dir, compilerPath, content, logger);
@@ -37,7 +42,7 @@ declare module a.b.c {
         then:
         def l = symbols.toList()
         l.sort()
-        l.join(",") == "a,b,c,d,e,f,g,hh,ii,jj,kk,ll"
+        l.join(",") == "a,b,c,d,e,f,g,hh,ii,jj,kk,ll,m,n,o"
     }
 
     def "classes not allowed"() {
