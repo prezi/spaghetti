@@ -427,22 +427,31 @@ function isNodeExported(node: ts.Node): boolean {
 
 
 function getProtectedIdentifiers(sourceFile: ts.SourceFile) {
-    const idents: { [key: string]: string } = {};
+    const idents: Set<string> = new Set();
 
     function visitAst(node: ts.Node) {
         switch (node.kind) {
             case ts.SyntaxKind.Parameter:
             case ts.SyntaxKind.TypeParameter:
             case ts.SyntaxKind.TypeReference:
+                break;
+
             case ts.SyntaxKind.TypeAliasDeclaration:
+                ts.forEachChild((node as ts.TypeAliasDeclaration).type, visitAst);
+                break;
+
+            case ts.SyntaxKind.TypeLiteral:
+                const literal = node as ts.TypeLiteralNode;
+                literal.members.forEach(member => {
+                    ts.forEachChild(member, visitAst);
+                });
                 break;
 
             case ts.SyntaxKind.Identifier:
                 if (node.parent && node.parent.kind === ts.SyntaxKind.InterfaceDeclaration) {
                     break;
                 }
-                let text = (node as ts.Identifier).text;
-                idents[text] = text;
+                idents.add((node as ts.Identifier).text)
                 break;
 
             default:
@@ -452,7 +461,7 @@ function getProtectedIdentifiers(sourceFile: ts.SourceFile) {
 
     ts.forEachChild(sourceFile, visitAst);
 
-    let list = Object.keys(idents);
+    let list = Array.from(idents);
     list.sort();
     return list;
 }
