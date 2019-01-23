@@ -21,6 +21,7 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.function.Predicate;
 
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
@@ -36,9 +37,22 @@ public class ModuleBundleLookup {
 		transitiveFiles.removeAll(lazyFiles);
 
 		if (filterFilesForIncrementalTask != null) {
-			directFiles.retainAll(filterFilesForIncrementalTask);
-			lazyFiles.retainAll(filterFilesForIncrementalTask);
-			transitiveFiles.retainAll(filterFilesForIncrementalTask);
+			Predicate<File> removePredicate = file -> {
+				if (filterFilesForIncrementalTask.contains(file)) {
+					return false;
+				}
+				if (file.isDirectory()) {
+					for (File filterFile : filterFilesForIncrementalTask) {
+						if (filterFile.toPath().startsWith(file.toPath())) {
+							return false;
+						}
+					}
+				}
+				return true;
+			};
+			directFiles.removeIf(removePredicate);
+			lazyFiles.removeIf(removePredicate);
+			transitiveFiles.removeIf(removePredicate);
 		}
 
 		if (logger.isDebugEnabled()) {
