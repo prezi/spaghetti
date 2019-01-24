@@ -19,19 +19,21 @@ stage("flow") {
 		ansiColor('xterm') {
 			def haxeHome = setupHaxe()
 
-			withEnv(["PATH+=$haxeHome"]) {
-				if (env.BRANCH_NAME == "master") {
-					sh "echo '<<' $PATH '>>'; haxe -version; ./gradlew version clean check install publish -Prelease --stacktrace"
-				} else {
-					sh "./gradlew assemble check"
+			try {
+				withEnv(["PATH+=$haxeHome"]) {
+					if (env.BRANCH_NAME == "master") {
+						sh "./gradlew version clean check install publish -Prelease --stacktrace"
+					} else {
+						sh "./gradlew assemble check"
+					}
 				}
+			} finally {
+				archiveArtifacts artifacts: 'spaghetti-haxe-support/build/reports/**'
+				archiveArtifacts artifacts: 'spaghetti-js-support/build/reports/**'
+				archiveArtifacts artifacts: 'spaghetti-core/build/reports/**'
+				archiveArtifacts artifacts: 'spaghetti-typescript-support/build/reports/**'
+				archiveArtifacts artifacts: 'gradle-spaghetti-typescript-plugin/build/reports/**'
 			}
-
-			archiveArtifacts artifacts: 'spaghetti-haxe-support/build/reports/**'
-			archiveArtifacts artifacts: 'spaghetti-js-support/build/reports/**'
-			archiveArtifacts artifacts: 'spaghetti-core/build/reports/**'
-			archiveArtifacts artifacts: 'spaghetti-typescript-support/build/reports/**'
-			archiveArtifacts artifacts: 'gradle-spaghetti-typescript-plugin/build/reports/**'
 		}
 	}
 }
