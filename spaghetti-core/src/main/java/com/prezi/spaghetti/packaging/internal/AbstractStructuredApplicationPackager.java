@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
-import com.prezi.spaghetti.bundle.ModuleBundleSet;
 import com.prezi.spaghetti.bundle.ModuleFormat;
 import com.prezi.spaghetti.bundle.internal.ModuleBundleInternal;
 import com.prezi.spaghetti.packaging.ApplicationPackageParameters;
@@ -30,8 +29,8 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 	@Override
 	public void packageApplicationInternal(StructuredWriter writer, final ApplicationPackageParameters params) throws IOException {
 		StructuredAppender modulesAppender = writer.subAppender(getModulesDirectory());
-		ModuleBundleSet bundlesToPackage = params.outOfDateBundlesForIncrementalTasks != null ? params.outOfDateBundlesForIncrementalTasks : params.bundles;
-		for (ModuleBundle bundle : bundlesToPackage) {
+
+		for (ModuleBundle bundle : params.bundles) {
 			// Extract resources
 			StructuredAppender moduleAppender = modulesAppender.subAppender(bundle.getName());
 			((ModuleBundleInternal) bundle).extract(moduleAppender, EnumSet.of(ModuleBundleElement.RESOURCES, ModuleBundleElement.SOURCE_MAP));

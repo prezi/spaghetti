@@ -15,6 +15,8 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Command(name = "package", description = "Package an application")
@@ -72,7 +74,6 @@ public class PackageApplicationCommand extends AbstractSpaghettiCommand {
 
 		ApplicationPackageParameters params = new ApplicationPackageParameters(
 				bundles,
-				null,
 				name != null ? name + ".js" : "application.js",
 				mainModule,
 				execute != null ? execute : mainModule != null,
