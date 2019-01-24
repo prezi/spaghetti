@@ -20,7 +20,7 @@ stage("flow") {
 			def haxeHome = setupHaxe()
 
 			try {
-				withEnv(["PATH+=$haxeHome"]) {
+				withEnv(["PATH+=$haxeHome", "HAXE_STD_PATH=$haxeHome/std"]) {
 					if (env.BRANCH_NAME == "master") {
 						sh "./gradlew version clean check install publish -Prelease --stacktrace"
 					} else {
