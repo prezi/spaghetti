@@ -37,7 +37,7 @@ stage("flow") {
 			try {
 				withEnv(["PATH+=$tsBin", "PATH+=$haxeHome", "HAXE_STD_PATH=$haxeHome/std"]) {
 					if (env.BRANCH_NAME == "master") {
-						sh "./gradlew version clean check install publish -Prelease --stacktrace"
+						sh "echo $PATH; ./gradlew version clean check install publish -Prelease --stacktrace"
 					} else {
 						sh "./gradlew assemble check"
 					}
