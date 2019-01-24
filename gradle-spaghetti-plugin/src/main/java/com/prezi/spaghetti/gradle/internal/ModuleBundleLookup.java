@@ -21,12 +21,11 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 
 public class ModuleBundleLookup {
 	private static final Logger logger = LoggerFactory.getLogger(ModuleBundleLookup.class);
 
-	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies, ModuleBundleType moduleBundleType, Set<File> filterFilesForIncrementalTask) throws IOException {
+	public static ModuleBundleSet lookup(Project project, Object dependencies, Object lazyDependencies, ModuleBundleType moduleBundleType) throws IOException {
 		Set<File> directFiles = Sets.newLinkedHashSet();
 		Set<File> lazyFiles = Sets.newLinkedHashSet();
 		Set<File> transitiveFiles = Sets.newLinkedHashSet();
@@ -35,25 +34,6 @@ public class ModuleBundleLookup {
 		addFiles(project, lazyDependencies, lazyFiles, transitiveFiles);
 
 		transitiveFiles.removeAll(lazyFiles);
-
-		if (filterFilesForIncrementalTask != null) {
-			Predicate<File> removePredicate = file -> {
-				if (filterFilesForIncrementalTask.contains(file)) {
-					return false;
-				}
-				if (file.isDirectory()) {
-					for (File filterFile : filterFilesForIncrementalTask) {
-						if (filterFile.toPath().startsWith(file.toPath())) {
-							return false;
-						}
-					}
-				}
-				return true;
-			};
-			directFiles.removeIf(removePredicate);
-			lazyFiles.removeIf(removePredicate);
-			transitiveFiles.removeIf(removePredicate);
-		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading modules from:");
