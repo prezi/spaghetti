@@ -19,9 +19,9 @@ stage("flow") {
 		ansiColor('xterm') {
 			def haxeHome = setupHaxe()
 
-			withEnv(["PATH+=/$haxeHome"]) {
+			withEnv(["PATH+=$haxeHome"]) {
 				if (env.BRANCH_NAME == "master") {
-					sh "echo $PATH; ./gradlew version clean check install publish -Prelease --stacktrace"
+					sh "echo '<<' $PATH '>>'; haxe -version; ./gradlew version clean check install publish -Prelease --stacktrace"
 				} else {
 					sh "./gradlew assemble check"
 				}
