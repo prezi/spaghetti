@@ -15,6 +15,7 @@ stage("flow") {
 			setupHaxe()
 
 			if (env.BRANCH_NAME == "master") {
+				sh "echo $PATH; haxe -version"
 				sh "./gradlew version clean check install publish -Prelease --stacktrace"
 			} else {
 				sh "./gradlew assemble check"
