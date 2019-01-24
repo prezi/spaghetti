@@ -35,7 +35,7 @@ stage("flow") {
 			def tsBin = setupTypescript()
 
 			try {
-				withEnv(["PATH+=$tsBin", "PATH+=$haxeHome", "HAXE_STD_PATH=$haxeHome/std"]) {
+				withEnv(["PATH+=$haxeHome:$tsBin", "HAXE_STD_PATH=$haxeHome/std"]) {
 					if (env.BRANCH_NAME == "master") {
 						sh "echo $PATH; ./gradlew version clean check install publish -Prelease --stacktrace"
 					} else {
