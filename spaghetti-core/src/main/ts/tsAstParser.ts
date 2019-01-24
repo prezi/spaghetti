@@ -475,9 +475,14 @@ function getSourceFile(filename: string) {
     let parseErrors: Array<ts.Diagnostic> = (sourceFile as any).parseDiagnostics;
     if (parseErrors && parseErrors.length > 0) {
         parseErrors.forEach((error: ts.Diagnostic) => {
-            let { line, character } = sourceFile.getLineAndCharacterOfPosition(error.start);
             let message = ts.flattenDiagnosticMessageText(error.messageText, "\n");
-            let output = `${sourceFile.fileName} (${line + 1},${character + 1}): ${message}`;
+            let output;
+            if (error.start) {
+                let { line, character } = sourceFile.getLineAndCharacterOfPosition(error.start);
+                output = `${sourceFile.fileName} (${line + 1},${character + 1}): ${message}`;
+            } else {
+                output = `${sourceFile.fileName}: ${message}`;
+            }
             process.stderr.write(output + '\n');
         });
         process.exit(2);
