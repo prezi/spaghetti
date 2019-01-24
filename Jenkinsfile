@@ -13,14 +13,29 @@ haxe -version
 	return haxeHome
 }
 
+def setupTypescript = { ->
+	def script = '''
+npm install typescript@3.2.4
+export TS_BIN=$PWD/node_modules/typescript/bin
+export PATH=$PATH:$TS_BIN
+echo TS_BIN=$TS_BIN
+tsc --version
+'''
+	def output = sh script: script, returnStdout: true
+	def matcher = (output =~ /TS_BIN=(.*)/)
+	tsBin = matcher[0][1]
+	return tsBin
+}
+
 stage("flow") {
 	node('boxfish-xenial-executor-small') {
 		checkout scm
 		ansiColor('xterm') {
 			def haxeHome = setupHaxe()
+			def tsBin = setupTypescript()
 
 			try {
-				withEnv(["PATH+=$haxeHome", "HAXE_STD_PATH=$haxeHome/std"]) {
+				withEnv(["PATH+=$tsBin", "PATH+=$haxeHome", "HAXE_STD_PATH=$haxeHome/std"]) {
 					if (env.BRANCH_NAME == "master") {
 						sh "./gradlew version clean check install publish -Prelease --stacktrace"
 					} else {
