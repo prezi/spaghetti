@@ -37,9 +37,11 @@ stage("flow") {
 			try {
 				withEnv(["PATH+=$haxeHome:$tsBin", "HAXE_STD_PATH=$haxeHome/std"]) {
 					if (env.BRANCH_NAME == "master") {
-						sh "echo $PATH; ./gradlew version clean check install publish -Prelease --stacktrace"
+						withCredentials([usernamePassword(credentialsId: "artifactory-upload", usernameVariable: "USER", passwordVariable: "PASS")]) {
+							sh './gradlew version clean check install publish -Prelease -PnexusUser=$USER -PnexusPassword=$PASS --stacktrace'
+						}
 					} else {
-						sh "./gradlew assemble check"
+						sh './gradlew assemble check'
 					}
 				}
 			} finally {
