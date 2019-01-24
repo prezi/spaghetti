@@ -28,11 +28,11 @@ stage("flow") {
 					}
 				}
 			} finally {
-				archiveArtifacts artifacts: 'spaghetti-haxe-support/build/reports/**'
-				archiveArtifacts artifacts: 'spaghetti-js-support/build/reports/**'
-				archiveArtifacts artifacts: 'spaghetti-core/build/reports/**'
-				archiveArtifacts artifacts: 'spaghetti-typescript-support/build/reports/**'
-				archiveArtifacts artifacts: 'gradle-spaghetti-typescript-plugin/build/reports/**'
+				archiveArtifacts artifacts: 'spaghetti-haxe-support/build/reports/**', allowEmptyArchive: true
+				archiveArtifacts artifacts: 'spaghetti-js-support/build/reports/**', allowEmptyArchive: true
+				archiveArtifacts artifacts: 'spaghetti-core/build/reports/**', allowEmptyArchive: true
+				archiveArtifacts artifacts: 'spaghetti-typescript-support/build/reports/**', allowEmptyArchive: true
+				archiveArtifacts artifacts: 'gradle-spaghetti-typescript-plugin/build/reports/**', allowEmptyArchive: true
 			}
 		}
 	}
