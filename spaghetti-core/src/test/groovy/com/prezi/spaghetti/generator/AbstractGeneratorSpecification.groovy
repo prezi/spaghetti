@@ -50,6 +50,10 @@ class AbstractGeneratorSpecification extends Specification {
 		}
 	}
 
+	protected String getNamespace() {
+		return "com.example.test"
+	}
+
 	private static FQName qName(String qualifiedName, String name) {
 		if (qualifiedName != null) {
 			return DefaultFQName.fromString(qualifiedName)
@@ -60,7 +64,10 @@ class AbstractGeneratorSpecification extends Specification {
 
 	private TypeResolver mockResolver(TypeNode... typeNodes) {
 		def types = [:]
-		typeNodes.each { types.put it.name, it}
+		typeNodes.each {
+			types.put it.name, it
+			types.put it.qualifiedName.fullyQualifiedName, it
+		}
 		def resolver = Mock(TypeResolver)
 		resolver.resolveType(_) >> { TypeResolutionContext context ->
 			def name = context.name

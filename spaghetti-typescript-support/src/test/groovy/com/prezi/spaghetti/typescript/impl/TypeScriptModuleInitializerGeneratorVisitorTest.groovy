@@ -17,7 +17,7 @@ module com.example.test {
 	doStatic(x: int): int;
 }
 """
-		def result = parseAndVisitModule(definition, new TypeScriptModuleInitializerGeneratorVisitor())
+		def result = parseAndVisitModule(definition, new TypeScriptModuleInitializerGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == """export function __createSpaghettiModule():any {

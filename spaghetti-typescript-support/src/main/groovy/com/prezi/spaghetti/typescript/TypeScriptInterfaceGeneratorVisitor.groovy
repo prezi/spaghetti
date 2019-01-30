@@ -1,7 +1,9 @@
 package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.InterfaceNode
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class TypeScriptInterfaceGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
 	@Override

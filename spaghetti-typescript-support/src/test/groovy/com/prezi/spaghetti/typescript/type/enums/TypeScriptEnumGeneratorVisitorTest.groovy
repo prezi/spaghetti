@@ -32,7 +32,7 @@ enum MyEnum {
 
 	def "generate local definition"() {
 
-		def result = parseAndVisitEnum(definition, new TypeScriptEnumGeneratorVisitor())
+		def result = parseAndVisitEnum(definition, new TypeScriptEnumGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == localExpected
@@ -40,7 +40,7 @@ enum MyEnum {
 
 	def "generate proxied definition for UMD format"() {
 
-		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test", ModuleFormat.UMD))
+		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == dependentExpected
@@ -48,7 +48,7 @@ enum MyEnum {
 
 	def "generate proxied definition for wrapperless format"() {
 
-		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor("test", ModuleFormat.Wrapperless))
+		def result = parseAndVisitEnum(definition, new TypeScriptDependentEnumGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == dependentExpected

@@ -15,10 +15,10 @@ interface MyInterface<X> extends Parent<X> {
 	hello<T, U>(f: (X, () -> int) -> U): T[];
 }
 """
-		def result = parseAndVisitInterface(definition, new TypeScriptInterfaceGeneratorVisitor(), mockInterface("Parent", mockTypeParameter()))
+		def result = parseAndVisitInterface(definition, new TypeScriptInterfaceGeneratorVisitor(getNamespace()), mockInterface("Parent", mockTypeParameter()))
 
 		expect:
-		result == """export interface MyInterface<X> extends com.example.test.Parent<X> {
+		result == """export interface MyInterface<X> extends Parent<X> {
 	/**
 	 * Does something.
 	 */

@@ -60,9 +60,9 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	{
 		if (module.source.definitionLanguage == DefinitionLanguage.Spaghetti) {
 			def contents = ""
-			contents += new TypeScriptDefinitionIteratorVisitor().visit(module)
-			contents += new TypeScriptModuleProxyGeneratorVisitor().visit(module)
-			contents += new TypeScriptModuleInitializerGeneratorVisitor().visit(module)
+			contents += new TypeScriptDefinitionIteratorVisitor(module.name).visit(module)
+			contents += new TypeScriptModuleProxyGeneratorVisitor(module.name).visit(module)
+			contents += new TypeScriptModuleInitializerGeneratorVisitor(module.name).visit(module)
 			TypeScriptUtils.createSourceFile(header, module, module.alias, outputDirectory, contents)
 		} else if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
 			// Local module does not need to include the module.d.ts.
@@ -86,24 +86,24 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	}
 
 	private static void generateSpaghettiDependentModule(EntityWithModuleMetaData<ModuleNode> module, File outputDirectory, String header, boolean generateAccessor) {
-		def contents = "declare module ${module.entity.name} {\n"
+		def contents = ""
 		if (generateAccessor) {
-			contents += new TypeScriptModuleAccessorGeneratorVisitor(module.format).visit(module.entity)
-			contents += new TypeScriptDefinitionIteratorVisitor() {
+			contents += new TypeScriptModuleAccessorGeneratorVisitor(module.entity.name).visit(module.entity)
+			contents += new TypeScriptDefinitionIteratorVisitor(module.entity.name) {
 				@Override
 				String visitEnumNode(EnumNode node) {
-					return new TypeScriptDependentEnumGeneratorVisitor(module.entity.name, module.format).visit(node)
+					return new TypeScriptDependentEnumGeneratorVisitor(module.entity.name).visit(node)
 				}
 				@Override
 				String visitConstNode(ConstNode node) {
-					return new TypeScriptDependentConstGeneratorVisitor(module.entity.name, module.format).visit(node)
+					return new TypeScriptDependentConstGeneratorVisitor(module.entity.name).visit(node)
 				}
 			}.visit(module.entity)
 		} else {
-			contents += new TypeScriptDefinitionIteratorVisitor() {
+			contents += new TypeScriptDefinitionIteratorVisitor(module.entity.name) {
 				@Override
 				String visitEnumNode(EnumNode node) {
-					return new TypeScriptOpaqueEnumGeneratorVisitor().visit(node)
+					return new TypeScriptOpaqueEnumGeneratorVisitor(module.entity.name).visit(node)
 				}
 				@Override
 				String visitConstNode(ConstNode node) {
@@ -111,7 +111,6 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 				}
 			}.visit(module.entity)
 		}
-		contents += "}\n";
 		writeTypeScriptDtsFile(module.entity, outputDirectory, header, contents)
 	}
 

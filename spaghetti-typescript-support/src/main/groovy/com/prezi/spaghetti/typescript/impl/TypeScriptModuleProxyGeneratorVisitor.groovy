@@ -9,30 +9,33 @@ import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 import com.prezi.spaghetti.typescript.AbstractTypeScriptMethodGeneratorVisitor
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class TypeScriptModuleProxyGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
-"""export class __${node.alias}Proxy {
+"""import * as ${node.alias} from "${node.alias}";
+export class __${node.alias}Proxy {
 ${
-	node.methods*.accept(new MethodVisitor(node)).join("") +
-	node.accept(new QualifiedConstVisitor(node)) +
-	node.accept(new QualifiedEnumVisitor(node))
+	node.methods*.accept(new MethodVisitor(currentNamespace, node.alias)).join("") +
+	node.accept(new ConstVisitor(node.alias)) +
+	node.accept(new EnumVisitor(node.alias))
 }}
 """
 	}
 
-	private static class QualifiedConstVisitor extends StringModuleVisitorBase {
-		private ModuleNode qualifyingNode
+	private static class ConstVisitor extends StringModuleVisitorBase {
+		private String moduleName;
 
-		public QualifiedConstVisitor(ModuleNode qualifyingNode) {
-			this.qualifyingNode = qualifyingNode
+		ConstVisitor(String moduleName) {
+			this.moduleName = moduleName;
 		}
 
 		@Override
 		String visitConstNode(ConstNode constNode) {
-			return "\tpublic ${constNode.name} = ${qualifyingNode.name}.${constNode.name};\n"
+			return "\tpublic ${constNode.name} = ${moduleName}.${constNode.name};\n"
 		}
 
 		@Override
@@ -41,16 +44,16 @@ ${
 		}
 	}
 
-	private static class QualifiedEnumVisitor extends StringModuleVisitorBase {
-		private ModuleNode qualifyingNode
+	private static class EnumVisitor extends StringModuleVisitorBase {
+		private String moduleName;
 
-		public QualifiedEnumVisitor(ModuleNode qualifyingNode) {
-			this.qualifyingNode = qualifyingNode
+		EnumVisitor(String moduleName) {
+			this.moduleName = moduleName;
 		}
 
 		@Override
 		String visitEnumNode(EnumNode enumNode) {
-			return "\tpublic ${enumNode.name} = ${qualifyingNode.name}.${enumNode.name};\n"
+			return "\tpublic ${enumNode.name} = ${moduleName}.${enumNode.name};\n"
 		}
 
 		@Override
@@ -59,11 +62,13 @@ ${
 		}
 	}
 
+	@InheritConstructors
 	private static class MethodVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
-		private final ModuleNode module
+		private String moduleName
 
-		MethodVisitor(ModuleNode module) {
-			this.module = module
+		MethodVisitor(String namespace, String moduleName) {
+			super(namespace)
+			this.moduleName = moduleName
 		}
 
 		@Override
@@ -75,7 +80,7 @@ ${
 
 			return \
 """	${node.name}${typeParams}(${params}):${returnType} {
-		${node.returnType instanceof VoidTypeReference ? "" : "return "}${module.name}.${module.alias}.${node.name}${typeParams}(${paramNames});
+		${node.returnType instanceof VoidTypeReference ? "" : "return "}${moduleName}.${node.name}${typeParams}(${paramNames});
 	}
 """
 		}

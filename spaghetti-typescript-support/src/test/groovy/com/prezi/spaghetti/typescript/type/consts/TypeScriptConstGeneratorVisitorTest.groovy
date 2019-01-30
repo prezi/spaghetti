@@ -22,21 +22,14 @@ const MyConstants {
 """
 
 	def "generate local definition"() {
-		def result = parseAndVisitConst(definition, new TypeScriptConstGeneratorVisitor())
+		def result = parseAndVisitConst(definition, new TypeScriptConstGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == expectedWith("1", "-123", "-1.23", "\"tibor\"")
 	}
 
-	def "generate proxied definition for UMD format"() {
-		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test", ModuleFormat.UMD))
-
-		expect:
-		result == expectedWithoutValues()
-	}
-
-	def "generate proxied definition for wrapperless format"() {
-		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor("test", ModuleFormat.Wrapperless))
+	def "generate proxied definition"() {
+		def result = parseAndVisitConst(definition, new TypeScriptDependentConstGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == expectedWithoutValues()

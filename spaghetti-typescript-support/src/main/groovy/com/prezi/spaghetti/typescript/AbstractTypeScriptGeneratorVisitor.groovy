@@ -12,8 +12,10 @@ import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.StringModuleVisitorBase
 import com.prezi.spaghetti.ast.StructReference
 import com.prezi.spaghetti.ast.FunctionType
+import com.prezi.spaghetti.ast.FQName
 import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.VoidTypeReference
+import com.prezi.spaghetti.generator.GeneratorUtils
 
 abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBase {
 	private static def EXTERNS = [:].asImmutable()
@@ -25,6 +27,13 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 			(PrimitiveType.STRING): "string",
 			(PrimitiveType.ANY): "any"
 	]
+
+	protected String currentNamespace;
+
+	AbstractTypeScriptGeneratorVisitor(String namespace) {
+		assert namespace != null
+		this.currentNamespace = namespace;
+	}
 
 	@Override
 	String visitFunctionType(FunctionType node) {
@@ -43,18 +52,18 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 
 	@Override
 	String visitInterfaceReference(InterfaceReference reference) {
-		def result = reference.type.qualifiedName.toString()
+		def result = qualifyNonLocal(reference.type.qualifiedName)
 		return wrapParametrizedTypeReference(result, reference);
 	}
 
 	@Override
 	String visitStructReference(StructReference reference) {
-		return wrapParametrizedTypeReference(reference.type.qualifiedName.toString(), reference)
+		return wrapParametrizedTypeReference(qualifyNonLocal(reference.type.qualifiedName), reference)
 	}
 
 	@Override
 	String visitEnumReference(EnumReference reference) {
-		return wrapSingleTypeReference(reference.type.qualifiedName.toString(), reference.arrayDimensions)
+		return wrapSingleTypeReference(qualifyNonLocal(reference.type.qualifiedName), reference.arrayDimensions)
 	}
 
 	@Override
@@ -70,11 +79,21 @@ abstract class AbstractTypeScriptGeneratorVisitor extends StringModuleVisitorBas
 
 	@Override
 	String visitExternInterfaceReference(ExternInterfaceReference reference) {
-		def type = reference.type.qualifiedName.toString()
-		if (EXTERNS.containsKey(type)) {
+		def type = null;
+		if (EXTERNS.containsKey(reference.type.qualifiedName.toString())) {
 			type = EXTERNS.get(type)
+		} else {
+			type = qualifyNonLocal(reference.type.qualifiedName)
 		}
 		return wrapParametrizedTypeReference(type, reference)
+	}
+
+	private String qualifyNonLocal(FQName name) {
+		if (!name.hasNamespace() || name.namespace == currentNamespace) {
+			return name.localName
+		} else {
+			return GeneratorUtils.namespaceToIdentifier(name.namespace) + "." + name.localName
+		}
 	}
 
 	private String wrapParametrizedTypeReference(String type, ParametrizedTypeNodeReference<? extends ParametrizedReferableTypeNode> reference) {

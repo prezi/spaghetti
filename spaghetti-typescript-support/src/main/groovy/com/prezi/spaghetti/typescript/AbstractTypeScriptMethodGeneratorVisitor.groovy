@@ -2,7 +2,9 @@ package com.prezi.spaghetti.typescript
 
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.MethodParameterNode
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 abstract class AbstractTypeScriptMethodGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 
 	@Override
@@ -10,10 +12,15 @@ abstract class AbstractTypeScriptMethodGeneratorVisitor extends AbstractTypeScri
 		def returnType = node.returnType.accept(this)
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
 		def params = node.parameters*.accept(this).join(", ")
+		def prefix = getMethodPrefix()
 
 		return \
-"""	${node.name}${typeParams}(${params}):${returnType};
+"""${prefix}${node.name}${typeParams}(${params}):${returnType};
 """
+	}
+
+	String getMethodPrefix() {
+		return "\t"
 	}
 
 	@Override

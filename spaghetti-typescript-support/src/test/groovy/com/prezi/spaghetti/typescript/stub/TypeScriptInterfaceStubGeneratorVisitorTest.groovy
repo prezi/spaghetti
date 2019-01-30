@@ -27,7 +27,7 @@ module com.example.test {
 	}
 }
 """
-		def result = parseAndVisitModule(definition, new TypeScriptInterfaceStubGeneratorVisitor())
+		def result = parseAndVisitModule(definition, new TypeScriptInterfaceStubGeneratorVisitor(getNamespace()))
 
 		expect:
 		result == """export class TiborStub<T> implements Tibor<T> {
