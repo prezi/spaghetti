@@ -3,6 +3,7 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.InterfaceNode
 import com.prezi.spaghetti.generator.AbstractStubGenerator
 import com.prezi.spaghetti.generator.GeneratorParameters
+import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.typescript.stub.TypeScriptInterfaceStubGeneratorVisitor
 
 class TypeScriptStubGenerator extends AbstractStubGenerator {
@@ -21,7 +22,7 @@ class TypeScriptStubGenerator extends AbstractStubGenerator {
 					contents += new TypeScriptInterfaceStubGeneratorVisitor().visit(type)
 				}
 			}
-			TypeScriptUtils.createSourceFile(header, module, module.alias + "Stubs", outputDirectory, contents)
+			TypeScriptUtils.createSourceFile(header, GeneratorUtils.namespaceToIdentifier(module.name) + ".stubs", outputDirectory, contents)
 		}
 	}
 }

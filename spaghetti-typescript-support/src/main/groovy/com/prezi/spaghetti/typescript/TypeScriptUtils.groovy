@@ -3,21 +3,8 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.ModuleNode
 
 final class TypeScriptUtils {
-	public static File createSourceFile(String header, ModuleNode module, String name, File outputDirectory, String contents) {
-		def namespace = module.name
-		if (namespace)
-		{
-			def namespaceContent = "module ${namespace} {\n"
-			namespaceContent += contents
-			namespaceContent += "}"
-
-			def packageDir = createNamespacePath(outputDirectory, namespace)
-			packageDir.mkdirs()
-
-			return createRawSourceFile(header, namespaceContent, new File(packageDir, name + ".ts"));
-		} else {
-			return createRawSourceFile(header, contents, new File(outputDirectory, name + ".ts"));
-		}
+	public static File createSourceFile(String header, String name, File outputDirectory, String contents) {
+		return createRawSourceFile(header, contents, new File(outputDirectory, name + ".ts"));
 	}
 
 	public static File createRawSourceFile(String header, String contents, File file) {
