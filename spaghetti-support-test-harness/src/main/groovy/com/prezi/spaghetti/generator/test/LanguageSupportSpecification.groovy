@@ -12,6 +12,7 @@ import com.prezi.spaghetti.bundle.ModuleFormat
 import com.prezi.spaghetti.bundle.DefinitionLanguage
 import com.prezi.spaghetti.bundle.internal.DefaultModuleBundleSet
 import com.prezi.spaghetti.bundle.internal.ModuleBundleParameters
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData
 import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.definition.ModuleDefinitionSource
 import com.prezi.spaghetti.definition.internal.DefaultEntityWithModuleMetaData
@@ -126,20 +127,43 @@ public abstract class LanguageSupportSpecification extends Specification {
 			[ Resources.getResource(this.class, "/TestModule.module.ts") ])
 	}
 
+	private ModuleConfiguration loadModuleConfigFromResource(
+			String resourcePath,
+			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> directModuleSources) {
+
+		def namespace = null
+		if (resourcePath.endsWith('.ts')) {
+			if (resourcePath == "/DependencyModule.module.d.ts") {
+				namespace = "spaghetti.test.dependency"
+			} else if (resourcePath == "/TestModule.module.d.ts") {
+				namespace = "spaghetti.test"
+			} else {
+				throw new RuntimeException("Unknown namespace override for typescript definition: " + resourcePath)
+			}
+		}
+
+		def definition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, resourcePath))
+		def moduleConfig = ModuleConfigurationParser.parse(definition, namespace, directModuleSources, [], [])
+
+		return moduleConfig
+	}
+
 	private void setupAndRunSpaghettiApplication(
 			String dependencyModuleDefResourcePath,
 			String testModuleDefResourcePath,
 			List<URL> extraTestSources) {
 		// Build the dependency module
-		def testDependencyDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, dependencyModuleDefResourcePath))
-		def testDependencyConfig = ModuleConfigurationParser.parse(testDependencyDefinition, null, new DefaultModuleBundleSet([], [], []))
+		def testDependencyConfig = loadModuleConfigFromResource(dependencyModuleDefResourcePath, [])
 		def testDependencyModule = testDependencyConfig.localModule
 		// Make the module bundle
 		def testDependencyBundle = bundle(testDependencyModule, Resources.getResource(this.class, "/dependency.js").text, [], [:])
 
 		// Build the module
-		def testModuleDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, testModuleDefResourcePath))
-		def moduleConfig = ModuleConfigurationParser.parse(testModuleDefinition, null, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.UMD)], [], [])
+		def moduleConfig = loadModuleConfigFromResource(
+			testModuleDefResourcePath,
+			[
+				new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyModule.getSource(), ModuleFormat.UMD)
+			])
 		def module = moduleConfig.localModule
 		GeneratorParameters generatorParameters = new DefaultGeneratorParameters(moduleConfig, "Integration test")
 		def headersDir = new File(rootDir, "headers")
@@ -162,8 +186,12 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def moduleBundle = bundle(module, processedJs.text, [testDependencyModule.name], ["libWithVersion": "chai"])
 
 		// Make the app bundle
-		def testAppDefinition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, "/TestApp.module"))
-		def appConfig = ModuleConfigurationParser.parse(testAppDefinition, null, [new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testModuleDefinition, ModuleFormat.Wrapperless), new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyDefinition, ModuleFormat.Wrapperless)], [], [])
+		def appConfig = loadModuleConfigFromResource(
+			"/TestApp.module",
+			[
+				new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(module.getSource(), ModuleFormat.Wrapperless),
+				new DefaultEntityWithModuleMetaData<ModuleDefinitionSource>(testDependencyModule.getSource(), ModuleFormat.Wrapperless)
+			])
 		def appModule = appConfig.localModule
 
 		def processedAppJs = processJavaScript(new VerbatimJavaScriptBundleProcessor("js"), appConfig, Resources.getResource(this.class, "/app.js").text)
@@ -171,7 +199,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		def appBundle = bundle(appModule,
 				processedAppJs,
 				[module.name, testDependencyModule.name],
-                [:])
+				[:])
 
 		def packageDir = new File(rootDir, "package")
 		// Package the application
