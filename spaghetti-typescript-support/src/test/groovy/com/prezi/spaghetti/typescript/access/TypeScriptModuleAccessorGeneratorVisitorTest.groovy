@@ -34,14 +34,16 @@ module com.example.test {
 				mockInterface("Other", "com.example.other.Other"))
 
 		expect:
-		result == """/**
- * Initializes module.
- */
-export function initModule(a:number, b?:number):void;
-export function doSomething():string;
-export function doStatic(a:number, b:number):number;
-export function returnT<T>(t:T):MyInterface<T>;
-export function returnOther():com_example_other.Other;
+		result == """export module TestModule {
+	/**
+	 * Initializes module.
+	 */
+	export function initModule(a:number, b?:number):void;
+	export function doSomething():string;
+	export function doStatic(a:number, b:number):number;
+	export function returnT<T>(t:T):MyInterface<T>;
+	export function returnOther():com_example_other.Other;
+}
 """
 	}
 }

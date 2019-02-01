@@ -15,14 +15,15 @@ class TypeScriptModuleAccessorGeneratorVisitor extends AbstractTypeScriptGenerat
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
-		return node.methods*.accept(new MethodVisitor(currentNamespace)).join("")
+		def methods = node.methods*.accept(new MethodVisitor(currentNamespace)).join("")
+		return "export module ${node.alias} {\n${methods}}\n"
 	}
 
 	@InheritConstructors
 	private static class MethodVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 		@Override
 		String getMethodPrefix() {
-			return "export function "
+			return "\texport function "
 		}
 	}
 }
