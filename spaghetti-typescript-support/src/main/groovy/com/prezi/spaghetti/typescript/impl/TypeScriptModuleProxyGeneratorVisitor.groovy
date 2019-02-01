@@ -16,26 +16,20 @@ class TypeScriptModuleProxyGeneratorVisitor extends AbstractTypeScriptGeneratorV
 
 	@Override
 	String visitModuleNode(ModuleNode node) {
-"""import * as ${node.alias} from "${node.alias}";
+"""import { ${node.alias} } from "${node.alias}";
 export class __${node.alias}Proxy {
 ${
 	node.methods*.accept(new MethodVisitor(currentNamespace, node.alias)).join("") +
-	node.accept(new ConstVisitor(node.alias)) +
-	node.accept(new EnumVisitor(node.alias))
+	node.accept(new ConstVisitor()) +
+	node.accept(new EnumVisitor())
 }}
 """
 	}
 
 	private static class ConstVisitor extends StringModuleVisitorBase {
-		private String moduleName;
-
-		ConstVisitor(String moduleName) {
-			this.moduleName = moduleName;
-		}
-
 		@Override
 		String visitConstNode(ConstNode constNode) {
-			return "\tpublic ${constNode.name} = ${moduleName}.${constNode.name};\n"
+			return "\tpublic ${constNode.name} = ${constNode.name};\n"
 		}
 
 		@Override
@@ -45,15 +39,9 @@ ${
 	}
 
 	private static class EnumVisitor extends StringModuleVisitorBase {
-		private String moduleName;
-
-		EnumVisitor(String moduleName) {
-			this.moduleName = moduleName;
-		}
-
 		@Override
 		String visitEnumNode(EnumNode enumNode) {
-			return "\tpublic ${enumNode.name} = ${moduleName}.${enumNode.name};\n"
+			return "\tpublic ${enumNode.name} = ${enumNode.name};\n"
 		}
 
 		@Override

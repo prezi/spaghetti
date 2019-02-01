@@ -12,7 +12,7 @@ class TypeScriptModuleInitializerGeneratorVisitor extends AbstractTypeScriptGene
 	@Override
 	String visitModuleNode(ModuleNode node) {
 """export function ${CREATE_MODULE_FUNCTION}():any {
-	return new ${node.name}.__${node.alias}Proxy();
+	return new __${node.alias}Proxy();
 }
 """
 	}

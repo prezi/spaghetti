@@ -1,5 +1,5 @@
-import * as spaghetti_test_dependency from "spagetti_test_dependency";
-import { Numbers, Point3d } from "spaghetti_test";
+import * as spaghetti_test_dependency from "spaghetti_test_dependency";
+import { Numbers, Point3d } from "TestModule.module";
 
 declare var libWithVersion: any;
 

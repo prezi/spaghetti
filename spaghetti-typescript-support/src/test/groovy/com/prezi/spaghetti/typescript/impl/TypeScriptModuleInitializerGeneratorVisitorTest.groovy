@@ -21,7 +21,7 @@ module com.example.test {
 
 		expect:
 		result == """export function __createSpaghettiModule():any {
-	return new com.example.test.__TestModuleProxy();
+	return new __TestModuleProxy();
 }
 """
 	}

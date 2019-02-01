@@ -11,8 +11,6 @@ import java.util.Collection
 import java.util.LinkedHashSet
 import java.util.regex.Pattern
 
-import static com.prezi.spaghetti.generator.ReservedWords.SPAGHETTI_CLASS
-
 class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProcessor {
 	public static final String CREATE_MODULE_FUNCTION = "__createSpaghettiModule"
 	public static final Pattern USE_STRICT = Pattern.compile("^['\"]use strict['\"];");
@@ -48,7 +46,7 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
 			return module.name;
 		} else {
-			return "${module.name}.${CREATE_MODULE_FUNCTION}(${SPAGHETTI_CLASS})"
+			return "${CREATE_MODULE_FUNCTION}()"
 		}
 	}
 

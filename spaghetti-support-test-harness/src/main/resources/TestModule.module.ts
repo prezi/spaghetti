@@ -1,5 +1,5 @@
 import { Fruit, Prime, Point2d } from "spaghetti_test_dependency";
-import * as TestModule from "TestModule";
+import { TestModule } from "TestModule";
 
 export enum Exported {
 	Target = 42,

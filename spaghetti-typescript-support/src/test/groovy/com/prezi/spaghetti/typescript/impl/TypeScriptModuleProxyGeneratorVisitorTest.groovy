@@ -40,7 +40,7 @@ module com.example.test {
 		def result = parseAndVisitModule(definition, new TypeScriptModuleProxyGeneratorVisitor(getNamespace()))
 
 		expect:
-		result == """import * as TestModule from "TestModule";
+		result == """import { TestModule } from "TestModule";
 export class __TestModuleProxy {
 	doSomething():void {
 		TestModule.doSomething();
@@ -60,8 +60,8 @@ export class __TestModuleProxy {
 	returnT<T>(t:T):MyInterface<T> {
 		return TestModule.returnT<T>(t);
 	}
-	public MyConst = TestModule.MyConst;
-	public MyEnum = TestModule.MyEnum;
+	public MyConst = MyConst;
+	public MyEnum = MyEnum;
 }
 """
 	}

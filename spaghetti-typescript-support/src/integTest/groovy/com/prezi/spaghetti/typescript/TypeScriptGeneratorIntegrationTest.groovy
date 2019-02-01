@@ -4,6 +4,8 @@ import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.generator.HeaderGenerator
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.test.LanguageSupportSpecification
+import com.prezi.spaghetti.obfuscation.ClosureTarget
+import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler
 
 import static groovy.io.FileType.FILES
 
@@ -23,40 +25,60 @@ class TypeScriptGeneratorIntegrationTest extends LanguageSupportSpecification {
 		return true;
 	}
 
+	protected String makeTsConfig(File moduleFile, File outDir, File headersDir, File sourcesDir) {
+		return """{
+  "files": [
+    "${moduleFile.absolutePath}",
+  ],
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES6",
+    "outDir": "${outDir.absolutePath}",
+    "baseUrl": "/",
+    "paths": {
+      "*": [
+        "${headersDir.absolutePath}/*",
+        "${sourcesDir.absolutePath}/*",
+      ]
+    },
+  }
+}
+"""
+	}
+
 	@Override
-	protected void compile(ModuleNode module, File compiledJs, File headersDir, File sourceDir) {
-		execute([
-				"tsc",
-				"--out", compiledJs,
-				*getTypeScriptFiles(headersDir),
-				*sortMakingModuleFileLast(getTypeScriptFiles(sourceDir))
-		])
+	protected void compile(ModuleNode module, File compiledJs, File headersDir, File sourcesDir) {
+		def distDir = new File(compiledJs.parentFile, "dist")
+		def content = makeTsConfig(
+			getFileEndingWith("module.ts", [ headersDir, sourcesDir ]),
+			distDir,
+			headersDir,
+			sourcesDir)
+
+		def tsconfigFile = new File(compiledJs.parentFile, "tsconfig.json")
+		tsconfigFile.text = content;
+
+		execute([ "tsc", "-p", tsconfigFile ])
+		ClosureCompiler.concat(
+			distDir,
+			compiledJs,
+			getFileEndingWith("module.js", [ distDir ]),
+			[ distDir ],
+			[],
+			ClosureTarget.ES6);
+
 	}
 
-	private static List<File> sortMakingModuleFileLast(List<File> files) {
-		// The .module.ts file should always be the last argument to "tsc"
-		// because it references other code in other files and needs to be
-		// the at the bottom of the concatenated JavaScript.
-		return files.sort { a, b ->
-			def isAModuleDef = a.name.endsWith(".module.ts")
-			def isBModuleDef = b.name.endsWith(".module.ts")
-			if (isAModuleDef && !isBModuleDef) {
-				return 1
-			} else if (isBModuleDef && !isAModuleDef) {
-				return -1
-			} else {
-				return a.path <=> b.path
-			}
-		}
-	}
-
-	private static List<File> getTypeScriptFiles(File dir) {
+	private static File getFileEndingWith(String suffix, List<File> dirs) {
 		def files = []
-		dir.eachFileRecurse(FILES) {
-			if (it.name.endsWith(".ts")) {
-				files.add it
+		dirs.each { dir ->
+			dir.eachFileRecurse(FILES) {
+				if (it.name.endsWith(suffix)) {
+					files.add(it)
+				}
 			}
 		}
-		return files
+		assert files.size() == 1
+		return files[0]
 	}
 }
