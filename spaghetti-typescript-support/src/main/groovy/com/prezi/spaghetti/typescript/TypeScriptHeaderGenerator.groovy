@@ -66,7 +66,7 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 			contents += new TypeScriptModuleInitializerGeneratorVisitor(module.name).visit(module)
 			TypeScriptUtils.createSourceFile(
 				header,
-				GeneratorUtils.namespaceToIdentifier(module.name) + ".module",
+				module.alias + ".module.ts",
 				outputDirectory,
 				contents)
 
@@ -124,7 +124,6 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 
 	private static void writeTypeScriptDtsFile(ModuleNode module, File outputDirectory, String header, String content) {
 		String filename = GeneratorUtils.namespaceToIdentifier(module.name);
-		File file = new File(outputDirectory, filename + ".d.ts");
-		TypeScriptUtils.createRawSourceFile(header, content, file);
+		TypeScriptUtils.createSourceFile(header, filename + ".d.ts", outputDirectory, content);
 	}
 }
