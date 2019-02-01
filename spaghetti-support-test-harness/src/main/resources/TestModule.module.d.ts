@@ -66,3 +66,5 @@ function returnPointViaCallback(x: number, y: number, z: number, callback: (p: P
  * Call into external dependency to get its version.
  */
 function getExternalDependencyVersion(): string;
+
+export as namespace spaghetti_test;

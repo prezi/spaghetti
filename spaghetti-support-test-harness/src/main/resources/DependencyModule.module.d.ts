@@ -23,3 +23,5 @@ export module DependencyModule {
 	function getPoint(): Point2d;
 	function createPointViaCallback(x: number, y: number, callback: (Point2d) => void): void;
 }
+
+export as namespace spaghetti_test_dependency;

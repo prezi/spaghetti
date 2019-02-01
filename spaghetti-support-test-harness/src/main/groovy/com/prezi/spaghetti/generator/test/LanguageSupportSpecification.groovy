@@ -131,20 +131,8 @@ public abstract class LanguageSupportSpecification extends Specification {
 			String resourcePath,
 			Collection<EntityWithModuleMetaData<ModuleDefinitionSource>> directModuleSources) {
 
-		def namespace = null
-		if (resourcePath.endsWith('.ts')) {
-			if (resourcePath == "/DependencyModule.module.d.ts") {
-				namespace = "spaghetti.test.dependency"
-			} else if (resourcePath == "/TestModule.module.d.ts") {
-				namespace = "spaghetti.test"
-			} else {
-				throw new RuntimeException("Unknown namespace override for typescript definition: " + resourcePath)
-			}
-		}
-
 		def definition = DefaultModuleDefinitionSource.fromUrl(Resources.getResource(this.class, resourcePath))
-		def moduleConfig = ModuleConfigurationParser.parse(definition, namespace, directModuleSources, [], [])
-
+		def moduleConfig = ModuleConfigurationParser.parse(definition, null, directModuleSources, [], [])
 		return moduleConfig
 	}
 

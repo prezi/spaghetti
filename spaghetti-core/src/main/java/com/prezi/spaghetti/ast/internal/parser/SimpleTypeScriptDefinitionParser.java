@@ -12,8 +12,6 @@ import com.prezi.spaghetti.definition.internal.DefaultModuleDefinitionSource;
 public class SimpleTypeScriptDefinitionParser extends ModuleParser {
     public static final String DEFERRED_DTS_CONTENTS = "<< Definition contents will be generated later; if you see this string in a file it is likely a Spaghetti bug >>";
 
-    private static final Pattern moduleNamespacePattern =
-        Pattern.compile("(?:declare\\s+)?(?:module|namespace)\\s+([a-zA-Z0-9_\\.]+)\\s+\\{");
     private static final Pattern commonJsNamespacePattern =
         Pattern.compile("export\\s+as\\s+namespace\\s+([a-zA-Z0-9_]+)\\s*;");
 
@@ -46,11 +44,7 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
         Matcher m = commonJsNamespacePattern.matcher(source.getContents());
         boolean found = m.find();
         if (!found || m.groupCount() < 1) {
-             m = moduleNamespacePattern.matcher(source.getContents());
-            found = m.find();
-            if (!found || m.groupCount() < 1) {
-                throw new AstParserException(source, ": Cannot find module namespace in TypeScript file");
-            }
+            throw new AstParserException(source, ": Cannot find module namespace in TypeScript file");
         }
         return m.group(1);
     }
