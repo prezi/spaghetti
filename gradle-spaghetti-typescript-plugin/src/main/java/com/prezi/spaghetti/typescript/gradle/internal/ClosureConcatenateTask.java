@@ -23,6 +23,7 @@ import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.DefinitionFile;
 import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.generator.GeneratorUtils;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.ExternalDependencyAwareTask;
@@ -135,13 +136,9 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		FileUtils.copyDirectory(getSourceDir(), workDir);
 		ModuleConfiguration config = readConfig(getDefinition());
 
-		for (Map.Entry<String, String> extern : getDependencies(config, getExternalDependencies())) {
-			String varName = extern.getKey();
-			String importName = extern.getValue();
-			FileUtils.write(
-				new File(nodeDir, importName + ".js"),
-				String.format("module.exports = %s;\n", varName));
-		}
+		ClosureCompiler.createExternAccessorsForConcat(
+			nodeDir,
+			getDependencies(config, getExternalDependencies()));
 
 		for (String name : getNodeRequireDependencies()) {
 			FileUtils.write(
@@ -160,7 +157,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			FileUtils.listFiles(workDir, new String[] {"js"}, true),
 			getEntryPoints());
 		File mainEntryPoint = new File(workDir, "_spaghetti-entry.js");
-		ClosureUtils.writeMainEntryPoint(
+		ClosureCompiler.writeMainEntryPoint(
 			mainEntryPoint,
 			entryPointFiles,
 			config.getLocalModule().getName());
@@ -199,14 +196,14 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		return foundFiles;
 	}
 
-	private static Set<Map.Entry<String, String>> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
+	private static Map<String, String> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
 		Map<String, String> deps = Maps.newHashMap();
 		for (EntityWithModuleMetaData<ModuleNode> wrapper : config.getDirectDependentModules()) {
 			ModuleNode node = wrapper.getEntity();
-			String importName = node.getName().replace(".", "_");
-			deps.put(node.getName(), importName);
+			String name = GeneratorUtils.namespaceToIdentifier(node.getName());
+			deps.put(name, name);
 		}
 		deps.putAll(externalDependencies);
-		return deps.entrySet();
+		return deps;
 	}
 }
