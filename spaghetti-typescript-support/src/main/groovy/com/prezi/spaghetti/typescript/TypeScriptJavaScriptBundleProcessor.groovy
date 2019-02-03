@@ -43,10 +43,11 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 	}
 
 	private static String getModuleExport(ModuleNode module) {
+		def identName = GeneratorUtils.namespaceToIdentifier(module.name)
 		if (module.source.definitionLanguage == DefinitionLanguage.TypeScript) {
-			return module.name;
+			return identName;
 		} else {
-			return "${CREATE_MODULE_FUNCTION}()"
+			return "${identName}.${CREATE_MODULE_FUNCTION}()"
 		}
 	}
 
@@ -58,7 +59,8 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 
 		// Create local variable for current module's namespace and initialize it to null.
 		// To prevent module's code from accidentally assigning to a global variable.
-		lines.addAll(GeneratorUtils.createNamespaceMerge(config.localModule.name, "null"))
+		lines.addAll(String.format("var %s=%s;",
+			GeneratorUtils.namespaceToIdentifier(config.localModule.name), "null"))
 
 		for (def wrapper: config.getDirectDependentModules()) {
 			ModuleNode module = wrapper.entity;

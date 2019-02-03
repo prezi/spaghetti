@@ -23,9 +23,7 @@ class TypeScriptJavaScriptBundleProcessorTest extends Specification {
 		when:
 		def result = processor.processModuleJavaScript(params, "/* This is the JavaScript module */");
 		then:
-		result == """var spaghetti=(spaghetti||{});
-spaghetti.test=(spaghetti.test||{});
-spaghetti.test.main=null;
+		result == """var spaghetti_test_main=null;
 var com_a=Spaghetti["dependencies"]["com.a"];
 var com_b=Spaghetti["dependencies"]["com.b"];
 var spaghetti_other_dep=Spaghetti["dependencies"]["spaghetti.other.dep"];
@@ -34,7 +32,7 @@ var spaghetti_test_dep=Spaghetti["dependencies"]["spaghetti.test.dep"];
 var get_com_lazy_first=Spaghetti["dependencies"]["com.lazy.first"];
 var get_com_lazy_second=Spaghetti["dependencies"]["com.lazy.second"];
 /* This is the JavaScript module */
-return spaghetti.test.main;
+return spaghetti_test_main;
 """
 	}
 
@@ -51,11 +49,9 @@ return spaghetti.test.main;
 		def result = processor.processModuleJavaScript(params, "'use strict';/* This is the JavaScript module */");
 		then:
 		result == """'use strict';
-var spaghetti=(spaghetti||{});
-spaghetti.test=(spaghetti.test||{});
-spaghetti.test.main=null;
+var spaghetti_test_main=null;
 /* This is the JavaScript module */
-return spaghetti.test.main;
+return spaghetti_test_main;
 """
 	}
 
@@ -72,11 +68,9 @@ return spaghetti.test.main;
 		def result = processor.processModuleJavaScript(params, "\"use strict\";/* This is the JavaScript module */");
 		then:
 		result == """'use strict';
-var spaghetti=(spaghetti||{});
-spaghetti.test=(spaghetti.test||{});
-spaghetti.test.main=null;
+var spaghetti_test_main=null;
 /* This is the JavaScript module */
-return spaghetti.test.main;
+return spaghetti_test_main;
 """
 	}
 
