@@ -1,6 +1,9 @@
 package com.prezi.spaghetti.typescript
 
+import org.apache.commons.io.FileUtils
 import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.definition.ModuleConfiguration
+import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.generator.HeaderGenerator
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.test.LanguageSupportSpecification
@@ -47,11 +50,14 @@ class TypeScriptGeneratorIntegrationTest extends LanguageSupportSpecification {
 	}
 
 	@Override
-	protected void compile(ModuleNode module, File compiledJs, File headersDir, File sourcesDir) {
-		def distDir = new File(compiledJs.parentFile, "dist")
+	protected void compile(ModuleConfiguration moduleConfig, File compiledJs, File headersDir, File sourcesDir) {
+		def tscDir = new File(compiledJs.parentFile, "tsc")
+		def closureDir = new File(compiledJs.parentFile, "closure")
+		def nodeModulesDir = new File(closureDir, "node_modules")
+
 		def content = makeTsConfig(
 			getFileEndingWith("module.ts", [ headersDir, sourcesDir ]),
-			distDir,
+			tscDir,
 			headersDir,
 			sourcesDir)
 
@@ -59,11 +65,31 @@ class TypeScriptGeneratorIntegrationTest extends LanguageSupportSpecification {
 		tsconfigFile.text = content;
 
 		execute([ "tsc", "-p", tsconfigFile ])
+
+		nodeModulesDir.mkdirs()
+		tscDir.eachFileRecurse(FILES) { f ->
+			if (f.name.endsWith(".js")) {
+				FileUtils.copyFileToDirectory(f, nodeModulesDir)
+			}
+		}
+
+		Map<String, String> externNames = moduleConfig.getDirectDependentModules().collectEntries { wrapper ->
+			String name = GeneratorUtils.namespaceToIdentifier(wrapper.entity.name);
+			return [ name, name ]
+		}
+		ClosureCompiler.createExternAccessorsForConcat(nodeModulesDir, externNames);
+
+		File mainEntryPoint = new File(nodeModulesDir, "_spaghetti-entry.js");
+		ClosureCompiler.writeMainEntryPoint(
+			mainEntryPoint,
+			[ getFileEndingWith("module.js", [ nodeModulesDir ]) ],
+			GeneratorUtils.namespaceToIdentifier(moduleConfig.getLocalModule().getName()));
+
 		ClosureCompiler.concat(
-			distDir,
+			closureDir,
 			compiledJs,
-			getFileEndingWith("module.js", [ distDir ]),
-			[ distDir ],
+			mainEntryPoint,
+			[ closureDir ],
 			[],
 			ClosureTarget.ES6);
 

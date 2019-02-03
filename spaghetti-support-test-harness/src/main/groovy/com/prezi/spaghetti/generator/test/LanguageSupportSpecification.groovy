@@ -165,7 +165,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		}
 
 		def compiledJs = new File(rootDir, "compiled.js")
-		compile(module, compiledJs, headersDir, sourcesDir)
+		compile(moduleConfig, compiledJs, headersDir, sourcesDir)
 
 		def processedJs = new File(rootDir, "processed.js")
 		processedJs << processJavaScript(bundleProcessor, moduleConfig, compiledJs.text)
@@ -284,7 +284,7 @@ public abstract class LanguageSupportSpecification extends Specification {
 		}
 	}
 
-	abstract protected void compile(ModuleNode module, File outputFile, File headersDir, File sourceDir)
+	abstract protected void compile(ModuleConfiguration module, File outputFile, File headersDir, File sourceDir)
 
 	abstract protected HeaderGenerator createHeaderGenerator()
 
