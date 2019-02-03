@@ -2,8 +2,14 @@ var expect = require("chai").expect;
 
 return {
 	main: function () {
-		var module = Spaghetti["dependencies"]["spaghetti.test"];
-		var dependencyModule = Spaghetti["dependencies"]["spaghetti.test.dependency"];
+		var d = Spaghetti["dependencies"];
+		/**
+		 * We try to load both dotted and underscore package names because we have multiple test configurations:
+		 * - Haxe with Spaghetti definitions must use dotted package names
+		 * - Typescript definitions must use an identifier without dots
+		 */
+		var module = d["spaghetti.test"] || d["spaghetti_test"];
+		var dependencyModule = d["spaghetti.test.dependency"] || d["spaghetti_test_dependency"];
 		describe("Module", function () {
 
 			describe("#addTwoNumbers()", function () {
