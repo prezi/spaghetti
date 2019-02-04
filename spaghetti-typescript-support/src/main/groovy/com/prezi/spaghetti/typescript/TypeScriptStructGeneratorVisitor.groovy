@@ -3,7 +3,9 @@ package com.prezi.spaghetti.typescript
 import com.prezi.spaghetti.ast.MethodNode
 import com.prezi.spaghetti.ast.PropertyNode
 import com.prezi.spaghetti.ast.StructNode
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class TypeScriptStructGeneratorVisitor extends AbstractTypeScriptMethodGeneratorVisitor {
 
 	@Override

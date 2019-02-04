@@ -1,4 +1,5 @@
-module spaghetti.test {
+import * as spaghetti_test_dependency from "spaghetti_test_dependency";
+import { Numbers, Point3d } from "TestModule.module";
 
 declare var libWithVersion: any;
 
@@ -7,12 +8,12 @@ export class TestModule {
 		return a + b;
 	}
 
-	static getNextEnumValue(value:spaghetti.test.dependency.Fruit):spaghetti.test.dependency.Fruit {
+	static getNextEnumValue(value:spaghetti_test_dependency.Fruit):spaghetti_test_dependency.Fruit {
 		return value + 1;
 	}
 
-	static getPositionInPrimes(value:spaghetti.test.dependency.Prime):string {
-		return spaghetti.test.dependency.Prime[value];
+	static getPositionInPrimes(value:spaghetti_test_dependency.Prime):string {
+		return spaghetti_test_dependency.Prime[value];
 	}
 
 	static getValueOfTwo():string {
@@ -20,7 +21,7 @@ export class TestModule {
 	}
 
 	static getValueOfDependentConstant():string {
-		return spaghetti.test.dependency.DependentConstant.A;
+		return spaghetti_test_dependency.DependentConstant.A;
 	}
 
 	static createPoint3dWithGivenValues(x:number, y:number, z:number):Point3d {
@@ -31,13 +32,13 @@ export class TestModule {
 		};
 	}
 
-	static getPointFromDependencyModule():spaghetti.test.dependency.Point2d {
-		return spaghetti.test.dependency.DependencyModule.getPoint();
+	static getPointFromDependencyModule():spaghetti_test_dependency.Point2d {
+		return spaghetti_test_dependency.DependencyModule.getPoint();
 	}
 
-	static getPointFromDependencyModuleViaCallback(x:number, y:number):spaghetti.test.dependency.Point2d {
-		var returnedPoint:spaghetti.test.dependency.Point2d = null;
-		spaghetti.test.dependency.DependencyModule.createPointViaCallback(x, y, (point:spaghetti.test.dependency.Point2d) => {
+	static getPointFromDependencyModuleViaCallback(x:number, y:number):spaghetti_test_dependency.Point2d {
+		var returnedPoint:spaghetti_test_dependency.Point2d = null;
+		spaghetti_test_dependency.DependencyModule.createPointViaCallback(x, y, (point:spaghetti_test_dependency.Point2d) => {
 			returnedPoint = point;
 		});
 		return returnedPoint;
@@ -50,5 +51,4 @@ export class TestModule {
     static getExternalDependencyVersion(): string {
 		return libWithVersion.version;
     }
-}
 }

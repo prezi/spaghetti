@@ -2,7 +2,9 @@ package com.prezi.spaghetti.typescript.type.enums
 
 import com.prezi.spaghetti.ast.EnumNode
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class TypeScriptOpaqueEnumGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	@Override
 	String visitEnumNode(EnumNode node) {

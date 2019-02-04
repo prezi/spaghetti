@@ -19,13 +19,13 @@ struct MyStruct<T> extends Parent<T> {
 	parent(): Parent<T>;
 }
 """
-		def result = parseAndVisitStruct(definition, new TypeScriptStructGeneratorVisitor(), mockStruct("Parent", mockTypeParameter()))
+		def result = parseAndVisitStruct(definition, new TypeScriptStructGeneratorVisitor(getNamespace()), mockStruct("Parent", mockTypeParameter()))
 
 		expect:
 		result == """/**
  * Hey this is my struct!
  */
-export interface MyStruct<T> extends com.example.test.Parent<T> {
+export interface MyStruct<T> extends Parent<T> {
 	a: number;
 	/**
 	 * This is field b.
@@ -33,7 +33,7 @@ export interface MyStruct<T> extends com.example.test.Parent<T> {
 	b?: string;
 	t: T;
 	convert(value:T):T;
-	parent():com.example.test.Parent<T>;
+	parent():Parent<T>;
 
 }
 """

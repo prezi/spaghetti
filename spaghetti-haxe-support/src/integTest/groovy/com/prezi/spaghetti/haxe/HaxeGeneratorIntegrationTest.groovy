@@ -1,6 +1,6 @@
 package com.prezi.spaghetti.haxe
 
-import com.prezi.spaghetti.ast.ModuleNode
+import com.prezi.spaghetti.definition.ModuleConfiguration
 import com.prezi.spaghetti.generator.HeaderGenerator
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.test.LanguageSupportSpecification
@@ -22,11 +22,11 @@ class HaxeGeneratorIntegrationTest extends LanguageSupportSpecification {
 	}
 
 	@Override
-	protected void compile(ModuleNode module, File compiledJs, File headersDir, File sourceDir) {
+	protected void compile(ModuleConfiguration moduleConfig, File compiledJs, File headersDir, File sourceDir) {
 		execute "haxe",
 				"-js", compiledJs,
 				"-cp", headersDir,
 				"-cp", sourceDir,
-				"--macro", "include(\'" + module.name + "\')"
+				"--macro", "include(\'" + moduleConfig.localModule.name + "\')"
 	}
 }

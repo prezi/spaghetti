@@ -7,7 +7,9 @@ import com.prezi.spaghetti.ast.PrimitiveType
 import com.prezi.spaghetti.ast.PrimitiveTypeReference
 import com.prezi.spaghetti.ast.VoidTypeReference
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class TypeScriptInterfaceStubGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	private static final PRIMITIVE_RETURN_VALUES = [
 			(PrimitiveType.BOOL): "false",
@@ -20,7 +22,7 @@ class TypeScriptInterfaceStubGeneratorVisitor extends AbstractTypeScriptGenerato
 	@Override
 	String visitInterfaceNode(InterfaceNode node) {
 		def typeParams = node.typeParameters ? "<" + node.typeParameters*.name.join(", ") + ">" : ""
-		def methodDefinitions = node.allMethods*.accept(new MethodGenerator()).join("")
+		def methodDefinitions = node.allMethods*.accept(new MethodGenerator(currentNamespace)).join("")
 
 		return  \
  """export class ${node.name}Stub${typeParams} implements ${node.name}${typeParams} {
@@ -29,6 +31,7 @@ ${methodDefinitions}
 """
 	}
 
+	@InheritConstructors
 	private static class MethodGenerator extends AbstractTypeScriptGeneratorVisitor {
 
 		@Override

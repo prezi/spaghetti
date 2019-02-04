@@ -1,11 +1,13 @@
 package com.prezi.spaghetti.obfuscation.internal;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.prezi.spaghetti.obfuscation.ClosureTarget;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -13,8 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
 
 public class ClosureCompiler {
 
@@ -108,6 +113,54 @@ public class ClosureCompiler {
 			logger.error("ERROR: " + output);
 		}
 		return retCode;
+	}
+
+	public static void createExternAccessorsForConcat(File nodeModulesDir, Map<String, String> names) throws IOException {
+		for (Map.Entry<String, String> entry : names.entrySet()) {
+			String varName = entry.getKey();
+			String importName = entry.getValue();
+			FileUtils.write(
+				new File(nodeModulesDir, importName + ".js"),
+				String.format("module.exports = %s;\n", varName));
+		}
+	}
+
+	public static void writeMainEntryPoint(File file, Collection<File> entryPoints, String namespace) throws IOException {
+		String data;
+		if (entryPoints.size() == 1) {
+			File entryPoint = Iterables.getOnlyElement(entryPoints);
+			data = String.format(
+				"%s=require('%s');",
+				namespace,
+				getRelativeImport(file, entryPoint));
+		} else {
+			Collection<String> requireCalls = Lists.newArrayList();
+			for (File entryPoint: entryPoints) {
+				requireCalls.add(String.format("require('%s')", getRelativeImport(file, entryPoint)));
+			}
+			data = String.format(
+				"%s=[%s];",
+				namespace,
+				Joiner.on(",").join(requireCalls));
+		}
+		FileUtils.write(file, data);
+	}
+
+	private static String getRelativeImport(File base, File imported) {
+		Path basePath = Paths.get(base.getParentFile().toURI());
+		Path importedPath = Paths.get(imported.toURI());
+		Path relativized = basePath.relativize(importedPath);
+
+		List<String> parts = Lists.newArrayList();
+		for (Path part: relativized) {
+			parts.add(part.toFile().getName());
+		}
+
+		String rel = Joiner.on("/").join(parts);
+		if (!rel.startsWith("../")) {
+			rel = "./" + rel;
+		}
+		return FilenameUtils.removeExtension(rel);
 	}
 
 	private static File copyJarFile(File workDir) throws IOException {

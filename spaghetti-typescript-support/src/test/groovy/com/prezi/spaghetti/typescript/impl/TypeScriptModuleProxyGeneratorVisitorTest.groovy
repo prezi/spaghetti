@@ -37,30 +37,31 @@ module com.example.test {
 	returnT<T>(t: T): MyInterface<T>;
 }
 """
-		def result = parseAndVisitModule(definition, new TypeScriptModuleProxyGeneratorVisitor())
+		def result = parseAndVisitModule(definition, new TypeScriptModuleProxyGeneratorVisitor(getNamespace()))
 
 		expect:
-		result == """export class __TestModuleProxy {
+		result == """import { TestModule } from "TestModule";
+export class __TestModuleProxy {
 	doSomething():void {
-		com.example.test.TestModule.doSomething();
+		TestModule.doSomething();
 	}
 	doSomethingElse(a:number, b:number):Array<string> {
-		return com.example.test.TestModule.doSomethingElse(a, b);
+		return TestModule.doSomethingElse(a, b);
 	}
 	doSomethingStatic(x:number):number {
-		return com.example.test.TestModule.doSomethingStatic(x);
+		return TestModule.doSomethingStatic(x);
 	}
 	doSomethingVoid(x:number):void {
-		com.example.test.TestModule.doSomethingVoid(x);
+		TestModule.doSomethingVoid(x);
 	}
 	hello<T, U>(t:T, y:U):Array<T> {
-		return com.example.test.TestModule.hello<T, U>(t, y);
+		return TestModule.hello<T, U>(t, y);
 	}
-	returnT<T>(t:T):com.example.test.MyInterface<T> {
-		return com.example.test.TestModule.returnT<T>(t);
+	returnT<T>(t:T):MyInterface<T> {
+		return TestModule.returnT<T>(t);
 	}
-	public MyConst = com.example.test.MyConst;
-	public MyEnum = com.example.test.MyEnum;
+	public MyConst = MyConst;
+	public MyEnum = MyEnum;
 }
 """
 	}

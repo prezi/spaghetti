@@ -4,7 +4,9 @@ import com.prezi.spaghetti.ast.ConstEntryNode
 import com.prezi.spaghetti.ast.ConstNode
 import com.prezi.spaghetti.typescript.AbstractTypeScriptGeneratorVisitor
 import com.prezi.spaghetti.typescript.TypeScriptUtils
+import groovy.transform.InheritConstructors
 
+@InheritConstructors
 class TypeScriptConstGeneratorVisitor extends AbstractTypeScriptGeneratorVisitor {
 	@Override
 	String visitConstNode(ConstNode node) {

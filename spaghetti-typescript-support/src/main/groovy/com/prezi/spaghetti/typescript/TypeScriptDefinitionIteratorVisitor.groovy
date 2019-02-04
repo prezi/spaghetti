@@ -10,24 +10,29 @@ import com.prezi.spaghetti.typescript.type.consts.TypeScriptConstGeneratorVisito
 import com.prezi.spaghetti.typescript.type.enums.TypeScriptEnumGeneratorVisitor
 
 class TypeScriptDefinitionIteratorVisitor extends StringModuleVisitorBase {
+	private String namespace
+
+	TypeScriptDefinitionIteratorVisitor(String namespace) {
+		this.namespace = namespace
+	}
 
 	@Override
 	String visitInterfaceNode(InterfaceNode node) {
-		return new TypeScriptInterfaceGeneratorVisitor().visit(node)
+		return new TypeScriptInterfaceGeneratorVisitor(namespace).visit(node)
 	}
 
 	@Override
 	String visitEnumNode(EnumNode node) {
-		return new TypeScriptEnumGeneratorVisitor().visit(node)
+		return new TypeScriptEnumGeneratorVisitor(namespace).visit(node)
 	}
 
 	@Override
 	String visitStructNode(StructNode node) {
-		return new TypeScriptStructGeneratorVisitor().visit(node)
+		return new TypeScriptStructGeneratorVisitor(namespace).visit(node)
 	}
 
 	@Override
 	String visitConstNode(ConstNode node) {
-		return new TypeScriptConstGeneratorVisitor().visit(node)
+		return new TypeScriptConstGeneratorVisitor(namespace).visit(node)
 	}
 }
