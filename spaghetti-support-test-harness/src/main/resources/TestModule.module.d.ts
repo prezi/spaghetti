@@ -1,4 +1,4 @@
-import { Fruit, Prime, Point2d } from "spaghetti_test_dependency";
+import { Fruit, Prime, Point2d } from "spaghetti.test.dependency";
 
 /**
  * This enum should be exported on the compiled module.

@@ -13,7 +13,7 @@ public class SimpleTypeScriptDefinitionParser extends ModuleParser {
     public static final String DEFERRED_DTS_CONTENTS = "<< Definition contents will be generated later; if you see this string in a file it is likely a Spaghetti bug >>";
 
     private static final Pattern commonJsNamespacePattern =
-        Pattern.compile("export\\s+as\\s+namespace\\s+([a-zA-Z0-9_]+)\\s*;");
+        Pattern.compile("export\\s+as\\s+namespace\\s+([a-zA-Z0-9_\\.]+)\\s*;");
 
     public SimpleTypeScriptDefinitionParser(ModuleDefinitionSource source, String namespaceOverride) {
         super(null, createModuleNode(source, namespaceOverride));
