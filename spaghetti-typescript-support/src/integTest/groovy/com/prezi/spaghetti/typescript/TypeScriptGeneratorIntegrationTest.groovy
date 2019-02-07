@@ -3,7 +3,6 @@ package com.prezi.spaghetti.typescript
 import org.apache.commons.io.FileUtils
 import com.prezi.spaghetti.ast.ModuleNode
 import com.prezi.spaghetti.definition.ModuleConfiguration
-import com.prezi.spaghetti.generator.GeneratorUtils
 import com.prezi.spaghetti.generator.HeaderGenerator
 import com.prezi.spaghetti.generator.JavaScriptBundleProcessor
 import com.prezi.spaghetti.generator.test.LanguageSupportSpecification
@@ -73,17 +72,13 @@ class TypeScriptGeneratorIntegrationTest extends LanguageSupportSpecification {
 			}
 		}
 
-		Map<String, String> externNames = moduleConfig.getDirectDependentModules().collectEntries { wrapper ->
-			String name = GeneratorUtils.namespaceToIdentifier(wrapper.entity.name);
-			return [ name, name ]
-		}
-		ClosureCompiler.createExternAccessorsForConcat(nodeModulesDir, externNames);
+		ClosureCompiler.createExternAccessorsForConcat(nodeModulesDir, moduleConfig);
 
 		File mainEntryPoint = new File(nodeModulesDir, "_spaghetti-entry.js");
 		ClosureCompiler.writeMainEntryPoint(
 			mainEntryPoint,
 			[ getFileEndingWith("module.js", [ nodeModulesDir ]) ],
-			GeneratorUtils.namespaceToIdentifier(moduleConfig.getLocalModule().getName()));
+			moduleConfig.getLocalModule().getName());
 
 		ClosureCompiler.concat(
 			closureDir,

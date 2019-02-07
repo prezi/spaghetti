@@ -3,9 +3,14 @@ package com.prezi.spaghetti.obfuscation.internal;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
+import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.obfuscation.ClosureTarget;
 import com.prezi.spaghetti.obfuscation.CompilationLevel;
+import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
+import com.prezi.spaghetti.definition.ModuleConfiguration;
+import com.prezi.spaghetti.generator.GeneratorUtils;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.FileUtils;
@@ -115,6 +120,16 @@ public class ClosureCompiler {
 		return retCode;
 	}
 
+	public static void createExternAccessorsForConcat(File nodeModulesDir, ModuleConfiguration config) throws IOException {
+		Map<String, String> deps = Maps.newHashMap();
+		for (EntityWithModuleMetaData<ModuleNode> wrapper : config.getDirectDependentModules()) {
+			ModuleNode node = wrapper.getEntity();
+			String ident = GeneratorUtils.namespaceToIdentifier(node.getName());
+			deps.put(ident, node.getName());
+		}
+		createExternAccessorsForConcat(nodeModulesDir, deps);
+	}
+
 	public static void createExternAccessorsForConcat(File nodeModulesDir, Map<String, String> names) throws IOException {
 		for (Map.Entry<String, String> entry : names.entrySet()) {
 			String varName = entry.getKey();
@@ -127,11 +142,12 @@ public class ClosureCompiler {
 
 	public static void writeMainEntryPoint(File file, Collection<File> entryPoints, String namespace) throws IOException {
 		String data;
+		String ident = GeneratorUtils.namespaceToIdentifier(namespace);
 		if (entryPoints.size() == 1) {
 			File entryPoint = Iterables.getOnlyElement(entryPoints);
 			data = String.format(
 				"%s=require('%s');",
-				namespace,
+				ident,
 				getRelativeImport(file, entryPoint));
 		} else {
 			Collection<String> requireCalls = Lists.newArrayList();
@@ -140,7 +156,7 @@ public class ClosureCompiler {
 			}
 			data = String.format(
 				"%s=[%s];",
-				namespace,
+				ident,
 				Joiner.on(",").join(requireCalls));
 		}
 		FileUtils.write(file, data);

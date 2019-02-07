@@ -19,15 +19,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.prezi.spaghetti.ast.ModuleNode;
 import com.prezi.spaghetti.definition.DefinitionFile;
-import com.prezi.spaghetti.definition.EntityWithModuleMetaData;
 import com.prezi.spaghetti.definition.ModuleConfiguration;
-import com.prezi.spaghetti.generator.GeneratorUtils;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.ExternalDependencyAwareTask;
-import com.prezi.spaghetti.obfuscation.CompilationLevel;
 import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
 
 public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask implements ExternalDependencyAwareTask, DefinitionAwareSpaghettiTask {
@@ -136,9 +132,8 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		FileUtils.copyDirectory(getSourceDir(), workDir);
 		ModuleConfiguration config = readConfig(getDefinition());
 
-		ClosureCompiler.createExternAccessorsForConcat(
-			nodeDir,
-			getDependencies(config, getExternalDependencies()));
+		ClosureCompiler.createExternAccessorsForConcat(nodeDir, config);
+		ClosureCompiler.createExternAccessorsForConcat(nodeDir, getExternalDependencies());
 
 		for (String name : getNodeRequireDependencies()) {
 			FileUtils.write(
@@ -194,16 +189,5 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			throw new RuntimeException("Cannot find entry points: " + Joiner.on(", ").join(names));
 		}
 		return foundFiles;
-	}
-
-	private static Map<String, String> getDependencies(ModuleConfiguration config, Map<String, String> externalDependencies) throws IOException {
-		Map<String, String> deps = Maps.newHashMap();
-		for (EntityWithModuleMetaData<ModuleNode> wrapper : config.getDirectDependentModules()) {
-			ModuleNode node = wrapper.getEntity();
-			String ident = GeneratorUtils.namespaceToIdentifier(node.getName());
-			deps.put(ident, node.getName());
-		}
-		deps.putAll(externalDependencies);
-		return deps;
 	}
 }
