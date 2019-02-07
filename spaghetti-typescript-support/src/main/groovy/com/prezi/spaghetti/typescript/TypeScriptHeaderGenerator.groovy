@@ -120,7 +120,6 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 
 		def aliasImports = TypeScriptDefinitionImportVisitor.collectImports(module.entity, true);
 		def commonJsImports = TypeScriptDefinitionImportVisitor.collectImports(module.entity);
-		def underscoreName = GeneratorUtils.namespaceToIdentifier(module.entity.name);
 
 		// Backwards compatibility for commonjs header transition
 		def dtsContents = """
@@ -128,17 +127,15 @@ declare module ${module.entity.name} {
 ${aliasImports}
 ${contents}
 }
-declare module \"${underscoreName}\" {
+declare module \"${module.entity.name}\" {
 ${commonJsImports}
 ${contents}
 }
 """
-
 		writeTypeScriptDtsFile(module.entity, outputDirectory, header, dtsContents)
 	}
 
 	private static void writeTypeScriptDtsFile(ModuleNode module, File outputDirectory, String header, String content) {
-		String filename = GeneratorUtils.namespaceToIdentifier(module.name);
-		TypeScriptUtils.createSourceFile(header, filename + ".d.ts", outputDirectory, content);
+		TypeScriptUtils.createSourceFile(header, module.name + ".d.ts", outputDirectory, content);
 	}
 }

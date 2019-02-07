@@ -27,7 +27,7 @@ class TypeScriptDefinitionImportVisitor extends ModuleVisitorBase<Set<String>> {
 		list.sort();
 		return list.collect { ns ->
 			def ident = GeneratorUtils.namespaceToIdentifier(ns)
-			return "import * as ${ident} from \"${ident}\";\n"
+			return "import * as ${ident} from \"${ns}\";\n"
 		}.join("")
 	}
 
