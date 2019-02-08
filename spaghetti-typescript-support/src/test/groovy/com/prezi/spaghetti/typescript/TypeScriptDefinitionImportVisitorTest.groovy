@@ -27,8 +27,8 @@ module com.example.test {
 		def result = TypeScriptDefinitionImportVisitor.namespacesToImports(namespaces)
 
 		expect:
-		result == """import * as com_example_other from "com_example_other";
-import * as com_example_other1 from "com_example_other1";
+		result == """import * as com_example_other from "com.example.other";
+import * as com_example_other1 from "com.example.other1";
 """
 	}
 }

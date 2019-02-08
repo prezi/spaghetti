@@ -94,7 +94,6 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 	private static void generateSpaghettiDependentModule(EntityWithModuleMetaData<ModuleNode> module, File outputDirectory, String header, boolean generateAccessor) {
 		def contents = ""
 		if (generateAccessor) {
-			contents += TypeScriptDefinitionImportVisitor.collectImports(module.entity)
 			contents += new TypeScriptModuleAccessorGeneratorVisitor(module.entity.name).visit(module.entity)
 			contents += new TypeScriptDefinitionIteratorVisitor(module.entity.name) {
 				@Override
@@ -107,7 +106,6 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 				}
 			}.visit(module.entity)
 		} else {
-			contents += TypeScriptDefinitionImportVisitor.collectImports(module.entity)
 			contents += new TypeScriptDefinitionIteratorVisitor(module.entity.name) {
 				@Override
 				String visitEnumNode(EnumNode node) {
@@ -119,11 +117,25 @@ class TypeScriptHeaderGenerator extends AbstractHeaderGenerator {
 				}
 			}.visit(module.entity)
 		}
-		writeTypeScriptDtsFile(module.entity, outputDirectory, header, contents)
+
+		def aliasImports = TypeScriptDefinitionImportVisitor.collectImports(module.entity, true);
+		def commonJsImports = TypeScriptDefinitionImportVisitor.collectImports(module.entity);
+
+		// Backwards compatibility for commonjs header transition
+		def dtsContents = """
+declare module ${module.entity.name} {
+${aliasImports}
+${contents}
+}
+declare module \"${module.entity.name}\" {
+${commonJsImports}
+${contents}
+}
+"""
+		writeTypeScriptDtsFile(module.entity, outputDirectory, header, dtsContents)
 	}
 
 	private static void writeTypeScriptDtsFile(ModuleNode module, File outputDirectory, String header, String content) {
-		String filename = GeneratorUtils.namespaceToIdentifier(module.name);
-		TypeScriptUtils.createSourceFile(header, filename + ".d.ts", outputDirectory, content);
+		TypeScriptUtils.createSourceFile(header, module.name + ".d.ts", outputDirectory, content);
 	}
 }

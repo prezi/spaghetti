@@ -25,10 +25,19 @@ class TypeScriptJavaScriptBundleProcessorTest extends Specification {
 		then:
 		result == """var spaghetti_test_main=null;
 var com_a=Spaghetti["dependencies"]["com.a"];
+var com=(com||{});
+com.a=com_a;
 var com_b=Spaghetti["dependencies"]["com.b"];
+com.b=com_b;
 var spaghetti_other_dep=Spaghetti["dependencies"]["spaghetti.other.dep"];
+var spaghetti=(spaghetti||{});
+spaghetti.other=(spaghetti.other||{});
+spaghetti.other.dep=spaghetti_other_dep;
 var spaghetti_test_a=Spaghetti["dependencies"]["spaghetti.test.a"];
+spaghetti.test=(spaghetti.test||{});
+spaghetti.test.a=spaghetti_test_a;
 var spaghetti_test_dep=Spaghetti["dependencies"]["spaghetti.test.dep"];
+spaghetti.test.dep=spaghetti_test_dep;
 var get_com_lazy_first=Spaghetti["dependencies"]["com.lazy.first"];
 var get_com_lazy_second=Spaghetti["dependencies"]["com.lazy.second"];
 /* This is the JavaScript module */
