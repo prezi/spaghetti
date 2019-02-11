@@ -4,6 +4,8 @@ import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.AbstractLanguageAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.AbstractSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.SpaghettiExtension;
+import com.prezi.spaghetti.gradle.internal.SpaghettiTask;
+import com.prezi.spaghetti.gradle.internal.SpaghettiTestTask;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -56,6 +58,12 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 				withDefaultConfiguration(project, task);
 			}
 		});
+		project.getTasks().withType(SpaghettiTestTask.class).all(new Action<SpaghettiTestTask>() {
+			@Override
+			public void execute(SpaghettiTestTask task) {
+				withDefaultTestConfiguration(project, task);
+			}
+		});
 		project.getTasks().withType(AbstractLanguageAwareSpaghettiTask.class).all(new Action<AbstractLanguageAwareSpaghettiTask>() {
 			@Override
 			public void execute(AbstractLanguageAwareSpaghettiTask task) {
@@ -72,7 +80,7 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	/**
 	 * Override fallback configuration with the main configuration.
  	 */
-	public static void withDefaultConfiguration(final Project project, AbstractSpaghettiTask task) {
+	public static void withDefaultConfiguration(final Project project, SpaghettiTask task) {
 		task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
@@ -98,7 +106,7 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 	/**
 	 * Override fallback configuration with the test configuration.
  	 */
-	public static void withDefaultTestConfiguration(final Project project, AbstractSpaghettiTask task) {
+	public static void withDefaultTestConfiguration(final Project project, SpaghettiTask task) {
 		task.getConventionMapping().map("dependentModules", new Callable<ConfigurableFileCollection>() {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
