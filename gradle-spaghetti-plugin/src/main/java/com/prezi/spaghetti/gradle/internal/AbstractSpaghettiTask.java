@@ -18,7 +18,7 @@ import org.gradle.api.tasks.InputFiles;
 import java.io.IOException;
 import java.util.SortedSet;
 
-public class AbstractSpaghettiTask extends ConventionTask {
+public class AbstractSpaghettiTask extends ConventionTask implements SpaghettiTask {
 	private ConfigurableFileCollection dependentModules = getProject().files();
 	private ConfigurableFileCollection lazyDependentModules = getProject().files();
 	private ModuleBundleSet dependentBundles;
