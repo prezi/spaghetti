@@ -37,9 +37,10 @@ public class StructParser extends AbstractModuleTypeParser<ModuleParser.StructDe
 		// Let further processing access type parameters as defined types
 		resolver = new SimpleNamedTypeResolver(resolver, node.getTypeParameters());
 
-		ModuleParser.SuperTypeDefinitionContext superCtx = getContext().superTypeDefinition();
-		if (superCtx != null) {
-			node.setSuperStruct(parseSuperType(locator, resolver, superCtx));
+
+		for (ModuleParser.SuperTypeDefinitionContext superCtx : getContext().superTypeDefinition()) {
+			StructReference s = parseSuperType(locator, resolver, superCtx);
+			node.getSuperStructs().addInternal(s);
 		}
 
 		for (ModuleParser.StructElementDefinitionContext elemCtx : getContext().structElementDefinition()) {

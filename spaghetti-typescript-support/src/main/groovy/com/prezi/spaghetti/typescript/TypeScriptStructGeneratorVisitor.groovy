@@ -14,9 +14,10 @@ class TypeScriptStructGeneratorVisitor extends AbstractTypeScriptMethodGenerator
 		if (node.typeParameters) {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
-		def superStruct = node.superStruct == null ? "" : "extends " + node.superStruct.accept(this) + " "
+		def superStructs = node.superStructs*.accept(this)
+		def extensions = superStructs.size() > 0 ? "extends ${superStructs.join(', ')} " : ""
 		def members = node.children.findAll({ it instanceof PropertyNode || it instanceof MethodNode })*.accept(this).join("")
-"""export interface ${typeName} ${superStruct}{
+"""export interface ${typeName} ${extensions}{
 ${members}
 }
 """

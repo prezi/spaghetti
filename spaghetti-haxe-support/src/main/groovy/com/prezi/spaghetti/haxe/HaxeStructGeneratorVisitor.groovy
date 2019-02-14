@@ -12,9 +12,9 @@ class HaxeStructGeneratorVisitor extends AbstractHaxeMethodGeneratorVisitor {
 		if (node.typeParameters) {
 			typeName += "<" + node.typeParameters*.name.join(", ") + ">"
 		}
-		def superStruct = node.superStruct == null ? "" : " > " + node.superStruct.accept(this) + ","
+		def superStructs = node.superStructs*.accept(this).collect({ s -> " > ${s}," }).join("")
 		def members = node.children.findAll({ it instanceof PropertyNode || it instanceof MethodNode })*.accept(this).join("")
-"""typedef ${typeName} = {${superStruct}
+"""typedef ${typeName} = {${superStructs}
 ${members}
 }
 """
