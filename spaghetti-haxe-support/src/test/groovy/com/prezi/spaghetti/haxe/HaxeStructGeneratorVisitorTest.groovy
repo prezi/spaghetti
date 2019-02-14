@@ -8,7 +8,7 @@ class HaxeStructGeneratorVisitorTest extends StructGeneratorSpecification {
 /**
  * Hey this is my struct!
  */
-struct MyStruct<T> extends Parent<T> {
+struct MyStruct<T> extends Parent<T>, OtherParent {
 	a: int;
 	/**
 	 * This is field b.
@@ -20,13 +20,17 @@ struct MyStruct<T> extends Parent<T> {
 	parent(): Parent<T>;
 }
 """
-		def result = parseAndVisitStruct(definition, new HaxeStructGeneratorVisitor(), mockStruct("Parent", mockTypeParameter()))
+		def result = parseAndVisitStruct(
+			definition,
+			new HaxeStructGeneratorVisitor(),
+			mockStruct("Parent", mockTypeParameter()),
+			mockStruct("OtherParent"))
 
 		expect:
 		result == """/**
  * Hey this is my struct!
  */
-typedef MyStruct<T> = { > com.example.test.Parent<T>,
+typedef MyStruct<T> = { > com.example.test.Parent<T>, > com.example.test.OtherParent,
 	var a (default, never):Int;
 	/**
 	 * This is field b.

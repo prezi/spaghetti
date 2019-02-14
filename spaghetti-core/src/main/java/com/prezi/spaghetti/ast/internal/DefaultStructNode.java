@@ -16,7 +16,7 @@ import java.util.Collections;
 public class DefaultStructNode extends AbstractParametrizedTypeNode implements StructNodeInternal {
 	private final NamedNodeSetInternal<AnnotationNode> annotations = NodeSets.newNamedNodeSet("annotation");
 	private DocumentationNode documentation = DocumentationNodeInternal.NONE;
-	private StructReference superStruct;
+	private QualifiedTypeNodeReferenceSetInternal<StructReference> superStructs = NodeSets.newQualifiedNodeReferenceSet("super struct");
 	private final NamedNodeSetInternal<PropertyNode> properties = NodeSets.newNamedNodeSet("property");
 	private final NamedNodeSetInternal<MethodNode> methods = NodeSets.newNamedNodeSet("method");
 
@@ -26,7 +26,7 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 
 	@Override
 	public Iterable<? extends AstNode> getChildren() {
-		return Iterables.concat(super.getChildren(), superStruct == null ? Collections.<AstNode>emptySet() : Collections.singleton(superStruct), properties, methods);
+		return Iterables.concat(super.getChildren(), superStructs, properties, methods);
 	}
 
 	@Override
@@ -50,13 +50,8 @@ public class DefaultStructNode extends AbstractParametrizedTypeNode implements S
 	}
 
 	@Override
-	public StructReference getSuperStruct() {
-		return superStruct;
-	}
-
-	@Override
-	public void setSuperStruct(StructReference superStruct) {
-		this.superStruct = superStruct;
+	public QualifiedTypeNodeReferenceSetInternal<StructReference> getSuperStructs() {
+		return superStructs;
 	}
 
 	@Override

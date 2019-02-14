@@ -4,6 +4,8 @@ import com.prezi.spaghetti.ast.AstSpecification
 import com.prezi.spaghetti.ast.StructNode
 import com.prezi.spaghetti.ast.TypeParameterReference
 import com.prezi.spaghetti.ast.internal.NodeSets
+import com.prezi.spaghetti.ast.internal.DefaultFQName
+import com.prezi.spaghetti.ast.internal.DefaultStructNode
 
 import static com.prezi.spaghetti.ast.PrimitiveType.ANY
 import static com.prezi.spaghetti.ast.PrimitiveType.BOOL
@@ -119,14 +121,13 @@ struct MyStruct<T> {
 
 	def "parse super struct"() {
 		def locator = mockLocator("""
-struct StructB extends StructA {
+struct StructC extends StructA, StructB {
 }
 """)
 		def context = AstParserSpecification.parser(locator).structDefinition()
-		def mockStructA = Mock(StructNode) {
-			getName() >> "StructA"
-		}
-		def resolver = Mock(TypeResolver)
+		def mockStructA = new DefaultStructNode(null, new DefaultFQName(null, "StructA"))
+		def mockStructB = new DefaultStructNode(null, new DefaultFQName(null, "StructB"))
+		def resolver = new SimpleNamedTypeResolver(null, [mockStructA, mockStructB])
 		def parser = new StructParser(locator, context, "com.example.test")
 
 		when:
@@ -134,15 +135,7 @@ struct StructB extends StructA {
 		def node = parser.node
 
 		then:
-		_ * mockStructA.typeParameters >> NodeSets.newNamedNodeSet("type parameters")
-		1 * resolver.resolveType(_) >> { TypeResolutionContext ctx ->
-			if (ctx.name.fullyQualifiedName == "StructA") {
-				return mockStructA
-			}
-			throw new UnsupportedOperationException()
-		}
-		node.name == "StructB"
-		node.superStruct.type == mockStructA
-		0 * _
+		node.name == "StructC"
+		node.superStructs.collect({ it.type }) == [mockStructA, mockStructB]
 	}
 }
