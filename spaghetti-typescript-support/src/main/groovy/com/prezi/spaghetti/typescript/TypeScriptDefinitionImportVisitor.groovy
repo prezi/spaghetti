@@ -13,13 +13,8 @@ import com.prezi.spaghetti.generator.GeneratorUtils
 class TypeScriptDefinitionImportVisitor extends ModuleVisitorBase<Set<String>> {
 	private String currentNamespace
 
-	public static String collectImports(ModuleNode node, boolean useAliases = false) {
-		def set = new TypeScriptDefinitionImportVisitor(node.name).visit(node);
-		if (useAliases) {
-			return namespaceToAliases(set, node.name)
-		} else {
-			return namespacesToImports(set)
-		}
+	public static String collectImports(ModuleNode node) {
+		return namespacesToImports(new TypeScriptDefinitionImportVisitor(node.name).visit(node))
 	}
 
 	public static String namespacesToImports(Set<String> namespaces) {
@@ -29,23 +24,6 @@ class TypeScriptDefinitionImportVisitor extends ModuleVisitorBase<Set<String>> {
 			def ident = GeneratorUtils.namespaceToIdentifier(ns)
 			return "import * as ${ident} from \"${ns}\";\n"
 		}.join("")
-	}
-
-	// Backwards compatibility for commonjs header transition
-	public static String namespaceToAliases(Set<String> namespaces, String currentNamespace) {
-		List<String> list = namespaces.toList()
-		list.sort();
-		if (currentNamespace != GeneratorUtils.namespaceToIdentifier(currentNamespace)) {
-			list.add(currentNamespace)
-		}
-
-		return list.collect { ns ->
-			def ident = GeneratorUtils.namespaceToIdentifier(ns)
-			if (ns != ident) {
-				return "import ${ident} = ${ns};\n"
-			}
-			return null
-		}.findAll({ it != null }).join("")
 	}
 
 	TypeScriptDefinitionImportVisitor(String currentNamespace) {
