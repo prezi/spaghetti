@@ -65,13 +65,7 @@ class TypeScriptJavaScriptBundleProcessor extends AbstractJavaScriptBundleProces
 		for (def wrapper: config.getDirectDependentModules()) {
 			ModuleNode module = wrapper.entity;
 			String value = GeneratorUtils.createModuleAccessor(module.name, wrapper.format);
-			String identName = GeneratorUtils.namespaceToIdentifier(module.name);
-			lines.add(String.format("var %s=%s;", identName, value));
-			if (identName != module.name) {
-				// Backwards compatibility for commonjs header transition: generate both underscored and non-underscore accessors
-				Collection<String> namespaceMerge = GeneratorUtils.createNamespaceMerge(module.name, identName);
-				lines.addAll(namespaceMerge);
-			}
+			lines.add(String.format("var %s=%s;", GeneratorUtils.namespaceToIdentifier(module.name), value));
 		}
 		for (def wrapper: config.getLazyDependentModules()) {
 			ModuleNode module = wrapper.entity;
