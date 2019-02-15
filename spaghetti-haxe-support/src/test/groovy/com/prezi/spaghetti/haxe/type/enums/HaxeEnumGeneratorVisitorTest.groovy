@@ -48,10 +48,10 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	/**
 	 * Alma.
 	 */
-	public static var ALMA = new MyEnum(${first});
+	public static var ALMA (default, never) = new MyEnum(${first});
 	@:deprecated("escape \\"this\\"!")
-	public static var BELA = new MyEnum(${second});
-	public static var GEZA = new MyEnum(${third});
+	public static var BELA (default, never) = new MyEnum(${second});
+	public static var GEZA (default, never) = new MyEnum(${third});
 
 	static var _values = {
 		#if js
