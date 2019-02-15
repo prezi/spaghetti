@@ -71,7 +71,7 @@ ${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
 
 		@Override
 		String visitEnumValueNode(EnumValueNode node) {
-			return "\tpublic static var ${node.name} = new ${enumName}(${generateValueExpression(node)});"
+			return "\tpublic static var ${node.name} (default, never) = new ${enumName}(${generateValueExpression(node)});"
 		}
 
 		String generateValueExpression(EnumValueNode node) {
