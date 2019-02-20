@@ -129,4 +129,8 @@ public class AbstractSpaghettiTask extends ConventionTask {
 		getLogger().info("Loaded configuration: {}", config);
 		return config;
 	}
+
+	public boolean usesDirectDependentModuleImplementation() {
+		return false;
+	}
 }

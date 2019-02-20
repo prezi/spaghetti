@@ -77,9 +77,9 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
 				SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
-				Configuration configuration = task instanceof AbstractDefinitionAwareSpaghettiTask
-					? extension.getModuleDefinitionConfiguration()
-					: extension.getConfiguration();
+				Configuration configuration = task.usesDirectDependentModuleImplementation()
+					? extension.getConfiguration()
+					: extension.getModuleDefinitionConfiguration();
 				return project.files(configuration);
 			}
 		});
@@ -87,9 +87,9 @@ public class SpaghettiBasePlugin implements Plugin<Project> {
 			@Override
 			public ConfigurableFileCollection call() throws Exception {
 				SpaghettiExtension extension = project.getExtensions().getByType(SpaghettiExtension.class);
-				Configuration configuration = task instanceof AbstractDefinitionAwareSpaghettiTask
-						? extension.getLazyModuleDefinitionConfiguration()
-						: extension.getLazyConfiguration();
+				Configuration configuration = task.usesDirectDependentModuleImplementation()
+						? extension.getLazyConfiguration()
+						: extension.getLazyModuleDefinitionConfiguration();
 				return project.files(configuration);
 			}
 		});
