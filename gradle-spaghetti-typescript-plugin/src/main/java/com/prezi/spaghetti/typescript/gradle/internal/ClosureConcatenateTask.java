@@ -24,10 +24,9 @@ import com.prezi.spaghetti.definition.ModuleConfiguration;
 import com.prezi.spaghetti.gradle.internal.AbstractDefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.DefinitionAwareSpaghettiTask;
 import com.prezi.spaghetti.gradle.internal.ExternalDependencyAwareTask;
-import com.prezi.spaghetti.gradle.internal.SpaghettiTestTask;
 import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
 
-public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask implements ExternalDependencyAwareTask, DefinitionAwareSpaghettiTask, SpaghettiTestTask {
+public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask implements ExternalDependencyAwareTask, DefinitionAwareSpaghettiTask {
 	private File workDir;
 	private File sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
