@@ -175,4 +175,9 @@ public class PackageApplication extends AbstractSpaghettiTask {
 				getExternalDependencies()
 		));
 	}
+
+	@Override
+	public boolean usesDirectDependentModuleImplementation() {
+		return true;
+	}
 }

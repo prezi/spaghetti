@@ -172,6 +172,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 
 				ClosureConcatenateTask concatTask = addConcatenateTask(project, testBinary);
 				concatTask.getConventionMapping().map("entryPoints", testSourcesEntryPoints);
+				SpaghettiBasePlugin.withDefaultTestConfiguration(project, concatTask);
 
 				registerSpaghettiModule(project, testBinary, null, null, concatTask, true, lazy);
 			}
