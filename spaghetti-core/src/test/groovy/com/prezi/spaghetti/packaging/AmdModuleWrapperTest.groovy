@@ -56,15 +56,15 @@ class AmdModuleWrapperTest extends WrapperTestBase {
 	}
 
 	def "AMD application"() {
-		def dependencyTree = [
-				"com.example.test": ["com.example.alma", "com.example.bela"].toSet(),
-				"com.example.alma": ["com.example.bela"].toSet(),
-				"com.example.bela": [].toSet()
+		def dependencies = [
+				"com.example.alma",
+				"com.example.bela",
+				"com.example.test",
 		]
 		def externals = [
 				"react": "react"
 		]
-		def result = new AmdModuleWrapper().makeApplication(dependencyTree, "modules", "com.example.test", true, externals)
+		def result = new AmdModuleWrapper().makeApplication(dependencies, "modules", "com.example.test", true, externals)
 
 		expect:
 		result == [

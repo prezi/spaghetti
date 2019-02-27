@@ -3,6 +3,7 @@ package com.prezi.spaghetti.packaging.internal;
 import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,16 +27,10 @@ public class SingleFileModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	@Override
-	protected StringBuilder makeConfig(StringBuilder result, String modulesDirectory, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
-		return result;
-	}
-
-	@Override
-	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+	protected void makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
 		result.append("var mainModule=modules[\"").append(mainModule).append("\"][\"").append(MODULE).append("\"];");
 		if (execute) {
 			result.append("mainModule[\"main\"]();");
 		}
-		return result;
 	}
 }

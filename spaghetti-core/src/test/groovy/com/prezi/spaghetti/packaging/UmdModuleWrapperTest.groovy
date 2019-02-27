@@ -68,15 +68,15 @@ class UmdModuleWrapperTest extends WrapperTestBase {
 	}
 
 	def "UMD application"() {
-		def dependencyTree = [
-				"com.example.test": ["com.example.alma", "com.example.bela"].toSet(),
-				"com.example.alma": ["com.example.bela"].toSet(),
-				"com.example.bela": [].toSet()
+		def dependencies = [
+				"com.example.alma",
+				"com.example.bela",
+				"com.example.test",
 		]
 		def externals = [
 				"react": "react"
 		]
-		def result = new UmdModuleWrapper().makeApplication(dependencyTree, "modules", "com.example.test", true, externals)
+		def result = new UmdModuleWrapper().makeApplication(dependencies, "modules", "com.example.test", true, externals)
 
 		expect:
 		result == [

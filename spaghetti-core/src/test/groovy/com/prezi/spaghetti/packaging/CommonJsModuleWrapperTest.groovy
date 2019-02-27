@@ -55,15 +55,15 @@ class CommonJsModuleWrapperTest extends WrapperTestBase {
 	}
 
 	def "CommonJS application"() {
-		def dependencyTree = [
-				"com.example.test": ["com.example.alma", "com.example.bela"].toSet(),
-				"com.example.alma": ["com.example.bela"].toSet(),
-				"com.example.bela": [].toSet()
+		def dependencies = [
+				"com.example.test",
+				"com.example.alma",
+				"com.example.bela",
 		]
 		def externals = [
 				"react": "react"
 		]
-		def result = new CommonJsModuleWrapper().makeApplication(dependencyTree, "node_modules", "com.example.test", true, externals)
+		def result = new CommonJsModuleWrapper().makeApplication(dependencies, "node_modules", "com.example.test", true, externals)
 
 		expect:
 		result == [

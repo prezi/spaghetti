@@ -1,7 +1,9 @@
 package com.prezi.spaghetti.packaging.internal;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.prezi.spaghetti.bundle.ModuleBundle;
 import com.prezi.spaghetti.bundle.ModuleBundleElement;
 import com.prezi.spaghetti.bundle.ModuleFormat;
@@ -11,10 +13,12 @@ import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 import com.prezi.spaghetti.structure.internal.IOAction;
 import com.prezi.spaghetti.structure.internal.StructuredAppender;
 import com.prezi.spaghetti.structure.internal.StructuredWriter;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
@@ -44,9 +48,9 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 		}
 
 		// Add application
-		final Map<String, Set<String>> dependencyTree = Maps.newLinkedHashMap();
+		final Collection<String> dependencies = Sets.newTreeSet();
 		for (ModuleBundle bundle : params.bundles) {
-			dependencyTree.put(bundle.getName(), bundle.getDependentModules());
+			dependencies.add(bundle.getName());
 		}
 
 		writer.appendFile(params.applicationName, new IOAction<OutputStream>() {
@@ -56,7 +60,7 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 					IOUtils.write(prefix, out, Charsets.UTF_8);
 				}
 
-				String wrappedApplication = wrapper.makeApplication(dependencyTree, getModulesDirectory(), params.mainModule, params.execute, params.externals);
+				String wrappedApplication = wrapper.makeApplication(dependencies, getModulesDirectory(), params.mainModule, params.execute, params.externals);
 
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 				for (String suffix : params.suffixes) {
@@ -64,6 +68,12 @@ public abstract class AbstractStructuredApplicationPackager extends AbstractAppl
 				}
 			}
 		});
+
+		String jsonContents = wrapper.makeJsonPathsMapping(dependencies, getModulesDirectory(), params.externals);
+		if (!Strings.isNullOrEmpty(jsonContents)) {
+			String jsonFilename = FilenameUtils.removeExtension(params.applicationName) + ".json";
+			writer.appendFile(jsonFilename, jsonContents);
+		}
 	}
 
 	protected abstract String getModuleFileName(ModuleBundle bundle);
