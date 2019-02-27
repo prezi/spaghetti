@@ -98,7 +98,7 @@ public class SingleFileApplicationPackager extends AbstractApplicationPackager {
 				IOUtils.write(Joiner.on('\n').join(dependencyInitializers), out, Charsets.UTF_8);
 				IOUtils.write("\n", out);
 
-				String wrappedApplication = wrapper.makeApplication(dependencyTree, null, params.mainModule, params.execute, params.externals);
+				String wrappedApplication = wrapper.makeApplication(dependencyTree.keySet(), null, params.mainModule, params.execute, params.externals);
 				IOUtils.write(wrappedApplication, out, Charsets.UTF_8);
 
 				for (String suffix : params.suffixes) {

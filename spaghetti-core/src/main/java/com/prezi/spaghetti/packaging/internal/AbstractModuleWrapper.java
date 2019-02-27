@@ -80,18 +80,23 @@ public abstract class AbstractModuleWrapper implements ModuleWrapper {
 
 
 
-	public String makeApplication(Map<String, Set<String>> dependencyTree, String modulesDirectory, final String mainModule, boolean execute, Map<String, String> externals) {
+	public String makeApplication(Collection<String> dependencies, String modulesDirectory, final String mainModule, boolean execute, Map<String, String> externals) {
 		StringBuilder result = new StringBuilder();
-		makeConfig(result, modulesDirectory, dependencyTree, externals);
+		makeConfig(result, modulesDirectory, dependencies, externals);
 		if (!Strings.isNullOrEmpty(mainModule)) {
 			makeMainModuleSetup(result, mainModule, execute);
 		}
 		return result.toString();
 	}
 
+	public String makeJsonPathsMapping(Collection<String> dependencies, String modulesDirectory, Map<String, String> externals) {
+		return null;
+	}
+
 	// Make the configuration for the application
-	protected abstract StringBuilder makeConfig(StringBuilder result, String modulesDirectory, Map<String, Set<String>> dependencyTree, Map<String, String> externals);
+	protected void makeConfig(StringBuilder result, String modulesDirectory, Collection<String> dependencies, Map<String, String> externals) {
+	}
 
 	// Make the setup instructions for the main module
-	protected abstract StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute);
+	protected abstract void makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute);
 }

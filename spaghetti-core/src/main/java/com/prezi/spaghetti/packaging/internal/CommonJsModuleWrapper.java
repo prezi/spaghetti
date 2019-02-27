@@ -8,6 +8,7 @@ import com.prezi.spaghetti.packaging.ModuleWrapperParameters;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,16 +51,10 @@ public class CommonJsModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	@Override
-	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+	protected void makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
 		result.append("var mainModule=require(\"").append(mainModule).append("\")[\"").append(MODULE).append("\"];");
 		if (execute) {
             result.append("mainModule[\"main\"]();\n");
         }
-		return result;
-	}
-
-	@Override
-	protected StringBuilder makeConfig(StringBuilder result, String modulesDirectory, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
-		return result;
 	}
 }

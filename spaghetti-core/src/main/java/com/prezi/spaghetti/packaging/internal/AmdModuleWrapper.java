@@ -58,41 +58,24 @@ public class AmdModuleWrapper extends AbstractModuleWrapper {
 	}
 
 	@Override
-	protected StringBuilder makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
+	protected void makeMainModuleSetup(StringBuilder result, String mainModule, boolean execute) {
 		result.append("require([\"").append(mainModule).append("\"],function(__mainModule){");
 		if (execute) {
             result.append("__mainModule[\"").append(MODULE).append("\"][\"main\"]();");
         }
 		result.append("});\n");
-		return result;
 	}
 
 	@Override
-	protected StringBuilder makeConfig(StringBuilder result, String modulesDirectory, Map<String, Set<String>> dependencyTree, Map<String, String> externals) {
-		Iterable<String> moduleDependencyPaths = makeModuleDependencies(Sets.newTreeSet(dependencyTree.keySet()), modulesDirectory);
-		Iterable<String> externalDependencyPaths = Collections2.transform(externals.entrySet(), new Function<Map.Entry<String, String>, String>() {
-			@Override
-			public String apply(Map.Entry<String, String> external) {
-				return String.format("\"%s\":\"%s\"", external.getKey(), external.getValue());
-			}
-		});
-		// Begin config
-		result.append("require[\"config\"]({\"baseUrl\":\".\",\"paths\":{");
-		// Append path definitions
-		Joiner.on(',').appendTo(result, Iterables.concat(moduleDependencyPaths, externalDependencyPaths));
-		// End config
-		result.append("}});");
-		return result;
+	protected void makeConfig(StringBuilder result, String modulesDirectory, Collection<String> dependencies, Map<String, String> externals) {
+		RequireJsHelpers.makeConfig(result, modulesDirectory, dependencies, externals);
 	}
 
-	private static Collection<String> makeModuleDependencies(Collection<String> moduleNames, final String modulesRoot) {
-		final String normalizedModulesRoot = modulesRoot.endsWith("/") ? modulesRoot : modulesRoot + "/";
-		return Collections2.transform(moduleNames, new Function<String, String>() {
-			@Override
-			public String apply(String moduleName) {
-				return String.format("\"%s\":\"%s%s/%s\"", moduleName, normalizedModulesRoot, moduleName, moduleName);
-			}
-		});
+	@Override
+	public String makeJsonPathsMapping(Collection<String> dependencies, String modulesDirectory, Map<String, String> externals) {
+		StringBuilder result = new StringBuilder();
+		RequireJsHelpers.makePathsMapping(result, modulesDirectory, dependencies, externals);
+		result.append("\n");
+		return result.toString();
 	}
-
 }
