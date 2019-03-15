@@ -43,7 +43,7 @@ public class ModuleBundleLoader {
 				ModuleBundle bundle = ModuleBundleFactory.load(bundleFile, moduleBundleType);
 				logger.info("Found module bundle {}", bundle.getName());
 				if (!bundles.add(bundle)) {
-					logger.warn("Bundle {} loaded twice", bundle.getName());
+					logger.info("Bundle {} loaded twice", bundle.getName());
 				}
 			} catch (IOException ex) {
 				throw ex;
