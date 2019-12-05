@@ -3,6 +3,8 @@ package com.prezi.spaghetti.typescript.gradle.internal;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +17,6 @@ import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -178,7 +179,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			names.add(f.getName().replaceAll("(\\.d)?\\.tsx?$", ".js"));
 		}
 
-		Collection<File> foundFiles = Lists.newArrayList();
+		List<File> foundFiles = Lists.newArrayList();
 		for (File f: list) {
 			if (names.contains(f.getName())) {
 				foundFiles.add(f);
@@ -188,6 +189,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		if (foundFiles.size() != fileNames.size()) {
 			throw new RuntimeException("Cannot find entry points: " + Joiner.on(", ").join(names));
 		}
+		foundFiles.sort(Comparator.comparing(File::getAbsolutePath));
 		return foundFiles;
 	}
 }
