@@ -164,6 +164,18 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			public void execute(CopySpec copySpec) {
 				copySpec.from(getSourceDir());
 				copySpec.into(getWorkDir());
+				copySpec.filter(new Transformer<String, String>() {
+					@Override
+					public String transform(String s) {
+						if (s.startsWith("exports.") && s.endsWith("= void 0;")) {
+							// Starting with typescript version 3.9 it emits lines like these
+							// closure can't handle these, so these have to be removed
+							// See https://github.com/microsoft/TypeScript/issues/41369 for more info
+							return null;
+						}
+						return s;
+					}
+				});
 			}
 		});
 		ModuleConfiguration config = readConfig(getDefinition());
