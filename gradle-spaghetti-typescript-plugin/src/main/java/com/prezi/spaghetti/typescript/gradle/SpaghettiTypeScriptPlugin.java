@@ -34,7 +34,10 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.ConfigurableFileTree;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.internal.file.FileResolver;
+import org.gradle.api.specs.Spec;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,7 +217,10 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 			ClosureConcatenateTask.class);
 		concatTask.setDescription("Concatenates " + binary);
 		concatTask.dependsOn(binary.getCompileTask());
-		concatTask.setSourceDir(binary.getCompileTask().getOutputDir());
+		concatTask.setSourceRootDir(binary.getCompileTask().getOutputDir());
+		ConfigurableFileTree sourceFiltered = project.fileTree(concatTask.getSourceRootDir());
+		sourceFiltered.exclude("tsconfig.tsbuildinfo");
+		concatTask.setSourceDir(sourceFiltered);
 		concatTask.setWorkDir(
 				project.file(project.getBuildDir() + "/closure-concat/"
 					+ namingScheme.getOutputDirectoryBase() + "/"));

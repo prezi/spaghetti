@@ -10,9 +10,17 @@ import java.util.Set;
 
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import org.apache.commons.io.FileUtils;
+import org.gradle.api.Action;
+import org.gradle.api.Transformer;
+import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.CopySpec;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
 
@@ -29,13 +37,26 @@ import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
 
 public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask implements ExternalDependencyAwareTask, DefinitionAwareSpaghettiTask {
 	private File workDir;
-	private File sourceDir;
+	private File sourceRootDir;
+	private FileTree sourceDir;
 	private Map<String, String> externalDependencies = Maps.newTreeMap();
 	private Set<String> nodeRequireDependencies = Sets.newHashSet();
 	private Set<File> npmPackageRoots = Sets.newHashSet();
 	private Collection<File> entryPoints = null;
 	private DefinitionFile definition = null;
 	private String closureTarget = "es5";
+
+	@Override
+	@Internal
+	public ConfigurableFileCollection getDependentModules() {
+		return super.getDependentModules();
+	}
+
+	@Override
+	@Internal
+	public ConfigurableFileCollection getLazyDependentModules() {
+		return super.getLazyDependentModules();
+	}
 
 	@Input
 	public File getWorkDir() {
@@ -46,13 +67,21 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		workDir = dir;
 	}
 
-	@InputDirectory
-	public File getSourceDir() {
+	@InputFiles
+	public FileTree getSourceDir() {
 		return sourceDir;
 	}
 
-	public void setSourceDir(File dir) {
+	public void setSourceDir(FileTree dir) {
 		sourceDir = dir;
+	}
+
+	public File getSourceRootDir() {
+		return sourceRootDir;
+	}
+
+	public void setSourceRootDir(File sourceRootDir) {
+		this.sourceRootDir = sourceRootDir;
 	}
 
 	@OutputFile
@@ -130,7 +159,13 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		File nodeDir = new File(workDir, "node_modules");
 		FileUtils.forceMkdir(nodeDir);
 
-		FileUtils.copyDirectory(getSourceDir(), workDir);
+		getProject().copy(new Action<CopySpec>() {
+			@Override
+			public void execute(CopySpec copySpec) {
+				copySpec.from(getSourceDir());
+				copySpec.into(getWorkDir());
+			}
+		});
 		ModuleConfiguration config = readConfig(getDefinition());
 
 		ClosureCompiler.createExternAccessorsForConcat(nodeDir, config);
