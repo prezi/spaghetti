@@ -26,6 +26,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.internal.CollectionCallbackActionDecorator;
 import org.gradle.internal.reflect.Instantiator;
 
 public class SpaghettiExtension {
@@ -52,8 +53,8 @@ public class SpaghettiExtension {
 	private String typescriptExportNamespace = null;
 	private boolean lazy = false;
 
-	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultModuleDefinitionConfiguration, Configuration defaultLazyConfiguration, Configuration defaultLazyModuleDefinitionConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration) {
-		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator);
+	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultModuleDefinitionConfiguration, Configuration defaultLazyConfiguration, Configuration defaultLazyModuleDefinitionConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration, CollectionCallbackActionDecorator collectionCallbackActionDecorator) {
+		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator, collectionCallbackActionDecorator);
 		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator);
 		this.configuration = defaultConfiguration;
 		this.moduleDefinitionConfiguration = defaultModuleDefinitionConfiguration;

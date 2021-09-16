@@ -1,7 +1,6 @@
 package com.prezi.spaghetti.gradle.internal.incubating;
 
-import org.gradle.api.Nullable;
-
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface BinaryNamingScheme {

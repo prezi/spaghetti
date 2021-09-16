@@ -321,7 +321,3 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 		compile project(path: ":gradle-spaghetti-plugin")
 	}
 }
-
-task wrapper(type: Wrapper) {
-	gradleVersion = gradleVer
-}
