@@ -1,20 +1,22 @@
 configurations {
 	antlr
+	testDependencies.extendsFrom testImplementation
 }
 
 dependencies {
-	compile project(":spaghetti-api")
-	compile "com.google.javascript:closure-compiler:v20140814"
+	api project(":spaghetti-api")
+	api "org.slf4j:slf4j-api:1.7.7"
 
-	compile "org.antlr:antlr4-runtime:4.2"
-	compile "commons-lang:commons-lang:2.6"
-	compile "commons-codec:commons-codec:1.9"
-	compile "commons-io:commons-io:2.4"
-	compile "com.google.guava:guava:17.0"
-	compile "com.google.code.gson:gson:2.2.4"
-	compile "org.slf4j:slf4j-api:1.7.7"
+	api "com.google.javascript:closure-compiler:v20140814"
+
+	api "org.antlr:antlr4-runtime:4.2"
+	api "commons-lang:commons-lang:2.6"
+	api "commons-codec:commons-codec:1.9"
+	api "commons-io:commons-io:2.4"
+	api "com.google.guava:guava:17.0"
+	api "com.google.code.gson:gson:2.2.4"
 	antlr "org.antlr:antlr4:4.2"
-	testCompile "org.slf4j:slf4j-simple:1.7.7"
+	testImplementation "org.slf4j:slf4j-simple:1.7.7"
 }
 
 def generatedGrammar = file("${buildDir}/antlr-generated")
@@ -115,6 +117,6 @@ processResources {
 
 
 artifacts {
-	testCompile(testJar)
+	testImplementation(testJar)
 	archives(testJar)
 }
