@@ -55,7 +55,7 @@ public class SpaghettiExtension {
 
 	public SpaghettiExtension(final Project project, Instantiator instantiator, Configuration defaultConfiguration, Configuration defaultModuleDefinitionConfiguration, Configuration defaultLazyConfiguration, Configuration defaultLazyModuleDefinitionConfiguration, Configuration defaultTestConfiguration, Configuration defaultObfuscatedConfiguration, Configuration defaultTestObfuscatedConfiguration, CollectionCallbackActionDecorator collectionCallbackActionDecorator) {
 		this.sources = instantiator.newInstance(DefaultProjectSourceSet.class, instantiator, collectionCallbackActionDecorator);
-		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator);
+		this.binaries = instantiator.newInstance(DefaultBinaryContainer.class, instantiator, collectionCallbackActionDecorator);
 		this.configuration = defaultConfiguration;
 		this.moduleDefinitionConfiguration = defaultModuleDefinitionConfiguration;
 		this.lazyConfiguration = defaultLazyConfiguration;

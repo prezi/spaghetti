@@ -11,6 +11,6 @@ public class DefaultProjectSourceSet extends AbstractNamedDomainObjectContainer<
 
     @Override
     protected FunctionalSourceSet doCreate(String name) {
-        return getInstantiator().newInstance(DefaultFunctionalSourceSet.class, name, getInstantiator());
+        return getInstantiator().newInstance(DefaultFunctionalSourceSet.class, name, getInstantiator(), getEventRegister().getDecorator());
     }
 }

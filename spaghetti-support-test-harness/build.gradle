@@ -1,4 +1,4 @@
 dependencies {
-	implementation project(path: ":spaghetti-core")
-	implementation project(path: ":spaghetti-core", configuration: "testDependencies")
+	api project(path: ":spaghetti-core")
+	api project(path: ":spaghetti-core", configuration: "testDependencies")
 }

@@ -1,5 +1,5 @@
-ext.gradleVer = "4.6"
-ext.groovyVersion = "2.3.9"
+ext.gradleVer = "7.1"
+ext.groovyVersion = "3.0.7"
 
 String gitVersion
 if (hasProperty("release")) {
@@ -162,10 +162,10 @@ configure(codeProjects) {
 	project.dependencies {
 		testImplementation "junit:junit:4.11"
 		testImplementation "org.mockito:mockito-all:1.9.5"
-		testImplementation("org.spockframework:spock-core:0.7-groovy-2.0") {
+		testImplementation("org.spockframework:spock-core:2.0-groovy-3.0") {
 			exclude group: "org.codehaus.groovy"
 		}
-		testImplementation "org.codehaus.groovy:groovy:${groovyVersion}"
+		testImplementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
 	}
 
 	test {
