@@ -9,10 +9,7 @@ import com.prezi.spaghetti.gradle.internal.AbstractBundleModuleTask;
 import com.prezi.spaghetti.obfuscation.ModuleObfuscator;
 import com.prezi.spaghetti.obfuscation.ObfuscationParameters;
 import com.prezi.spaghetti.obfuscation.ObfuscationResult;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,6 +76,7 @@ public class ObfuscateModule extends AbstractBundleModuleTask implements NeedsTy
 		this.tsCompilerPath = compilerPath;
 	}
 
+	@Internal
 	public File getWorkDir() {
 		return workDir;
 	}

@@ -8,12 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.SourceTask;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -31,7 +26,7 @@ public class MergeDtsTask extends SourceTask implements DefinitionAwareSpaghetti
     private File sourceDir;
     private File tsCompilerPath = null;
 
-    @Input
+    @Internal
     public File getWorkDir() {
         return workDir;
     }

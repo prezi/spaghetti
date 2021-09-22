@@ -25,6 +25,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
@@ -299,13 +300,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 			}
 
 		});
-		zipTask.getConventionMapping().map("baseName", new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				return name;
-			}
-
-		});
+		zipTask.getArchiveBaseName().convention(name);
 		return zipTask;
 	}
 }
