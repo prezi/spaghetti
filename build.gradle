@@ -32,8 +32,6 @@ allprojects {
 
 subprojects { subproject ->
 	apply plugin: 'maven-publish'
-	// For some reason this is needed ot have dependencies in POM files
-	apply plugin: "java"
 	apply plugin: "java-library"
 
 	repositories {

@@ -239,7 +239,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		mergeDtsTask.dependsOn(binary.getCompileTask());
 		mergeDtsTask.setSourceDir(binary.getCompileTask().getOutputDir());
 		mergeDtsTask.setSource(project.fileTree(binary.getCompileTask().getOutputDir()));
-		mergeDtsTask.setWorkDir(
+		mergeDtsTask.setOutputDir(
 				project.file(project.getBuildDir() + "/merge-dts/"
 					+ namingScheme.getOutputDirectoryBase() + "/"));
 		binary.builtBy(mergeDtsTask);
