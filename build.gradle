@@ -43,6 +43,9 @@ subprojects { subproject ->
 		maven {
 			url "https://plugins.gradle.org/m2/"
 		}
+		maven {
+			url "https://artifactory.prezi.com/artifactory/plugins-release-local/"
+		}
 	}
 
 	publishing {
