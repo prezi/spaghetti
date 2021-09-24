@@ -1,5 +1,5 @@
-ext.gradleVer = "4.6"
-ext.groovyVersion = "2.3.9"
+ext.gradleVer = "7.1"
+ext.groovyVersion = "3.0.7"
 
 String gitVersion
 if (hasProperty("release")) {
@@ -14,8 +14,8 @@ task version {
 	}
 }
 
-def sonatype = hasProperty("sonatype")
-def signArtifacts = sonatype || hasProperty("sign")
+def ossRelease = hasProperty("oss") || hasProperty("sonatype")
+def signArtifacts = ossRelease || hasProperty("sign")
 
 allprojects {
 	group = 'com.prezi.spaghetti'
@@ -31,10 +31,8 @@ allprojects {
 }
 
 subprojects { subproject ->
-	apply plugin: 'maven'
 	apply plugin: 'maven-publish'
-	// For some reason this is needed ot have dependencies in POM files
-	apply plugin: "java"
+	apply plugin: "java-library"
 
 	repositories {
 		mavenLocal()
@@ -43,80 +41,66 @@ subprojects { subproject ->
 			url "https://oss.sonatype.org/content/groups/public"
 		}
 		maven {
-			url "http://gradle.artifactoryonline.com/gradle/libs"
+			url "https://plugins.gradle.org/m2/"
 		}
 	}
 
-	uploadArchives {
-		repositories {
-			mavenDeployer {
-				pom.project {
-					url "http://github.com/prezi/spaghetti/"
-					name subproject.name
-					description subproject.description
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				from components.java
+				pom {
+					url = "http://github.com/prezi/spaghetti/"
+					name = subproject.name
+					description = subproject.description
 
 					scm {
-						url "http://github.com:prezi/spaghetti"
-						connection "scm:git@github.com:prezi/spaghetti.git"
-						developerConnection "scm:git@github.com:prezi/spaghetti.git"
+						url = "http://github.com:prezi/spaghetti"
+						connection = "scm:git@github.com:prezi/spaghetti.git"
+						developerConnection = "scm:git@github.com:prezi/spaghetti.git"
 					}
 
 					licenses {
 						license {
-							name "The Apache Software License, Version 2.0"
-							url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-							distribution "repo"
+							name = "The Apache Software License, Version 2.0"
+							url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+							distribution = "repo"
 						}
 					}
 
 					developers {
 						developer {
-							id "lptr"
-							name "Lorant Pinter"
+							id = "lptr"
+							name = "Lorant Pinter"
 						}
 						developer {
-							id "exFalso"
-							name "Andras Slemmer"
+							id = "exFalso"
+							name = "Andras Slemmer"
 						}
 						developer {
-							id "gidapataki"
-							name "Gida Pataki"
+							id = "gidapataki"
+							name = "Gida Pataki"
 						}
 					}
 				}
-
-				if (sonatype) {
-					repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-						def user = project.getProperty("sonatypeUsername")
-						def password = project.getProperty("sonatypePassword")
-						authentication(userName: user, password: password)
+			}
+		}
+		repositories {
+			maven {
+				def isSnapshot = version.endsWith('SNAPSHOT')
+				if (ossRelease) {
+					credentials {
+						username = project.getProperty("sonatypeUsername")
+						password = project.getProperty("sonatypePassword")
 					}
-					snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-						def user = project.getProperty("sonatypeUsername")
-						def password = project.getProperty("sonatypePassword")
-						authentication(userName: user, password: password)
-					}
+					url = isSnapshot ? "https://oss.sonatype.org/content/repositories/snapshots/" : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 				} else if (project.hasProperty("nexusUser") && project.hasProperty("nexusPassword")) {
-					publishing {
-						repositories {
-							maven {
-								def repoUrl = project.version.endsWith('-SNAPSHOT') ?
-										"https://artifactory.prezi.com/plugins-snapshot-local/" :
-										"https://artifactory.prezi.com/plugins-release-local/"
-
-								url repoUrl
-								credentials {
-									username = nexusUser
-									password = nexusPassword
-								}
-							}
-						}
-						publications {
-							maven(MavenPublication) {
-								from components.java
-							}
-						}
+					credentials {
+						username = project.getProperty("nexusUser")
+						password = project.getProperty("nexusPassword")
 					}
+					def baseRepoUrl = "https://artifactory.prezi.com/artifactory"
+					url = isSnapshot ? "${baseRepoUrl}/plugins-snapshot-local/" : "${baseRepoUrl}/plugins-release-local/"
 				}
 			}
 		}
@@ -126,15 +110,7 @@ subprojects { subproject ->
 		apply plugin: "signing"
 
 		signing {
-			sign configurations.archives
-		}
-
-		uploadArchives {
-			repositories {
-				mavenDeployer {
-					beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-				}
-			}
+			sign publishing.publications.mavenJava
 		}
 	}
 }
@@ -163,10 +139,10 @@ configure(codeProjects) {
 	}
 
 	dependencies {
-		integTestCompile sourceSets.main.output
-		integTestCompile configurations.testCompile
-		integTestCompile sourceSets.test.output
-		integTestRuntime configurations.testRuntime
+		integTestImplementation sourceSets.main.output
+		integTestImplementation configurations.testImplementation
+		integTestImplementation sourceSets.test.output
+		integTestRuntimeOnly configurations.testRuntimeOnly
 	}
 
 	task integTest(type: Test) {
@@ -182,12 +158,12 @@ configure(codeProjects) {
 	}
 
 	project.dependencies {
-		testCompile "junit:junit:4.11"
-		testCompile "org.mockito:mockito-all:1.9.5"
-		testCompile("org.spockframework:spock-core:0.7-groovy-2.0") {
+		testImplementation "junit:junit:4.11"
+		testImplementation "org.mockito:mockito-all:1.9.5"
+		testImplementation("org.spockframework:spock-core:2.0-groovy-3.0") {
 			exclude group: "org.codehaus.groovy"
 		}
-		testCompile "org.codehaus.groovy:groovy:${groovyVersion}"
+		testImplementation "org.codehaus.groovy:groovy-all:${groovyVersion}"
 	}
 
 	test {
@@ -224,7 +200,7 @@ configure(codeProjects) {
 	}
 
 	configurations {
-		groovydoc { extendsFrom compile }
+		groovydoc { extendsFrom implementation }
 	}
 
 	dependencies {
@@ -295,14 +271,14 @@ configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) { p -
 
 configure(groovyProjects) {
 	dependencies {
-		compile "org.codehaus.groovy:groovy:${groovyVersion}"
+		implementation "org.codehaus.groovy:groovy:${groovyVersion}"
 	}
 }
 
 configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 	dependencies {
-		compile project(path: ":spaghetti-api")
-		testCompile project(path: ":spaghetti-support-test-harness")
+		api project(path: ":spaghetti-api")
+		testImplementation project(path: ":spaghetti-support-test-harness")
 	}
 
 	task zipIntegrationTestSources(type: Zip) {
@@ -317,11 +293,7 @@ configure(subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }) {
 
 configure(subprojects.findAll { it.name ==~ /gradle-spaghetti-.*-plugin/}) {
 	dependencies {
-		compile gradleApi()
-		compile project(path: ":gradle-spaghetti-plugin")
+		api project(path: ":gradle-spaghetti-plugin")
+		implementation gradleApi()
 	}
-}
-
-task wrapper(type: Wrapper) {
-	gradleVersion = gradleVer
 }

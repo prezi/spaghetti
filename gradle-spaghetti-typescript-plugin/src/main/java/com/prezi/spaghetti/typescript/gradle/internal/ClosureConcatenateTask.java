@@ -16,13 +16,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.Internal;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -58,7 +52,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		return super.getLazyDependentModules();
 	}
 
-	@Input
+	@Internal
 	public File getWorkDir() {
 		return workDir;
 	}
@@ -76,6 +70,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		sourceDir = dir;
 	}
 
+	@Internal
 	public File getSourceRootDir() {
 		return sourceRootDir;
 	}

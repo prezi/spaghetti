@@ -8,12 +8,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
-import org.gradle.api.tasks.InputFile;
-import org.gradle.api.tasks.OutputFile;
-import org.gradle.api.tasks.SourceTask;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.*;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -26,18 +24,18 @@ import com.prezi.spaghetti.tsast.TypeScriptAstParserService;
 
 public class MergeDtsTask extends SourceTask implements DefinitionAwareSpaghettiTask, NeedsTypeScriptCompilerSpaghettiTask {
 
-    private DefinitionFile definition = null;
-    private File workDir;
-    private File sourceDir;
-    private File tsCompilerPath = null;
+	private DefinitionFile definition = null;
+    private DirectoryProperty outputDir = getProject().getObjects().directoryProperty();
+    private RegularFileProperty sourceDir = getProject().getObjects().fileProperty();
+    private RegularFileProperty tsCompilerPath = getProject().getObjects().fileProperty();
 
-    @Input
-    public File getWorkDir() {
-        return workDir;
+    @OutputDirectory
+    public File getOutputDir() {
+        return outputDir.getAsFile().get();
     }
 
-    public void setWorkDir(File dir) {
-        workDir = dir;
+    public void setOutputDir(File dir) {
+        outputDir.set(dir);
     }
 
     @InputFile
@@ -56,16 +54,16 @@ public class MergeDtsTask extends SourceTask implements DefinitionAwareSpaghetti
 
     @InputDirectory
     public File getSourceDir() {
-        return sourceDir;
+        return sourceDir.getAsFile().get();
     }
 
     public void setSourceDir(File dir) {
-        sourceDir = dir;
+        sourceDir.set(dir);
     }
 
     @OutputFile
     public File getOutputFile() {
-        return new File(getWorkDir(), getDefinitionDtsFilename());
+        return outputDir.map(dir -> new File(dir.getAsFile(), getDefinitionDtsFilename())).get();
     }
 
     private String getDefinitionDtsFilename() {
@@ -75,18 +73,17 @@ public class MergeDtsTask extends SourceTask implements DefinitionAwareSpaghetti
 
     @InputDirectory
     public File getCompilerPath() {
-        return tsCompilerPath;
+        return tsCompilerPath.getAsFile().get();
     }
 
     public void setCompilerPath(File compilerDir) {
-        this.tsCompilerPath = compilerDir;
+        this.tsCompilerPath.set(compilerDir);
     }
 
 
     @TaskAction
     public void merge() throws IOException, InterruptedException {
-        FileUtils.deleteQuietly(getWorkDir());
-        FileUtils.forceMkdir(getWorkDir());
+        File workDir = getTemporaryDir();
 
         String filename = getDefinitionDtsFilename();
         Collection<File> files = FileUtils.listFiles(getSourceDir(), new NameFileFilter(filename), TrueFileFilter.TRUE);
@@ -97,10 +94,10 @@ public class MergeDtsTask extends SourceTask implements DefinitionAwareSpaghetti
         File generatedDts = Iterables.getOnlyElement(files);
         List<String> lines = Lists.newArrayList();
 
-        File mergedDts = new File(getWorkDir(), "_merged.d.ts");
+        File mergedDts = new File(workDir, "_merged.d.ts");
         try {
             TypeScriptAstParserService.mergeDefinitionFileImports(
-                getWorkDir(),
+                workDir,
                 getCompilerPath(),
                 generatedDts,
                 mergedDts,

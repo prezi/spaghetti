@@ -24,6 +24,8 @@ import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
@@ -41,12 +43,13 @@ public class SpaghettiPlugin implements Plugin<Project> {
 	public static final String SPAGHETTI_GENERATED_SOURCE_SET = "spaghetti-generated";
 
 	private final Instantiator instantiator;
-	private final FileResolver fileResolver;
+	//private final FileResolver fileResolver;
+	private final ObjectFactory objectFactory;
 
 	@Inject
-	public SpaghettiPlugin(Instantiator instantiator, FileResolver fileResolver) {
+	public SpaghettiPlugin(Instantiator instantiator, ObjectFactory objectFactory) {
 		this.instantiator = instantiator;
-		this.fileResolver = fileResolver;
+		this.objectFactory = objectFactory;
 	}
 
 	@Override
@@ -59,11 +62,11 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		FunctionalSourceSet mainSources = extension.getSources().maybeCreate("main");
 		FunctionalSourceSet testSources = extension.getSources().maybeCreate("test");
 
-		DefaultSpaghettiSourceSet spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet.class, "spaghetti", mainSources, fileResolver);
+		DefaultSpaghettiSourceSet spaghettiSourceSet = instantiator.newInstance(DefaultSpaghettiSourceSet.class, "spaghetti", mainSources, objectFactory);
 		spaghettiSourceSet.getSource().srcDir("src/main/spaghetti");
 		mainSources.add(spaghettiSourceSet);
 
-		DefaultSpaghettiResourceSet spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet.class, "spaghetti-resources", mainSources, fileResolver);
+		DefaultSpaghettiResourceSet spaghettiResourceSet = instantiator.newInstance(DefaultSpaghettiResourceSet.class, "spaghetti-resources", mainSources, objectFactory);
 		spaghettiResourceSet.getSource().srcDir("src/main/spaghetti-resources");
 		mainSources.add(spaghettiResourceSet);
 
@@ -145,7 +148,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		// Create source set
 		LanguageSourceSet spaghettiHeaders = functionalSourceSet.findByName(SPAGHETTI_GENERATED_SOURCE_SET);
 		if (spaghettiHeaders == null) {
-			spaghettiHeaders = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_SOURCE_SET, functionalSourceSet, fileResolver);
+			spaghettiHeaders = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_SOURCE_SET, functionalSourceSet, objectFactory);
 			functionalSourceSet.add(spaghettiHeaders);
 			logger.debug("Added {}", spaghettiHeaders);
 		}
@@ -171,7 +174,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 		// Create source set
 		LanguageSourceSet spaghettiStubs = functionalSourceSet.findByName(SPAGHETTI_GENERATED_SOURCE_SET);
 		if (spaghettiStubs == null) {
-			spaghettiStubs = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_SOURCE_SET, functionalSourceSet, fileResolver);
+			spaghettiStubs = instantiator.newInstance(DefaultSpaghettiGeneratedSourceSet.class, SPAGHETTI_GENERATED_SOURCE_SET, functionalSourceSet, objectFactory);
 			functionalSourceSet.add(spaghettiStubs);
 			logger.debug("Added {}", spaghettiStubs);
 		}
@@ -297,13 +300,7 @@ public class SpaghettiPlugin implements Plugin<Project> {
 			}
 
 		});
-		zipTask.getConventionMapping().map("baseName", new Callable<String>() {
-			@Override
-			public String call() throws Exception {
-				return name;
-			}
-
-		});
+		zipTask.getArchiveBaseName().convention(name);
 		return zipTask;
 	}
 }

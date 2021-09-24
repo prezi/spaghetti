@@ -1,10 +1,10 @@
 apply plugin: "application"
 
 dependencies {
-	compile project(":spaghetti-core")
-	compile "io.airlift:airline:0.6"
-	compile "ch.qos.logback:logback-classic:1.1.2"
-	runtime rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
+	api project(":spaghetti-core")
+	api "io.airlift:airline:0.6"
+	api "ch.qos.logback:logback-classic:1.1.2"
+	runtimeOnly rootProject.subprojects.findAll { it.name ==~ /spaghetti-.*-support/ }
 }
 
 mainClassName = "com.prezi.spaghetti.cli.SpaghettiCli"

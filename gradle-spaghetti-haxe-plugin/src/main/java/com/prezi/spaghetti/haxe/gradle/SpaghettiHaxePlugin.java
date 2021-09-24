@@ -32,6 +32,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.ConventionTask;
 import org.gradle.api.internal.file.FileResolver;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +51,12 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 	public static final String NODE_MUNIT_DEPENDENCIES = "nodeMunitDependencies";
 
 	private final Instantiator instantiator;
-	private final FileResolver fileResolver;
+	private final ObjectFactory objectFactory;
 
 	@Inject
-	public SpaghettiHaxePlugin(Instantiator instantiator, FileResolver fileResolver) {
+	public SpaghettiHaxePlugin(Instantiator instantiator, ObjectFactory objectFactory) {
 		this.instantiator = instantiator;
-		this.fileResolver = fileResolver;
+		this.objectFactory = objectFactory;
 	}
 
 	@Override
@@ -187,7 +188,7 @@ public class SpaghettiHaxePlugin implements Plugin<Project> {
 		logger.debug("Adding {} to binaries in {}", spaghettiSourceSet, project.getPath());
 		Configuration config = project.getConfigurations().maybeCreate("spaghetti");
 		FunctionalSourceSet spaghetti = haxeExtension.getSources().maybeCreate(sourceSetName);
-		final DefaultHaxeSourceSet haxeSourceSet = instantiator.newInstance(DefaultHaxeSourceSet.class, spaghettiSourceSet.getName(), spaghetti, config, fileResolver);
+		final DefaultHaxeSourceSet haxeSourceSet = instantiator.newInstance(DefaultHaxeSourceSet.class, spaghettiSourceSet.getName(), spaghetti, config, objectFactory);
 		haxeSourceSet.getSource().source(spaghettiSourceSet.getSource());
 		haxeSourceSet.builtBy(spaghettiSourceSet);
 		haxeExtension.getBinaries().withType(binaryType).all(new Action<T>() {

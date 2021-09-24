@@ -37,6 +37,7 @@ import org.gradle.api.Task;
 import org.gradle.api.file.ConfigurableFileTree;
 import org.gradle.api.file.FileTree;
 import org.gradle.api.internal.file.FileResolver;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.specs.Spec;
 import org.gradle.internal.reflect.Instantiator;
 import org.slf4j.Logger;
@@ -59,12 +60,13 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 	private static final Logger logger = LoggerFactory.getLogger(SpaghettiTypeScriptPlugin.class);
 
 	private final Instantiator instantiator;
-	private final FileResolver fileResolver;
+	private final ObjectFactory objectFactory;
 
 	@Inject
-	public SpaghettiTypeScriptPlugin(Instantiator instantiator, FileResolver fileResolver) {
+	public SpaghettiTypeScriptPlugin(Instantiator instantiator, ObjectFactory objectFactory) {
 		this.instantiator = instantiator;
-		this.fileResolver = fileResolver;
+		this.objectFactory = objectFactory;
+
 	}
 
 	@Override
@@ -198,7 +200,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		logger.debug("Adding {} to binaries in {}", spaghettiGeneratedSourceSet, project.getPath());
 		TypeScriptExtension typeScriptExtension = project.getExtensions().getByType(TypeScriptExtension.class);
 		FunctionalSourceSet spaghetti = typeScriptExtension.getSources().maybeCreate(sourceSetName);
-		final TypeScriptSourceSet typescriptSourceSet = instantiator.newInstance(TypeScriptSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, fileResolver);
+		final TypeScriptSourceSet typescriptSourceSet = instantiator.newInstance(TypeScriptSourceSet.class, spaghettiGeneratedSourceSet.getName(), spaghetti, objectFactory);
 		typescriptSourceSet.getSource().source(spaghettiGeneratedSourceSet.getSource());
 		typescriptSourceSet.builtBy(spaghettiGeneratedSourceSet);
 		typeScriptExtension.getBinaries().withType(binaryType).all(new Action<T>() {
@@ -237,7 +239,7 @@ public class SpaghettiTypeScriptPlugin implements Plugin<Project> {
 		mergeDtsTask.dependsOn(binary.getCompileTask());
 		mergeDtsTask.setSourceDir(binary.getCompileTask().getOutputDir());
 		mergeDtsTask.setSource(project.fileTree(binary.getCompileTask().getOutputDir()));
-		mergeDtsTask.setWorkDir(
+		mergeDtsTask.setOutputDir(
 				project.file(project.getBuildDir() + "/merge-dts/"
 					+ namingScheme.getOutputDirectoryBase() + "/"));
 		binary.builtBy(mergeDtsTask);

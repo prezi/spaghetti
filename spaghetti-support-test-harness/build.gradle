@@ -1,4 +1,4 @@
 dependencies {
-	compile project(path: ":spaghetti-core")
-	compile project(path: ":spaghetti-core", configuration: "testCompile")
+	api project(path: ":spaghetti-core")
+	api project(path: ":spaghetti-core", configuration: "testDependencies")
 }

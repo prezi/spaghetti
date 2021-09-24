@@ -45,7 +45,7 @@ class ModuleBundleTest extends Specification {
 
 		then:
 		1 * builder.init()
-		1 * builder.appendFile("META-INF/MANIFEST.MF", { manifest = get(it) })
+		1 * builder.appendFile("META-INF/MANIFEST.MF", { manifest == get(it) })
 		1 * builder.appendFile("module.def", { it == "definition" })
 		1 * builder.appendFile("module.js", { it == "console.log('hello');" })
 		1 * builder.appendFile("module.map", { it == "sourcemap" })
@@ -201,7 +201,7 @@ class ModuleBundleTest extends Specification {
 	}
 
 	private static ModuleBundle fakeModule(StructuredProcessor source) {
-		return new DefaultModuleBundle(source, "test", "3.7", ModuleFormat.UMD, DefinitionLanguage definitionLang, null, [] as Set, [] as Set, [:], [] as Set, false)
+		return new DefaultModuleBundle(source, "test", "3.7", ModuleFormat.UMD, null, null, [] as Set, [] as Set, [:], [] as Set, false)
 	}
 
 	private static String get(IOAction<OutputStream> action) {
