@@ -44,6 +44,10 @@ subprojects { subproject ->
 			url "https://plugins.gradle.org/m2/"
 		}
 		maven {
+			credentials {
+				username nexusUser
+				password nexusPassword
+			}
 			url "https://artifactory.prezi.com/artifactory/plugins-release-local/"
 		}
 	}
