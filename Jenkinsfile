@@ -28,7 +28,7 @@ tsc --version
 }
 
 stage("flow") {
-	node('boxfish-xenial-executor-small') {
+	node('boxfish-executor-small') {
 		checkout scm
 		ansiColor('xterm') {
 			def haxeHome = setupHaxe()
