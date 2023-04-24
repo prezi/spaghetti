@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 configurations {
 	antlr
 	testDependencies.extendsFrom testImplementation
@@ -7,7 +9,7 @@ dependencies {
 	api project(":spaghetti-api")
 	api "org.slf4j:slf4j-api:1.7.7"
 
-	api "com.google.javascript:closure-compiler:v20140814"
+	api "com.google.javascript:closure-compiler:v20230411"
 
 	api "org.antlr:antlr4-runtime:4.2"
 	api "commons-lang:commons-lang:2.6"
@@ -15,6 +17,7 @@ dependencies {
 	api "commons-io:commons-io:2.4"
 	api "com.google.guava:guava:17.0"
 	api "com.google.code.gson:gson:2.2.4"
+	api "com.github.spotbugs:spotbugs-annotations:4.7.1"
 	antlr "org.antlr:antlr4:4.2"
 	testImplementation "org.slf4j:slf4j-simple:1.7.7"
 }
@@ -69,6 +72,18 @@ task run(type: Exec) {
 	commandLine = ["gradle", "clean", "packApplication", "-is"]
 }
 
+def osAgnosticExec(Object... args) {
+	exec {
+		if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+			commandLine(['cmd', '/c', *args])
+		} else {
+			commandLine args
+		}
+	}
+}
+
+
+
 task compileTsAstParser {
 
 	def outputDir = new File(project.buildDir, "typescript")
@@ -84,14 +99,26 @@ task compileTsAstParser {
 			into outputDir
 		}
 
-		exec {
-			workingDir outputDir
-			commandLine "npm", "install"
-		}
+		if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+			exec {
+				workingDir outputDir
+				commandLine "cmd", "/c", "npm", "install"
+			}
 
-		exec {
-			workingDir outputDir
-			executable new File(outputDir, "node_modules/typescript/bin/tsc")
+			exec {
+				workingDir outputDir
+				commandLine "cmd", "/c", new File(outputDir, "node_modules/.bin/tsc.cmd").absolutePath
+			}
+		} else {
+			exec {
+				workingDir outputDir
+				commandLine "npm", "install"
+			}
+
+			exec {
+				workingDir outputDir
+				commandLine new File(outputDir, "node_modules/.bin/tsc").absolutePath
+			}
 		}
 	}
 }

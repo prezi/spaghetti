@@ -1,6 +1,6 @@
 dependencies {
 	api "args4j:args4j:2.33"
-	api "com.google.javascript:closure-compiler:v20181028"
+	api "com.google.javascript:closure-compiler:v20230411"
 }
 
 jar {

@@ -15,7 +15,7 @@ class FilteringErrorManager extends PrintStreamErrorManager {
 
     @Override
     public void report(CheckLevel level, JSError error) {
-        if (isRequireAssignment(error.node)) {
+        if (isRequireAssignment(error.getNode())) {
             // ignore this error
         } else {
             super.report(level, error);
