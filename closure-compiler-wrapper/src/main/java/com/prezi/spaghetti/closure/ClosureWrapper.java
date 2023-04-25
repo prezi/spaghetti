@@ -17,9 +17,15 @@ import com.google.javascript.jscomp.ModuleIdentifier;
 import com.google.javascript.jscomp.PropertyRenamingPolicy;
 import com.google.javascript.jscomp.SourceFile;
 import com.google.javascript.jscomp.VariableRenamingPolicy;
+import com.google.javascript.jscomp.jarjar.com.google.common.collect.ImmutableList;
+import com.google.javascript.jscomp.parsing.parser.trees.ThisExpressionTree;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,17 +41,44 @@ class ClosureWrapper {
 
     private static void runCompiler(Args args) throws IOException {
 
-        Compiler compiler = new Compiler(System.err);
-        CompilerOptions options = new CompilerOptions();
+		final CompilationLevel level = CompilationLevel.fromString(args.compilationLevel);
+		class Runner extends CommandLineRunner {
 
-        if (args.concat) {
-            compiler.setErrorManager(new FilteringErrorManager(
-                options.errorFormat.toFormatter(compiler, true),
-                System.err
-            ));
-        }
+			protected Runner(String[] args) {
+				super(args);
+			}
 
-        CompilationLevel level = CompilationLevel.fromString(args.compilationLevel);
+			@Override
+			protected void setRunOptions(CompilerOptions options) throws IOException {
+				super.setRunOptions(options);
+				if (args.concat) {
+					options.setConvertToDottedProperties(false);
+					if (level == CompilationLevel.SIMPLE_OPTIMIZATIONS) {
+						options.setRenamingPolicy(VariableRenamingPolicy.OFF, PropertyRenamingPolicy.OFF);
+						options.setInlineVariables(Reach.NONE);
+						options.setInlineFunctions(Reach.NONE);
+						options.setFoldConstants(false);
+						options.setCoalesceVariableNames(false);
+						options.setCollapseVariableDeclarations(false);
+					}
+				}
+				if (args.concat) {
+					// Report an error if there is an import cycle in the module resolution.
+					// (ie. EARLY_REFERENCE, the module is referenced before it is defined).
+					options.setWarningLevel(
+						new DiagnosticGroup(EARLY_REFERENCE),
+//						CheckLevel.WARNING);
+						CheckLevel.ERROR);
+				}
+			}
+
+			public Compiler getTheCompiler() {
+				return super.getCompiler();
+			}
+		}
+
+		List<String> argList = new ArrayList<String>();
+
         if (level == null) {
             System.err.println("Invalid value for compilation_level: " + args.compilationLevel);
             System.exit(2);
@@ -57,79 +90,80 @@ class ClosureWrapper {
             }
         }
 
-        level.setOptionsForCompilationLevel(options);
-        options.setTrustedStrings(true);
-        options.setEnvironment(CompilerOptions.Environment.BROWSER);
+		argList.add("--compilation_level");
+		argList.add(args.compilationLevel);
+		argList.add("--env");
+		argList.add("BROWSER");
 
         if (args.concat) {
-            level.setWrappedOutputOptimizations(options);
-            options.setProcessCommonJSModules(true);
-            options.setConvertToDottedProperties(false);
-            options.setModuleResolutionMode(ModuleLoader.ResolutionMode.NODE);
-            // Dependency mode STRICT
-            options.setDependencyOptions(new DependencyOptions()
-                .setDependencyPruning(true)
-                .setDependencySorting(true)
-                .setMoocherDropping(true)
-                .setEntryPoints(getEntryPoints(args.entryPoints)));
-
+			argList.add("--process_common_js_modules");
+			argList.add("--module_resolution");
+			argList.add("NODE");
+			argList.add("--dependency_mode");
+			argList.add("PRUNE");
+			for(String entryPoint : args.entryPoints) {
+				argList.add("--entry_point");
+				argList.add(entryPoint);
+			}
             if (level == CompilationLevel.SIMPLE_OPTIMIZATIONS) {
                 // Pretty print output to make local debugging easier.
                 // Spaghetti's obfuscation task will obfuscate & minify later in the build process.
-                options.setRenamingPolicy(VariableRenamingPolicy.OFF, PropertyRenamingPolicy.OFF);
-                options.setInlineVariables(Reach.NONE);
-                options.setInlineFunctions(Reach.NONE);
-                options.setPrettyPrint(true);
-                options.setFoldConstants(false);
-                options.setCoalesceVariableNames(false);
-                options.setCollapseVariableDeclarations(false);
+				argList.add("--formatting");
+				argList.add("PRETTY_PRINT");
+
             }
         }
 
         if (args.sourceMap != null) {
-            options.setSourceMapOutputPath(args.sourceMap.getPath());
+			argList.add("--create_source_map");
+			argList.add(args.sourceMap.getPath());
         }
 
-        options.setEmitUseStrict(false);
+		argList.add("--emit_use_strict");
 
         if (args.es5) {
-            options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT);
-            options.setLanguageOut(CompilerOptions.LanguageMode.ECMASCRIPT5_STRICT);
+			argList.add("--language_in");
+			argList.add("ECMASCRIPT5_STRICT");
+			argList.add("--language_out");
+			argList.add("ECMASCRIPT5_STRICT");
         } else {
-            options.setLanguageIn(CompilerOptions.LanguageMode.ECMASCRIPT_2015);
-            options.setLanguageOut(CompilerOptions.LanguageMode.NO_TRANSPILE);
-            options.setRewritePolyfills(false);
+			argList.add("--language_in");
+			argList.add("ECMASCRIPT_2015");
+			argList.add("--language_out");
+			argList.add("ECMASCRIPT_2015");
+			argList.add("--rewrite_polyfills");
+			argList.add("false");
         }
 
-        options.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, CheckLevel.OFF);
-        options.setWarningLevel(DiagnosticGroups.CHECK_TYPES, CheckLevel.OFF);
+		argList.add("--jscomp_off");
+		argList.add("checkVars");
+		argList.add("--jscomp_off");
+		argList.add("checkTypes");
+		argList.add("--jscomp_off");
+		argList.add("uselessCode");
 
-        if (args.concat) {
-            // Report an error if there is an import cycle in the module resolution.
-            // (ie. EARLY_REFERENCE, the module is referenced before it is defined).
-            options.setWarningLevel(
-                new DiagnosticGroup(EARLY_REFERENCE),
-                CheckLevel.ERROR);
+        for (String path : args.externsPatterns) {
+			argList.add("--externs");
+			argList.add(path);
         }
 
-        List<SourceFile> externs = new ArrayList<SourceFile>();
-        externs.addAll(AbstractCommandLineRunner.getBuiltinExterns(options.getEnvironment()));
-        for (String path : CommandLineRunner.findJsFiles(args.externsPatterns)) {
-            externs.add(SourceFile.fromFile(path));
+        for (String path : args.inputPatterns) {
+			argList.add("--js");
+			argList.add(path);
         }
 
-        List<SourceFile> inputs = new ArrayList<SourceFile>();
-        for (String path : CommandLineRunner.findJsFiles(args.inputPatterns)) {
-            inputs.add(SourceFile.fromFile(path));
-        }
+		argList.add("--js_output_file");
+		argList.add(args.outputFile.getPath());
 
-        compiler.compile(externs, inputs, options);
+		Runner runner = new Runner(argList.toArray(new String[0]));
+		runner.run();
 
-        JSError[] errors = compiler.getErrors();
-        if (errors.length > 0) {
+		Compiler compiler = runner.getTheCompiler();
+		ImmutableList<JSError> errors = compiler.getErrors();
+        if (errors.size() > 0) {
             for (JSError e : errors) {
                 if (args.concat && e.getType() == EARLY_REFERENCE) {
-                    System.err.println(String.format("The error '%s'", e.description));
+                    System.err.println(String.format("The error '%s'", e.getDescription()));
                     System.err.println("  likely means that there is a cycle in the module imports.");
                     System.err.println("  Please refactor to avoid undefined errors at runtime.");
                     break;
@@ -137,16 +171,9 @@ class ClosureWrapper {
             }
             System.exit(1);
         } else {
-            Writer writer = new FileWriter(args.outputFile);
-            writer.write(compiler.toSource());
-            writer.write("\n");
-            writer.close();
             System.out.println("Wrote: " + args.outputFile.getAbsolutePath());
 
             if (args.sourceMap != null) {
-                writer = new FileWriter(args.sourceMap);
-                compiler.getSourceMap().appendTo(writer, args.outputFile.getPath());
-                writer.close();
                 System.out.println("Wrote: " + args.sourceMap.getAbsolutePath());
             }
         }
@@ -162,14 +189,5 @@ class ClosureWrapper {
         }
 
         throw new RuntimeException("Cannot locate EARLY_REFERENCE");
-    }
-
-
-    private static List<ModuleIdentifier> getEntryPoints(List<String> entryFiles) {
-        List<ModuleIdentifier> entryPoints = new ArrayList<ModuleIdentifier>();
-        for (String s : entryFiles) {
-            entryPoints.add(ModuleIdentifier.forFile(s));
-        }
-        return entryPoints;
     }
 }
