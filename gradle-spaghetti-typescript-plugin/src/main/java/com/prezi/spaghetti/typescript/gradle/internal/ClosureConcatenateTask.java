@@ -146,6 +146,11 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		this.closureTarget = closureTarget;
 	}
 
+	private static String commentOut(String line) {
+		String prefix = "// ";
+		return prefix + line.substring(prefix.length());
+	}
+
 	@TaskAction
 	public void concat() throws IOException, InterruptedException {
 		File workDir = getWorkDir();
@@ -161,14 +166,14 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 				copySpec.into(getWorkDir());
 				copySpec.filter(new Transformer<String, String>() {
 					@Override
-					public String transform(String s) {
-						if (s.startsWith("exports.") && s.endsWith("= void 0;")) {
+					public String transform(String line) {
+						if (line.startsWith("exports.") && line.endsWith("= void 0;")) {
 							// Starting with typescript version 3.9 it emits lines like these
-							// closure can't handle these, so these have to be removed
+							// closure can't handle these, so these are commented out to preserve source maps
 							// See https://github.com/microsoft/TypeScript/issues/41369 for more info
-							return null;
+							return commentOut(line);
 						}
-						return s;
+						return line;
 					}
 				});
 			}
