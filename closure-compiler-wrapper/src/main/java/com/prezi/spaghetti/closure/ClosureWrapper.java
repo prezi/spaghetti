@@ -121,6 +121,7 @@ class ClosureWrapper {
         }
 
 		argList.add("--emit_use_strict");
+		argList.add("false");
 
         if (args.es5) {
 			argList.add("--language_in");
