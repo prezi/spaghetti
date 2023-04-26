@@ -92,6 +92,8 @@ task compileTsAstParser {
 
 	outputs.file outputFile
 	inputs.file inputFile
+	inputs.file project.file("src/main/ts/package.json")
+	inputs.file project.file("src/main/ts/tsconfig.json")
 
 	doLast {
 		copy {
