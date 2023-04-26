@@ -67,8 +67,9 @@ class ClosureWrapper {
 					// (ie. EARLY_REFERENCE, the module is referenced before it is defined).
 					options.setWarningLevel(
 						new DiagnosticGroup(EARLY_REFERENCE),
-//						CheckLevel.WARNING);
-						CheckLevel.ERROR);
+						CheckLevel.WARNING);
+					// TODO detect actual static early references
+//						CheckLevel.ERROR);
 				}
 			}
 
