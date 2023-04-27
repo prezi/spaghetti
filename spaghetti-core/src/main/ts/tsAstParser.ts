@@ -403,8 +403,8 @@ function collectImportedIdentifiers(root: ts.Node): ImportedIdentifiers {
     return importedNames;
 }
 
-function hasModifier(node: ts.Node, kind: ts.SyntaxKind) {
-    return node.modifiers != null && node.modifiers.some(
+function hasModifier(node: ts.Node | ts.HasModifiers, kind: ts.SyntaxKind) {
+    return "modifiers" in node && node.modifiers != null && node.modifiers.some(
             (modifier: ts.Modifier) => modifier.kind === kind);
 }
 
@@ -532,8 +532,6 @@ function replaceInText(sourceText: string, replacements: Replacement[]) {
     return sourceText;
 }
 
-
-
 const args = process.argv.slice(2);
 if (args[0] === "--collectExportedIdentifiers") {
     const filename = args[1];
@@ -569,7 +567,7 @@ if (args[0] === "--collectExportedIdentifiers") {
     const sourceFile = getSourceFile(filename);
     const linter = new Linter(sourceFile);
     linter.lintCommonJs();
-    const lintedFileText = linter.mergeCommonJsImports();
+    const lintedFileText = linter.mergeCommonJsImports() ?? "";
     if (linter.hasErrors()) {
         linter.printErrors();
         process.exit(1);

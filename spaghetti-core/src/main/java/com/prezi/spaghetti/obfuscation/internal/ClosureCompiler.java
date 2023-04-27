@@ -116,6 +116,8 @@ public class ClosureCompiler {
 		int retCode = process.waitFor();
 		if (retCode != 0) {
 			logger.error("ERROR: " + output);
+		} else {
+			logger.info(output);
 		}
 		return retCode;
 	}

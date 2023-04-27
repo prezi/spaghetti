@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -93,16 +94,10 @@ public class TypeScriptAstParserService {
 			logger.info("Executing: NODE_PATH={} {}", nodePath, Joiner.on(" ").join(command));
 			ProcessBuilder processBuilder = new ProcessBuilder(command);
 			processBuilder.environment().put("NODE_PATH", nodePath);
+			processBuilder.redirectErrorStream(true);
 			Process process = processBuilder.start();
 
-			ByteStreams.copy(process.getErrorStream(), System.out);
-			BufferedReader reader =
-				new BufferedReader(new InputStreamReader(process.getInputStream()));
-			List<String> lines = new ArrayList<String>();
-			String line = null;
-			while ( (line = reader.readLine()) != null) {
-				lines.add(line);
-			}
+			List<String> lines = IOUtils.readLines(process.getInputStream());
 			process.waitFor();
 			if (process.exitValue() != 0) {
 				throw new TypeScriptAstParserException("tsAstParser failure: " + process.exitValue(), lines);
