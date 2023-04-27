@@ -72,18 +72,6 @@ task run(type: Exec) {
 	commandLine = ["gradle", "clean", "packApplication", "-is"]
 }
 
-def osAgnosticExec(Object... args) {
-	exec {
-		if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-			commandLine(['cmd', '/c', *args])
-		} else {
-			commandLine args
-		}
-	}
-}
-
-
-
 task compileTsAstParser {
 
 	def outputDir = new File(project.buildDir, "typescript")
