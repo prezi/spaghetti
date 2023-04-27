@@ -105,9 +105,6 @@ public class TypeScriptAstParserService {
 			return lines;
 		} catch (IOException e) {
 			throw new IOException("Cannot run node.", e);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
 		}
 	}
 }
