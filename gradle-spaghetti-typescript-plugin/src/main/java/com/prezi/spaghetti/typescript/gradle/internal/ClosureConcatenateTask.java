@@ -14,6 +14,7 @@ import com.prezi.spaghetti.obfuscation.internal.ClosureCompiler;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.*;
 
 import java.io.File;
@@ -213,11 +214,11 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		}
 
 		List<String> outputLines = readLines(closureOutputFile.toPath());
-		removeUnusedModuleConsts(outputLines);
+		removeUnusedModuleConsts(outputLines, getLogger());
 		Files.write(getOutputFile().toPath(), outputLines);
 	}
 
-	private static void removeUnusedModuleConsts(List<String> outputLines) {
+	private static void removeUnusedModuleConsts(List<String> outputLines, Logger logger) {
 		Map<String, Integer> declarationMap = new HashMap<>();
 		String pattern ="$$module$";
 		Pattern declarationRegex = Pattern.compile("const ([^${:}]+"+Pattern.quote(pattern)+"[^ {:}]+) = [^{]*;");
@@ -229,14 +230,13 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 			if (!line.contains(pattern)) {
 				continue;
 			}
-
-			System.out.println(i+" Line: "+line);
+			logger.info(i+" Line: "+line);
 			Matcher matcher = declarationRegex.matcher(line);
 			if (!matcher.matches()) {
 				continue;
 			}
 			String name = matcher.group(1);
-			System.out.println("Found: "+name);
+			logger.info("Found: "+name);
 			if (declarationMap.containsKey(name)) {
 				throw new RuntimeException("Duplicated const: " + name);
 			}
@@ -262,8 +262,8 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 					continue;
 				}
 				if (patternMap.get(name).matcher(line).find()) {
-					System.out.println("Used: " + name);
-					System.out.println("In line "+lineNumber+": " + line);
+					logger.info("Used: " + name);
+					logger.info("In line "+lineNumber+": " + line);
 					usedNames.add(name);
 				}
 			}
@@ -274,7 +274,7 @@ public class ClosureConcatenateTask extends AbstractDefinitionAwareSpaghettiTask
 		for (Map.Entry<String, Integer> entry : declarationMap.entrySet()) {
 			String name = entry.getKey();
 			Integer lineNumber = entry.getValue();
-			System.out.println("Removed: " + name + "from line "+lineNumber);
+			logger.info("Removed: " + name + "from line "+lineNumber);
 			outputLines.set(lineNumber,commentOut(outputLines.get(lineNumber)));
 		}
 	}
