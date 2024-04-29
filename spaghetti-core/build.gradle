@@ -59,6 +59,7 @@ sourceSets {
 }
 
 compileJava {
+	options.compilerArgs << '-Xlint:deprecation'
 	dependsOn generateGrammar
 }
 

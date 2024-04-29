@@ -11,16 +11,12 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 		def enumName = node.name
 
 		return \
-"""abstract ${enumName}(Int) {
+"""
+	enum abstract ${enumName}(Int) {
 ${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 
-	static var _values = {
-		#if js
-		var thisValue = ${enumName};
-		${node.values.collect { entry -> "untyped __js__(\"thisValue[thisValue.${entry.name}] = '${entry.name}'\");" }.join("\n\t\t")}
-		#end
-		[${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
-	}
+	public static var _extern = ${enumName}_Impl;
+
 	static var _names = [${node.values.collect { entry -> "Std.string(${entry.name}) => \"${entry.name}\"" }.join(", ")}];
 
 	inline function new(value:Int) {
@@ -31,30 +27,42 @@ ${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 		return this;
 	}
 
-	@:from public static function fromValue(value:Int) {
-		var key: String = Std.string(value);
-		if (!_values.exists(key)) {
-			throw "Invalid value for ${enumName}: " + value;
-		}
-		return _values[key];
-	}
-
 	@:to public inline function name():String {
 		return _names[Std.string(this)];
 	}
-
-	@:from public static inline function valueOf(name:String) {
-		return switch(name)
-		{
-${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
-			default: throw "Invalid name for ${enumName}: " + name;
-		};
-	}
-
-	public static function values():Array<${enumName}> {
-		return [${node.values.collect { it }.join(", ")}];
-	}
 }
+
+class ${enumName}_Impl {
+${node.values.collect { entry -> "public static var ${entry.name} = cast ${entry.value};"}.join("\n\t\t")}
+
+		static var _values = {
+			#if js
+			var thisValue = ${enumName}_Impl;
+			${node.values.collect { entry -> "untyped __js__(\"thisValue[thisValue.${entry.name}] = '${entry.name}'\");" }.join("\n\t\t")}
+			#end
+			[${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
+		}
+
+		public static function values():Array<${enumName}> {
+			return [${node.values.collect { it }.join(", ")}];
+		}
+
+		@:from public static inline function valueOf(name:String) {
+				return switch(name)
+				{
+${node.values.collect {"			case \"${it}\": ${it};"}.join("\n")}
+				default: throw "Invalid name for ${enumName}: " + name;
+				};
+		}
+
+		@:from public static function fromValue(value:Int) {
+			var key: String = Std.string(value);
+			if (!_values.exists(key)) {
+				throw "Invalid value for ${enumName}: " + value;
+			}
+			return _values[key];
+		}
+	}
 """
 	}
 
