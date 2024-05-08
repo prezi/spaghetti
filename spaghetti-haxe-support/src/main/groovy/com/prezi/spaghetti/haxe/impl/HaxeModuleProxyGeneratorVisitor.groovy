@@ -14,14 +14,12 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	String visitModuleNode(ModuleNode node) {
 		return \
 """@:final class __${node.alias}Proxy {
-	public var ${node.alias}: __${node.alias}Proxy;
-	public function new() {
-		${node.alias} = this;
-	}
+	public function new() {}
 ${
 	node.methods*.accept(new MethodVisitor(node)).join("") +
 	node.accept(new QualifiedConstVisitor(node)) +
-	node.accept(new QualifiedEnumVisitor(node))
+	node.accept(new QualifiedEnumVisitor(node)) + 
+	"\tpublic var ${node.alias} = this;\n"
 }}
 """
 	}
@@ -53,7 +51,7 @@ ${
 
 		@Override
 		String visitEnumNode(EnumNode enumNode) {
-			return "	public var ${enumNode.name} = ${qualifyingNode.name}.${enumNode.name}._extern;\n"
+			return "	public var ${enumNode.name} = ${qualifyingNode.name}.${enumNode.name};\n"
 		}
 
 		@Override

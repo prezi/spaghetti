@@ -177,7 +177,6 @@ public abstract class AbstractNodeSet<K extends Serializable, N extends AstNode>
 		return delegate.values().retainAll(c);
 	}
 
-	@Deprecated
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException("External modification of the AST is not allowed");
