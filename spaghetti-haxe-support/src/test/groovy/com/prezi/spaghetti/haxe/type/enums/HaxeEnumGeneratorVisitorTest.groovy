@@ -28,9 +28,9 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 
 		expect:
 		result == expectedWith(
-				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"ALMA\"]')",
-				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"BELA\"]')",
-				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"GEZA\"]')")
+				"js.Syntax.code('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"ALMA\"]')",
+				"js.Syntax.code('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"BELA\"]')",
+				"js.Syntax.code('Spaghetti[\"dependencies\"][\"test\"][\"MyEnum\"][\"GEZA\"]')")
 	}
 
 	def "generate dependent definition for wrapperless format"() {
@@ -38,9 +38,9 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 
 		expect:
 		result == expectedWith(
-				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"ALMA\"]')",
-				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"BELA\"]')",
-				"untyped __js__('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"GEZA\"]')")
+				"js.Syntax.code('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"ALMA\"]')",
+				"js.Syntax.code('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"BELA\"]')",
+				"js.Syntax.code('Spaghetti[\"dependencies\"][\"test\"][\"module\"][\"MyEnum\"][\"GEZA\"]')")
 	}
 
 	private static String expectedWith(String first, String second, String third) {
@@ -56,9 +56,9 @@ class HaxeEnumGeneratorVisitorTest extends EnumGeneratorSpecification {
 	static var _values = {
 		#if js
 		var thisValue = MyEnum;
-		untyped __js__("thisValue[thisValue.ALMA] = 'ALMA'");
-		untyped __js__("thisValue[thisValue.BELA] = 'BELA'");
-		untyped __js__("thisValue[thisValue.GEZA] = 'GEZA'");
+		js.Syntax.code("thisValue[thisValue.ALMA] = 'ALMA'");
+		js.Syntax.code("thisValue[thisValue.BELA] = 'BELA'");
+		js.Syntax.code("thisValue[thisValue.GEZA] = 'GEZA'");
 		#end
 		[Std.string(ALMA) => ALMA, Std.string(BELA) => BELA, Std.string(GEZA) => GEZA];
 	}

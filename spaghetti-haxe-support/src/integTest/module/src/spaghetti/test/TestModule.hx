@@ -52,6 +52,6 @@ class TestModule {
 	}
 
 	public static function getExternalDependencyVersion(): String {
-	    return untyped __js__('libWithVersion.version');
+	    return js.Syntax.code('libWithVersion.version');
 	}
 }

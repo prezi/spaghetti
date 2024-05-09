@@ -21,7 +21,7 @@ class HaxeModuleAccessorGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 		return \
 """@:final class ${node.alias} {
 
-	static var __module:Dynamic = untyped __js__('${GeneratorUtils.createModuleAccessor(node.name, format)}');
+	static var __module:Dynamic = js.Syntax.code('${GeneratorUtils.createModuleAccessor(node.name, format)}');
 
 ${node.methods*.accept(new MethodVisitor(node)).join("")}
 }
