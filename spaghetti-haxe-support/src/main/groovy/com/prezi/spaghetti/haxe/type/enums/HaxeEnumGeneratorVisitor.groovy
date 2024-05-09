@@ -11,7 +11,9 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 		def enumName = node.name
 
 		return \
-"""abstract ${enumName}(Int) {
+"""
+@:runtimeValue
+enum abstract ${enumName}(Int) {
 ${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 
 	static var _values = {
