@@ -14,12 +14,14 @@ class HaxeModuleProxyGeneratorVisitor extends AbstractHaxeGeneratorVisitor {
 	String visitModuleNode(ModuleNode node) {
 		return \
 """@:final class __${node.alias}Proxy {
-	public function new() {}
+	public var ${node.alias}: __${node.alias}Proxy;
+	public function new() {
+		${node.alias} = this;
+	}
 ${
 	node.methods*.accept(new MethodVisitor(node)).join("") +
 	node.accept(new QualifiedConstVisitor(node)) +
-	node.accept(new QualifiedEnumVisitor(node)) + 
-	"\tpublic var ${node.alias} = this;\n"
+	node.accept(new QualifiedEnumVisitor(node))
 }}
 """
 	}

@@ -23,7 +23,7 @@ class HaxeDependentEnumGeneratorVisitor extends HaxeEnumGeneratorVisitor {
 		return new HaxeEnumGeneratorVisitor.EnumValueVisitor(enumName) {
 			@Override
 			String generateValueExpression(EnumValueNode node) {
-				return "untyped __js__('${GeneratorUtils.createModuleAccessor(foreignModuleName, format)}[\"${enumName}\"][\"${node.name}\"]')"
+				return "js.Syntax.code('${GeneratorUtils.createModuleAccessor(foreignModuleName, format)}[\"${enumName}\"][\"${node.name}\"]')"
 			}
 		}
 	}

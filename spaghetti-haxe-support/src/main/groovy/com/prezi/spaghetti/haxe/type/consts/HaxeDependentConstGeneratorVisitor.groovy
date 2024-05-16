@@ -38,7 +38,7 @@ ${node.entries*.accept(new ConstEntryVisitor(node.name)).join("")}
 			String value = HaxeUtils.toPrimitiveString(node.value)
 			// TODO [knuton] Enable after migratory period
 			// String moduleAccessor = GeneratorUtils.createModuleAccessor(foreignModuleName, format)
-			// String value = "untyped __js__('${moduleAccessor}[\"${constName}\"][\"${node.name}\"]')"
+			// String value = "js.Syntax.code('${moduleAccessor}[\"${constName}\"][\"${node.name}\"]')"
 			return "\tpublic static inline var ${node.name}:${type} = ${value};\n"
 		}
 	}

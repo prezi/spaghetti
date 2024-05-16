@@ -11,13 +11,15 @@ class HaxeEnumGeneratorVisitor extends StringModuleVisitorBase {
 		def enumName = node.name
 
 		return \
-"""abstract ${enumName}(Int) {
+"""
+@:runtimeValue
+enum abstract ${enumName}(Int) {
 ${node.values*.accept(createEnumValueVisitor(node.name)).join("\n")}
 
 	static var _values = {
 		#if js
 		var thisValue = ${enumName};
-		${node.values.collect { entry -> "untyped __js__(\"thisValue[thisValue.${entry.name}] = '${entry.name}'\");" }.join("\n\t\t")}
+		${node.values.collect { entry -> "js.Syntax.code(\"thisValue[thisValue.${entry.name}] = '${entry.name}'\");" }.join("\n\t\t")}
 		#end
 		[${node.values.collect { entry -> "Std.string(${entry.name}) => ${entry.name}" }.join(", ")}];
 	}

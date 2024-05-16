@@ -33,7 +33,7 @@ module com.example.test {
 		expect:
 		result == """@:final class TestModule {
 
-	static var __module:Dynamic = untyped __js__('Spaghetti["dependencies"]["com.example.test"]["module"]');
+	static var __module:Dynamic = js.Syntax.code('Spaghetti["dependencies"]["com.example.test"]["module"]');
 
 	/**
 	 * Initializes module.

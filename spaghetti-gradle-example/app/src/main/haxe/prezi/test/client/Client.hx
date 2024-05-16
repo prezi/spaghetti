@@ -26,8 +26,8 @@ class Client {
 		});
 		trace("TestStuff.doSomething(): " + testStuff.doSomething("pre", "text", "pos"));
 
-		if (untyped __js__("typeof(document)") != "undefined") {
-			var canvas = untyped __js__("document.getElementById('canvas')");
+		if (js.Syntax.code("typeof(document)") != "undefined") {
+			var canvas = js.Syntax.code("document.getElementById('canvas')");
 			testStuff.drawSomething(canvas);
 		}
 
